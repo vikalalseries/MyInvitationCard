@@ -1,0 +1,112 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:#f5f1f7;
+}
+
+/* NAVBAR */
+
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 50px;
+  background:white;
+}
+
+.download-btn{
+  background:#7c3aed;
+  color:white;
+  border:none;
+  padding:12px 25px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+/* MAIN CONTAINER */
+
+.builder-container{
+  display:flex;
+  gap:40px;
+  padding:40px;
+}
+
+/* LEFT PANEL */
+
+.editor-panel{
+  width:35%;
+  background:white;
+  padding:30px;
+  border-radius:25px;
+}
+
+.editor-panel h2{
+  margin-bottom:30px;
+}
+
+.input-group{
+  margin-bottom:25px;
+}
+
+.input-group label{
+  display:block;
+  margin-bottom:10px;
+  font-weight:bold;
+}
+
+.input-group input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font-size:16px;
+}
+
+/* RIGHT PANEL */
+
+.preview-panel{
+  width:65%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* CARD */
+
+.invitation-card{
+  width:500px;
+  min-height:300px;
+  background:linear-gradient(
+    135deg,
+    #7c3aed,
+    #4338ca
+  );
+
+  border-radius:40px;
+  padding:50px;
+  color:white;
+
+  box-shadow:0 10px 40px rgba(0,0,0,0.2);
+}
+
+.tag{
+  text-transform:uppercase;
+  letter-spacing:4px;
+  margin-bottom:40px;
+}
+
+.invitation-card h1{
+  font-size:48px;
+  margin-bottom:30px;
+}
+
+.invitation-card p{
+  font-size:20px;
+  margin-bottom:15px;
+}
