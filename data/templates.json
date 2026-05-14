@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "title": "Royal Hindu Wedding",
+    "type": "groom",
+    "event": "wedding",
+    "religion": "hindu",
+    "state": "uttar-pradesh",
+    "style": "modern",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=11"
+  },
+  {
+    "id": 2,
+    "title": "Elegant Muslim Nikah",
+    "type": "groom",
+    "event": "wedding",
+    "religion": "muslim",
+    "state": "delhi",
+    "style": "creative",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=12"
+  },
+  {
+    "id": 3,
+    "title": "Classic Sikh Anand Karaj",
+    "type": "groom",
+    "event": "wedding",
+    "religion": "sikh",
+    "state": "punjab",
+    "style": "simple",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=13"
+  },
+  {
+    "id": 4,
+    "title": "Golden Engagement Invite",
+    "type": "groom",
+    "event": "engagement",
+    "religion": "hindu",
+    "state": "bihar",
+    "style": "modern",
+    "language": "hindi",
+    "thumbnail": "https://picsum.photos/500/700?random=14"
+  },
+  {
+    "id": 5,
+    "title": "Anniversary Luxury Card",
+    "type": "groom",
+    "event": "anniversary",
+    "religion": "christian",
+    "state": "kerala",
+    "style": "creative",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=15"
+  },
+  {
+    "id": 6,
+    "title": "Birthday Party Blast",
+    "type": "groom",
+    "event": "birthday",
+    "religion": "buddha",
+    "state": "maharashtra",
+    "style": "modern",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=16"
+  },
+  {
+    "id": 7,
+    "title": "Bride Floral Wedding",
+    "type": "bride",
+    "event": "wedding",
+    "religion": "hindu",
+    "state": "rajasthan",
+    "style": "creative",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=21"
+  },
+  {
+    "id": 8,
+    "title": "Rose Gold Engagement",
+    "type": "bride",
+    "event": "engagement",
+    "religion": "muslim",
+    "state": "telangana",
+    "style": "modern",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=22"
+  },
+  {
+    "id": 9,
+    "title": "Pastel Anniversary Invite",
+    "type": "bride",
+    "event": "anniversary",
+    "religion": "christian",
+    "state": "goa",
+    "style": "simple",
+    "language": "hindi",
+    "thumbnail": "https://picsum.photos/500/700?random=23"
+  },
+  {
+    "id": 10,
+    "title": "Cute Birthday Celebration",
+    "type": "bride",
+    "event": "birthday",
+    "religion": "buddha",
+    "state": "west-bengal",
+    "style": "creative",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=24"
+  },
+  {
+    "id": 11,
+    "title": "Luxury Sikh Wedding",
+    "type": "bride",
+    "event": "wedding",
+    "religion": "sikh",
+    "state": "punjab",
+    "style": "modern",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=25"
+  },
+  {
+    "id": 12,
+    "title": "Minimal Christian Invite",
+    "type": "bride",
+    "event": "engagement",
+    "religion": "christian",
+    "state": "tamil-nadu",
+    "style": "simple",
+    "language": "english",
+    "thumbnail": "https://picsum.photos/500/700?random=26"
+  }
+]

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyInvitationCard - Template Dashboard</title>
+  <link rel="stylesheet" href="assets/css/template-dashboard.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  />
+</head>
+<body class="groom-theme">
+
+  <!-- MOBILE OVERLAY -->
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">
+        <i class="fa-solid fa-envelope-open-text"></i>
+        <span>MyInvitationCard</span>
+      </div>
+
+      <!-- GROOM / BRIDE SWITCH -->
+      <div class="theme-switch">
+        <button class="theme-btn active" data-theme="groom">Groom</button>
+        <button class="theme-btn" data-theme="bride">Bride</button>
+      </div>
+
+      <!-- EVENT FILTER -->
+      <div class="event-menu">
+        <h4>Events</h4>
+
+        <button class="event-btn active" data-event="all">
+          <i class="fa-solid fa-layer-group"></i>
+          All Templates
+        </button>
+
+        <button class="event-btn" data-event="wedding">
+          <i class="fa-solid fa-ring"></i>
+          Wedding
+        </button>
+
+        <button class="event-btn" data-event="engagement">
+          <i class="fa-solid fa-gem"></i>
+          Engagement
+        </button>
+
+        <button class="event-btn" data-event="anniversary">
+          <i class="fa-solid fa-heart"></i>
+          Anniversary
+        </button>
+
+        <button class="event-btn" data-event="birthday">
+          <i class="fa-solid fa-cake-candles"></i>
+          Birthday
+        </button>
+      </div>
+    </div>
+
+    <!-- AUTH -->
+    <div class="sidebar-bottom">
+      <a href="login.html" class="auth-btn login-btn">Login</a>
+      <a href="signup.html" class="auth-btn signup-btn">Sign Up</a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+
+    <div class="hero-section">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div>
+          <h1>Start Building Your Card</h1>
+          <p>Choose a template you love. Customize it later.</p>
+        </div>
+      </div>
+    </header>
+
+
+    <!-- CONTROLS -->
+
+<section class="controls-bar">
+  <div class="top-controls">
+    <div class="search-wrapper">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search millions of templates"
+        />
+      </div>
+    </div>
+
+    <div class="control-actions">
+      <label for="importJson" class="import-btn">
+        <i class="fa-solid fa-upload"></i>
+        Import JSON
+      </label>
+      <input type="file" id="importJson" accept=".json" hidden />
+    </div>
+  </div>
+
+
+  <div class="quick-filters">
+
+  <!-- STATE -->
+<div class="filter-select">
+  <i class="fa-solid fa-location-dot"></i>
+
+  <input
+    type="text"
+    id="quickState"
+    list="stateList"
+    placeholder="Search State"
+    autocomplete="off"
+  />
+
+  <datalist id="stateList">
+    <option value="Andhra Pradesh">
+    <option value="Assam">
+    <option value="Bihar">
+    <option value="Chhattisgarh">
+    <option value="Delhi">
+    <option value="Goa">
+    <option value="Gujarat">
+    <option value="Haryana">
+    <option value="Himachal Pradesh">
+    <option value="Jammu & Kashmir">
+    <option value="Jharkhand">
+    <option value="Karnataka">
+    <option value="Kerala">
+    <option value="Madhya Pradesh">
+    <option value="Maharashtra">
+    <option value="Odisha">
+    <option value="Punjab">
+    <option value="Rajasthan">
+    <option value="Tamil Nadu">
+    <option value="Telangana">
+    <option value="Uttar Pradesh">
+    <option value="Uttarakhand">
+    <option value="West Bengal">
+  </datalist>
+</div>
+
+  <!-- RELIGION -->
+  <div class="filter-select">
+    <i class="fa-solid fa-place-of-worship"></i>
+    <select id="quickCategory">
+      <option value="all">Religion</option>
+      <option value="hindu">🕉️ Hindu</option>
+      <option value="muslim">☪️ Muslim</option>
+      <option value="buddha">☸️ Buddha</option>
+      <option value="sikh">🪯 Sikh</option>
+      <option value="christian">✝️ Christian</option>
+    </select>
+  </div>
+
+  <!-- STYLE -->
+  <div class="filter-select">
+    <i class="fa-solid fa-palette"></i>
+    <select id="quickStyle">
+      <option value="all">Style</option>
+      <option value="simple">🪶 Simple</option>
+      <option value="modern">✨ Modern</option>
+      <option value="creative">🪄 Creative</option>
+    </select>
+  </div>
+
+  <!-- LANGUAGE -->
+  <div class="filter-select">
+    <i class="fa-solid fa-earth-asia"></i>
+    <select id="quickLanguage">
+      <option value="all">Language</option>
+      <option value="english">🇬🇧 English</option>
+      <option value="hindi">🇮🇳 Hindi</option>
+    </select>
+  </div>
+
+</div>
+
+
+  <!-- TEMPLATE PREVIEW MODAL -->
+  <div class="modal hidden" id="previewModal">
+    <div class="modal-content">
+      <button class="close-modal" id="closeModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-preview">
+        <img id="modalImage" src="" alt="Template Preview" />
+      </div>
+
+      <div class="modal-info">
+        <h2 id="modalTitle">Template Name</h2>
+        <p id="modalMeta">Wedding • Hindu • Modern • English</p>
+
+        <div class="modal-actions">
+          <button id="customizeBtn" class="customize-btn">
+            Customize This Template
+          </button>
+
+          <button id="backBtn" class="back-btn">
+            Back
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/template-dashboard.js"></script>
+</body>
+</html>
