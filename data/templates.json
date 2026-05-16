@@ -8,7 +8,8 @@
     "state": "uttar-pradesh",
     "style": "modern",
     "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=11"
+    "thumbnail": "assets/templates/wedding1.jpg",
+    "size": "tall"
   },
   {
     "id": 2,
@@ -19,7 +20,8 @@
     "state": "delhi",
     "style": "creative",
     "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=12"
+    "thumbnail": "assets/templates/nikah1.jpg",
+    "size": "medium"
   },
   {
     "id": 3,
@@ -30,7 +32,8 @@
     "state": "punjab",
     "style": "simple",
     "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=13"
+    "thumbnail": "assets/templates/wedding1.jpeg",
+    "size": "short"
   },
   {
     "id": 4,
@@ -41,7 +44,8 @@
     "state": "bihar",
     "style": "modern",
     "language": "hindi",
-    "thumbnail": "https://picsum.photos/500/700?random=14"
+    "thumbnail": "assets/templates/wedding1.jpeg",
+    "size": "medium"
   },
   {
     "id": 5,
@@ -52,7 +56,8 @@
     "state": "kerala",
     "style": "creative",
     "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=15"
+    "thumbnail": "assets/templates/wedding1.jpeg",
+    "size": "tall"
   },
   {
     "id": 6,
@@ -63,7 +68,8 @@
     "state": "maharashtra",
     "style": "modern",
     "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=16"
+    "thumbnail": "assets/templates/birthday1.jpeg",
+    "size": "short"
   },
   {
     "id": 7,
@@ -74,7 +80,8 @@
     "state": "rajasthan",
     "style": "creative",
     "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=21"
+    "thumbnail": "assets/templates/wedding1.jpeg",
+    "size": "medium"
   },
   {
     "id": 8,
@@ -85,7 +92,8 @@
     "state": "telangana",
     "style": "modern",
     "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=22"
+    "thumbnail": "assets/templates/nikah1.jpg",
+    "size": "tall"
   },
   {
     "id": 9,
@@ -96,7 +104,8 @@
     "state": "goa",
     "style": "simple",
     "language": "hindi",
-    "thumbnail": "https://picsum.photos/500/700?random=23"
+    "thumbnail": "assets/templates/wedding1.jpeg",
+    "size": "short"
   },
   {
     "id": 10,
@@ -107,28 +116,7 @@
     "state": "west-bengal",
     "style": "creative",
     "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=24"
-  },
-  {
-    "id": 11,
-    "title": "Luxury Sikh Wedding",
-    "type": "bride",
-    "event": "wedding",
-    "religion": "sikh",
-    "state": "punjab",
-    "style": "modern",
-    "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=25"
-  },
-  {
-    "id": 12,
-    "title": "Minimal Christian Invite",
-    "type": "bride",
-    "event": "engagement",
-    "religion": "christian",
-    "state": "tamil-nadu",
-    "style": "simple",
-    "language": "english",
-    "thumbnail": "https://picsum.photos/500/700?random=26"
+    "thumbnail": "assets/templates/birthday1.jpeg",
+    "size": "medium"
   }
 ]

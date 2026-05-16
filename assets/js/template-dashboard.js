@@ -1,73 +1,73 @@
+let templates = [];
+let currentTheme = "groom";
+let currentEvent = "all";
+let selectedTemplate = null;
+
+/* ELEMENTS */
 const templateGrid = document.getElementById("templateGrid");
 const searchInput = document.getElementById("searchInput");
 
 const quickCategory = document.getElementById("quickCategory");
+const quickState = document.getElementById("quickState");
 const quickStyle = document.getElementById("quickStyle");
 const quickLanguage = document.getElementById("quickLanguage");
-const quickState = document.getElementById("quickState");
 
 const themeButtons = document.querySelectorAll(".theme-btn");
 const eventButtons = document.querySelectorAll(".event-btn");
 
-const filterCategories = document.querySelectorAll(".filter-category");
-const filterStyles = document.querySelectorAll(".filter-style");
-const filterLanguages = document.querySelectorAll(".filter-language");
-
-const clearFiltersBtn = document.getElementById("clearFiltersBtn");
-
-const previewModal = document.getElementById("previewModal");
+const templateModal = document.getElementById("templateModal");
 const modalImage = document.getElementById("modalImage");
 const modalTitle = document.getElementById("modalTitle");
 const modalMeta = document.getElementById("modalMeta");
+const suggestionGrid = document.getElementById("suggestionGrid");
 
-const customizeBtn = document.getElementById("customizeBtn");
 const closeModal = document.getElementById("closeModal");
 const backBtn = document.getElementById("backBtn");
+const useTemplateBtn = document.getElementById("useTemplateBtn");
 
 const importJson = document.getElementById("importJson");
 
 const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-
 const sidebar = document.getElementById("sidebar");
-
 const mobileOverlay = document.getElementById("mobileOverlay");
 
-let templates = [];
-let selectedTemplate = null;
-
-let currentTheme = "groom";
-let currentEvent = "all";
-
+/* LOAD TEMPLATES */
 async function loadTemplates() {
   try {
     const response = await fetch("data/templates.json");
     templates = await response.json();
     renderTemplates();
   } catch (error) {
-    templateGrid.innerHTML = `
-      <p style="padding:20px;">Failed to load templates.</p>
-    `;
     console.error(error);
+    templateGrid.innerHTML = `
+      <p style="padding:40px;">Failed to load templates.</p>
+    `;
   }
 }
 
-function getCheckedValues(nodeList) {
-  return [...nodeList]
-    .filter((checkbox) => checkbox.checked)
-    .map((checkbox) => checkbox.value);
+function getTemplateDescription(template) {
+  if (template.event === "wedding") {
+    return "Elegant Indian Wedding Template";
+  }
+
+  if (template.event === "engagement") {
+    return "Beautiful Engagement Invitation";
+  }
+
+  if (template.event === "birthday") {
+    return "Modern Birthday Invitation";
+  }
+
+  if (template.event === "anniversary") {
+    return "Premium Anniversary Card";
+  }
+
+  return "Beautiful Invitation Template";
 }
 
-function matchesMultiFilter(itemValue, selectedValues) {
-  if (selectedValues.length === 0) return true;
-  return selectedValues.includes(itemValue);
-}
-
+/* RENDER */
 function renderTemplates() {
   const searchTerm = searchInput.value.toLowerCase();
-
-  const selectedCategories = getCheckedValues(filterCategories);
-  const selectedStyles = getCheckedValues(filterStyles);
-  const selectedLanguages = getCheckedValues(filterLanguages);
 
   const filtered = templates.filter((template) => {
     const matchesTheme = template.type === currentTheme;
@@ -75,51 +75,29 @@ function renderTemplates() {
     const matchesEvent =
       currentEvent === "all" || template.event === currentEvent;
 
-    const matchesQuickCategory =
+    const matchesCategory =
       quickCategory.value === "all" ||
       template.religion === quickCategory.value;
 
-    const stateSearch = quickState.value
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/&/g, "");
-
-
-    const matchesQuickState =
-      quickState.value = "";
+    const matchesState =
+      quickState.value === "" ||
       template.state === quickState.value;
 
-    const matchesQuickStyle =
+    const matchesStyle =
       quickStyle.value === "all" ||
       template.style === quickStyle.value;
 
-    const matchesQuickLanguage =
+    const matchesLanguage =
       quickLanguage.value === "all" ||
       template.language === quickLanguage.value;
-
-    const matchesCategory = matchesMultiFilter(
-      template.religion,
-      selectedCategories
-    );
-
-    const matchesStyle = matchesMultiFilter(
-      template.style,
-      selectedStyles
-    );
-
-    const matchesLanguage = matchesMultiFilter(
-      template.language,
-      selectedLanguages
-    );
 
     const searchableText = `
       ${template.title}
       ${template.religion}
+      ${template.state}
       ${template.style}
       ${template.language}
       ${template.event}
-      ${template.type}
     `.toLowerCase();
 
     const matchesSearch = searchableText.includes(searchTerm);
@@ -127,15 +105,15 @@ function renderTemplates() {
     return (
       matchesTheme &&
       matchesEvent &&
-      matchesQuickCategory &&
-      matchesQuickState &&
-      matchesQuickStyle &&
-      matchesQuickLanguage &&
+      matchesCategory &&
+      matchesState &&
+      matchesStyle &&
+      matchesLanguage &&
       matchesSearch
     );
   });
 
-  if (filtered.length === 0) {
+  if (!filtered.length) {
     templateGrid.innerHTML = `
       <div style="padding:40px;font-size:18px;">
         No templates found.
@@ -147,52 +125,121 @@ function renderTemplates() {
   templateGrid.innerHTML = filtered
     .map(
       (template) => `
-      <div class="template-card" data-id="${template.id}">
-        <div class="template-image">
-          <img src="${template.thumbnail}" alt="${template.title}">
-        </div>
-        <div class="template-content">
-          <h3>${template.title}</h3>
-          <div class="template-tags">
-            <span>${template.event}</span>
-            <span>${template.religion}</span>
-            <span>${template.style}</span>
-            <span>${template.language}</span>
+        <div class="template-card ${template.size}" data-id="${template.id}">
+        
+          <div class="template-image">
+            <img 
+              src="${template.thumbnail}" 
+              alt="${template.title}"
+              onerror="this.src='assets/templates/default-template.jpg'"
+            >
           </div>
+
+          <div class="template-content">
+            <h3>${template.title}</h3>
+
+            <p class="template-desc">
+              ${getTemplateDescription(template)}
+            </p>
+
+            <button class="card-use-btn" data-id="${template.id}">
+              Use Template
+            </button>
+          </div>
+
         </div>
-      </div>
-    `
+      `
     )
     .join("");
 
+
+/* WHOLE CARD CLICK */
   document.querySelectorAll(".template-card").forEach((card) => {
     card.addEventListener("click", () => {
       const id = Number(card.dataset.id);
       const template = templates.find((t) => t.id === id);
-      openPreview(template);
+
+      openTemplateModal(template);
+    });
+  });
+
+/* BUTTON CLICK */
+  document.querySelectorAll(".card-use-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      const id = Number(btn.dataset.id);
+      const template = templates.find((t) => t.id === id);
+
+      openTemplateModal(template);
     });
   });
 }
 
-function openPreview(template) {
+/* MODAL */
+function openTemplateModal(template) {
   selectedTemplate = template;
 
   modalImage.src = template.thumbnail;
   modalTitle.textContent = template.title;
+
   modalMeta.textContent = `
     ${template.event} •
     ${template.religion} •
+    ${template.state.replace(/-/g, " ")} •
     ${template.style} •
     ${template.language}
   `;
 
-  previewModal.classList.remove("hidden");
+  renderSuggestions(template);
+
+  templateModal.classList.remove("hidden");
 }
 
-function closePreview() {
-  previewModal.classList.add("hidden");
+function closeTemplateModal() {
+  templateModal.classList.add("hidden");
 }
 
+/* SUGGESTIONS */
+function renderSuggestions(template) {
+  const suggestions = templates
+    .filter((t) => {
+      if (t.id === template.id) return false;
+
+      return (
+        t.type === currentTheme &&
+        (
+          t.event === template.event ||
+          t.religion === template.religion ||
+          t.state === template.state ||
+          t.style === template.style ||
+          t.language === template.language
+        )
+      );
+    })
+    .slice(0, 4);
+
+  suggestionGrid.innerHTML = suggestions
+    .map(
+      (template) => `
+        <div class="suggestion-card" data-id="${template.id}">
+          <img src="${template.thumbnail}" alt="${template.title}">
+          <h4>${template.title}</h4>
+        </div>
+      `
+    )
+    .join("");
+
+  document.querySelectorAll(".suggestion-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      const id = Number(card.dataset.id);
+      const template = templates.find((t) => t.id === id);
+      openTemplateModal(template);
+    });
+  });
+}
+
+/* THEME */
 function switchTheme(theme) {
   currentTheme = theme;
 
@@ -206,6 +253,7 @@ function switchTheme(theme) {
   renderTemplates();
 }
 
+/* EVENT */
 function switchEvent(eventName) {
   currentEvent = eventName;
 
@@ -216,21 +264,7 @@ function switchEvent(eventName) {
   renderTemplates();
 }
 
-function clearAllFilters() {
-  quickCategory.value = "all";
-  quickState.value = "all";
-  quickStyle.value = "all";
-  quickLanguage.value = "all";
-
-  filterCategories.forEach((cb) => (cb.checked = false));
-  filterStyles.forEach((cb) => (cb.checked = false));
-  filterLanguages.forEach((cb) => (cb.checked = false));
-
-  searchInput.value = "";
-
-  renderTemplates();
-}
-
+/* IMPORT JSON */
 function handleImportJSON(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -255,12 +289,11 @@ function handleImportJSON(event) {
   reader.readAsText(file);
 }
 
+/* MOBILE */
 function openSidebar() {
   sidebar.classList.add("show");
   mobileOverlay.classList.add("show");
 }
-
-
 
 function closePanels() {
   sidebar.classList.remove("show");
@@ -268,7 +301,6 @@ function closePanels() {
 }
 
 /* EVENTS */
-
 themeButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     switchTheme(btn.dataset.theme);
@@ -282,53 +314,51 @@ eventButtons.forEach((btn) => {
 });
 
 searchInput.addEventListener("input", renderTemplates);
-
 quickCategory.addEventListener("change", renderTemplates);
 quickState.addEventListener("change", renderTemplates);
 quickStyle.addEventListener("change", renderTemplates);
 quickLanguage.addEventListener("change", renderTemplates);
 
-filterCategories.forEach((cb) =>
-  cb.addEventListener("change", renderTemplates)
-);
+if (closeModal) {
+  closeModal.addEventListener("click", closeTemplateModal);
+}
 
-filterStyles.forEach((cb) =>
-  cb.addEventListener("change", renderTemplates)
-);
+if (backBtn) {
+  backBtn.addEventListener("click", closeTemplateModal);
+}
 
-filterLanguages.forEach((cb) =>
-  cb.addEventListener("change", renderTemplates)
-);
+if (templateModal) {
+  templateModal.addEventListener("click", (e) => {
+    if (e.target === templateModal) {
+      closeTemplateModal();
+    }
+  });
+}
 
-clearFiltersBtn.addEventListener("click", clearAllFilters);
+if (useTemplateBtn) {
+  useTemplateBtn.addEventListener("click", () => {
+    if (!selectedTemplate) return;
 
-closeModal.addEventListener("click", closePreview);
-backBtn.addEventListener("click", closePreview);
+    localStorage.setItem(
+      "selectedTemplate",
+      JSON.stringify(selectedTemplate)
+    );
 
-previewModal.addEventListener("click", (e) => {
-  if (e.target === previewModal) {
-    closePreview();
-  }
-});
+    window.location.href = "builder.html";
+  });
+}
 
-customizeBtn.addEventListener("click", () => {
-  if (!selectedTemplate) return;
+if (importJson) {
+  importJson.addEventListener("change", handleImportJSON);
+}
 
-  localStorage.setItem(
-    "selectedTemplate",
-    JSON.stringify(selectedTemplate)
-  );
+if (mobileMenuBtn) {
+  mobileMenuBtn.addEventListener("click", openSidebar);
+}
 
-  window.location.href = "builder.html";
-});
-
-importJson.addEventListener("change", handleImportJSON);
-
-mobileMenuBtn.addEventListener("click", openSidebar);
-
-mobileOverlay.addEventListener("click", closePanels);
+if (mobileOverlay) {
+  mobileOverlay.addEventListener("click", closePanels);
+}
 
 /* INIT */
 loadTemplates();
-
-

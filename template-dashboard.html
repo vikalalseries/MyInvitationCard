@@ -82,10 +82,12 @@
 
         <div>
           <h1>Start Building Your Card</h1>
-          <p>Choose a template you love. Customize it later.</p>
+          <p>Select your preferred design to begin. You will have the option to customize or change your selection later.</p>
         </div>
       </div>
     </header>
+
+
 
 
     <!-- CONTROLS -->
@@ -106,7 +108,7 @@
     <div class="control-actions">
       <label for="importJson" class="import-btn">
         <i class="fa-solid fa-upload"></i>
-        Import JSON
+        Upload Existing Card
       </label>
       <input type="file" id="importJson" accept=".json" hidden />
     </div>
@@ -119,40 +121,34 @@
 <div class="filter-select">
   <i class="fa-solid fa-location-dot"></i>
 
-  <input
-    type="text"
-    id="quickState"
-    list="stateList"
-    placeholder="Search State"
-    autocomplete="off"
-  />
-
-  <datalist id="stateList">
-    <option value="Andhra Pradesh">
-    <option value="Assam">
-    <option value="Bihar">
-    <option value="Chhattisgarh">
-    <option value="Delhi">
-    <option value="Goa">
-    <option value="Gujarat">
-    <option value="Haryana">
-    <option value="Himachal Pradesh">
-    <option value="Jammu & Kashmir">
-    <option value="Jharkhand">
-    <option value="Karnataka">
-    <option value="Kerala">
-    <option value="Madhya Pradesh">
-    <option value="Maharashtra">
-    <option value="Odisha">
-    <option value="Punjab">
-    <option value="Rajasthan">
-    <option value="Tamil Nadu">
-    <option value="Telangana">
-    <option value="Uttar Pradesh">
-    <option value="Uttarakhand">
-    <option value="West Bengal">
-  </datalist>
+  <select id="quickState">
+    <option value="">All States</option>
+    <option value="andhra-pradesh">Andhra Pradesh</option>
+    <option value="assam">Assam</option>
+    <option value="bihar">Bihar</option>
+    <option value="chhattisgarh">Chhattisgarh</option>
+    <option value="delhi">Delhi</option>
+    <option value="goa">Goa</option>
+    <option value="gujarat">Gujarat</option>
+    <option value="haryana">Haryana</option>
+    <option value="himachal-pradesh">Himachal Pradesh</option>
+    <option value="jharkhand">Jharkhand</option>
+    <option value="karnataka">Karnataka</option>
+    <option value="kerala">Kerala</option>
+    <option value="madhya-pradesh">Madhya Pradesh</option>
+    <option value="maharashtra">Maharashtra</option>
+    <option value="odisha">Odisha</option>
+    <option value="punjab">Punjab</option>
+    <option value="rajasthan">Rajasthan</option>
+    <option value="tamil-nadu">Tamil Nadu</option>
+    <option value="telangana">Telangana</option>
+    <option value="uttar-pradesh">Uttar Pradesh</option>
+    <option value="uttarakhand">Uttarakhand</option>
+    <option value="west-bengal">West Bengal</option>
+  </select>
 </div>
+
+
 
   <!-- RELIGION -->
   <div class="filter-select">
@@ -187,38 +183,48 @@
       <option value="hindi">🇮🇳 Hindi</option>
     </select>
   </div>
-
 </div>
+
+<section class="templates-section">
+  <div id="templateGrid" class="template-grid"></div>
+</section>
 
 
   <!-- TEMPLATE PREVIEW MODAL -->
-  <div class="modal hidden" id="previewModal">
-    <div class="modal-content">
-      <button class="close-modal" id="closeModal">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
 
-      <div class="modal-preview">
-        <img id="modalImage" src="" alt="Template Preview" />
-      </div>
+<div id="templateModal" class="modal hidden">
+  <div class="modal-content">
 
-      <div class="modal-info">
-        <h2 id="modalTitle">Template Name</h2>
-        <p id="modalMeta">Wedding • Hindu • Modern • English</p>
+    <button id="closeModal" class="close-modal">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
 
-        <div class="modal-actions">
-          <button id="customizeBtn" class="customize-btn">
-            Customize This Template
-          </button>
-
-          <button id="backBtn" class="back-btn">
-            Back
-          </button>
-        </div>
-      </div>
+    <div class="modal-preview">
+      <img id="modalImage" src="" alt="Template Preview">
     </div>
-  </div>
 
-  <script src="assets/js/template-dashboard.js"></script>
+    <div class="modal-info">
+      <h2 id="modalTitle"></h2>
+
+      <p id="modalMeta"></p>
+
+      <div class="modal-actions">
+        <button id="useTemplateBtn" class="customize-btn">
+          Use This Template
+        </button>
+
+        <button id="backBtn" class="back-btn">
+          Back
+        </button>
+      </div>
+
+      <h3 class="suggestion-heading">Suggested Templates</h3>
+
+      <div id="suggestionGrid" class="suggestion-grid"></div>
+    </div>
+
+  </div>
+</div>
+<script src="assets/js/template-dashboard.js"></script>
 </body>
 </html>
