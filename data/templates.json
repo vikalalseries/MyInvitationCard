@@ -10,13 +10,13 @@
     "state": "uttar-pradesh",
     "style": "modern",
     "language": "english",
-    "thumbnail": "assets/templates/wedding1.jpg",
-    "previewImages": ["assets/templates/wedding1.jpg"],
+    "thumbnail": "assets/templates/wedding/wedding1.jpg",
+    "previewImages": ["assets/templates/wedding/wedding1.jpg"],
     "size": "tall",
     "category": "free",
     "featured": true,
     "designer": "MyInvitationCard",
-    "downloads": 125
+    "downloads": 1
   },
   {
     "id": 2,
@@ -29,13 +29,13 @@
     "state": "delhi",
     "style": "creative",
     "language": "english",
-    "thumbnail": "assets/templates/nikah1.jpg",
-    "previewImages": ["assets/templates/nikah1.jpg"],
+    "thumbnail": "assets/templates/wedding/nikah1.jpg",
+    "previewImages": ["assets/templates/wedding/nikah1.jpg"],
     "size": "medium",
     "category": "free",
     "featured": true,
     "designer": "MyInvitationCard",
-    "downloads": 98
+    "downloads": 2
   },
   {
     "id": 3,
@@ -48,13 +48,13 @@
     "state": "punjab",
     "style": "simple",
     "language": "english",
-    "thumbnail": "assets/templates/wedding1.jpg",
-    "previewImages": ["assets/templates/wedding1.jpg"],
+    "thumbnail": "assets/templates/wedding/wedding1.jpg",
+    "previewImages": ["assets/templates/wedding/wedding1.jpg"],
     "size": "short",
     "category": "free",
     "featured": false,
     "designer": "MyInvitationCard",
-    "downloads": 75
+    "downloads": 3
   },
   {
     "id": 4,
@@ -67,13 +67,13 @@
     "state": "bihar",
     "style": "modern",
     "language": "hindi",
-    "thumbnail": "assets/templates/wedding1.jpg",
-    "previewImages": ["assets/templates/wedding1.jpg"],
+    "thumbnail": "assets/templates/wedding/wedding1.jpg",
+    "previewImages": ["assets/templates/wedding/wedding1.jpg"],
     "size": "medium",
     "category": "free",
     "featured": false,
     "designer": "MyInvitationCard",
-    "downloads": 64
+    "downloads": 4
   },
   {
     "id": 5,
@@ -86,13 +86,13 @@
     "state": "kerala",
     "style": "creative",
     "language": "english",
-    "thumbnail": "assets/templates/wedding1.jpg",
-    "previewImages": ["assets/templates/wedding1.jpg"],
+    "thumbnail": "assets/templates/wedding/wedding1.jpg",
+    "previewImages": ["assets/templates/wedding/wedding1.jpg"],
     "size": "tall",
     "category": "premium",
     "featured": true,
     "designer": "MyInvitationCard",
-    "downloads": 44
+    "downloads": 5
   },
   {
     "id": 6,
@@ -105,13 +105,13 @@
     "state": "maharashtra",
     "style": "modern",
     "language": "english",
-    "thumbnail": "assets/templates/birthday1.jpeg",
-    "previewImages": ["assets/templates/birthday1.jpeg"],
+    "thumbnail": "assets/templates/birthday/birthday1.jpeg",
+    "previewImages": ["assets/templates/birthday/birthday1.jpeg"],
     "size": "short",
     "category": "free",
     "featured": false,
     "designer": "MyInvitationCard",
-    "downloads": 58
+    "downloads": 6
   },
   {
     "id": 7,
@@ -124,13 +124,13 @@
     "state": "rajasthan",
     "style": "creative",
     "language": "english",
-    "thumbnail": "assets/templates/wedding1.jpg",
-    "previewImages": ["assets/templates/wedding1.jpg"],
+    "thumbnail": "assets/templates/wedding/wedding1.jpg",
+    "previewImages": ["assets/templates/wedding/wedding1.jpg"],
     "size": "medium",
     "category": "free",
     "featured": true,
     "designer": "MyInvitationCard",
-    "downloads": 111
+    "downloads": 7
   },
   {
     "id": 8,
@@ -143,13 +143,13 @@
     "state": "telangana",
     "style": "modern",
     "language": "english",
-    "thumbnail": "assets/templates/nikah1.jpg",
-    "previewImages": ["assets/templates/nikah1.jpg"],
+    "thumbnail": "assets/templates/wedding/nikah1.jpg",
+    "previewImages": ["assets/templates/wedding/nikah1.jpg"],
     "size": "tall",
     "category": "premium",
     "featured": true,
     "designer": "MyInvitationCard",
-    "downloads": 83
+    "downloads": 8
   },
   {
     "id": 9,
@@ -162,13 +162,13 @@
     "state": "goa",
     "style": "simple",
     "language": "hindi",
-    "thumbnail": "assets/templates/wedding1.jpg",
-    "previewImages": ["assets/templates/wedding1.jpg"],
+    "thumbnail": "assets/templates/wedding/wedding1.jpg",
+    "previewImages": ["assets/templates/wedding/wedding1.jpg"],
     "size": "short",
     "category": "free",
     "featured": false,
     "designer": "MyInvitationCard",
-    "downloads": 39
+    "downloads": 9
   },
   {
     "id": 10,
@@ -181,12 +181,12 @@
     "state": "west-bengal",
     "style": "creative",
     "language": "english",
-    "thumbnail": "assets/templates/birthday1.jpeg",
-    "previewImages": ["assets/templates/birthday1.jpeg"],
+    "thumbnail": "assets/templates/birthday/birthday1.jpeg",
+    "previewImages": ["assets/templates/birthday/birthday1.jpeg"],
     "size": "medium",
     "category": "free",
     "featured": false,
     "designer": "MyInvitationCard",
-    "downloads": 67
+    "downloads": 10
   }
 ]

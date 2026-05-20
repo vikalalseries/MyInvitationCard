@@ -53,25 +53,7 @@ async function loadTemplates() {
   }
 }
 
-function getTemplateDescription(template) {
-  if (template.event === "wedding") {
-    return "Elegant Indian Wedding Template";
-  }
 
-  if (template.event === "engagement") {
-    return "Beautiful Engagement Invitation";
-  }
-
-  if (template.event === "birthday") {
-    return "Modern Birthday Invitation";
-  }
-
-  if (template.event === "anniversary") {
-    return "Premium Anniversary Card";
-  }
-
-  return "Beautiful Invitation Template";
-}
 
 /* RENDER */
 function renderTemplates() {
@@ -133,8 +115,7 @@ function renderTemplates() {
   templateGrid.innerHTML = filtered
     .map(
       (template) => `
-        <div class="template-card ${template.size}" data-id="${template.id}">
-        
+        <div class="template-card" data-id="${template.id}">
           <div class="template-image">
             <img 
               src="${template.thumbnail}" 
@@ -145,16 +126,7 @@ function renderTemplates() {
 
           <div class="template-content">
             <h3>${template.title}</h3>
-
-            <p class="template-desc">
-              ${getTemplateDescription(template)}
-            </p>
-
-            <button class="card-use-btn" data-id="${template.id}">
-              Use Template
-            </button>
           </div>
-
         </div>
       `
     )
@@ -170,19 +142,8 @@ function renderTemplates() {
       openTemplateModal(template);
     });
   });
-
-/* BUTTON CLICK */
-  document.querySelectorAll(".card-use-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-
-      const id = Number(btn.dataset.id);
-      const template = templates.find((t) => t.id === id);
-
-      openTemplateModal(template);
-    });
-  });
 }
+
 
 /* MODAL */
 function openTemplateModal(template) {
@@ -206,6 +167,20 @@ function openTemplateModal(template) {
   renderSuggestions(template);
 
   templateModal.classList.remove("hidden");
+
+  const previewModal = document.querySelector(".preview-modal");
+
+  if (previewModal) {
+    previewModal.scrollTop = 0;
+
+    previewModal.onscroll = function () {
+      const atBottom =
+        previewModal.scrollTop + previewModal.clientHeight >=
+        previewModal.scrollHeight - 5;
+
+      previewModal.classList.toggle("at-bottom", atBottom);
+    };
+  }
 }
 
 /* SUGGESTIONS */
@@ -224,13 +199,12 @@ function renderSuggestions(template) {
         t.type === template.type
       )
     )
-    .slice(0, 8);
+    .slice(0, 20);
 
   suggestionGrid.innerHTML = suggestions
     .map(template => `
       <div class="suggestion-card" data-id="${template.id}">
         <img src="${template.thumbnail}" alt="${template.title}">
-        <h4>${template.title}</h4>
       </div>
     `)
     .join("");
