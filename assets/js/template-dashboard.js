@@ -1,3 +1,5 @@
+import { auth } from "./firebase-config.js";
+
 let templates = [];
 let currentTheme = "groom";
 let currentEvent = "all";
@@ -46,6 +48,18 @@ const importJson = document.getElementById("importJson");
 const mobileMenuBtn = document.getElementById("mobileMenuBtn");
 const sidebar = document.getElementById("sidebar");
 const mobileOverlay = document.getElementById("mobileOverlay");
+
+function requireAuth() {
+  const userPanel = document.getElementById("sidebarAuthUser");
+
+  if (userPanel.classList.contains("hidden")) {
+    const authBtn = document.getElementById("openAccountAuthBtn");
+    if (authBtn) authBtn.click();
+    return false;
+  }
+
+  return true;
+}
 
 /* LOAD TEMPLATES */
 async function loadTemplates() {
@@ -313,8 +327,9 @@ function switchEvent(eventName) {
 
 /* IMPORT JSON */
 function handleImportJSON(event) {
+  if (!requireAuth()) return;
+
   const file = event.target.files[0];
-  if (!file) return;
 
   const reader = new FileReader();
 
@@ -430,12 +445,7 @@ function updateFavoriteUI() {
 }
 
 function toggleFavorite() {
-  const user = localStorage.getItem("loggedInUser");
-
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
+  if (!requireAuth()) return;
 
   let favorites = getFavorites();
 

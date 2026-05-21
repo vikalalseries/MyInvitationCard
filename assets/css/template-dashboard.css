@@ -50,7 +50,7 @@ body {
 
 /* SIDEBAR */
 .sidebar {
-  background: #fff;
+  background: #fdfdfd;
   border-right: 1px solid var(--border);
   padding: 24px;
   display: flex;
@@ -158,14 +158,6 @@ body {
   gap: 12px;
 }
 
-.auth-btn {
-  text-decoration: none;
-  text-align: center;
-  padding: 14px;
-  border-radius: 14px;
-  font-weight: 600;
-  transition: 0.3s;
-}
 
 .login-btn {
   border: 1px solid var(--border);
@@ -743,9 +735,9 @@ body.default-theme .main-content {
   z-index: 3000;
 }
 
-.hidden {
+/* .hidden {
   display: none;
-}
+} */
 
 .modal-content {
   background: white;
@@ -1257,21 +1249,181 @@ body.default-theme .main-content {
   border-color: var(--accent);
 }
 
+/* =========================
+   SIDEBAR ACCOUNT SECTION
+========================= */
 
-/* @media (max-width: 1200px) {
-  .template-grid {
-    column-count: 3;
+.sidebar-account-section {
+  margin-top: auto;
+  padding: 24px 18px 28px;
+}
+
+.sidebar-premium-btn {
+  width: 100%;
+  height: 54px;
+  border: none;
+  background: white;
+  border-radius: 16px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f1635;
+  cursor: pointer;
+  margin-bottom: 16px;
+  text-align: left;
+  padding: 0 22px;
+  transition: 0.2s ease;
+}
+
+.sidebar-premium-btn:hover {
+  transform: translateY(-1px);
+}
+
+.sidebar-student-btn {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+
+  font-size: 18px;
+  font-weight: 500;
+  color: #5d6676;
+
+  padding: 0;
+  cursor: pointer;
+  margin-bottom: 22px;
+}
+
+.sidebar-account-btn {
+  width: 100%;
+  border: none;
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  cursor: pointer;
+  text-align: left;
+
+  padding: 10px 0;
+  min-height: 56px;
+}
+
+.sidebar-account-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #d8d3ca;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  color: white;
+  font-size: 20px;
+}
+
+.sidebar-account-btn span {
+  font-size: 18px;
+  font-weight: 500;
+  color: #43506b;
+  line-height: 1;
+}
+
+.sidebar-account-btn span {
+  font-size: 24px;
+  font-weight: 500;
+  color: #43506b;
+}
+
+.sidebar-user-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 8px;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+#userName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f1635;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#userEmail {
+  font-size: 13px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+  .sidebar-premium-btn {
+    font-size: 18px;
+    height: 48px;
+  }
+
+  .sidebar-student-btn {
+    font-size: 16px;
+  }
+
+  .sidebar-account-btn span {
+    font-size: 18px;
   }
 }
 
-@media (max-width: 900px) {
-  .template-grid {
-    column-count: 2;
-  }
+
+.sidebar-login-btn,
+.sidebar-signup-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+  margin-bottom: 10px;
 }
 
-@media (max-width: 600px) {
-  .template-grid {
-    column-count: 1;
-  }
-} */
+.sidebar-login-btn {
+  background: white;
+  border: 2px solid #24113c;
+  color: #24113c;
+}
+
+.sidebar-login-btn:hover {
+  background: #f8f8f8;
+}
+
+.sidebar-signup-btn {
+  background: #24113c;
+  border: 2px solid #24113c;
+  color: white;
+}
+
+.sidebar-signup-btn:hover {
+  background: #34175a;
+}
+
+.sidebar-account-section {
+  margin-top: auto;
+  padding: 18px 14px;
+}

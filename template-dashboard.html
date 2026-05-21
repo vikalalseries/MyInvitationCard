@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MyInvitationCard - Template Dashboard</title>
-  <link rel="stylesheet" href="assets/css/template-dashboard.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MyInvitationCard</title>
+
+  <link rel="stylesheet" href="assets/css/template-dashboard.css">
+  <link rel="stylesheet" href="assets/css/auth-modal.css">
+
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-  />
+  >
 </head>
 <body class="groom-theme">
 
@@ -64,11 +68,51 @@
     </div>
 
     <!-- AUTH -->
-    <div class="sidebar-bottom">
-      <a href="login.html" class="auth-btn login-btn">Login</a>
-      <a href="signup.html" class="auth-btn signup-btn">Sign Up</a>
-    </div>
-  </aside>
+<div class="sidebar-account-section">
+
+  <!-- GUEST -->
+  <div id="sidebarAuthGuest">
+
+    <button class="sidebar-login-btn" id="openAccountAuthBtn">
+      Login
+    </button>
+
+    <button class="sidebar-signup-btn" id="openSignupDirectBtn">
+      Signup
+    </button>
+
+  </div>
+
+  <!-- LOGGED IN -->
+  <div id="sidebarAuthUser" class="hidden">
+
+    <button class="sidebar-premium-btn">
+      Plans & Pricing
+    </button>
+
+    <button class="sidebar-student-btn">
+      Student Benefits
+    </button>
+
+    <button class="sidebar-account-btn">
+      <div class="sidebar-account-icon">
+        <i class="fa-solid fa-user"></i>
+      </div>
+      <span>My account</span>
+    </button>
+
+    <button class="sidebar-account-btn" id="logoutBtn">
+      <div class="sidebar-account-icon">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </div>
+      <span>Logout</span>
+    </button>
+
+  </div>
+
+</div>
+</aside> 
+
 
   <!-- MAIN CONTENT -->
   <main class="main-content">
@@ -309,6 +353,193 @@
 
   </div>
 </div>
-<script src="assets/js/template-dashboard.js"></script>
+</main>
+
+<script type="module" src="assets/js/auth.js?v=2"></script>
+<script type="module" src="assets/js/template-dashboard.js?v=2"></script>
+
+<!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="authOverlay"></div>
+
+<!-- AUTH MODAL -->
+<div class="auth-modal" id="authModal">
+
+  <button id="closeAuthModal" class="auth-close-btn">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+
+  <!-- WELCOME -->
+  <div id="authWelcome">
+
+    <h2 class="auth-title">Login</h2>
+
+    <button class="auth-btn" id="googleLoginBtn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:20px;height:20px;">
+      Continue with Google
+    </button>
+
+    <button class="auth-btn" id="openEmailLoginBtn">
+      <i class="fa-regular fa-envelope"></i>
+      Login with Email
+    </button>
+
+    <div class="auth-footer">
+      Don't have an account?
+      <span class="auth-link" id="openSignupLink">Sign up</span>
+    </div>
+
+  </div>
+
+
+  <!-- LOGIN FORM -->
+  <div id="authLoginForm" class="hidden">
+
+    <h2 class="auth-title">Login</h2>
+
+    <input
+      type="email"
+      id="loginEmail"
+      class="auth-input"
+      placeholder="Email"
+    >
+
+    <input
+      type="password"
+      id="loginPassword"
+      class="auth-input"
+      placeholder="Password"
+    >
+
+    <button class="auth-btn" id="loginEmailBtn">
+      Login
+    </button>
+
+    <div class="auth-footer" style="margin-top: 8px; margin-bottom: 20px;">
+      <span class="auth-link" id="forgotPasswordBtn">
+        Forgot Password?
+      </span>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-link" id="backToWelcomeBtn">Back</span>
+    </div>
+
+    <div id="authResetForm" class="hidden">
+
+      <h2 class="auth-title">Reset Password</h2>
+
+      <p class="otp-subtext">
+        Enter your email address to receive a password reset link.
+      </p>
+
+      <input
+        type="email"
+        id="resetEmail"
+        class="auth-input"
+        placeholder="Email"
+      >
+
+      <button class="auth-btn" id="sendResetBtn">
+        Send Reset Link
+      </button>
+
+      <div class="auth-footer">
+        <span class="auth-link" id="backToLoginBtn">
+          Back to Login
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- SIGNUP FORM -->
+  <div id="authSignupForm" class="hidden">
+
+    <h2 class="auth-title">Sign Up</h2>
+
+    <input
+      type="text"
+      id="signupName"
+      class="auth-input"
+      placeholder="Full Name"
+    >
+
+    <input
+      type="email"
+      id="signupEmail"
+      class="auth-input"
+      placeholder="Email"
+    >
+
+    <input
+      type="password"
+      id="signupPassword"
+      class="auth-input"
+      placeholder="Password"
+    >
+
+    <input
+      type="password"
+      id="signupConfirmPassword"
+      class="auth-input"
+      placeholder="Confirm Password"
+    >
+
+    <button class="auth-btn" id="signupEmailBtn">
+      Create Account
+    </button>
+
+    <div class="auth-footer">
+      Already have an account?
+      <span class="auth-link" id="openLoginLink">Login</span>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-link" id="backToWelcomeBtn2">Back</span>
+    </div>
+
+  </div>
+
+
+    <!-- OTP VERIFY FORM -->
+  <div id="authOtpForm" class="hidden">
+
+    <h2 class="auth-title">Verify Code</h2>
+
+    <p class="otp-subtext">
+      Enter the 6-digit verification code sent to your email.
+    </p>
+
+    <input
+      type="text"
+      id="otpCode"
+      class="auth-input"
+      placeholder="Enter 6-digit code"
+      maxlength="6"
+    >
+
+    <button class="auth-btn" id="verifyOtpBtn">
+      Verify Code
+    </button>
+
+    <div class="resend-section">
+      <span id="resendOtpText">Didn't receive code?</span>
+
+      <button id="resendOtpBtn" class="resend-btn" disabled>
+        Resend OTP (30s)
+      </button>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-link" id="backToSignupBtn">Back</span>
+    </div>
+
+  </div>
+</div>
+
+  
+<div id="toastMessage" class="custom-toast"></div>
 </body>
 </html>
