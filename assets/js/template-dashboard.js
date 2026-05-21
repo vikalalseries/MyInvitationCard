@@ -12,8 +12,16 @@ const quickState = document.getElementById("quickState");
 const quickStyle = document.getElementById("quickStyle");
 const quickLanguage = document.getElementById("quickLanguage");
 
+const stateFilter = document.getElementById("stateFilter");
+const religionFilter = document.getElementById("religionFilter");
+const styleFilter = document.getElementById("styleFilter");
+const languageFilter = document.getElementById("languageFilter");
+
 const themeButtons = document.querySelectorAll(".theme-btn");
 const eventButtons = document.querySelectorAll(".event-btn");
+
+const weddingToggle = document.getElementById("weddingToggle");
+const weddingThemeSwitch = document.getElementById("weddingThemeSwitch");
 
 const templateModal = document.getElementById("templateModal");
 const modalImage = document.getElementById("modalImage");
@@ -60,7 +68,12 @@ function renderTemplates() {
   const searchTerm = searchInput.value.toLowerCase();
 
   const filtered = templates.filter((template) => {
-    const matchesTheme = template.type === currentTheme;
+    const matchesTheme =
+      currentEvent === "all"
+        ? true
+        : currentEvent === "wedding"
+        ? template.type === currentTheme
+        : true;
 
     const matchesEvent =
       currentEvent === "all" || template.event === currentEvent;
@@ -188,31 +201,33 @@ function renderSuggestions(template) {
   if (!suggestionGrid) return;
 
   const suggestions = templates
-    .filter(t =>
-      t.id !== template.id &&
-      (
-        t.event === template.event ||
-        t.religion === template.religion ||
-        t.state === template.state ||
-        t.style === template.style ||
-        t.language === template.language ||
+    .filter((t) => {
+      if (t.id === template.id) return false;
+
+      return (
+        t.event === template.event &&
+        t.religion === template.religion &&
         t.type === template.type
-      )
-    )
+      );
+    })
     .slice(0, 20);
 
   suggestionGrid.innerHTML = suggestions
-    .map(template => `
+    .map((template) => `
       <div class="suggestion-card" data-id="${template.id}">
-        <img src="${template.thumbnail}" alt="${template.title}">
+        <img
+          src="${template.thumbnail}"
+          alt="${template.title}"
+          onerror="this.onerror=null; this.src='assets/templates/fallback.jpg';"
+        >
       </div>
     `)
     .join("");
 
-  document.querySelectorAll(".suggestion-card").forEach(card => {
+  document.querySelectorAll(".suggestion-card").forEach((card) => {
     card.addEventListener("click", () => {
       const id = Number(card.dataset.id);
-      const selected = templates.find(t => t.id === id);
+      const selected = templates.find((t) => t.id === id);
 
       if (selected) {
         openTemplateModal(selected);
@@ -225,8 +240,15 @@ function renderSuggestions(template) {
 function switchTheme(theme) {
   currentTheme = theme;
 
-  document.body.classList.remove("groom-theme", "bride-theme");
-  document.body.classList.add(`${theme}-theme`);
+  if (currentEvent === "wedding") {
+    document.body.classList.remove(
+      "groom-theme",
+      "bride-theme",
+      "default-theme"
+    );
+
+    document.body.classList.add(`${theme}-theme`);
+  }
 
   themeButtons.forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.theme === theme);
@@ -242,6 +264,49 @@ function switchEvent(eventName) {
   eventButtons.forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.event === eventName);
   });
+
+  if (eventName === "wedding") {
+    document.body.classList.remove(
+      "groom-theme",
+      "bride-theme",
+      "default-theme"
+    );
+
+    document.body.classList.add(`${currentTheme}-theme`);
+
+    stateFilter.style.display = "flex";
+    religionFilter.style.display = "flex";
+    styleFilter.style.display = "flex";
+    languageFilter.style.display = "flex";
+  }
+
+  else if (eventName === "birthday") {
+    document.body.classList.remove(
+      "groom-theme",
+      "bride-theme"
+    );
+
+    document.body.classList.add("default-theme");
+
+    stateFilter.style.display = "none";
+    religionFilter.style.display = "none";
+    styleFilter.style.display = "flex";
+    languageFilter.style.display = "flex";
+  }
+
+  else {
+    document.body.classList.remove(
+      "groom-theme",
+      "bride-theme"
+    );
+
+    document.body.classList.add("default-theme");
+
+    stateFilter.style.display = "flex";
+    religionFilter.style.display = "flex";
+    styleFilter.style.display = "flex";
+    languageFilter.style.display = "flex";
+  }
 
   renderTemplates();
 }
@@ -292,6 +357,12 @@ themeButtons.forEach((btn) => {
 eventButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     switchEvent(btn.dataset.event);
+
+    if (btn.dataset.event === "wedding") {
+      weddingThemeSwitch.classList.toggle("show");
+    } else {
+      weddingThemeSwitch.classList.remove("show");
+    }
   });
 });
 
@@ -452,4 +523,5 @@ document.addEventListener("click", (e) => {
 });
 
 /* INIT */
+document.body.classList.add("default-theme");
 loadTemplates();

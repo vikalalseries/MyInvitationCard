@@ -80,7 +80,32 @@ body {
   background: var(--bg);
   padding: 5px;
   border-radius: 14px;
-  margin-bottom: 28px;
+}
+
+
+.event-group {
+  width: 100%;
+}
+
+.wedding-theme-switch {
+  display: none;
+  margin: 8px 0 14px 0;
+  animation: slideDown 0.25s ease;
+}
+
+.wedding-theme-switch.show {
+  display: flex;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .theme-btn {
@@ -177,6 +202,21 @@ body.bride-theme .main-content {
       rgba(255, 228, 239, 1) 0%,
       rgba(255, 214, 232, 1) 20%,
       rgb(250, 216, 250) 40%,
+      rgba(255, 255, 255, 1) 75%
+    );
+}
+
+body.default-theme {
+  --accent: #634796;
+  --accent-light: #f1f5f9;
+}
+
+body.default-theme .main-content {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(248, 250, 252, 1) 0%,
+      rgba(241, 245, 249, 1) 35%,
       rgba(255, 255, 255, 1) 75%
     );
 }

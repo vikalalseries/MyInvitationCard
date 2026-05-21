@@ -23,11 +23,7 @@
         <span>MyInvitationCard</span>
       </div>
 
-      <!-- GROOM / BRIDE SWITCH -->
-      <div class="theme-switch">
-        <button class="theme-btn active" data-theme="groom">Groom</button>
-        <button class="theme-btn" data-theme="bride">Bride</button>
-      </div>
+
 
       <!-- EVENT FILTER -->
       <div class="event-menu">
@@ -38,10 +34,17 @@
           All Templates
         </button>
 
-        <button class="event-btn" data-event="wedding">
-          <i class="fa-solid fa-ring"></i>
-          Wedding
-        </button>
+        <div class="event-group">
+          <button class="event-btn" id="weddingToggle" data-event="wedding">
+            <i class="fa-solid fa-ring"></i>
+            Wedding
+          </button>
+
+          <div class="theme-switch wedding-theme-switch" id="weddingThemeSwitch">
+            <button class="theme-btn active" data-theme="groom">Groom</button>
+            <button class="theme-btn" data-theme="bride">Bride</button>
+          </div>
+        </div>
 
         <button class="event-btn" data-event="engagement">
           <i class="fa-solid fa-gem"></i>
@@ -118,7 +121,7 @@
   <div class="quick-filters">
 
   <!-- STATE -->
-<div class="filter-select">
+<div class="filter-select" id="stateFilter">
   <i class="fa-solid fa-location-dot"></i>
 
   <select id="quickState">
@@ -165,7 +168,7 @@
 
 
   <!-- RELIGION -->
-  <div class="filter-select">
+  <div class="filter-select" id="religionFilter">
     <i class="fa-solid fa-place-of-worship"></i>
     <select id="quickCategory">
       <option value="all">All Religions</option>
@@ -179,7 +182,7 @@
   </div>
 
   <!-- STYLE -->
-  <div class="filter-select">
+  <div class="filter-select" id="styleFilter">
     <i class="fa-solid fa-palette"></i>
     <select id="quickStyle">
       <option value="all">All Style</option>
@@ -193,7 +196,7 @@
   </div>
 
   <!-- LANGUAGE -->
-  <div class="filter-select">
+  <div class="filter-select" id="languageFilter">
     <i class="fa-solid fa-earth-asia"></i>
     <select id="quickLanguage">
       <option value="all">All Languages</option>
