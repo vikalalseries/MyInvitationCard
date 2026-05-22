@@ -1,4 +1,8 @@
 import { auth } from "./firebase-config.js";
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 let templates = [];
 let currentTheme = "groom";
@@ -49,17 +53,7 @@ const mobileMenuBtn = document.getElementById("mobileMenuBtn");
 const sidebar = document.getElementById("sidebar");
 const mobileOverlay = document.getElementById("mobileOverlay");
 
-function requireAuth() {
-  const userPanel = document.getElementById("sidebarAuthUser");
 
-  if (userPanel.classList.contains("hidden")) {
-    const authBtn = document.getElementById("openAccountAuthBtn");
-    if (authBtn) authBtn.click();
-    return false;
-  }
-
-  return true;
-}
 
 /* LOAD TEMPLATES */
 async function loadTemplates() {
@@ -362,6 +356,20 @@ function closePanels() {
   mobileOverlay.classList.remove("show");
 }
 
+function requireAuth() {
+  if (!auth.currentUser) {
+    const loginBtn = document.getElementById("openAccountAuthBtn");
+
+    if (loginBtn) {
+      loginBtn.click();
+    }
+
+    return false;
+  }
+
+  return true;
+}
+
 /* EVENTS */
 themeButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -529,6 +537,75 @@ document.addEventListener("click", (e) => {
     (!menuBtn || !menuBtn.contains(e.target))
   ) {
     menuDropdown.classList.add("hidden");
+  }
+});
+
+const sidebarMenuBtn = document.getElementById("sidebarMenuBtn");
+const sidebarPopupMenu = document.getElementById("sidebarPopupMenu");
+
+if (sidebarMenuBtn && sidebarPopupMenu) {
+  sidebarMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    sidebarPopupMenu.classList.toggle("show");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!sidebarPopupMenu.contains(e.target)) {
+      sidebarPopupMenu.classList.remove("show");
+    }
+  });
+}
+
+
+
+const loggedOutSection = document.getElementById("loggedOutSection");
+const loggedInSection = document.getElementById("loggedInSection");
+const sidebarUserName = document.getElementById("sidebarUserName");
+const popupUserName = document.getElementById("popupUserName");
+const popupUserEmail = document.getElementById("popupUserEmail");
+const sidebarAvatar = document.getElementById("sidebarAvatar");
+const popupAvatar = document.getElementById("popupAvatar");
+const logoutBtn = document.getElementById("logoutBtn");
+
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+
+      localStorage.removeItem("signupFullName");
+
+      sidebarPopupMenu.classList.remove("show");
+    } catch (error) {
+      console.error(error);
+    }
+  });
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loggedOutSection.style.display = "none";
+    loggedInSection.style.display = "block";
+
+    const savedSignupName = localStorage.getItem("signupFullName");
+
+    const displayName =
+      user.displayName ||
+      savedSignupName ||
+      user.email.split("@")[0];
+
+    sidebarUserName.textContent = displayName;
+    popupUserName.textContent = displayName;
+    popupUserEmail.textContent = user.email;
+
+    if (user.photoURL) {
+      sidebarAvatar.innerHTML = `<img src="${user.photoURL}">`;
+      popupAvatar.innerHTML = `<img src="${user.photoURL}">`;
+    }
+
+  } else {
+    loggedOutSection.style.display = "block";
+    loggedInSection.style.display = "none";
   }
 });
 

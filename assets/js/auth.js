@@ -335,6 +335,11 @@ if (verifyOtpBtn) {
         pendingSignupPassword
       );
 
+      localStorage.setItem(
+        "signupFullName",
+        document.getElementById("signupName").value.trim()
+      );
+
       document.getElementById("signupName").value = "";
       document.getElementById("signupEmail").value = "";
       document.getElementById("signupPassword").value = "";
@@ -406,23 +411,3 @@ if (sendResetBtn) {
 }
 
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    sidebarAuthGuest.classList.add("hidden");
-    sidebarAuthUser.classList.remove("hidden");
-
-    userName.textContent = user.displayName || "User";
-    userEmail.textContent = user.email || "";
-
-    if (user.photoURL) {
-      userAvatar.innerHTML = `<img src="${user.photoURL}" alt="User">`;
-    } else {
-      const letter = (user.displayName || "U")[0].toUpperCase();
-      userAvatar.textContent = letter;
-    }
-
-  } else {
-    sidebarAuthGuest.classList.remove("hidden");
-    sidebarAuthUser.classList.add("hidden");
-  }
-});

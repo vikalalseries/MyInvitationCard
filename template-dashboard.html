@@ -9,109 +9,233 @@
   <link rel="stylesheet" href="assets/css/template-dashboard.css">
   <link rel="stylesheet" href="assets/css/auth-modal.css">
 
-  <link
+  <!-- <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-  >
+
+    
+  > -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
 </head>
-<body class="groom-theme">
+<!-- LEFT SIDEBAR -->
+<aside class="sidebar" id="sidebar">
 
-  <!-- MOBILE OVERLAY -->
-  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <div class="sidebar-top">
 
-  <!-- LEFT SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-top">
-      <div class="logo">
-        <i class="fa-solid fa-envelope-open-text"></i>
-        <span>MyInvitationCard</span>
-      </div>
+    <!-- LOGO -->
+    <div class="logo">
+      <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
 
+        <!-- SMALL HEART -->
+        <path
+          d="M60 42
+             C60 37, 54 33, 49 33
+             C42 33, 39 40, 39 45
+             C39 54, 49 61, 60 69
+             C71 61, 81 54, 81 45
+             C81 40, 78 33, 71 33
+             C66 33, 60 37, 60 42Z"
+          fill="#ef4444"
+        />
 
+        <!-- ENVELOPE OUTER BORDER -->
+        <path
+          d="M18 42
+             L18 78
+             Q18 84 24 84
+             L96 84
+             Q102 84 102 78
+             L102 42"
+          fill="none"
+          stroke="#6d28d9"
+          stroke-width="6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
 
-      <!-- EVENT FILTER -->
-      <div class="event-menu">
-        <h4>Events</h4>
+        <!-- TOP FLAP -->
+        <path
+          d="M18 42 L60 14 L102 42"
+          fill="none"
+          stroke="#6d28d9"
+          stroke-width="6"
+          stroke-linejoin="round"
+          stroke-linecap="round"
+        />
 
-        <button class="event-btn active" data-event="all">
-          <i class="fa-solid fa-layer-group"></i>
-          All Templates
+        <!-- LEFT INNER LINE -->
+        <path
+          d="M18 42 L60 68"
+          fill="none"
+          stroke="#6d28d9"
+          stroke-width="6"
+          stroke-linecap="round"
+        />
+
+        <!-- RIGHT INNER LINE -->
+        <path
+          d="M102 42 L60 68"
+          fill="none"
+          stroke="#6d28d9"
+          stroke-width="6"
+          stroke-linecap="round"
+        />
+
+      </svg>
+
+      <span>MyInvitationCard</span>
+    </div>
+
+    
+    <!-- EVENT FILTER -->
+    <div class="event-menu">
+      <h4>Events</h4>
+
+      <button class="event-btn active" data-event="all">
+        <i class="fa-solid fa-layer-group"></i>
+        All Templates
+      </button>
+
+      <div class="event-group">
+        <button class="event-btn" id="weddingToggle" data-event="wedding">
+          <i class="fa-solid fa-heart fa-fw"></i>
+          Wedding
         </button>
 
-        <div class="event-group">
-          <button class="event-btn" id="weddingToggle" data-event="wedding">
-            <i class="fa-solid fa-ring"></i>
-            Wedding
-          </button>
+        <div class="theme-switch wedding-theme-switch" id="weddingThemeSwitch">
+          <button class="theme-btn active" data-theme="groom">Groom</button>
+          <button class="theme-btn" data-theme="bride">Bride</button>
+        </div>
+      </div>
 
-          <div class="theme-switch wedding-theme-switch" id="weddingThemeSwitch">
-            <button class="theme-btn active" data-theme="groom">Groom</button>
-            <button class="theme-btn" data-theme="bride">Bride</button>
+      <button class="event-btn" data-event="engagement">
+        <i class="fa-solid fa-ring fa-fw icon-engagement"></i>
+        Engagement
+      </button>
+
+      <button class="event-btn" data-event="anniversary">
+        <i class="fa-solid fa-calendar-check fa-fw"></i>
+        Anniversary
+      </button>
+
+      <button class="event-btn" data-event="birthday">
+        <i class="fa-solid fa-cake-candles fa-fw icon-birthday"></i>
+        Birthday
+      </button>
+    </div>
+
+  </div>
+
+  <!-- AUTH -->
+  <div class="sidebar-account-section">
+
+    <!-- LOGGED OUT -->
+    <div id="loggedOutSection">
+
+      <button class="sidebar-login-btn" id="openAccountAuthBtn">
+        Login
+      </button>
+
+      <button class="sidebar-signup-btn" id="openSignupDirectBtn">
+        Signup
+      </button>
+
+    </div>
+
+    <!-- LOGGED IN -->
+    <div id="loggedInSection" style="display:none;">
+
+      <div class="sidebar-extra-links">
+
+        <button class="sidebar-extra-btn">
+          <i class="fa-regular fa-gem fa-fw"></i>
+          <span>Pricing Plans</span>
+        </button>
+
+        <button class="sidebar-extra-btn">
+          <i class="fa-solid fa-briefcase fa-fw"></i>
+          <span>Business Plans</span>
+        </button>
+
+      </div>
+
+      <div class="sidebar-account-row">
+
+        <div class="sidebar-account-info">
+          <div class="sidebar-avatar" id="sidebarAvatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+
+          <div class="sidebar-user-meta">
+            <div class="sidebar-username" id="sidebarUserName">
+              My Account
+            </div>
           </div>
         </div>
 
-        <button class="event-btn" data-event="engagement">
-          <i class="fa-solid fa-gem"></i>
-          Engagement
+        <button class="sidebar-menu-btn" id="sidebarMenuBtn">
+          <i class="fa-solid fa-ellipsis"></i>
         </button>
 
-        <button class="event-btn" data-event="anniversary">
-          <i class="fa-solid fa-heart"></i>
-          Anniversary
-        </button>
+        <div class="sidebar-popup-menu" id="sidebarPopupMenu">
 
-        <button class="event-btn" data-event="birthday">
-          <i class="fa-solid fa-cake-candles"></i>
-          Birthday
-        </button>
+          <div class="popup-profile-header">
+            <div class="popup-user-left">
+
+              <div class="popup-avatar" id="popupAvatar">
+                <i class="fa-solid fa-user"></i>
+              </div>
+
+              <div class="popup-user-meta">
+                <div class="popup-name" id="popupUserName">User Name</div>
+                <div class="popup-email" id="popupUserEmail">email@gmail.com</div>
+              </div>
+
+            </div>
+          </div>
+
+          <button class="sidebar-popup-item">
+            <i class="fa-regular fa-user"></i>
+            <span>My Profile</span>
+          </button>
+
+          <button class="sidebar-popup-item">
+            <i class="fa-regular fa-moon"></i>
+            <span>Theme</span>
+          </button>
+
+          <button class="sidebar-popup-item">
+            <i class="fa-regular fa-message"></i>
+            <span>Feedback</span>
+          </button>
+
+          <button class="sidebar-popup-item">
+            <i class="fa-regular fa-circle-question"></i>
+            <span>Help Center</span>
+          </button>
+
+          <button class="sidebar-popup-item" id="logoutBtn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Log Out</span>
+          </button>
+
+          <div class="popup-upgrade-wrap">
+            <button class="popup-upgrade-btn">
+              <i class="fa-solid fa-crown"></i>
+              Upgrade to Premium
+            </button>
+          </div>
+
+        </div>
+
       </div>
+
     </div>
 
-    <!-- AUTH -->
-<div class="sidebar-account-section">
-
-  <!-- GUEST -->
-  <div id="sidebarAuthGuest">
-
-    <button class="sidebar-login-btn" id="openAccountAuthBtn">
-      Login
-    </button>
-
-    <button class="sidebar-signup-btn" id="openSignupDirectBtn">
-      Signup
-    </button>
-
   </div>
 
-  <!-- LOGGED IN -->
-  <div id="sidebarAuthUser" class="hidden">
-
-    <button class="sidebar-premium-btn">
-      Plans & Pricing
-    </button>
-
-    <button class="sidebar-student-btn">
-      Student Benefits
-    </button>
-
-    <button class="sidebar-account-btn">
-      <div class="sidebar-account-icon">
-        <i class="fa-solid fa-user"></i>
-      </div>
-      <span>My account</span>
-    </button>
-
-    <button class="sidebar-account-btn" id="logoutBtn">
-      <div class="sidebar-account-icon">
-        <i class="fa-solid fa-right-from-bracket"></i>
-      </div>
-      <span>Logout</span>
-    </button>
-
-  </div>
-
-</div>
-</aside> 
+</aside>
 
 
   <!-- MAIN CONTENT -->
@@ -133,8 +257,6 @@
         </div>
       </div>
     </header>
-
-
 
 
     <!-- CONTROLS -->
