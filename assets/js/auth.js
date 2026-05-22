@@ -61,7 +61,16 @@ const userEmail = document.getElementById("userEmail");
 
 const logoutBtn = document.getElementById("logoutBtn");
 const openAccountAuthBtn = document.getElementById("openAccountAuthBtn");
+const openAccountAuthBtnMobile = document.getElementById("openAccountAuthBtnMobile");
 const openSignupDirectBtn = document.getElementById("openSignupDirectBtn");
+
+const navLoggedOut = document.getElementById("navLoggedOut");
+const navLoggedIn = document.getElementById("navLoggedIn");
+
+const navAvatar = document.getElementById("navAvatar");
+const navUserMenuBtn = document.getElementById("navUserMenuBtn");
+const navUserPopup = document.getElementById("navUserPopup");
+const logoutBtnNavbar = document.getElementById("logoutBtnNavbar");
 
 let pendingSignupEmail = "";
 let pendingSignupPassword = "";
@@ -154,6 +163,14 @@ if (authOverlay) {
 
 if (openAccountAuthBtn) {
   openAccountAuthBtn.addEventListener("click", () => {
+    showModal();
+    showWelcome();
+  });
+}
+
+if (openAccountAuthBtnMobile) {
+  openAccountAuthBtnMobile.addEventListener("click", (e) => {
+    e.preventDefault();
     showModal();
     showWelcome();
   });
@@ -410,4 +427,110 @@ if (sendResetBtn) {
   });
 }
 
+
+onAuthStateChanged(auth, (user) => {
+
+  if (user) {
+
+    /* TEMPLATE DASHBOARD SIDEBAR */
+    const loggedOutSection = document.getElementById("loggedOutSection");
+    const loggedInSection = document.getElementById("loggedInSection");
+    const sidebarUserName = document.getElementById("sidebarUserName");
+    const popupUserName = document.getElementById("popupUserName");
+    const popupUserEmail = document.getElementById("popupUserEmail");
+    const sidebarAvatar = document.getElementById("sidebarAvatar");
+    const popupAvatar = document.getElementById("popupAvatar");
+
+    const popupNavAvatar = document.getElementById("popupNavAvatar");
+    const popupNavUserName = document.getElementById("popupNavUserName");
+    const popupNavUserEmail = document.getElementById("popupNavUserEmail");
+
+    if (loggedOutSection) loggedOutSection.style.display = "none";
+    if (loggedInSection) loggedInSection.style.display = "block";
+
+    const displayName =
+      user.displayName?.trim() ||
+      localStorage.getItem("signupFullName")?.trim() ||
+      user.email.split("@")[0];
+
+    if (sidebarUserName) sidebarUserName.textContent = displayName;
+    if (popupNavUserName) {
+      popupNavUserName.textContent = displayName || "My Account";
+    }
+    if (popupNavUserEmail) {
+      popupNavUserEmail.textContent = user.email || "No email";
+    }
+
+    if (user.photoURL) {
+      if (sidebarAvatar) {
+        sidebarAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      }
+
+      if (popupAvatar) {
+        popupAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      }
+
+      if (navAvatar) {
+        navAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      }
+
+      if (popupNavAvatar) {
+        popupNavAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      }
+
+    } else {
+      const initial = displayName.charAt(0).toUpperCase();
+
+      const avatarHTML = `
+        <div class="avatar-initial">${initial}</div>
+      `;
+
+      if (navAvatar) navAvatar.innerHTML = avatarHTML;
+      if (popupNavAvatar) popupNavAvatar.innerHTML = avatarHTML;
+    }
+
+
+    /* HOMEPAGE NAVBAR */
+    if (navLoggedOut) navLoggedOut.style.display = "none";
+    if (navLoggedIn) navLoggedIn.style.display = "flex";
+
+  } else {
+
+    /* TEMPLATE DASHBOARD SIDEBAR */
+    const loggedOutSection = document.getElementById("loggedOutSection");
+    const loggedInSection = document.getElementById("loggedInSection");
+
+    if (loggedOutSection) loggedOutSection.style.display = "block";
+    if (loggedInSection) loggedInSection.style.display = "none";
+
+    /* HOMEPAGE NAVBAR */
+    if (navLoggedOut) navLoggedOut.style.display = "flex";
+    if (navLoggedIn) navLoggedIn.style.display = "none";
+  }
+
+});
+
+
+
+
+if (navUserMenuBtn && navUserPopup) {
+  navUserMenuBtn.addEventListener("click", () => {
+    navUserPopup.classList.toggle("show");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (
+      !navUserPopup.contains(e.target) &&
+      !navUserMenuBtn.contains(e.target)
+    ) {
+      navUserPopup.classList.remove("show");
+    }
+  });
+}
+
+if (logoutBtnNavbar) {
+  logoutBtnNavbar.addEventListener("click", async () => {
+    await signOut(auth);
+  });
+}
 

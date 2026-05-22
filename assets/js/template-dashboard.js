@@ -136,7 +136,11 @@ function renderTemplates() {
   templateGrid.innerHTML = filtered
     .map(
       (template) => `
-        <div class="template-card" data-id="${template.id}">
+        <div 
+          class="template-card" 
+          data-id="${template.id}"
+          data-slug="${template.slug}"
+        >
           <div class="template-image">
             <img 
               src="${template.thumbnail}" 
@@ -611,4 +615,27 @@ onAuthStateChanged(auth, (user) => {
 
 /* INIT */
 document.body.classList.add("default-theme");
-loadTemplates();
+
+loadTemplates().then(() => {
+  autoOpenTemplateFromURL();
+});
+
+
+
+function autoOpenTemplateFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const templateSlug = params.get("template");
+
+  if (!templateSlug) return;
+
+  setTimeout(() => {
+    const card = document.querySelector(
+      `[data-slug="${templateSlug}"]`
+    );
+
+    if (card) {
+      card.click();
+    }
+  }, 400);
+}
+

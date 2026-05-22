@@ -6,19 +6,137 @@
   <title>MyInvitationCard | Free Online Invitation Card Maker</title>
   <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-container">
-      <a href="index.html" class="nav-logo">🎉 <span>MyInvitationCard</span></a>
+            <a href="index.html" class="nav-logo">
+        <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+
+          <!-- SMALL HEART -->
+          <path
+            d="M60 42
+               C60 37, 54 33, 49 33
+               C42 33, 39 40, 39 45
+               C39 54, 49 61, 60 69
+               C71 61, 81 54, 81 45
+               C81 40, 78 33, 71 33
+               C66 33, 60 37, 60 42Z"
+            fill="#ef4444"
+          />
+
+          <!-- ENVELOPE OUTER BORDER -->
+          <path
+            d="M18 42
+               L18 78
+               Q18 84 24 84
+               L96 84
+               Q102 84 102 78
+               L102 42"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+
+          <!-- TOP FLAP -->
+          <path
+            d="M18 42 L60 14 L102 42"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
+
+          <!-- LEFT INNER LINE -->
+          <path
+            d="M18 42 L60 68"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+
+          <!-- RIGHT INNER LINE -->
+          <path
+            d="M102 42 L60 68"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+
+        </svg>
+
+        <span>MyInvitationCard</span>
+      </a>
+
+
       <div class="nav-links">
         <a href="#templates">Templates</a>
         <a href="#how-it-works">How It Works</a>
         <a href="#pricing">Pricing</a>
-        <a href="login.html" class="btn-login">Login</a>
-        <a href="template-dashboard.html" class="btn-start">Start for Free ✨</a>
+
+        <!-- LOGGED OUT -->
+        <div id="navLoggedOut">
+          <a href="#" class="btn-login" id="openAccountAuthBtn">Login</a>
+        </div>
+
+        <!-- LOGGED IN -->
+        <div id="navLoggedIn" style="display:none;">
+
+          <div class="nav-user-box">
+
+            <button class="nav-avatar-btn" id="navUserMenuBtn">
+              <div class="nav-avatar" id="navAvatar">
+                <i class="fa-solid fa-user"></i>
+              </div>
+            </button>
+
+            <div class="nav-user-popup" id="navUserPopup">
+
+              <div class="popup-user-header">
+                <div class="popup-avatar" id="popupNavAvatar">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="popup-user-meta">
+                  <div id="popupNavUserName">My Account</div>
+                  <div id="popupNavUserEmail">user@email.com</div>
+                </div>
+              </div>
+
+              <button class="popup-menu-btn">
+                <i class="fa-regular fa-user"></i>
+                My Profile
+              </button>
+
+              <button class="popup-menu-btn">
+                <i class="fa-regular fa-moon"></i>
+                Theme
+              </button>
+
+              <button class="popup-menu-btn" id="logoutBtnNavbar">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                Log Out
+              </button>
+
+              <div class="popup-divider"></div>
+
+              <button class="popup-upgrade-btn">
+                👑 Upgrade to Premium
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
       </div>
       <button class="hamburger" id="hamburger">
         <span></span><span></span><span></span>
@@ -28,8 +146,8 @@
       <a href="#templates">Templates</a>
       <a href="#how-it-works">How It Works</a>
       <a href="#pricing">Pricing</a>
-      <a href="login.html">Login</a>
-      <a href="template-dashboard.html" class="btn-start">Start for Free ✨</a>
+      <a href="#" id="openAccountAuthBtnMobile">Login</a>
+      
     </div>
   </nav>
 
@@ -37,7 +155,7 @@
   <section class="hero">
     <div class="hero-container">
       <div class="hero-text">
-        <div class="hero-badge">🎊 Trusted by 1 Million+ Users</div>
+        <div class="hero-badge">🎊 Trusted by Three Plus Users</div>
         <h1 class="hero-title">
           Free Online<br />
           <span class="highlight">Invitation Card</span><br />
@@ -46,11 +164,11 @@
         <p class="hero-sub">
           Design beautiful, print-ready invitation cards for weddings, birthdays,
           anniversaries and more. Your first card is <strong>100% free forever.</strong>
-          No hidden fees. No watermarks. Really 🚀
+          No hidden fees. No watermarks. 🚀
         </p>
         <div class="hero-cta">
           <a href="template-dashboard.html" class="btn-hero-primary">Get Started for Free ✨</a>
-          <a href="#templates" class="btn-hero-secondary">Browse Templates →</a>
+          <a href="template-dashboard.html" class="btn-hero-secondary">Browse Templates →</a>
         </div>
         <div class="hero-stats">
           <div class="stat"><strong>50+</strong><span>Templates</span></div>
@@ -60,32 +178,12 @@
           <div class="stat"><strong>Print</strong><span>Ready PDFs</span></div>
         </div>
       </div>
-      <div class="hero-image-wrap">
-        <div class="hero-card-preview">
-          <div class="card-mockup card-1">
-            <div class="card-inner">
-              <p class="card-type">Wedding Invitation</p>
-              <h3>Yuvraj &amp; Sonam</h3>
-              <p class="card-date">Friday, May 09 · 2030</p>
-              <p class="card-venue">Lalganj, Mirzapur</p>
-            </div>
-          </div>
-          <div class="card-mockup card-2">
-            <div class="card-inner">
-              <p class="card-type">Birthday Party 🎂</p>
-              <h3>Vika Lal Turns 20!</h3>
-              <p class="card-date">Sunday, Sept 06 · 6:00 PM</p>
-              <p class="card-venue">Rajapur Ratawal, Manda, Prayagraj</p>
-            </div>
-          </div>
-          <div class="card-mockup card-3">
-            <div class="card-inner">
-              <p class="card-type">Anniversary 💍</p>
-              <h3>01 Year Together</h3>
-              <p class="card-date">Friday, May 09 · 7:00 PM</p>
-              <p class="card-venue">Mahuav Kalan, Bharatganj, Prayagraj</p>
-            </div>
-          </div>
+      <div class="hero-visual">
+        <div class="hero-template-preview">
+          <img
+            src="assets/templates/birthday/sim_001.jpg"
+            alt="Invitation Template Preview"
+          />
         </div>
       </div>
     </div>
@@ -145,97 +243,26 @@
     </div>
   </section>
 
-
+<!-- Template -->
 <section class="templates-section" id="templates">
   <div class="container">
+
     <div class="section-header">
-      <p class="section-tag">50+ Designs</p>
+      <p class="section-tag">Featured Templates</p>
       <h2>Choose from Our Best Templates</h2>
-      <p class="section-sub">Professionally crafted, fully customizable, and always free to try.</p>
+      <p class="section-sub">
+        Select a design and start customizing instantly.
+      </p>
     </div>
-    <div class="template-tabs">
-      <button class="tab-btn active" data-filter="all">All</button>
-      <button class="tab-btn" data-filter="wedding">Wedding 💍</button>
-      <button class="tab-btn" data-filter="birthday">Birthday 🎂</button>
-      <button class="tab-btn" data-filter="anniversary">Anniversary 🥂</button>
-      <button class="tab-btn" data-filter="corporate">Corporate 💼</button>
-    </div>
-    <div class="templates-grid" id="templatesGrid">
 
-      <div class="template-card" data-category="wedding">
-        <div class="template-preview wedding-1">
-          <div class="tp-inner">
-            <p>Wedding</p>
-            <h4>Royal Bliss</h4>
-            <small>Classic · Elegant</small>
-          </div>
-        </div>
-        <div class="template-info">
-          <span>Royal Bliss</span>
-          <a href="builder.html?template=wedding">Use Template →</a>
-        </div>
-      </div>
+    <div id="homeTemplateGrid" class="template-grid"></div>
 
-      <div class="template-card" data-category="wedding">
-        <div class="template-preview nikah-1">
-          <div class="tp-inner">
-            <p>Nikah</p>
-            <h4>Noor e Dil</h4>
-            <small>Elegant · Islamic</small>
-          </div>
-        </div>
-        <div class="template-info">
-          <span>Noor e Dil</span>
-          <a href="builder.html?template=nikah">Use Template →</a>
-        </div>
-      </div>
-
-      <div class="template-card" data-category="birthday">
-        <div class="template-preview birthday-1">
-          <div class="tp-inner">
-            <p>Birthday</p>
-            <h4>Party Blast</h4>
-            <small>Fun · Colorful</small>
-          </div>
-        </div>
-        <div class="template-info">
-          <span>Party Blast</span>
-          <a href="builder.html?template=birthday">Use Template →</a>
-        </div>
-      </div>
-
-      <div class="template-card" data-category="anniversary">
-        <div class="template-preview anniversary-1">
-          <div class="tp-inner">
-            <p>Anniversary</p>
-            <h4>Eternal Bond</h4>
-            <small>Romantic · Deep</small>
-          </div>
-        </div>
-        <div class="template-info">
-          <span>Eternal Bond</span>
-          <a href="builder.html?template=anniversary">Use Template →</a>
-        </div>
-      </div>
-
-      <div class="template-card" data-category="corporate">
-        <div class="template-preview corporate-1">
-          <div class="tp-inner">
-            <p>Corporate</p>
-            <h4>Pro Invite</h4>
-            <small>Clean · Minimal</small>
-          </div>
-        </div>
-        <div class="template-info">
-          <span>Pro Invite</span>
-          <a href="builder.html?template=corporate">Use Template →</a>
-        </div>
-      </div>
-
-    </div>
     <div class="templates-cta">
-      <a href="template-dashboard.html" class="btn-outline">View All Templates →</a>
+      <a href="template-dashboard.html" class="btn-outline">
+        View All Templates →
+      </a>
     </div>
+
   </div>
 </section>
 
@@ -287,23 +314,23 @@
     <div class="container">
       <div class="section-header">
         <p class="section-tag">Reviews</p>
-        <h2>Loved by Thousands of Users</h2>
+        <h2>Loved by Three Plus Users</h2>
       </div>
       <div class="testimonials-grid">
         <div class="testimonial-card">
           <div class="stars">⭐⭐⭐⭐⭐</div>
-          <p>"Made my wedding invitations in just 20 minutes! The templates are so beautiful and printing was perfect."</p>
-          <div class="reviewer"><strong>Priya Sharma</strong> · Delhi</div>
+          <p>"Made my wedding invitations in just 5 minutes! The templates are so beautiful and printing was perfect."</p>
+          <div class="reviewer"><strong>Yuvraj Maurya</strong> · Prayagraj</div>
         </div>
         <div class="testimonial-card">
           <div class="stars">⭐⭐⭐⭐⭐</div>
-          <p>"Absolutely love this site. Used it for my son's birthday party. So easy to use and totally free!"</p>
-          <div class="reviewer"><strong>Ravi Kumar</strong> · Mumbai</div>
+          <p>"Absolutely love this site. Used it for my birthday party. So easy to use and totally free!"</p>
+          <div class="reviewer"><strong>Vika Lal</strong> · Lucknow</div>
         </div>
         <div class="testimonial-card">
           <div class="stars">⭐⭐⭐⭐⭐</div>
           <p>"Professional looking cards without spending a single rupee. The design options are amazing!"</p>
-          <div class="reviewer"><strong>Sunita Patel</strong> · Ahmedabad</div>
+          <div class="reviewer"><strong>Akash</strong> · Bangluru</div>
         </div>
       </div>
     </div>
@@ -335,7 +362,7 @@
         </div>
         <div class="faq-item">
           <button class="faq-question" onclick="toggleFaq(this)">Are there templates for Indian occasions? <span class="faq-icon">+</span></button>
-          <div class="faq-answer">Yes! We have templates for Hindu weddings, Muslim weddings, Diwali parties, Holi celebrations, and many more Indian occasions.</div>
+          <div class="faq-answer">Yes! We have templates for all religion weddings, birthday and many more Indian occasions.</div>
         </div>
       </div>
     </div>
@@ -345,8 +372,8 @@
   <section class="cta-banner">
     <div class="container">
       <h2>Ready to Create Your Invitation?</h2>
-      <p>Join 1 million+ happy users. Start designing for free today.</p>
-      <a href="builder.html" class="btn-hero-primary">Create My Invitation Card ✨</a>
+      <p>Join 1+ happy users. Start designing for free today.</p>
+      <a href="template-dashboard.html" class="btn-hero-primary">Create My Invitation Card ✨</a>
     </div>
   </section>
 
@@ -354,22 +381,86 @@
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-brand">
-        <a href="index.html" class="nav-logo">🎉 <span>MyInvitationCard</span></a>
+                <a href="index.html" class="footer-logo">
+          <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+
+            <!-- SMALL HEART -->
+            <path
+              d="M60 42
+                 C60 37, 54 33, 49 33
+                 C42 33, 39 40, 39 45
+                 C39 54, 49 61, 60 69
+                 C71 61, 81 54, 81 45
+                 C81 40, 78 33, 71 33
+                 C66 33, 60 37, 60 42Z"
+              fill="#ef4444"
+            />
+
+            <!-- ENVELOPE OUTER BORDER -->
+            <path
+              d="M18 42
+                 L18 78
+                 Q18 84 24 84
+                 L96 84
+                 Q102 84 102 78
+                 L102 42"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+
+            <!-- TOP FLAP -->
+            <path
+              d="M18 42 L60 14 L102 42"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            />
+
+            <!-- LEFT INNER LINE -->
+            <path
+              d="M18 42 L60 68"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+
+            <!-- RIGHT INNER LINE -->
+            <path
+              d="M102 42 L60 68"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+
+          </svg>
+
+          <span>MyInvitationCard</span>
+        </a>
+
+
+
         <p>Empowering people to create beautiful invitations for every occasion — free, fast, and professional.</p>
       </div>
       <div class="footer-links">
         <div class="footer-col">
           <h5>Product</h5>
           <a href="template-dashboard.html">All Templates</a>
-          <a href="builder.html">Card Builder</a>
+          
           <a href="#pricing">Pricing</a>
         </div>
         <div class="footer-col">
           <h5>Occasions</h5>
           <a href="#">Wedding Cards</a>
-          <a href="#">Birthday Cards</a>
+          <a href="#">Engagement Cards</a>
           <a href="#">Anniversary Cards</a>
-          <a href="#">Corporate Events</a>
+          <a href="#">Birthday Cards</a>
         </div>
         <div class="footer-col">
           <h5>Company</h5>
@@ -385,6 +476,192 @@
     </div>
   </footer>
 
+
+
+  <!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="authOverlay"></div>
+
+<!-- AUTH MODAL -->
+<div class="auth-modal" id="authModal">
+
+  <button id="closeAuthModal" class="auth-close-btn">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+
+  <!-- WELCOME -->
+  <div id="authWelcome">
+
+    <h2 class="auth-title">Login</h2>
+
+    <button class="auth-btn" id="googleLoginBtn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:20px;height:20px;">
+      Continue with Google
+    </button>
+
+    <button class="auth-btn" id="openEmailLoginBtn">
+      <i class="fa-regular fa-envelope"></i>
+      Login with Email
+    </button>
+
+    <div class="auth-footer">
+      Don't have an account?
+      <span class="auth-link" id="openSignupLink">Sign up</span>
+    </div>
+
+  </div>
+
+
+  <!-- LOGIN FORM -->
+  <div id="authLoginForm" class="hidden">
+
+    <h2 class="auth-title">Login</h2>
+
+    <input
+      type="email"
+      id="loginEmail"
+      class="auth-input"
+      placeholder="Email"
+    >
+
+    <input
+      type="password"
+      id="loginPassword"
+      class="auth-input"
+      placeholder="Password"
+    >
+
+    <button class="auth-btn" id="loginEmailBtn">
+      Login
+    </button>
+
+    <div class="auth-footer" style="margin-top: 8px; margin-bottom: 20px;">
+      <span class="auth-link" id="forgotPasswordBtn">
+        Forgot Password?
+      </span>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-link" id="backToWelcomeBtn">Back</span>
+    </div>
+
+    <div id="authResetForm" class="hidden">
+
+      <h2 class="auth-title">Reset Password</h2>
+
+      <p class="otp-subtext">
+        Enter your email address to receive a password reset link.
+      </p>
+
+      <input
+        type="email"
+        id="resetEmail"
+        class="auth-input"
+        placeholder="Email"
+      >
+
+      <button class="auth-btn" id="sendResetBtn">
+        Send Reset Link
+      </button>
+
+      <div class="auth-footer">
+        <span class="auth-link" id="backToLoginBtn">
+          Back to Login
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- SIGNUP FORM -->
+  <div id="authSignupForm" class="hidden">
+
+    <h2 class="auth-title">Sign Up</h2>
+
+    <input
+      type="text"
+      id="signupName"
+      class="auth-input"
+      placeholder="Full Name"
+    >
+
+    <input
+      type="email"
+      id="signupEmail"
+      class="auth-input"
+      placeholder="Email"
+    >
+
+    <input
+      type="password"
+      id="signupPassword"
+      class="auth-input"
+      placeholder="Password"
+    >
+
+    <input
+      type="password"
+      id="signupConfirmPassword"
+      class="auth-input"
+      placeholder="Confirm Password"
+    >
+
+    <button class="auth-btn" id="signupEmailBtn">
+      Create Account
+    </button>
+
+    <div class="auth-footer">
+      Already have an account?
+      <span class="auth-link" id="openLoginLink">Login</span>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-link" id="backToWelcomeBtn2">Back</span>
+    </div>
+
+  </div>
+
+
+    <!-- OTP VERIFY FORM -->
+  <div id="authOtpForm" class="hidden">
+
+    <h2 class="auth-title">Verify Code</h2>
+
+    <p class="otp-subtext">
+      Enter the 6-digit verification code sent to your email.
+    </p>
+
+    <input
+      type="text"
+      id="otpCode"
+      class="auth-input"
+      placeholder="Enter 6-digit code"
+      maxlength="6"
+    >
+
+    <button class="auth-btn" id="verifyOtpBtn">
+      Verify Code
+    </button>
+
+    <div class="resend-section">
+      <span id="resendOtpText">Didn't receive code?</span>
+
+      <button id="resendOtpBtn" class="resend-btn" disabled>
+        Resend OTP (30s)
+      </button>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-link" id="backToSignupBtn">Back</span>
+    </div>
+
+  </div>
+</div>
+
   <script src="js/main.js"></script>
+
+  <script type="module" src="assets/js/auth.js"></script>
+
 </body>
 </html>

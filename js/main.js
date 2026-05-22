@@ -64,3 +64,119 @@ tabBtns.forEach(btn => {
     });
   });
 });
+
+
+async function loadHomeTemplates() {
+  const grid = document.getElementById("homeTemplateGrid");
+  if (!grid) return;
+
+  try {
+    const res = await fetch("data/templates.json");
+    const templates = await res.json();
+
+    function pickRandom(arr) {
+      if (!arr.length) return null;
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    const hinduWedding = templates.filter(
+      t =>
+        t.event === "wedding" &&
+        t.religion === "hindu"
+    );
+
+    const muslimWedding = templates.filter(
+      t =>
+        t.event === "wedding" &&
+        (
+          t.religion === "muslim" ||
+          t.event === "nikah"
+        )
+    );
+
+    const christianWedding = templates.filter(
+      t =>
+        t.event === "wedding" &&
+        t.religion === "christian"
+    );
+
+    const birthdayTemplates = templates.filter(
+      t => t.event === "birthday"
+    );
+
+    const anniversaryTemplates = templates.filter(
+      t => t.event === "anniversary"
+    );
+
+    const selected = [
+      pickRandom(hinduWedding),
+      pickRandom(muslimWedding),
+      pickRandom(christianWedding),
+      pickRandom(birthdayTemplates),
+      pickRandom(anniversaryTemplates)
+    ].filter(Boolean);
+
+    const usedIds = selected.map(t => t.id);
+
+    const wildcardPool = templates.filter(
+      t => !usedIds.includes(t.id)
+    );
+
+    /* fill until total = 6 */
+    while (selected.length < 6 && wildcardPool.length > 0) {
+      const randomIndex = Math.floor(
+        Math.random() * wildcardPool.length
+      );
+
+      const picked = wildcardPool.splice(randomIndex, 1)[0];
+
+      selected.push(picked);
+    }
+
+    grid.innerHTML = selected
+      .map(
+        (template, index) => `
+          <a
+            href="template-dashboard.html?template=${template.slug}"
+            class="home-template-card reveal"
+            style="animation-delay:${index * 120}ms"
+          >
+            <img
+              src="${template.thumbnail}"
+              alt="${template.title}"
+              class="home-template-thumb"
+              onerror="this.src='assets/templates/default-template.jpg'"
+            />
+
+            <div class="home-template-info">
+              <div class="home-template-title">
+                ${template.title}
+              </div>
+            </div>
+          </a>
+        `
+      )
+      .join("");
+
+  } catch (err) {
+    console.error("Homepage templates failed:", err);
+  }
+}
+
+loadHomeTemplates();
+
+function revealOnScroll() {
+  const reveals = document.querySelectorAll(".reveal");
+
+  reveals.forEach((item) => {
+    const top = item.getBoundingClientRect().top;
+    const trigger = window.innerHeight - 80;
+
+    if (top < trigger) {
+      item.classList.add("visible");
+    }
+  });
+}
+
+window.addEventListener("scroll", revealOnScroll);
+window.addEventListener("load", revealOnScroll);

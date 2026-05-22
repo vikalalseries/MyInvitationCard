@@ -1554,7 +1554,7 @@ body.default-theme .main-content {
 }
 
 .sidebar-username{
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
   color: #374151;
 
@@ -1705,6 +1705,7 @@ body.default-theme .main-content {
   gap: 10px;
 
   cursor: pointer;
+  
 }
 /* .sidebar-popup-item:last-child{
   border-bottom: none;
