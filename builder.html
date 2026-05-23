@@ -522,6 +522,139 @@
       .left-panel { position: static; height: auto; }
       #invitation-card { width: 92vw; max-width: 440px; }
     }
+
+    @media (min-width: 1441px) {
+      .builder-layout {
+        grid-template-columns: 360px 1fr;
+      }
+
+      #invitation-card {
+        width: 520px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .top-nav {
+        height: auto;
+        padding: 14px 16px;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .nav-actions {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .nav-btn {
+        flex: 1 1 calc(50% - 5px);
+      }
+
+      .builder-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .left-panel {
+        position: static;
+        height: auto;
+      }
+
+      .panel-section {
+        padding: 18px 16px;
+      }
+
+      .right-panel {
+        padding: 20px 14px;
+      }
+
+      #invitation-card {
+        width: min(100%, 420px);
+        min-height: 560px;
+        padding: 34px 24px;
+      }
+
+      .card-names {
+        font-size: 2rem;
+      }
+
+      .download-row {
+        flex-direction: column;
+      }
+
+      .dl-btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .top-nav {
+        padding: 12px;
+      }
+
+      .nav-logo {
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+      }
+
+      .nav-btn {
+        flex: 1 1 100%;
+        font-size: 0.72rem;
+        padding: 8px 12px;
+      }
+
+      .builder-layout {
+        min-height: calc(100vh - 56px);
+      }
+
+      .panel-section {
+        padding: 16px 14px;
+      }
+
+      .template-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .color-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .size-row {
+        flex-direction: column;
+      }
+
+      .right-panel {
+        padding: 16px 12px 20px;
+      }
+
+      #invitation-card {
+        width: 100%;
+        min-height: 500px;
+        padding: 28px 18px;
+      }
+
+      .card-names {
+        font-size: clamp(1.6rem, 10vw, 2.2rem);
+      }
+
+      .card-message,
+      .detail-row,
+      .rsvp-text {
+        font-size: 0.9rem;
+      }
+
+      .download-wrap {
+        max-width: 100%;
+      }
+
+      .dl-btn {
+        font-size: 0.72rem;
+        padding: 12px;
+      }
+    }
   </style>
 </head>
 <body>

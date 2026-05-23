@@ -192,6 +192,8 @@ function openTemplateModal(template) {
   renderSuggestions(template);
 
   templateModal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  document.documentElement.style.overflow = "hidden";
 
   const previewModal = document.querySelector(".preview-modal");
 
@@ -435,6 +437,9 @@ if (reportTemplateBtn) {
 
 function closeTemplateModal() {
   templateModal.classList.add("hidden");
+
+  document.body.style.overflow = "";
+  document.documentElement.style.overflow = "";
 
   if (menuDropdown) {
     menuDropdown.classList.add("hidden");

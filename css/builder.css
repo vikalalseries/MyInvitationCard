@@ -110,3 +110,99 @@ body{
   font-size:20px;
   margin-bottom:15px;
 }
+
+@media (max-width: 1024px) {
+  .builder-container {
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .editor-panel,
+  .preview-panel {
+    width: 100%;
+  }
+
+  .invitation-card {
+    width: min(100%, 500px);
+  }
+}
+
+@media (max-width: 767px) {
+  .navbar {
+    padding: 16px 18px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .download-btn {
+    width: 100%;
+  }
+
+  .builder-container {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .editor-panel {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .invitation-card {
+    width: 100%;
+    min-height: 260px;
+    padding: 28px 20px;
+  }
+
+  .invitation-card h1 {
+    font-size: clamp(1.8rem, 8vw, 2.8rem);
+  }
+
+  .invitation-card p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 14px;
+  }
+
+  .nav-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    flex: 1 1 calc(50% - 5px);
+    padding: 10px 12px;
+    font-size: 0.75rem;
+  }
+
+  .panel-section {
+    padding: 16px;
+  }
+
+  .form-row,
+  .download-row,
+  .size-row {
+    flex-direction: column;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .template-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .color-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .invitation-card {
+    padding: 24px 16px;
+  }
+}
