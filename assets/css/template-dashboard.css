@@ -1865,7 +1865,7 @@ body.bride-theme .main-content {
 
 .sidebar-popup-item{
   width: 100%;
-  height: 36px;
+  height: 44px;
 
   border: none;
   border-bottom: 1px solid var(--border);
@@ -2594,4 +2594,143 @@ img {
     top: auto;
     bottom: 12px;
   }
+}
+
+
+/*theme icon */
+
+.theme-switcher-inline-sidebar{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+}
+
+.theme-mode-toggle{
+  width:28px;
+  height:28px;
+  border:none;
+  background:transparent;
+  position:relative;
+  cursor:pointer;
+  padding:0;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.theme-mode-toggle i{
+  position:absolute;
+  font-size:16px;
+}
+
+.theme-light-solid,
+.theme-light-outline{
+  top:4px;
+  left:-8px;
+}
+
+.theme-light-solid,
+.theme-light-outline{
+  transform: translateY(-4px);
+}
+
+.theme-dark-solid,
+.theme-dark-outline{
+  bottom:4px;
+  right:3px;
+}
+
+.theme-dark-solid,
+.theme-dark-outline{
+  transform: translateY(6px);
+}
+
+.theme-divider{
+  position:absolute;
+  width:2px;
+  height:24px;
+  border-radius:10px;
+  top:5px;
+  left:8px;
+  transform:rotate(38deg);
+}
+
+
+
+.theme-switcher-label{
+  font-size:16px;
+  font-weight:500;
+  color:inherit;
+  line-height:1;
+  margin-right:auto;
+  display:flex;
+  align-items:center;
+}
+
+.theme-switcher-buttons{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-top:-1px;
+}
+
+.theme-icon-btn{
+  width:24px;
+  height:24px;
+  border:none;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  padding:0;
+}
+
+.theme-icon-btn i{
+  font-size:14px;
+  line-height:1;
+}
+
+
+
+/* LIGHT MODE */
+html[data-site-theme="light"] .theme-light-solid{
+  display:block;
+  color:#f59e0b;
+}
+
+html[data-site-theme="light"] .theme-dark-outline{
+  display:block;
+  color:#374151;
+}
+
+html[data-site-theme="light"] .theme-light-outline,
+html[data-site-theme="light"] .theme-dark-solid{
+  display:none;
+}
+
+html[data-site-theme="light"] .theme-divider{
+  background:#1f2937;
+}
+
+/* DARK MODE */
+html[data-site-theme="dark"] .theme-light-outline{
+  display:block;
+  color:#f8fafc;
+}
+
+html[data-site-theme="dark"] .theme-dark-solid{
+  display:block;
+  color:#3b82f6;
+}
+
+html[data-site-theme="dark"] .theme-light-solid,
+html[data-site-theme="dark"] .theme-dark-outline{
+  display:none;
+}
+
+html[data-site-theme="dark"] .theme-divider{
+  background:#ffffff;
 }

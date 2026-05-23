@@ -172,17 +172,39 @@
     <!-- LOGGED IN -->
     <div id="loggedInSection" style="display:none;">
 
-      <div class="sidebar-extra-links">
+      <div class="sidebar-extra-links">        
 
         <button class="sidebar-extra-btn">
           <i class="fa-regular fa-gem fa-fw"></i>
           <span>Pricing Plans</span>
         </button>
 
-        <button class="sidebar-extra-btn">
-          <i class="fa-solid fa-briefcase fa-fw"></i>
-          <span>Business Plans</span>
+      <div class="theme-switcher-inline theme-switcher-inline-sidebar">
+
+        <button class="theme-mode-toggle" type="button" id="themeModeToggle" aria-label="Toggle theme">
+
+          <i class="fa-solid fa-sun theme-light-solid"></i>
+          <i class="fa-regular fa-sun theme-light-outline"></i>
+
+          <i class="fa-solid fa-moon theme-dark-solid"></i>
+          <i class="fa-regular fa-moon theme-dark-outline"></i>
+
+          <span class="theme-divider"></span>
+
         </button>
+
+        <span class="theme-switcher-label">Theme</span>
+
+        <div class="theme-switcher-buttons">
+          <button class="theme-icon-btn" type="button" data-site-theme="light" aria-label="Light theme">
+            <i class="fa-solid fa-sun"></i>
+          </button>
+          <button class="theme-icon-btn" type="button" data-site-theme="dark" aria-label="Dark theme">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+        </div>
+
+      
 
       </div>
 
@@ -225,18 +247,6 @@
             <i class="fa-regular fa-user"></i>
             <span>My Profile</span>
           </button>
-
-          <div class="theme-switcher-inline theme-switcher-inline-sidebar-popup">
-            <span class="theme-switcher-label">Theme</span>
-            <div class="theme-switcher-buttons">
-              <button class="theme-icon-btn" type="button" data-site-theme="light" aria-label="Light theme">
-                <i class="fa-solid fa-sun"></i>
-              </button>
-              <button class="theme-icon-btn" type="button" data-site-theme="dark" aria-label="Dark theme">
-                <i class="fa-solid fa-moon"></i>
-              </button>
-            </div>
-          </div>
 
           <button class="sidebar-popup-item">
             <i class="fa-regular fa-message"></i>

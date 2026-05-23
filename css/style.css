@@ -1013,6 +1013,9 @@ html.site-theme-dark .hero {
   padding:18px;
   display:none;
   z-index:9999;
+
+  transform: scale(0.9);
+  transform-origin: top right;
 }
 
 .nav-user-popup.show{
@@ -1022,15 +1025,15 @@ html.site-theme-dark .hero {
 .popup-user-header{
   display:flex;
   align-items:center;
-  gap:14px;
-  padding-bottom:16px;
+  gap:12px;
+  padding-bottom:14px;
   border-bottom:1px solid var(--light-gray);
   margin-bottom:14px;
 }
 
 .popup-avatar{
-  width:52px;
-  height:52px;
+  width:46px;
+  height:46px;
   border-radius:14px;
   background: var(--light-gray);
   border: 1.5px solid var(--light-gray);
@@ -1062,26 +1065,43 @@ html.site-theme-dark .hero {
 .popup-menu-btn{
   width:100%;
   border:none;
-  background:none;
+  background:transparent;
   display:flex;
   align-items:center;
   gap:12px;
-  padding:14px 10px;
+  padding:10px 6px;
   font-size:15px;
+  font-weight:500;
+  color:#111827;
   cursor:pointer;
-  border-radius:10px;
+  text-align:left;
 }
+
+.popup-menu-btn i{
+  width:20px;
+  min-width:20px;
+  font-size:18px;
+  color:#374151;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  opacity:1;
+  visibility:visible;
+}
+
 
 .popup-menu-btn:hover{
   background: var(--light-gray);
+  border-radius: 16px;
 }
 
 .popup-upgrade-btn{
+  height: 46px;
   width:100% !important;
   margin-top:0 !important;
   padding:14px 16px !important;
   border:none !important;
-  border-radius:12px !important;
+  border-radius:14px !important;
   background:var(--primary) !important;
   color:var(--white) !important;
   font-size:15px !important;

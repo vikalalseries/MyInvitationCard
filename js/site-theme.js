@@ -82,3 +82,16 @@
     getCurrentTheme
   };
 })();
+
+
+
+const themeModeToggle = document.getElementById("themeModeToggle");
+
+if (themeModeToggle) {
+  themeModeToggle.addEventListener("click", () => {
+    const current = document.documentElement.dataset.siteTheme || "light";
+    const next = current === "dark" ? "light" : "dark";
+
+    window.SiteTheme.applyTheme(next);
+  });
+}

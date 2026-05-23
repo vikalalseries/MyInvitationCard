@@ -597,50 +597,42 @@ onAuthStateChanged(auth, (user) => {
 
 
 
-
+/* DESKTOP PROFILE POPUP */
 if (navUserMenuBtn && navUserPopup) {
-  navUserMenuBtn.addEventListener("click", () => {
+  navUserMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     navUserPopup.classList.toggle("show");
   });
 
-  document.addEventListener("click", (e) => {
-    if (
-      !navUserPopup.contains(e.target) &&
-      !navUserMenuBtn.contains(e.target)
-    ) {
-      navUserPopup.classList.remove("show");
-    }
+  navUserPopup.addEventListener("click", (e) => {
+    e.stopPropagation();
   });
 }
 
-if (logoutBtnNavbar) {
-  logoutBtnNavbar.addEventListener("click", async () => {
-    await signOut(auth);
-  });
-}
-
-if (mobileLogoutBtnNavbar) {
-  mobileLogoutBtnNavbar.addEventListener("click", async () => {
-    await signOut(auth);
-  });
-}
-
+/* MOBILE PROFILE POPUP */
 if (mobileNavUserMenuBtn && mobileNavUserPopup) {
   mobileNavUserMenuBtn.addEventListener("click", (e) => {
     e.stopPropagation();
+
     if (mobileMenu) {
       mobileMenu.classList.remove("open");
     }
+
     mobileNavUserPopup.classList.toggle("show");
   });
 
-  document.addEventListener("click", (e) => {
-    if (
-      !mobileNavUserPopup.contains(e.target) &&
-      !mobileNavUserMenuBtn.contains(e.target)
-    ) {
-      mobileNavUserPopup.classList.remove("show");
-    }
+  mobileNavUserPopup.addEventListener("click", (e) => {
+    e.stopPropagation();
   });
 }
 
+/* CLICK ANYWHERE OUTSIDE TO CLOSE */
+document.addEventListener("click", () => {
+  if (navUserPopup) {
+    navUserPopup.classList.remove("show");
+  }
+
+  if (mobileNavUserPopup) {
+    mobileNavUserPopup.classList.remove("show");
+  }
+});
