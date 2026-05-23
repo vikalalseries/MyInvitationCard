@@ -6,6 +6,7 @@
   <title>Card Builder — MyInvitationCard</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="js/site-theme.js"></script>
   <style>
     :root {
       --gold: #c9a84c;
@@ -20,13 +21,30 @@
       --accent: #7c4a3a;
       --success: #4a7c59;
       --card-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      --page-bg: #f4ede0;
+    }
+
+    html.site-theme-dark {
+      --gold: #ffffff;
+      --gold-light: rgba(255,255,255,0.16);
+      --gold-dark: #e5e7eb;
+      --cream: #111827;
+      --deep: #0b1220;
+      --sidebar-bg: #111827;
+      --border: #243041;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #c08457;
+      --success: #4f7f64;
+      --card-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      --page-bg: #0b1220;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Montserrat', sans-serif;
-      background: #f4ede0;
+      background: var(--page-bg);
       min-height: 100vh;
       color: var(--text);
     }
@@ -53,6 +71,57 @@
     }
     .nav-logo span { color: #fff; }
     .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .theme-switcher-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      border: none;
+    }
+    .theme-switcher-label {
+      font-size: 0.9rem;
+      letter-spacing: 0;
+      text-transform: none;
+      color: rgba(255,255,255,0.9);
+      font-weight: 700;
+    }
+    .theme-switcher-buttons { display: flex; gap: 8px; }
+    .theme-icon-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      line-height: 1;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .theme-icon-btn:hover { transform: translateY(-1px); }
+    .theme-icon-btn.active {
+      background: transparent;
+      color: #2563eb;
+    }
+    html.site-theme-dark .theme-switcher-inline {
+      background: transparent;
+    }
+    html.site-theme-dark .theme-switcher-label {
+      color: #ffffff;
+    }
+    html.site-theme-dark .theme-icon-btn {
+      background: transparent;
+      color: #ffffff;
+    }
+    html.site-theme-dark .theme-icon-btn.active {
+      background: transparent;
+      color: #2563eb;
+    }
     .nav-btn {
       padding: 8px 18px;
       border-radius: 6px;
@@ -494,6 +563,14 @@
       box-shadow: 0 4px 18px rgba(180,140,50,0.4);
     }
     .dl-btn.gold:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(180,140,50,0.5); }
+    html.site-theme-dark .dl-btn.gold {
+      background: #ffffff;
+      color: #0b1220;
+      box-shadow: none;
+    }
+    html.site-theme-dark .dl-btn.gold:hover {
+      background: #e5e7eb;
+    }
     .dl-btn.outline-dark {
       background: transparent;
       border: 1.5px solid #aaa;
@@ -663,6 +740,17 @@
 <nav class="top-nav">
   <a href="index.html" class="nav-logo">My<span>Invitation</span>Card</a>
   <div class="nav-actions">
+    <div class="theme-switcher-inline theme-switcher-inline-builder">
+      <span class="theme-switcher-label">Theme</span>
+      <div class="theme-switcher-buttons">
+        <button class="theme-icon-btn" type="button" data-site-theme="light" aria-label="Light theme">
+          ☀
+        </button>
+        <button class="theme-icon-btn" type="button" data-site-theme="dark" aria-label="Dark theme">
+          ☾
+        </button>
+      </div>
+    </div>
     <button class="nav-btn outline" onclick="window.location='templates.html'">← Templates</button>
     <button class="nav-btn primary" onclick="downloadCard('png')">⬇ Download PNG</button>
     <button class="nav-btn success" onclick="downloadCard('pdf')">📄 Save as PDF</button>

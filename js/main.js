@@ -6,7 +6,36 @@ window.addEventListener('scroll', () => {
 
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
-if (hamburger) { hamburger.addEventListener('click', () => { mobileMenu.classList.toggle('open'); }); }
+const mobileNavUserPopup = document.getElementById('mobileNavUserPopup');
+const heroGetStartedBtn = document.getElementById('heroGetStartedBtn');
+if (hamburger && mobileMenu) {
+  hamburger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (mobileNavUserPopup) {
+      mobileNavUserPopup.classList.remove('show');
+    }
+    mobileMenu.classList.toggle('open');
+  });
+
+  mobileMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (
+      !mobileMenu.contains(e.target) &&
+      !hamburger.contains(e.target)
+    ) {
+      mobileMenu.classList.remove('open');
+    }
+  });
+}
+
+if (heroGetStartedBtn) {
+  heroGetStartedBtn.addEventListener('click', () => {
+    window.location.href = 'template-dashboard.html';
+  });
+}
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -180,3 +209,39 @@ function revealOnScroll() {
 
 window.addEventListener("scroll", revealOnScroll);
 window.addEventListener("load", revealOnScroll);
+
+
+
+const howItWorksBtn = document.getElementById("howItWorksNavBtn");
+const offset = 130;
+
+if (howItWorksBtn) {
+  howItWorksBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    document.getElementById("how-it-works").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+}
+
+
+
+const mobileHowItWorksBtn = document.getElementById("mobileHowItWorksNavBtn");
+
+if (mobileHowItWorksBtn) {
+  mobileHowItWorksBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const section = document.getElementById("how-it-works");
+    const offset = 130;
+
+    window.scrollTo({
+      top: section.offsetTop - offset,
+      behavior: "smooth"
+    });
+
+    document.getElementById("mobileMenu")?.classList.remove("show");
+  });
+}

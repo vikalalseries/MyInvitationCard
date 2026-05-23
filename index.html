@@ -4,16 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MyInvitationCard | Free Online Invitation Card Maker</title>
+  <script>
+  (function () {
+    try {
+      const savedTheme = localStorage.getItem("siteTheme");
+
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("site-theme-dark");
+        document.documentElement.dataset.siteTheme = "dark";
+      }
+    } catch (e) {}
+  })();
+  </script>
+
   <link rel="stylesheet" href="css/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/..." rel="stylesheet" />
+  <link rel="stylesheet" href="fontawesome..." />
+  <script src="js/site-theme.js"></script>
 </head>
 <body>
 
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-container">
-            <a href="index.html" class="nav-logo">
+      <a href="index.html" class="nav-logo">
         <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
 
           <!-- SMALL HEART -->
@@ -76,11 +90,84 @@
         <span>MyInvitationCard</span>
       </a>
 
+      <div class="mobile-nav-actions">
+        <button class="mobile-nav-user-btn" id="mobileNavUserMenuBtn" style="display:none;">
+          <div class="nav-avatar mobile-nav-avatar" id="mobileNavAvatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+        </button>
+
+        <div class="mobile-nav-user-popup" id="mobileNavUserPopup">
+          <div class="popup-user-header">
+            <div class="popup-avatar" id="mobilePopupNavAvatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="popup-user-meta">
+              <div id="mobilePopupNavUserName">My Account</div>
+              <div id="mobilePopupNavUserEmail">user@email.com</div>
+            </div>
+          </div>
+
+          <button class="popup-menu-btn">
+            <i class="fa-regular fa-user"></i>
+            My Profile
+          </button>
+
+          <div class="theme-switcher-inline">
+            <span class="theme-switcher-label">Theme</span>
+            <div class="theme-switcher-buttons">
+              <button class="theme-icon-btn" type="button" data-site-theme="light" aria-label="Light theme">
+                <i class="fa-solid fa-sun"></i>
+              </button>
+              <button class="theme-icon-btn" type="button" data-site-theme="dark" aria-label="Dark theme">
+                <i class="fa-solid fa-moon"></i>
+              </button>
+            </div>
+          </div>
+
+          <button class="popup-menu-btn" id="mobileLogoutBtnNavbar">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            Log Out
+          </button>
+
+          <div class="popup-divider"></div>
+
+          <button class="popup-upgrade-btn">
+            <i class="fa-solid fa-crown"></i>
+            Upgrade to Premium
+          </button>
+        </div>
+
+        <button class="hamburger" id="hamburger">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
 
       <div class="nav-links">
         <a href="#templates">Templates</a>
-        <a href="#how-it-works">How It Works</a>
+        <a href="#" id="howItWorksNavBtn">How It Works</a>
         <a href="#pricing">Pricing</a>
+
+        <div class="nav-theme-dropdown">
+          <button class="nav-theme-trigger" id="navThemeTrigger">
+            Theme
+          </button>
+
+          <div class="nav-theme-popup" id="navThemePopup">
+            <button data-site-theme="light" class="theme-popup-btn">
+              <span>☀️</span>
+              <span>Light</span>
+            </button>
+
+            <button data-site-theme="dark" class="theme-popup-btn">
+              <span>🌙</span>
+              <span>Dark</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
         <!-- LOGGED OUT -->
         <div id="navLoggedOut">
@@ -116,10 +203,17 @@
                 My Profile
               </button>
 
-              <button class="popup-menu-btn">
-                <i class="fa-regular fa-moon"></i>
-                Theme
-              </button>
+              <div class="theme-switcher-inline">
+                <span class="theme-switcher-label">Theme</span>
+                <div class="theme-switcher-buttons">
+                  <button class="theme-icon-btn" type="button" data-site-theme="light" aria-label="Light theme">
+                    <i class="fa-solid fa-sun"></i>
+                  </button>
+                  <button class="theme-icon-btn" type="button" data-site-theme="dark" aria-label="Dark theme">
+                    <i class="fa-solid fa-moon"></i>
+                  </button>
+                </div>
+              </div>
 
               <button class="popup-menu-btn" id="logoutBtnNavbar">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -129,7 +223,8 @@
               <div class="popup-divider"></div>
 
               <button class="popup-upgrade-btn">
-                👑 Upgrade to Premium
+                <i class="fa-solid fa-crown"></i>
+                Upgrade to Premium
               </button>
 
             </div>
@@ -138,15 +233,31 @@
         </div>
 
       </div>
-      <button class="hamburger" id="hamburger">
-        <span></span><span></span><span></span>
-      </button>
     </div>
     <div class="mobile-menu" id="mobileMenu">
-      <a href="#templates">Templates</a>
-      <a href="#how-it-works">How It Works</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#" id="openAccountAuthBtnMobile">Login</a>
+      <div id="mobileMenuLoggedOut">
+        <a href="#templates">Templates</a>
+        <a href="#" id="howItWorksNavBtn">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <div class="theme-switcher-inline theme-switcher-inline-mobile">
+          <span class="theme-switcher-label">Theme</span>
+          <div class="theme-switcher-buttons">
+            <button class="theme-icon-btn" type="button" data-site-theme="light" aria-label="Light theme">
+              <i class="fa-solid fa-sun"></i>
+            </button>
+            <button class="theme-icon-btn" type="button" data-site-theme="dark" aria-label="Dark theme">
+              <i class="fa-solid fa-moon"></i>
+            </button>
+          </div>
+        </div>
+        <button class="mobile-menu-link-btn" id="openAccountAuthBtnMobile">Login</button>
+      </div>
+
+      <div id="mobileMenuLoggedIn" style="display:none;">
+        <a href="#templates">Templates</a>
+        <a href="#" id="howItWorksNavBtn">How It Works</a>
+        <a href="#pricing">Pricing</a>
+      </div>
       
     </div>
   </nav>
@@ -167,7 +278,7 @@
           No hidden fees. No watermarks. 🚀
         </p>
         <div class="hero-cta">
-          <a href="template-dashboard.html" class="btn-hero-primary">Get Started for Free ✨</a>
+          <a href="template-dashboard.html" class="btn-hero-primary" id="heroGetStartedBtn">Get Started for Free ✨</a>
           <a href="template-dashboard.html" class="btn-hero-secondary">Browse Templates →</a>
         </div>
         <div class="hero-stats">

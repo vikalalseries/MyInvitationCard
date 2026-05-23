@@ -7,6 +7,7 @@ import {
 let templates = [];
 let currentTheme = "groom";
 let currentEvent = "all";
+
 let selectedTemplate = null;
 
 /* ELEMENTS */
@@ -300,7 +301,7 @@ function switchEvent(eventName) {
       "bride-theme"
     );
 
-    document.body.classList.add("default-theme");
+    // document.body.classList.add("default-theme");
 
     stateFilter.style.display = "none";
     religionFilter.style.display = "none";
@@ -314,7 +315,7 @@ function switchEvent(eventName) {
       "bride-theme"
     );
 
-    document.body.classList.add("default-theme");
+    // document.body.classList.add("default-theme");
 
     stateFilter.style.display = "flex";
     religionFilter.style.display = "flex";
@@ -355,11 +356,13 @@ function handleImportJSON(event) {
 function openSidebar() {
   sidebar.classList.add("show");
   mobileOverlay.classList.add("show");
+  document.body.style.overflow = "hidden";
 }
 
 function closePanels() {
   sidebar.classList.remove("show");
   mobileOverlay.classList.remove("show");
+  document.body.style.overflow = "";
 }
 
 function requireAuth() {
@@ -618,8 +621,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-/* INIT */
-document.body.classList.add("default-theme");
+
 
 loadTemplates().then(() => {
   autoOpenTemplateFromURL();

@@ -72,6 +72,20 @@ const navUserMenuBtn = document.getElementById("navUserMenuBtn");
 const navUserPopup = document.getElementById("navUserPopup");
 const logoutBtnNavbar = document.getElementById("logoutBtnNavbar");
 
+const mobileNavUserMenuBtn = document.getElementById("mobileNavUserMenuBtn");
+const mobileNavUserPopup = document.getElementById("mobileNavUserPopup");
+const mobilePopupNavAvatar = document.getElementById("mobilePopupNavAvatar");
+const mobilePopupNavUserName = document.getElementById("mobilePopupNavUserName");
+const mobilePopupNavUserEmail = document.getElementById("mobilePopupNavUserEmail");
+const mobileMenuLoggedOut = document.getElementById("mobileMenuLoggedOut");
+const mobileMenuLoggedIn = document.getElementById("mobileMenuLoggedIn");
+const mobileMenuAvatar = document.getElementById("mobileMenuAvatar");
+const mobileMenuUserName = document.getElementById("mobileMenuUserName");
+const mobileMenuUserEmail = document.getElementById("mobileMenuUserEmail");
+const mobileLogoutBtn = document.getElementById("mobileLogoutBtn");
+const mobileLogoutBtnNavbar = document.getElementById("mobileLogoutBtnNavbar");
+const mobileMenu = document.getElementById("mobileMenu");
+
 let pendingSignupEmail = "";
 let pendingSignupPassword = "";
 let resendCountdown;
@@ -391,6 +405,12 @@ if (logoutBtn) {
   });
 }
 
+if (mobileLogoutBtn) {
+  mobileLogoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+  });
+}
+
 if (backToLoginBtn) {
   backToLoginBtn.addEventListener("click", showLoginForm);
 }
@@ -461,6 +481,34 @@ onAuthStateChanged(auth, (user) => {
       popupNavUserEmail.textContent = user.email || "No email";
     }
 
+    if (mobilePopupNavUserName) {
+      mobilePopupNavUserName.textContent = displayName || "My Account";
+    }
+
+    if (mobilePopupNavUserEmail) {
+      mobilePopupNavUserEmail.textContent = user.email || "No email";
+    }
+
+    if (mobileMenuUserName) {
+      mobileMenuUserName.textContent = displayName || "My Account";
+    }
+
+    if (mobileMenuUserEmail) {
+      mobileMenuUserEmail.textContent = user.email || "No email";
+    }
+
+    if (mobileNavUserMenuBtn) {
+      mobileNavUserMenuBtn.style.display = "flex";
+    }
+
+    if (mobileMenuLoggedOut) {
+      mobileMenuLoggedOut.style.display = "none";
+    }
+
+    if (mobileMenuLoggedIn) {
+      mobileMenuLoggedIn.style.display = "flex";
+    }
+
     if (user.photoURL) {
       if (sidebarAvatar) {
         sidebarAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
@@ -478,6 +526,21 @@ onAuthStateChanged(auth, (user) => {
         popupNavAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
       }
 
+      if (mobilePopupNavAvatar) {
+        mobilePopupNavAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      }
+
+      if (mobileMenuAvatar) {
+        mobileMenuAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      }
+
+      if (mobileNavUserMenuBtn) {
+        const avatar = mobileNavUserMenuBtn.querySelector(".mobile-nav-avatar");
+        if (avatar) {
+          avatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+        }
+      }
+
     } else {
       const initial = displayName.charAt(0).toUpperCase();
 
@@ -487,6 +550,12 @@ onAuthStateChanged(auth, (user) => {
 
       if (navAvatar) navAvatar.innerHTML = avatarHTML;
       if (popupNavAvatar) popupNavAvatar.innerHTML = avatarHTML;
+      if (mobilePopupNavAvatar) mobilePopupNavAvatar.innerHTML = avatarHTML;
+      if (mobileMenuAvatar) mobileMenuAvatar.innerHTML = avatarHTML;
+      if (mobileNavUserMenuBtn) {
+        const avatar = mobileNavUserMenuBtn.querySelector(".mobile-nav-avatar");
+        if (avatar) avatar.innerHTML = avatarHTML;
+      }
     }
 
 
@@ -506,6 +575,22 @@ onAuthStateChanged(auth, (user) => {
     /* HOMEPAGE NAVBAR */
     if (navLoggedOut) navLoggedOut.style.display = "flex";
     if (navLoggedIn) navLoggedIn.style.display = "none";
+
+    if (mobileNavUserMenuBtn) {
+      mobileNavUserMenuBtn.style.display = "none";
+    }
+
+    if (mobileNavUserPopup) {
+      mobileNavUserPopup.classList.remove("show");
+    }
+
+    if (mobileMenuLoggedOut) {
+      mobileMenuLoggedOut.style.display = "flex";
+    }
+
+    if (mobileMenuLoggedIn) {
+      mobileMenuLoggedIn.style.display = "none";
+    }
   }
 
 });
@@ -531,6 +616,31 @@ if (navUserMenuBtn && navUserPopup) {
 if (logoutBtnNavbar) {
   logoutBtnNavbar.addEventListener("click", async () => {
     await signOut(auth);
+  });
+}
+
+if (mobileLogoutBtnNavbar) {
+  mobileLogoutBtnNavbar.addEventListener("click", async () => {
+    await signOut(auth);
+  });
+}
+
+if (mobileNavUserMenuBtn && mobileNavUserPopup) {
+  mobileNavUserMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (mobileMenu) {
+      mobileMenu.classList.remove("open");
+    }
+    mobileNavUserPopup.classList.toggle("show");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (
+      !mobileNavUserPopup.contains(e.target) &&
+      !mobileNavUserMenuBtn.contains(e.target)
+    ) {
+      mobileNavUserPopup.classList.remove("show");
+    }
   });
 }
 
