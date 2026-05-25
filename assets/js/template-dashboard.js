@@ -251,6 +251,30 @@ function renderSuggestions(template) {
   });
 }
 
+
+function updateWeddingThemeState() {
+  document.body.classList.remove(
+    "groom-theme",
+    "bride-theme",
+    "default-theme"
+  );
+
+  const isDarkMode =
+    document.documentElement.classList.contains("site-theme-dark");
+
+  if (currentEvent !== "wedding") return;
+
+  if (isDarkMode) return;
+
+  if (currentTheme === "bride") {
+    document.body.classList.add("bride-theme");
+  } else {
+    document.body.classList.add("groom-theme");
+  }
+}
+
+window.updateWeddingThemeState = updateWeddingThemeState;
+
 /* THEME */
 function switchTheme(theme) {
   currentTheme = theme;
@@ -262,7 +286,10 @@ function switchTheme(theme) {
       "default-theme"
     );
 
-    document.body.classList.add(`${theme}-theme`);
+    /* ONLY APPLY BRIDE/GROOM COLORS IN LIGHT MODE */
+    if (!document.documentElement.classList.contains("site-theme-dark")) {
+      document.body.classList.add(`${theme}-theme`);
+    }
   }
 
   themeButtons.forEach((btn) => {

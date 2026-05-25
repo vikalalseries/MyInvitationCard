@@ -35,12 +35,13 @@
 }
 
 html.site-theme-dark {
-  --bg: #0b1220;
+  --bg: #a1a4aa;
+  --dark: #000000;
   --card: #111827;
   --text: #f8fafc;
   --muted: #ffffff;
   --border: #243041;
-  --white: #ffffff;
+  --white: #000000;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
   --sidebar-bg: #0f172a;
   --main-bg:
@@ -52,12 +53,17 @@ html.site-theme-dark {
       rgba(11, 18, 32, 1) 85%
     );
   --topbar-bg: #0b1220;
-  --accent: #f59e0b;
+  --accent: #ffffff;
   --accent-light: #2a2615;
 }
 
 body.bride-theme {
   --accent: #ec4899;
+  --accent-light: #fce7f3;
+}
+
+body.bride-dark-theme {
+  --accent: #0b1220;
   --accent-light: #fce7f3;
 }
 
@@ -168,6 +174,30 @@ body {
   background: var(--accent);
   color: var(--white);
 }
+
+
+/* DARK MODE GROOM / BRIDE FIX */
+html.site-theme-dark .wedding-theme-switch{
+  background: #111827;
+  border: 1px solid #243041;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+html.site-theme-dark .theme-btn{
+  background: transparent;
+  color: #ffffff;
+}
+
+html.site-theme-dark .theme-btn:hover{
+  background: #1f2937;
+}
+
+html.site-theme-dark .theme-btn.active{
+  background: #374151;
+  color: #ffffff;
+}
+
 
 .theme-switcher-inline {
   width: 100%;
@@ -1188,6 +1218,15 @@ body.bride-theme .main-content {
   transition: all 0.25s ease;
 }
 
+.close-icon{
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.preview-close-btn:hover .close-icon{
+  transform: rotate(90deg) scale(1.12);
+  opacity: 0.85;
+}
+
 .template-features ul {
   margin: 0 0 28px 20px;
   padding: 0;
@@ -1988,7 +2027,7 @@ body.bride-theme .main-content {
 }
 
 .popup-upgrade-btn i{
-  color: var(--accent);   /* crown follows theme accent in light mode */
+  color: #fad11c;   /* crown follows theme accent in light mode */
   margin-right: 8px;
 }
 
@@ -2742,4 +2781,89 @@ html[data-site-theme="dark"] .theme-dark-outline{
 
 html[data-site-theme="dark"] .theme-divider{
   background:#ffffff;
+}
+
+
+
+/* ===== DARK MODE ICON FIXES ===== */
+
+/* SIDEBAR 3 DOT BUTTON */
+html.site-theme-dark .sidebar-menu-btn{
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+html.site-theme-dark .sidebar-menu-btn i{
+  color: #ffffff;
+}
+
+/* PREVIEW FAVORITE + SHARE + 3 DOT BUTTON */
+html.site-theme-dark .icon-btn{
+  background: transparent;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+html.site-theme-dark .icon-btn i{
+  color: #ffffff;
+}
+
+/* TOOLTIP TEXT (Save / Share etc.) */
+html.site-theme-dark .tooltip-text{
+  background: #ffffff;
+  color: #111827;
+}
+
+/* 3 DOT POPUP MENU */
+html.site-theme-dark .menu-dropdown{
+  background: #111827;
+  border: 1px solid #243041;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+}
+
+/* POPUP BUTTON TEXT */
+html.site-theme-dark .menu-dropdown button{
+  color: #ffffff;
+}
+
+/* POPUP BUTTON ICONS */
+html.site-theme-dark .menu-dropdown button i{
+  color: #ffffff;
+}
+
+/* POPUP HOVER */
+html.site-theme-dark .menu-dropdown button:hover{
+  background: #1f2937;
+}
+
+
+
+/* SIDEBAR POPUP UPGRADE ICON FIX */
+html.site-theme-dark .sidebar-popup-menu .popup-upgrade-btn i{
+  color: #000000 !important;
+  opacity: 1 !important;
+  display: inline-flex !important;
+}
+
+
+/* FORCE DARK MODE GROOM / BRIDE SWITCH FIX */
+html.site-theme-dark .wedding-theme-switch{
+  background: #111827 !important;
+  border: 1px solid #243041 !important;
+  border-radius: 12px !important;
+  padding: 4px !important;
+}
+
+html.site-theme-dark .wedding-theme-switch .theme-btn{
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+html.site-theme-dark .wedding-theme-switch .theme-btn:hover{
+  background: #1f2937 !important;
+}
+
+html.site-theme-dark .wedding-theme-switch .theme-btn.active{
+  background: #374151 !important;
+  color: #ffffff !important;
 }
