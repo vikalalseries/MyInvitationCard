@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Template Preview</title>
+
+  <link rel="stylesheet" href="assets/css/preview.css">
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  >
+</head>
+<body>
+
+  <div class="preview-page">
+
+    <!-- TOP -->
+    <div class="preview-top">
+
+      <!-- LEFT IMAGE -->
+      <div class="preview-image-section">
+
+        <!-- BIG MAIN IMAGE -->
+        <div class="main-preview-wrapper">
+            <img id="modalImage" src="" alt="Template Preview">
+        </div>
+
+        <!-- SMALL THUMBNAILS BELOW -->
+        <div id="previewThumbs" class="preview-thumbnails"></div>
+
+      </div>
+
+      <!-- RIGHT INFO -->
+      <div class="preview-info-section">
+
+        <h1 id="modalTitle"></h1>
+
+        <p id="modalMeta" class="preview-meta"></p>
+
+        <div class="template-features">
+          <ul>
+            <li>Fully customizable invitation design</li>
+            <li>Editable names, dates, venue & event details</li>
+            <li>Download-ready digital invitation format</li>
+            <li>Mobile-friendly sharing support</li>
+            <li>Suitable for print and WhatsApp sharing</li>
+          </ul>
+        </div>
+
+        <div class="preview-designer">
+          <span class="designer-badge">MIC</span>
+          <span>By MyInvitationCard</span>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="preview-actions">
+
+          <button id="useTemplateBtn" class="preview-primary-btn">
+            Use This Template
+          </button>
+
+          <!-- FAVORITE -->
+          <div class="tooltip-wrapper">
+            <button id="favoriteBtn" class="icon-btn">
+              <i class="fa-regular fa-star"></i>
+            </button>
+
+            <div class="tooltip-text">
+              Add this template to favourites
+            </div>
+          </div>
+
+          <!-- MENU -->
+          <div class="menu-wrapper">
+            <button id="menuBtn" class="icon-btn">
+              <i class="fa-solid fa-ellipsis"></i>
+            </button>
+
+            <div id="menuDropdown" class="menu-dropdown hidden">
+              <button id="shareTemplateBtn">Share</button>
+              <button id="copyLinkBtn">Copy Link</button>
+              <button id="reportTemplateBtn">Report Template</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- BOTTOM -->
+    <div class="preview-bottom">
+      <h2>More like this</h2>
+
+      <div id="suggestionGrid" class="horizontal-suggestions"></div>
+    </div>
+
+  </div>
+
+  <script type="module" src="assets/js/preview.js"></script>
+
+</body>
+</html>

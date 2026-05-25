@@ -484,8 +484,7 @@
 </section>
 </div>
 
-  <!-- TEMPLATE PREVIEW MODAL -->
-
+<!-- TEMPLATE PREVIEW OVERLAY -->
 <div id="templateModal" class="preview-overlay hidden">
 
   <!-- CLOSE -->
@@ -493,83 +492,17 @@
     <i class="fa-solid fa-xmark close-icon"></i>
   </button>
 
-  <div class="preview-modal">
-
-    <!-- TOP SECTION -->
-    <div class="preview-top">
-
-      <!-- LEFT IMAGE -->
-      <div class="preview-image-section">
-        <img id="modalImage" src="" alt="Template Preview">
-      </div>
-
-      <!-- RIGHT INFO -->
-      <div class="preview-info-section">
-
-        <h1 id="modalTitle"></h1>
-
-        <p id="modalMeta" class="preview-meta"></p>
-
-        <div class="template-features">
-          <ul>
-            <li>Fully customizable invitation design</li>
-            <li>Editable names, dates, venue & event details</li>
-            <li>Download-ready digital invitation format</li>
-            <li>Mobile-friendly sharing support</li>
-            <li>Suitable for print and WhatsApp sharing</li>
-          </ul>
-        </div>
-
-        <div class="preview-designer">
-          <span class="designer-badge">MIC</span>
-          <span>By MyInvitationCard</span>
-        </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="preview-actions">
-
-          <button id="useTemplateBtn" class="preview-primary-btn">
-            Use This Template
-          </button>
-
-          <!-- FAVOURITE -->
-          <div class="tooltip-wrapper">
-            <button id="favoriteBtn" class="icon-btn">
-              <i class="fa-regular fa-star"></i>
-            </button>
-
-            <div class="tooltip-text">
-              Add this template to favourites
-            </div>
-          </div>
-
-          <!-- THREE DOT -->
-          <div class="menu-wrapper">
-            <button id="menuBtn" class="icon-btn">
-              <i class="fa-solid fa-ellipsis"></i>
-            </button>
-
-            <div id="menuDropdown" class="menu-dropdown hidden">
-              <button id="shareTemplateBtn">Share</button>
-              <button id="copyLinkBtn">Copy Link</button>
-              <button id="reportTemplateBtn">Report Template</button>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- SUGGESTIONS -->
-    <div class="preview-bottom">
-      <h2>More like this</h2>
-
-      <div id="suggestionGrid" class="horizontal-suggestions"></div>
-    </div>
-
+  <!-- PREVIEW CONTAINER -->
+  <div class="preview-modal iframe-preview-modal">
+    <iframe
+      id="previewFrame"
+      src=""
+      frameborder="0"
+      loading="lazy"
+      allowfullscreen
+    ></iframe>
   </div>
+
 </div>
 </main>
 

@@ -31,22 +31,9 @@ const weddingToggle = document.getElementById("weddingToggle");
 const weddingThemeSwitch = document.getElementById("weddingThemeSwitch");
 
 const templateModal = document.getElementById("templateModal");
-const modalImage = document.getElementById("modalImage");
-const modalTitle = document.getElementById("modalTitle");
-const modalMeta = document.getElementById("modalMeta");
-const suggestionGrid = document.getElementById("suggestionGrid");
-
-const favoriteBtn = document.getElementById("favoriteBtn");
-const menuBtn = document.getElementById("menuBtn");
-const menuDropdown = document.getElementById("menuDropdown");
-
-const shareTemplateBtn = document.getElementById("shareTemplateBtn");
-const copyLinkBtn = document.getElementById("copyLinkBtn");
-const reportTemplateBtn = document.getElementById("reportTemplateBtn");
+const previewFrame = document.getElementById("previewFrame");
 
 const closeModal = document.getElementById("closeModal");
-const backBtn = document.getElementById("backBtn");
-const useTemplateBtn = document.getElementById("useTemplateBtn");
 
 const importJson = document.getElementById("importJson");
 
@@ -162,93 +149,33 @@ function renderTemplates() {
 /* WHOLE CARD CLICK */
   document.querySelectorAll(".template-card").forEach((card) => {
     card.addEventListener("click", () => {
-      const id = Number(card.dataset.id);
-      const template = templates.find((t) => t.id === id);
-
-      openTemplateModal(template);
+      const slug = card.dataset.slug;
+      openPreview(slug);
     });
   });
 }
 
 
-/* MODAL */
-function openTemplateModal(template) {
-  selectedTemplate = template;
+function openPreview(templateSlug) {
+  if (!previewFrame) return;
 
-  modalImage.src = template.thumbnail;
-  modalImage.onerror = function () {
-    this.src = "assets/templates/default-template.jpg";
-  };
-  modalTitle.textContent = template.title;
-
-  modalMeta.textContent = `
-    ${template.event} •
-    ${template.religion} •
-    ${template.state.replace(/-/g, " ")} •
-    ${template.style} •
-    ${template.language}
-  `;
-
-  updateFavoriteUI();
-  renderSuggestions(template);
+  previewFrame.src = `preview.html?template=${templateSlug}`;
 
   templateModal.classList.remove("hidden");
+
   document.body.style.overflow = "hidden";
   document.documentElement.style.overflow = "hidden";
-
-  const previewModal = document.querySelector(".preview-modal");
-
-  if (previewModal) {
-    previewModal.scrollTop = 0;
-
-    previewModal.onscroll = function () {
-      const atBottom =
-        previewModal.scrollTop + previewModal.clientHeight >=
-        previewModal.scrollHeight - 5;
-
-      previewModal.classList.toggle("at-bottom", atBottom);
-    };
-  }
 }
 
-/* SUGGESTIONS */
-function renderSuggestions(template) {
-  if (!suggestionGrid) return;
+function closePreview() {
+  templateModal.classList.add("hidden");
 
-  const suggestions = templates
-    .filter((t) => {
-      if (t.id === template.id) return false;
+  document.body.style.overflow = "";
+  document.documentElement.style.overflow = "";
 
-      return (
-        t.event === template.event &&
-        t.religion === template.religion &&
-        t.type === template.type
-      );
-    })
-    .slice(0, 20);
-
-  suggestionGrid.innerHTML = suggestions
-    .map((template) => `
-      <div class="suggestion-card" data-id="${template.id}">
-        <img
-          src="${template.thumbnail}"
-          alt="${template.title}"
-          onerror="this.onerror=null; this.src='assets/templates/fallback.jpg';"
-        >
-      </div>
-    `)
-    .join("");
-
-  document.querySelectorAll(".suggestion-card").forEach((card) => {
-    card.addEventListener("click", () => {
-      const id = Number(card.dataset.id);
-      const selected = templates.find((t) => t.id === id);
-
-      if (selected) {
-        openTemplateModal(selected);
-      }
-    });
-  });
+  if (previewFrame) {
+    previewFrame.src = "";
+  }
 }
 
 
@@ -433,37 +360,17 @@ quickLanguage.addEventListener("change", renderTemplates);
 
 
 
-if (backBtn) {
-  backBtn.addEventListener("click", closeTemplateModal);
-}
+
 
 if (templateModal) {
   templateModal.addEventListener("click", (e) => {
     if (e.target === templateModal) {
-      closeTemplateModal();
+      closePreview();
     }
   });
 }
 
-if (favoriteBtn) {
-  favoriteBtn.addEventListener("click", toggleFavorite);
-}
 
-if (menuBtn) {
-  menuBtn.addEventListener("click", toggleMenu);
-}
-
-if (shareTemplateBtn) {
-  shareTemplateBtn.addEventListener("click", shareTemplate);
-}
-
-if (copyLinkBtn) {
-  copyLinkBtn.addEventListener("click", copyTemplateLink);
-}
-
-if (reportTemplateBtn) {
-  reportTemplateBtn.addEventListener("click", reportTemplate);
-}
 
 function closeTemplateModal() {
   templateModal.classList.add("hidden");
@@ -476,86 +383,13 @@ function closeTemplateModal() {
   }
 }
 
-function getFavorites() {
-  return JSON.parse(localStorage.getItem("favorites")) || [];
-}
 
-function updateFavoriteUI() {
-  if (!selectedTemplate || !favoriteBtn) return;
-
-  const favorites = getFavorites();
-  const isFav = favorites.includes(selectedTemplate.id);
-
-  favoriteBtn.innerHTML = isFav
-    ? '<i class="fa-solid fa-star"></i>'
-    : '<i class="fa-regular fa-star"></i>';
-}
-
-function toggleFavorite() {
-  if (!requireAuth()) return;
-
-  let favorites = getFavorites();
-
-  if (favorites.includes(selectedTemplate.id)) {
-    favorites = favorites.filter(id => id !== selectedTemplate.id);
-  } else {
-    favorites.push(selectedTemplate.id);
-  }
-
-  localStorage.setItem("favorites", JSON.stringify(favorites));
-
-  updateFavoriteUI();
-}
-
-function toggleMenu() {
-  menuDropdown.classList.toggle("hidden");
-}
-
-async function shareTemplate() {
-  const shareData = {
-    title: selectedTemplate.title,
-    text: "Check out this invitation template",
-    url: window.location.href
-  };
-
-  if (navigator.share) {
-    await navigator.share(shareData);
-  } else {
-    alert("Sharing not supported.");
-  }
-}
-
-function copyTemplateLink() {
-  navigator.clipboard.writeText(window.location.href);
-  alert("Template link copied.");
-}
-
-function reportTemplate() {
-  const reason = prompt(
-    "Report reason:\nSpam / Copyright / Inappropriate"
-  );
-
-  if (reason) {
-    alert("Report submitted.");
-  }
-}
 
 if (closeModal) {
-  closeModal.addEventListener("click", closeTemplateModal);
+  closeModal.addEventListener("click", closePreview);
 }
 
-if (useTemplateBtn) {
-  useTemplateBtn.addEventListener("click", () => {
-    if (!selectedTemplate) return;
 
-    localStorage.setItem(
-      "selectedTemplate",
-      JSON.stringify(selectedTemplate)
-    );
-
-    window.location.href = "builder.html";
-  });
-}
 
 if (importJson) {
   importJson.addEventListener("change", handleImportJSON);
@@ -663,13 +497,6 @@ function autoOpenTemplateFromURL() {
   if (!templateSlug) return;
 
   setTimeout(() => {
-    const card = document.querySelector(
-      `[data-slug="${templateSlug}"]`
-    );
-
-    if (card) {
-      card.click();
-    }
-  }, 400);
+    openPreview(templateSlug);
+  }, 300);
 }
-

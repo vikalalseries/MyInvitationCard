@@ -529,7 +529,11 @@
     "style": "simple",
     "language": "english",
     "thumbnail": "assets/templates/birthday/sim_001.jpg",
-    "previewImages": ["assets/templates/birthday/sim_001.jpg"],
+    "previewImages": [
+      "assets/templates/birthday/sim_001.jpg",
+      "assets/templates/birthday/sim_001-envelope.jpg",
+      "assets/templates/birthday/sim_001-rsvp.jpg"
+    ],
     "size": "tall",
     "category": "free",
     "featured": true,
