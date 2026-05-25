@@ -211,37 +211,61 @@ window.addEventListener("scroll", revealOnScroll);
 window.addEventListener("load", revealOnScroll);
 
 
+/* NAVBAR SMOOTH SCROLL */
 
-const howItWorksBtn = document.getElementById("howItWorksNavBtn");
-const offset = 130;
+const logoScrollBtn = document.getElementById("logoScrollBtn");
+const howItWorksNavBtn = document.getElementById("howItWorksNavBtn");
+const mobileHowItWorksNavBtn = document.getElementById("mobileHowItWorksNavBtn");
+const templatesNavBtns = document.querySelectorAll('a[href="#templates"]');
 
-if (howItWorksBtn) {
-  howItWorksBtn.addEventListener("click", (e) => {
-    e.preventDefault();
+function smoothScrollToSection(sectionId, offset = 50) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
 
-    document.getElementById("how-it-works").scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+  window.scrollTo({
+    top: section.offsetTop - offset,
+    behavior: "smooth"
   });
 }
 
-
-
-const mobileHowItWorksBtn = document.getElementById("mobileHowItWorksNavBtn");
-
-if (mobileHowItWorksBtn) {
-  mobileHowItWorksBtn.addEventListener("click", (e) => {
+/* LOGO -> TOP */
+if (logoScrollBtn) {
+  logoScrollBtn.addEventListener("click", (e) => {
     e.preventDefault();
-
-    const section = document.getElementById("how-it-works");
-    const offset = 130;
 
     window.scrollTo({
-      top: section.offsetTop - offset,
+      top: 0,
       behavior: "smooth"
     });
-
-    document.getElementById("mobileMenu")?.classList.remove("show");
   });
 }
+
+/* HOW IT WORKS DESKTOP */
+if (howItWorksNavBtn) {
+  howItWorksNavBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    smoothScrollToSection("how-it-works");
+  });
+}
+
+/* HOW IT WORKS MOBILE */
+if (mobileHowItWorksNavBtn) {
+  mobileHowItWorksNavBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    smoothScrollToSection("how-it-works");
+
+    document.getElementById("mobileMenu")?.classList.remove("open");
+  });
+}
+
+/* TEMPLATES */
+templatesNavBtns.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    smoothScrollToSection("templates");
+
+    document.getElementById("mobileMenu")?.classList.remove("open");
+  });
+});

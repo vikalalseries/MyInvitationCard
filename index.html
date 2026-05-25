@@ -31,7 +31,7 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-container">
-      <a href="index.html" class="nav-logo">
+      <a href="#" class="nav-logo" id="logoScrollBtn">
         <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
 
           <!-- SMALL HEART -->
@@ -95,53 +95,7 @@
       </a>
 
       <div class="mobile-nav-actions">
-        <button class="mobile-nav-user-btn" id="mobileNavUserMenuBtn" style="display:none;">
-          <div class="nav-avatar mobile-nav-avatar" id="mobileNavAvatar">
-            <i class="fa-solid fa-user"></i>
-          </div>
-        </button>
-
-        <div class="mobile-nav-user-popup" id="mobileNavUserPopup">
-          <div class="popup-user-header">
-            <div class="popup-avatar" id="mobilePopupNavAvatar">
-              <i class="fa-solid fa-user"></i>
-            </div>
-
-            <div class="popup-user-meta">
-              <div id="mobilePopupNavUserName">My Account</div>
-              <div id="mobilePopupNavUserEmail">user@email.com</div>
-            </div>
-          </div>
-
-          <button class="popup-menu-btn">
-            <i class="fa-regular fa-user"></i>
-            My Profile
-          </button>
-
-          <div class="theme-switcher-inline">
-            <span class="theme-switcher-label">Theme</span>
-            <div class="theme-switcher-buttons">
-              <button class="theme-icon-btn" type="button" data-site-theme="light" aria-label="Light theme">
-                <i class="fa-solid fa-sun"></i>
-              </button>
-              <button class="theme-icon-btn" type="button" data-site-theme="dark" aria-label="Dark theme">
-                <i class="fa-solid fa-moon"></i>
-              </button>
-            </div>
-          </div>
-
-          <button class="popup-menu-btn" id="mobileLogoutBtnNavbar">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            Log Out
-          </button>
-
-          <div class="popup-divider"></div>
-
-          <button class="popup-upgrade-btn">
-            <i class="fa-solid fa-crown"></i>
-            Upgrade to Premium
-          </button>
-        </div>
+        
 
         <button class="hamburger" id="hamburger">
           <span></span><span></span><span></span>
@@ -241,7 +195,7 @@
     <div class="mobile-menu" id="mobileMenu">
       <div id="mobileMenuLoggedOut">
         <a href="#templates">Templates</a>
-        <a href="#" id="howItWorksNavBtn">How It Works</a>
+        <a href="#" id="mobileHowItWorksNavBtn">How It Works</a>
         <a href="#pricing">Pricing</a>
         <div class="theme-switcher-inline theme-switcher-inline-mobile">
           <span class="theme-switcher-label">Theme</span>
@@ -259,7 +213,7 @@
 
       <div id="mobileMenuLoggedIn" style="display:none;">
         <a href="#templates">Templates</a>
-        <a href="#" id="howItWorksNavBtn">How It Works</a>
+        <a href="#" id="mobileHowItWorksNavBtn">How It Works</a>
         <a href="#pricing">Pricing</a>
       </div>
       
@@ -267,7 +221,7 @@
   </nav>
 
   <!-- HERO SECTION -->
-  <section class="hero">
+  <section class="hero" id="top-section">
     <div class="hero-container">
       <div class="hero-text">
         <div class="hero-badge">🎊 Trusted by Three Plus Users</div>
@@ -600,7 +554,7 @@
 <div class="auth-modal" id="authModal">
 
   <button id="closeAuthModal" class="auth-close-btn">
-    <i class="fa-solid fa-xmark"></i>
+    <i class="fa-solid fa-xmark close-icon"></i>
   </button>
 
   <!-- WELCOME -->
