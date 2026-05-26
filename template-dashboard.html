@@ -148,15 +148,29 @@
       <div id="loggedOutSection">
 
       <div class="theme-switcher-inline theme-switcher-inline-sidebar">
+
+        <div class="theme-mode-toggle" aria-hidden="true">
+          <i class="fa-solid fa-sun theme-light-solid"></i>
+          <i class="fa-regular fa-sun theme-light-outline"></i>
+
+          <span class="theme-divider"></span>
+
+          <i class="fa-solid fa-moon theme-dark-solid"></i>
+          <i class="fa-regular fa-moon theme-dark-outline"></i>
+        </div>
+
         <span class="theme-switcher-label">Theme</span>
+
         <div class="theme-switcher-buttons">
-          <button class="theme-icon-btn" type="button" data-site-theme="light" aria-label="Light theme">
+          <button class="theme-icon-btn" type="button" data-site-theme="light">
             <i class="fa-solid fa-sun"></i>
           </button>
-          <button class="theme-icon-btn" type="button" data-site-theme="dark" aria-label="Dark theme">
+
+          <button class="theme-icon-btn" type="button" data-site-theme="dark">
             <i class="fa-solid fa-moon"></i>
           </button>
         </div>
+
       </div>
 
       <button class="sidebar-login-btn" id="openAccountAuthBtn">
