@@ -19,7 +19,7 @@
 
   <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/..." rel="stylesheet" />
-  <link rel="stylesheet" href="fontawesome..." />
+  
   <script src="js/site-theme.js"></script>
   <link
     rel="stylesheet"
@@ -526,10 +526,22 @@
         </div>
         <div class="footer-col">
           <h5>Occasions</h5>
-          <a href="#">Wedding Cards</a>
-          <a href="#">Engagement Cards</a>
-          <a href="#">Anniversary Cards</a>
-          <a href="#">Birthday Cards</a>
+          <button class="footer-link-btn" onclick="goToTemplates('wedding')">
+            Wedding Cards
+          </button>
+
+          <button class="footer-link-btn" onclick="goToTemplates('engagement')">
+            Engagement Cards
+          </button>
+
+          <button class="footer-link-btn" onclick="goToTemplates('anniversary')">
+            Anniversary Cards
+          </button>
+
+          <button class="footer-link-btn" onclick="goToTemplates('birthday')">
+            Birthday Cards
+          </button>
+
         </div>
         <div class="footer-col">
           <h5>Company</h5>
@@ -728,9 +740,15 @@
   </div>
 </div>
 
-  <script src="js/main.js"></script>
+<script src="js/main.js"></script>
 
-  <script type="module" src="assets/js/auth.js"></script>
+<script type="module" src="assets/js/auth.js"></script>
 
+<script>
+function goToTemplates(eventName) {
+  localStorage.setItem("selectedEvent", eventName);
+  window.location.href = "template-dashboard.html";
+}
+</script>
 </body>
 </html>

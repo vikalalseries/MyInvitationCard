@@ -72,8 +72,7 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 280px 1fr;
+  display: flex;
   overflow-x: hidden;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
@@ -97,6 +96,8 @@ body {
 
 /* SIDEBAR */
 .sidebar {
+  width: 280px;
+  min-width: 280px;
   background: var(--sidebar-bg);
   border-right: 1px solid var(--border);
   padding: 24px;
@@ -104,9 +105,10 @@ body {
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
-  position: sticky;
+  position: fixed;
+  left: 0;
   top: 0;
-  overflow: visible;
+  overflow-y: auto;
 }
 
 .logo{
@@ -386,8 +388,9 @@ html.site-theme-dark .popup-upgrade-btn i{
 
 /* MAIN */
 .main-content {
-  padding: 0px 25px 25px;
-  min-width: 0;
+  margin-left: 280px;
+  width: calc(100% - 280px);
+  padding: 25px;
   min-height: 100vh;
   background: var(--main-bg);
   transition: background 0.4s ease;

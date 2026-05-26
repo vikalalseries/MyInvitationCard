@@ -633,6 +633,8 @@ html.site-theme-dark .hero {
   opacity: 0;
   visibility: hidden;
   transition: 0.2s ease;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .auth-overlay.show {
@@ -1937,4 +1939,32 @@ html.site-theme-dark .nav-theme-btn{
 
 html.site-theme-dark .theme-icon-btn:hover{
   background:rgba(255,255,255,0.08);
+}
+
+
+
+/* footer occasion link button */
+
+.footer-link-btn { 
+  background: none;
+  border: none;
+  color: #dadada;
+  font-size: 0.88rem;
+  font-weight: 400;
+  font-family: inherit;
+  padding: 0;
+  margin: 20px 0 -4px 0;
+  cursor: pointer;
+  text-align: left;
+  display: block;
+  width: 100%;
+  text-decoration: none;
+  transition: 0.2s ease;
+  /* top-margin:  */
+  
+}
+
+.footer-link-btn:hover {
+  /* opacity: 0.8; */
+  color: var(--white); 
 }

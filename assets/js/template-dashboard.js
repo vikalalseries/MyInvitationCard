@@ -377,10 +377,6 @@ function closeTemplateModal() {
 
   document.body.style.overflow = "";
   document.documentElement.style.overflow = "";
-
-  if (menuDropdown) {
-    menuDropdown.classList.add("hidden");
-  }
 }
 
 
@@ -403,15 +399,7 @@ if (mobileOverlay) {
   mobileOverlay.addEventListener("click", closePanels);
 }
 
-document.addEventListener("click", (e) => {
-  if (
-    menuDropdown &&
-    !menuDropdown.contains(e.target) &&
-    (!menuBtn || !menuBtn.contains(e.target))
-  ) {
-    menuDropdown.classList.add("hidden");
-  }
-});
+document.addEventListener("click", () => {});
 
 const sidebarMenuBtn = document.getElementById("sidebarMenuBtn");
 const sidebarPopupMenu = document.getElementById("sidebarPopupMenu");
@@ -422,11 +410,7 @@ if (sidebarMenuBtn && sidebarPopupMenu) {
     sidebarPopupMenu.classList.toggle("show");
   });
 
-  document.addEventListener("click", (e) => {
-    if (!sidebarPopupMenu.contains(e.target)) {
-      sidebarPopupMenu.classList.remove("show");
-    }
-  });
+
 }
 
 
@@ -484,12 +468,6 @@ onAuthStateChanged(auth, (user) => {
 
 
 
-loadTemplates().then(() => {
-  autoOpenTemplateFromURL();
-});
-
-
-
 function autoOpenTemplateFromURL() {
   const params = new URLSearchParams(window.location.search);
   const templateSlug = params.get("template");
@@ -500,3 +478,30 @@ function autoOpenTemplateFromURL() {
     openPreview(templateSlug);
   }, 300);
 }
+
+
+loadTemplates().then(() => {
+  const savedEvent = localStorage.getItem("selectedEvent");
+
+  if (savedEvent) {
+    switchEvent(savedEvent);
+
+    const targetBtn = document.querySelector(
+      `.event-btn[data-event="${savedEvent}"]`
+    );
+
+    if (targetBtn) {
+      targetBtn.classList.add("active");
+    }
+
+    if (savedEvent === "wedding") {
+      weddingThemeSwitch.classList.add("show");
+    } else {
+      weddingThemeSwitch.classList.remove("show");
+    }
+
+    localStorage.removeItem("selectedEvent");
+  }
+
+  autoOpenTemplateFromURL();
+});
