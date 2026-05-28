@@ -166,7 +166,7 @@ async function loadHomeTemplates() {
       .map(
         (template, index) => `
           <a
-            href="template-dashboard.html?template=${template.slug}"
+            href="template-dashboard.html?template=${template.slug}&event=${template.event}"
             class="home-template-card reveal"
             style="animation-delay:${index * 120}ms"
           >
@@ -269,3 +269,4 @@ templatesNavBtns.forEach((btn) => {
     document.getElementById("mobileMenu")?.classList.remove("open");
   });
 });
+

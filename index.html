@@ -5,22 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MyInvitationCard | Free Online Invitation Card Maker</title>
   <script>
-  (function () {
-    try {
-      const savedTheme = localStorage.getItem("siteTheme");
-
-      if (savedTheme === "dark") {
-        document.documentElement.classList.add("site-theme-dark");
-        document.documentElement.dataset.siteTheme = "dark";
-      }
-    } catch (e) {}
-  })();
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("siteTheme");
+        var isDark = savedTheme === "dark";
+        document.documentElement.classList.add("theme-preload");
+        document.documentElement.dataset.siteTheme = isDark ? "dark" : "light";
+        if (isDark) {
+          document.documentElement.classList.add("site-theme-dark");
+        } else {
+          document.documentElement.classList.remove("site-theme-dark");
+        }
+      } catch (e) {}
+    })();
   </script>
 
   <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/..." rel="stylesheet" />
   
-  <script src="js/site-theme.js"></script>
+  <script src="js/site-theme.js" defer></script>
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -127,75 +130,75 @@
         </div>
       </div>
 
-        <!-- LOGGED OUT -->
-        <div id="navLoggedOut">
-          <a href="#" class="btn-login" id="openAccountAuthBtn">Login</a>
-        </div>
+      <!-- LOGGED OUT -->
+      <div id="navLoggedOut">
+        <a href="#" class="btn-login" id="openAccountAuthBtn">Login</a>
+      </div>
 
-        <!-- LOGGED IN -->
-        <div id="navLoggedIn" style="display:none;">
+      <!-- LOGGED IN -->
+      <div id="navLoggedIn" style="display:none;">
 
-          <div class="nav-user-box">
+        <div class="nav-user-box">
 
-            <button class="nav-avatar-btn" id="navUserMenuBtn">
-              <div class="nav-avatar" id="navAvatar">
+          <button class="nav-avatar-btn" id="navUserMenuBtn">
+            <span class="nav-avatar" id="navAvatar">
+              <i class="fa-solid fa-user"></i>
+            </span>
+          </button>
+
+          <div class="nav-user-popup" id="navUserPopup">
+
+            <div class="popup-user-header">
+              <div class="popup-avatar" id="popupNavAvatar">
                 <i class="fa-solid fa-user"></i>
               </div>
-            </button>
 
-            <div class="nav-user-popup" id="navUserPopup">
-
-              <div class="popup-user-header">
-                <div class="popup-avatar" id="popupNavAvatar">
-                  <i class="fa-solid fa-user"></i>
-                </div>
-
-                <div class="popup-user-meta">
-                  <div id="popupNavUserName">My Account</div>
-                  <div id="popupNavUserEmail">user@email.com</div>
-                </div>
+              <div class="popup-user-meta">
+                <div id="popupNavUserName">My Account</div>
+                <div id="popupNavUserEmail">user@email.com</div>
               </div>
-
-              <button class="popup-menu-btn">
-                <i class="fa-regular fa-user"></i>
-                My Profile
-              </button>
-
-
-              <button class="popup-menu-btn">
-                <i class="fa-regular fa-message"></i>
-                <span>Feedback</span>
-              </button>
-
-              <button class="popup-menu-btn">
-                <i class="fa-regular fa-circle-question"></i>
-                <span>Help Center</span>
-              </button>
-
-
-              <button class="popup-menu-btn" id="logoutBtnNavbar">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                Log Out
-              </button>
-
-              <div class="popup-divider"></div>
-
-              <button class="popup-upgrade-btn">
-                <i class="fa-solid fa-crown"></i>
-                Upgrade to Premium
-              </button>
-
             </div>
 
-          </div>
-        </div>
+            <button class="popup-menu-btn">
+              <i class="fa-regular fa-user"></i>
+              My Profile
+            </button>
 
+
+            <button class="popup-menu-btn">
+              <i class="fa-regular fa-message"></i>
+              <span>Feedback</span>
+            </button>
+
+            <button class="popup-menu-btn">
+              <i class="fa-regular fa-circle-question"></i>
+              <span>Help Center</span>
+            </button>
+
+
+            <button class="popup-menu-btn" id="logoutBtnNavbar">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              Log Out
+            </button>
+
+            <div class="popup-divider"></div>
+
+            <button class="popup-upgrade-btn">
+              <i class="fa-solid fa-crown"></i>
+              Upgrade to Premium
+            </button>
+
+          </div>
+
+        </div>
       </div>
+
+      
     </div>
     <div class="mobile-menu" id="mobileMenu">
       <div id="mobileMenuLoggedOut">
         <a href="#templates">Templates</a>
-        <a href="#" id="mobileHowItWorksNavBtn">How It Works</a>
+        
         <a href="#pricing">Pricing</a>
         <div class="theme-switcher-inline theme-switcher-inline-mobile">
           <span class="theme-switcher-label">Theme</span>
@@ -327,9 +330,7 @@
     <div id="homeTemplateGrid" class="template-grid"></div>
 
     <div class="templates-cta">
-      <a href="template-dashboard.html" class="btn-outline">
-        View All Templates →
-      </a>
+      <a href="./template-dashboard.html" onclick="window.location.href='./template-dashboard.html'" class="btn-hero-primary">View All Templates →</a>
     </div>
 
   </div>
@@ -442,7 +443,7 @@
     <div class="container">
       <h2>Ready to Create Your Invitation?</h2>
       <p>Join 1+ happy users. Start designing for free today.</p>
-      <a href="template-dashboard.html" class="btn-hero-primary">Create My Invitation Card ✨</a>
+      <a href="./template-dashboard.html" onclick="window.location.href='./template-dashboard.html'" class="btn-hero-primary">Create My Invitation Card ✨</a>
     </div>
   </section>
 
@@ -515,12 +516,12 @@
 
 
 
-        <p>Empowering people to create beautiful invitations for every occasion — free, fast, and professional.</p>
+        <p>Empowering people to create beautiful invitations for every occasion - free, fast, and professional.</p>
       </div>
       <div class="footer-links">
         <div class="footer-col">
           <h5>Product</h5>
-          <a href="template-dashboard.html">All Templates</a>
+          <a href="./template-dashboard.html" onclick="window.location.href='./template-dashboard.html'" >All Templates</a>
           
           <a href="#pricing">Pricing</a>
         </div>
@@ -545,10 +546,10 @@
         </div>
         <div class="footer-col">
           <h5>Company</h5>
-          <a href="about.html">About Us</a>
-          <a href="contact.html">Contact</a>
-          <a href="privacy.html">Privacy Policy</a>
-          <a href="terms.html">Terms of Service</a>
+          <a href="./about.html" onclick="window.location.href='./about.html'">About Us</a>
+          <a href="./contact.html" onclick="window.location.href='./contact.html'">Contact</a>
+          <a href="./privacy.html" onclick="window.location.href='./privacy.html'">Privacy Policy</a>
+          <a href="./terms.html" onclick="window.location.href='./terms.html'">Terms of Service</a>
         </div>
       </div>
     </div>
@@ -746,9 +747,15 @@
 
 <script>
 function goToTemplates(eventName) {
-  localStorage.setItem("selectedEvent", eventName);
+  try {
+    localStorage.setItem("selectedEvent", eventName);
+  } catch (e) {
+    console.warn("Storage blocked");
+  }
+
   window.location.href = "template-dashboard.html";
 }
 </script>
+
 </body>
 </html>

@@ -405,11 +405,21 @@ if (logoutBtn) {
   });
 }
 
+if (logoutBtnNavbar) {
+  logoutBtnNavbar.addEventListener("click", async () => {
+    await signOut(auth);
+  });
+}
+
 if (mobileLogoutBtn) {
   mobileLogoutBtn.addEventListener("click", async () => {
     await signOut(auth);
   });
 }
+
+window.logout = async function () {
+  await signOut(auth);
+};
 
 if (backToLoginBtn) {
   backToLoginBtn.addEventListener("click", showLoginForm);

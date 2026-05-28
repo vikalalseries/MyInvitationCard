@@ -16,20 +16,6 @@ const shareTemplateBtn = document.getElementById("shareTemplateBtn");
 const copyLinkBtn = document.getElementById("copyLinkBtn");
 const reportTemplateBtn = document.getElementById("reportTemplateBtn");
 const useTemplateBtn = document.getElementById("useTemplateBtn");
-syncThemeFromParent();
-
-
-function syncThemeFromParent() {
-  try {
-    const parentHtml = window.parent.document.documentElement;
-
-    if (parentHtml.classList.contains("site-theme-dark")) {
-      document.documentElement.classList.add("site-theme-dark");
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 /* LOAD TEMPLATES */
 async function loadTemplates() {

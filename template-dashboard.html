@@ -7,26 +7,28 @@
   <title>MyInvitationCard</title>
 
   <script>
-  (function () {
-    try {
-      const savedTheme = localStorage.getItem("siteTheme");
-
-      if (savedTheme === "dark") {
-        document.documentElement.classList.add("site-theme-dark");
-        document.documentElement.dataset.siteTheme = "dark";
-      }
-    } catch (e) {}
-  })();
-
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("siteTheme");
+        var isDark = savedTheme === "dark";
+        document.documentElement.classList.add("theme-preload");
+        document.documentElement.dataset.siteTheme = isDark ? "dark" : "light";
+        if (isDark) {
+          document.documentElement.classList.add("site-theme-dark");
+        } else {
+          document.documentElement.classList.remove("site-theme-dark");
+        }
+      } catch (e) {}
+    })();
   </script>
 
   <link rel="stylesheet" href="assets/css/template-dashboard.css">
   <link rel="stylesheet" href="assets/css/auth-modal.css">
-  <script src="js/site-theme.js"></script>
+  <script src="js/site-theme.js" defer></script>
   <script type="module" src="assets/js/template-dashboard.js?v=2"></script>
 
     
-  > -->
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
 </head>
@@ -289,7 +291,7 @@
     </div>
 
   </div>
-
+</div>
 </aside>
 
   <div class="mobile-overlay" id="mobileOverlay"></div>
@@ -508,8 +510,8 @@
   <div class="preview-modal iframe-preview-modal">
     <iframe
       id="previewFrame"
-      src=""
-      frameborder="0"
+      src="about:blank"
+      style="border: none;"
       loading="lazy"
       allowfullscreen
     ></iframe>

@@ -1,3 +1,9 @@
+html.theme-preload *,
+html.theme-preload *::before,
+html.theme-preload *::after {
+  transition: none !important;
+}
+
 * {
   margin: 0;
   padding: 0;

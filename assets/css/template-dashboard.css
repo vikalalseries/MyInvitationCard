@@ -2,7 +2,6 @@
 .theme-preload *::before,
 .theme-preload *::after {
   transition: none !important;
-  animation: none !important;
 }
 
 * {

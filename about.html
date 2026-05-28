@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us | MyInvitationCard - Free Online Invitation Card Maker</title>
+  <script>
+  (function () {
+    try {
+      const savedTheme = localStorage.getItem("siteTheme");
+
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("site-theme-dark");
+        document.documentElement.dataset.siteTheme = "dark";
+      }
+    } catch (e) {}
+  })();
+  </script>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/about.css" />
+  <link href="https://fonts.googleapis.com/..." rel="stylesheet" />
+  
+  <script src="js/site-theme.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- SMALL HEART -->
+          <path
+            d="M60 42
+               C60 37, 54 33, 49 33
+               C42 33, 39 40, 39 45
+               C39 54, 49 61, 60 69
+               C71 61, 81 54, 81 45
+               C81 40, 78 33, 71 33
+               C66 33, 60 37, 60 42Z"
+            fill="#ef4444"
+          />
+          <!-- ENVELOPE OUTER BORDER -->
+          <path
+            d="M18 42
+               L18 78
+               Q18 84 24 84
+               L96 84
+               Q102 84 102 78
+               L102 42"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <!-- TOP FLAP -->
+          <path
+            d="M18 42 L60 14 L102 42"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
+          <!-- LEFT INNER LINE -->
+          <path
+            d="M18 42 L60 68"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+          <!-- RIGHT INNER LINE -->
+          <path
+            d="M102 42 L60 68"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span>MyInvitationCard</span>
+      </a>
+
+      <div class="mobile-nav-actions">
+        <button class="hamburger" id="hamburger">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="template-dashboard.html">Templates</a>
+        <a href="index.html#pricing">Pricing</a>
+
+        <div class="nav-theme-dropdown">
+          <button class="nav-theme-trigger" id="navThemeTrigger">
+            Theme
+          </button>
+
+          <div class="nav-theme-popup" id="navThemePopup">
+            <button data-site-theme="light" class="theme-popup-btn">
+              <span>☀️</span>
+              <span>Light</span>
+            </button>
+
+            <button data-site-theme="dark" class="theme-popup-btn">
+              <span>🌙</span>
+              <span>Dark</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGGED OUT -->
+      <div id="navLoggedOut">
+        <a href="#" class="btn-login" id="openAccountAuthBtn">Login</a>
+      </div>
+
+      <!-- LOGGED IN -->
+      <div id="navLoggedIn" style="display:none;">
+        <div class="nav-user-box">
+          <button class="nav-avatar-btn" id="navUserMenuBtn">
+            </span> class="nav-avatar" id="navAvatar">
+              <i class="fa-solid fa-user"></i>
+            </span>
+          </button>
+
+          <div class="nav-user-popup" id="navUserPopup">
+            <div class="popup-user-header">
+              <div class="popup-avatar" id="popupNavAvatar">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div class="popup-user-meta">
+                <div id="popupNavUserName">My Account</div>
+                <div id="popupNavUserEmail">user@email.com</div>
+              </div>
+            </div>
+
+            <button class="popup-menu-btn">
+              <i class="fa-regular fa-user"></i>
+              My Profile
+            </button>
+
+            <button class="popup-menu-btn">
+              <i class="fa-regular fa-message"></i>
+              <span>Feedback</span>
+            </button>
+
+            <button class="popup-menu-btn">
+              <i class="fa-regular fa-circle-question"></i>
+              <span>Help Center</span>
+            </button>
+
+            <button class="popup-menu-btn" id="logoutBtnNavbar">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              Log Out
+            </button>
+
+            <div class="popup-divider"></div>
+
+            <button class="popup-upgrade-btn">
+              <i class="fa-solid fa-crown"></i>
+              Upgrade to Premium
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <div id="mobileMenuLoggedOut">
+        <a href="index.html">Home</a>
+        <a href="template-dashboard.html">Templates</a>
+        <a href="index.html#pricing">Pricing</a>
+        <button class="mobile-menu-link-btn" id="openAccountAuthBtnMobile">Login</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ABOUT HERO -->
+  <section class="about-hero" id="top-section">
+    <div class="about-hero-container">
+      <h1>About MyInvitationCard</h1>
+      <p>Helping everyone design stunning invitation cards for every celebration - simple, quick, and completely free.</p>
+    </div>
+  </section>
+
+  <!-- MISSION SECTION -->
+  <section class="mission-section">
+    <div class="mission-container">
+      <div class="mission-content">
+        <h2>Our Mission</h2>
+        <p>
+          We believe that everyone deserves beautiful invitations without breaking the bank. Creating invitations shouldn't require design skills or expensive software.
+        </p>
+        <p>
+          MyInvitationCard was founded with a simple goal: to make invitation design accessible to everyone. We've built a platform that's powerful yet easy to use, free yet professional-quality.
+        </p>
+        <div class="mission-highlight">
+          <p>"Design beautiful invitations for every occasion — no skills required, no watermarks, no hidden fees."</p>
+        </div>
+      </div>
+      <div class="mission-visual">
+        <div class="mission-icon-grid">
+          <div class="mission-icon-box">
+            <div class="mission-icon-box-icon">🎨</div>
+            <h4>Beautiful Templates</h4>
+            <p>50+ professionally designed templates for every occasion</p>
+          </div>
+          <div class="mission-icon-box">
+            <div class="mission-icon-box-icon">⚡</div>
+            <h4>Lightning Fast</h4>
+            <p>Create stunning invitations in just minutes</p>
+          </div>
+          <div class="mission-icon-box">
+            <div class="mission-icon-box-icon">💰</div>
+            <h4>Completely Free</h4>
+            <p>Your first card is free forever with no credit card required</p>
+          </div>
+          <div class="mission-icon-box">
+            <div class="mission-icon-box-icon">🖨️</div>
+            <h4>Print Ready</h4>
+            <p>High-quality PDFs ready for any printer</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUES SECTION -->
+  <section class="values-section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag">Our Values</p>
+        <h2>What We Stand For</h2>
+        <p class="section-sub">These core values guide every decision we make</p>
+      </div>
+
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">🎁</div>
+          <h3>Generosity</h3>
+          <p>We give away more than anyone else. Your first invitation is free forever, with unlimited downloads and no watermarks.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">👥</div>
+          <h3>Accessibility</h3>
+          <p>Design should be for everyone. We remove barriers so anyone can create professional-looking invitations in minutes.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">⭐</div>
+          <h3>Quality</h3>
+          <p>We obsess over every detail. From template design to user experience, we deliver excellence without compromise.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Founder Section -->
+  <section class="founder-section">
+
+    <div class="section-header">
+      <p class="section-tag">Behind MyInvitationCard</p>
+      <h2>Built with Passion by One Creator</h2>
+      <p class="section-sub">
+        One creator combining design and technology to make invitation creation effortless
+      </p>
+    </div>
+
+    <div class="founder-card">
+
+      <div class="founder-brand-bg">
+            <a href="index.html" class="brand-watermark">
+                  <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+                        <!-- SMALL HEART -->
+                        <path
+                              d="M60 42
+                                 C60 37, 54 33, 49 33
+                                 C42 33, 39 40, 39 45
+                                 C39 54, 49 61, 60 69
+                                 C71 61, 81 54, 81 45
+                                 C81 40, 78 33, 71 33
+                                 C66 33, 60 37, 60 42Z"
+                              fill="#ef4444"
+                        />
+
+                        <!-- ENVELOPE OUTER BORDER -->
+                        <path
+                              d="M18 42
+                                 L18 78
+                                 Q18 84 24 84
+                                 L96 84
+                                 Q102 84 102 78
+                                 L102 42"
+                              fill="none"
+                              stroke="#6d28d9"
+                              stroke-width="6"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                        />
+
+                        <!-- TOP FLAP -->
+                        <path
+                              d="M18 42 L60 14 L102 42"
+                              fill="none"
+                              stroke="#6d28d9"
+                              stroke-width="6"
+                              stroke-linejoin="round"
+                              stroke-linecap="round"
+                        />
+
+                        <!-- LEFT INNER LINE -->
+                        <path
+                              d="M18 42 L60 68"
+                              fill="none"
+                              stroke="#6d28d9"
+                              stroke-width="6"
+                              stroke-linecap="round"
+                        />
+
+                        <!-- RIGHT INNER LINE -->
+                        <path
+                              d="M102 42 L60 68"
+                              fill="none"
+                              stroke="#6d28d9"
+                              stroke-width="6"
+                              stroke-linecap="round"
+                        />
+                  </svg>
+
+                  <span>MyInvitationCard</span>
+            </a>
+      </div>
+
+
+      <div class="founder-image">
+        <img src="assets/teammember/ashwani_maurya.jpeg" alt="Ashwani Maurya">
+      </div>
+
+      <div class="founder-content">
+        <h3>Ashwani Maurya</h3>
+        <div class="founder-role">Founder • Designer • Developer</div>
+
+        <p>
+          Building MyInvitationCard with passion - making invitation creation
+          simple, beautiful, and accessible for everyone.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+
+
+  <!-- TEAM SECTION -->
+  <!-- <section class="team-section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag">Behind MyInvitationCard</p>
+        <h2>Built with Passion by One Creator</h2>
+        <p class="section-sub">Passionate designers and developers working to make invitation creation effortless</p>
+      </div> -->
+
+      <!-- <div class="team-grid">
+        <div class="team-member">
+          <div class="team-member-image"> <img src="assets/teammember/ashwani_maurya.jpeg" > </div>
+          <div class="team-member-info">
+            <h3>Ashwani Maurya</h3>
+            <div class="team-member-role">Founder, MyInvitationCard</div>
+            <p class="team-member-bio">Dreamed up MyInvitationCard with a passion for making design accessible to all.</p>
+          </div>
+        </div> -->
+        <!-- <div class="team-member">
+          <div class="team-member-image">
+            <img src="assets/teammember/ashwani_maurya.jpeg" >
+          </div>
+          <div class="team-member-info">
+            <h3>Ashwani Maurya</h3>
+            <div class="team-member-role">Founder, MyInvitationCard</div>
+            <p class="team-member-bio">
+              Founder, designer, and developer behind MyInvitationCard - making invitation creation simple and beautiful.
+            </p>
+          </div>
+        
+        </div> -->
+        <!-- <div class="team-member">
+          <div class="team-member-image"><img src="assets/teammember/ashwani_maurya.jpeg" ></div>
+          <div class="team-member-info">
+            <h3>Ashwani Maurya</h3>
+            <div class="team-member-role">Tech Lead</div>
+            <p class="team-member-bio">Builds the technology that makes beautiful invitations possible.</p>
+          </div>
+        </div> -->
+
+      <!-- </div>
+    </div>
+  </section> -->
+
+  <!-- TIMELINE SECTION -->
+  <section class="timeline-section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag">Our Journey</p>
+        <h2>From Idea to Impact</h2>
+        <p class="section-sub">The milestones that shaped MyInvitationCard</p>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-year">May 2026</div>
+            <p>MyInvitationCard launches! We release our first 50 templates and welcome our first users.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-year">Early Growth</div>
+            <p>Reach 1,000 happy users. Expand template library and add custom color features.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-year">Milestones Ahead</div>
+            <p>Expand support for more occasions, add collaboration features, and build our community.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS SECTION
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <h3>1000+</h3>
+        <p>Happy Users</p>
+      </div>
+      <div class="stat-box">
+        <h3>50+</h3>
+        <p>Templates</p>
+      </div>
+      <div class="stat-box">
+        <h3>100%</h3>
+        <p>Free Forever</p>
+      </div>
+      <div class="stat-box">
+        <h3>5⭐</h3>
+        <p>Average Rating</p>
+      </div>
+    </div>
+  </section> -->
+
+  <!-- CTA SECTION -->
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Ready to Create Your Invitation?</h2>
+      <p>Join our community of creators. Start designing for free today.</p>
+      <a href="template-dashboard.html" class="btn-hero-primary">Create My Invitation Card ✨</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo">
+          <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- SMALL HEART -->
+            <path
+              d="M60 42
+                 C60 37, 54 33, 49 33
+                 C42 33, 39 40, 39 45
+                 C39 54, 49 61, 60 69
+                 C71 61, 81 54, 81 45
+                 C81 40, 78 33, 71 33
+                 C66 33, 60 37, 60 42Z"
+              fill="#ef4444"
+            />
+            <!-- ENVELOPE OUTER BORDER -->
+            <path
+              d="M18 42
+                 L18 78
+                 Q18 84 24 84
+                 L96 84
+                 Q102 84 102 78
+                 L102 42"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <!-- TOP FLAP -->
+            <path
+              d="M18 42 L60 14 L102 42"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            />
+            <!-- LEFT INNER LINE -->
+            <path
+              d="M18 42 L60 68"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+            <!-- RIGHT INNER LINE -->
+            <path
+              d="M102 42 L60 68"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span>MyInvitationCard</span>
+        </a>
+
+        <p>Empowering people to create beautiful invitations for every occasion — free, fast, and professional.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h5>Product</h5>
+          <a href="template-dashboard.html">All Templates</a>
+          <a href="index.html#pricing">Pricing</a>
+        </div>
+        <div class="footer-col">
+          <h5>Company</h5>
+          <a href="about.html">About Us</a>
+          <a href="contact.html">Contact</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div class="footer-col">
+          <h5>Resources</h5>
+          <a href="index.html">Home</a>
+          <a href="template-dashboard.html">Templates</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 MyInvitationCard. Made with ❤️ in India.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
