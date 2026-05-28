@@ -147,9 +147,29 @@ html.site-theme-dark .navbar.scrolled{
 
 .nav-links a { font-size: 0.95rem; font-weight: 500; color: var(--gray); transition: color 0.2s; }
 .nav-links a:hover { color: var(--primary); }
-.btn-login { background: none; border: 1.5px solid #D1D5DB; padding: 8px 20px; border-radius: 50px; font-weight: 600 !important; color: var(--dark) !important; transition: border-color 0.2s !impo[...]
+
+.btn-login {
+  background: none;
+  border: 1.5px solid #D1D5DB;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-weight: 600 !important;
+  color: var(--dark) !important;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
 .btn-login:hover { border-color: var(--primary); color: var(--primary) !important; }
-.btn-start { background: var(--primary); color: var(--white) !important; padding: 10px 24px; border-radius: 50px; font-weight: 600 !important; box-shadow: 0 4px 14px rgba(124,58,237,0.3); transit[...]
+
+.btn-start {
+  background: var(--primary);
+  color: var(--white) !important;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+  transition: all 0.25s ease;
+}
+
 .btn-start:hover { background: var(--primary-dark) !important; transform: translateY(-1px); }
 .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
 .hamburger span { display: block; width: 24px; height: 2px; background: var(--dark); border-radius: 2px; }
@@ -291,14 +311,59 @@ html.site-theme-dark .hero {
 
 
 .hero-container { max-width: 1240px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; min-height: 560px; }
-.hero-badge { display: inline-flex; align-items: center; background: var(--surface); margin-top: 12px; border: 1.5px solid rgba(124,58,237,0.2); color: var(--primary); padding: 6px 16px; border-r[...]
-.hero-title { font-family: var(--font-heading); font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 800; line-height: 1.15; color: var(--dark); margin-bottom: 20px; animation: fadeInUp 0.7s ease [...]
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface);
+  margin-top: 12px;
+  border: 1.5px solid rgba(124,58,237,0.2);
+  color: var(--primary);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--dark);
+  margin-bottom: 20px;
+  animation: fadeInUp 0.7s ease both;
+}
+
+
 .highlight { background: linear-gradient(135deg, var(--primary), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .hero-sub { font-size: 1.1rem; color: var(--gray); margin-bottom: 32px; line-height: 1.75; animation: fadeInUp 0.7s ease 0.2s both; }
 .hero-cta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 36px; animation: fadeInUp 0.7s ease 0.3s both; }
-.btn-hero-primary { background: var(--primary); color: var(--white); padding: 14px 32px; border-radius: 50px; font-weight: 700; font-size: 1rem; box-shadow: 0 6px 24px rgba(124,58,237,0.35); tran[...]
+
+.btn-hero-primary {
+  background: var(--primary);
+  color: var(--white);
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 6px 24px rgba(124,58,237,0.35);
+  transition: all 0.25s ease;
+}
+
 .btn-hero-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
-.btn-hero-secondary { background: var(--surface); color: var(--primary); padding: 14px 28px; border-radius: 50px; font-weight: 600; font-size: 1rem; border: 1.5px solid rgba(124,58,237,0.25); tra[...]
+
+.btn-hero-secondary {
+  background: var(--surface);
+  color: var(--primary);
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 1.5px solid rgba(124,58,237,0.25);
+  transition: all 0.25s ease;
+}
+
 .btn-hero-secondary:hover { border-color: var(--primary); background: var(--primary-light); }
 .hero-stats { display: flex; align-items: center; gap: 24px; animation: fadeInUp 0.7s ease 0.4s both; }
 .stat { text-align: center; }
@@ -352,7 +417,27 @@ html.site-theme-dark .hero {
 .card-date, .card-venue { font-size: 0.78rem; opacity: 0.9; line-height: 1.5; }
 .hero-wave { margin-top: 0; line-height: 0; }
 .hero-wave svg { display: block; width: 100%; }
-@media (max-width: 900px) { .hero-container { grid-template-columns: 1fr; text-align: center; } .hero-cta { justify-content: center; } .hero-stats { justify-content: center; } .hero-image-wrap { [...]
+
+@media (max-width: 900px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-cta {
+    justify-content: center;
+  }
+
+  .hero-stats {
+    justify-content: center;
+  }
+
+  .hero-image-wrap {
+    margin: 0 auto;
+  }
+}
+
+
 
 /* SOCIAL PROOF */
 .social-proof { background: var(--bg); padding: 32px 0; text-align: center; }
@@ -377,9 +462,36 @@ html.site-theme-dark .hero {
 
 
 .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
-.step-card { background: var(--bg); border: 1.5px solid rgba(124,58,237,0.08); border-radius: var(--radius); padding: 32px 24px; text-align: center; position: relative; transition: transform 0.25[...]
+
+.step-card {
+  background: var(--bg);
+  border: 1.5px solid rgba(124,58,237,0.08);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
 .step-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
-.step-num { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--white); width: 28px; height: 28px; border-radius: 50%; font-size: 0.78[...]
+
+.step-num {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: var(--white);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .step-icon { font-size: 2.4rem; margin-bottom: 16px; }
 .step-card h3 { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 10px; }
 .step-card p { font-size: 0.9rem; color: var(--gray); line-height: 1.65; }
@@ -528,7 +640,23 @@ html.site-theme-dark .hero {
 
 .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 .faq-item { border: 1.5px solid #E5E7EB; border-radius: 10px; overflow: hidden; }
-.faq-question { width: 100%; background: none; border: none; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-body); font-size: 0.97[...]
+
+.faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: 0.97rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--dark);
+}
+
+
 .faq-icon { font-size: 1.4rem; color: var(--primary); font-weight: 300; flex-shrink: 0; }
 .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s; font-size: 0.9rem; color: var(--gray); line-height: 1.7; padding: 0 24px; }
 .faq-answer.open { max-height: 200px; padding: 0 24px 18px; }
@@ -567,7 +695,7 @@ html.site-theme-dark .hero {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: center;
+  margin-bottom: 16px;
 }
 
 .footer-logo span {
