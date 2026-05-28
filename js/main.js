@@ -270,3 +270,14 @@ templatesNavBtns.forEach((btn) => {
   });
 });
 
+
+
+
+// Handle Home navigation from About page
+const homeLinks = document.querySelectorAll('a[href="index.html"]');
+homeLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = 'index.html';
+  });
+});
