@@ -93,11 +93,13 @@ let resendCountdown;
 function showModal() {
   authOverlay.classList.add("show");
   authModal.classList.add("show");
+  document.body.style.overflow = "hidden";
 }
 
 function hideModal() {
   authOverlay.classList.remove("show");
   authModal.classList.remove("show");
+  document.body.style.overflow = "auto";
 }
 
 function showWelcome() {
@@ -646,3 +648,21 @@ document.addEventListener("click", () => {
     mobileNavUserPopup.classList.remove("show");
   }
 });
+
+
+
+
+
+
+
+
+document.addEventListener(
+  "click",
+  () => {
+    console.log("OUTSIDE CLICK");
+    if (navUserPopup) {
+      navUserPopup.classList.remove("show");
+    }
+  },
+  true
+);

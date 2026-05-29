@@ -401,17 +401,35 @@ if (mobileOverlay) {
 
 document.addEventListener("click", () => {});
 
+
+
+
+
 const sidebarMenuBtn = document.getElementById("sidebarMenuBtn");
 const sidebarPopupMenu = document.getElementById("sidebarPopupMenu");
 
 if (sidebarMenuBtn && sidebarPopupMenu) {
+
   sidebarMenuBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     sidebarPopupMenu.classList.toggle("show");
   });
 
+  sidebarPopupMenu.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
 
 }
+
+document.addEventListener(
+  "click",
+  () => {
+    if (sidebarPopupMenu) {
+      sidebarPopupMenu.classList.remove("show");
+    }
+  },
+  true
+);
 
 
 
@@ -470,7 +488,31 @@ onAuthStateChanged(auth, (user) => {
 
 function autoOpenTemplateFromURL() {
   const params = new URLSearchParams(window.location.search);
+
   const templateSlug = params.get("template");
+  const event = params.get("event");
+
+  if (event) {
+    switchEvent(event);
+
+    const targetBtn = document.querySelector(
+      `.event-btn[data-event="${event}"]`
+    );
+
+    if (targetBtn) {
+      eventButtons.forEach(btn =>
+        btn.classList.remove("active")
+      );
+
+      targetBtn.classList.add("active");
+    }
+
+    if (event === "wedding") {
+      weddingThemeSwitch.classList.add("show");
+    } else {
+      weddingThemeSwitch.classList.remove("show");
+    }
+  }
 
   if (!templateSlug) return;
 

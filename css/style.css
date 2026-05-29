@@ -769,18 +769,28 @@ html.site-theme-dark .hero {
 }
 
 
+/* Auth */
+
 .auth-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.32);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   z-index: 9998;
 
   opacity: 0;
   visibility: hidden;
-  transition: 0.2s ease;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
   pointer-events: none;
-  z-index: -1;
 }
+
+.auth-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
 
 .auth-overlay.show {
   opacity: 1;
@@ -806,9 +816,9 @@ html.site-theme-dark .hero {
   opacity: 0;
   visibility: hidden;
 
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 
-  transition: 0.2s ease;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
 .auth-modal.show {

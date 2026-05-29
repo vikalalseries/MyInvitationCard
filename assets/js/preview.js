@@ -246,7 +246,19 @@ function useTemplate() {
 /* EVENTS */
 favoriteBtn.addEventListener("click", toggleFavorite);
 
-menuBtn.addEventListener("click", toggleMenu);
+menuBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  if (menuDropdown.classList.contains("hidden")) {
+    menuDropdown.classList.remove("hidden");
+  } else {
+    menuDropdown.classList.add("hidden");
+  }
+});
+
+menuDropdown.addEventListener("click", (e) => {
+  e.stopPropagation();
+});
 
 shareTemplateBtn.addEventListener("click", shareTemplate);
 
@@ -258,14 +270,16 @@ useTemplateBtn.addEventListener("click", useTemplate);
 
 
 /* CLOSE MENU ON OUTSIDE CLICK */
-document.addEventListener("click", (e) => {
-  if (
-    !menuDropdown.contains(e.target) &&
-    !menuBtn.contains(e.target)
-  ) {
+document.addEventListener(
+  "click",
+  () => {
     menuDropdown.classList.add("hidden");
-  }
-});
-
+  },
+  true
+);
 
 loadTemplates();
+
+
+
+

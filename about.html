@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="css/about.css" />
   <link href="https://fonts.googleapis.com/..." rel="stylesheet" />
   
-  <script src="js/site-theme.js"></script>
+  <script src="js/about.js"></script>
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -127,7 +127,7 @@
       <div id="navLoggedIn" style="display:none;">
         <div class="nav-user-box">
           <button class="nav-avatar-btn" id="navUserMenuBtn">
-            </span> class="nav-avatar" id="navAvatar">
+            <span class="nav-avatar" id="navAvatar">            
               <i class="fa-solid fa-user"></i>
             </span>
           </button>
@@ -558,6 +558,191 @@
     </div>
   </footer>
 
-  <script type="module" src="assets/js/auth.js"></script>
+
+  <!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="authOverlay"></div>
+
+<!-- AUTH MODAL -->
+<div class="auth-modal" id="authModal">
+
+  <button id="closeAuthModal" class="auth-close-btn">
+    <i class="fa-solid fa-xmark close-icon"></i>
+  </button>
+
+  <!-- WELCOME -->
+  <div id="authWelcome">
+
+    <h2 class="auth-title">Login</h2>
+
+    <button class="auth-btn" id="googleLoginBtn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:20px;height:20px;">
+      Continue with Google
+    </button>
+
+    <button class="auth-btn" id="openEmailLoginBtn">
+      <i class="fa-regular fa-envelope"></i>
+      Login with Email
+    </button>
+
+    <div class="auth-footer">
+      Don't have an account?
+      <span class="auth-link" id="openSignupLink">Sign up</span>
+    </div>
+
+  </div>
+
+
+  <!-- LOGIN FORM -->
+  <div id="authLoginForm" class="hidden">
+
+    <h2 class="auth-title">Login</h2>
+
+    <input
+      type="email"
+      id="loginEmail"
+      class="auth-input"
+      placeholder="Email"
+    >
+
+    <input
+      type="password"
+      id="loginPassword"
+      class="auth-input"
+      placeholder="Password"
+    >
+
+    <button class="auth-btn" id="loginEmailBtn">
+      Login
+    </button>
+
+    <div class="auth-footer" style="margin-top: 8px; margin-bottom: 20px;">
+      <span class="auth-link" id="forgotPasswordBtn">
+        Forgot Password?
+      </span>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-link" id="backToWelcomeBtn">Back</span>
+    </div>
+
+    <div id="authResetForm" class="hidden">
+
+      <h2 class="auth-title">Reset Password</h2>
+
+      <p class="otp-subtext">
+        Enter your email address to receive a password reset link.
+      </p>
+
+      <input
+        type="email"
+        id="resetEmail"
+        class="auth-input"
+        placeholder="Email"
+      >
+
+      <button class="auth-btn" id="sendResetBtn">
+        Send Reset Link
+      </button>
+
+      <div class="auth-footer">
+        <span class="auth-link" id="backToLoginBtn">
+          Back to Login
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- SIGNUP FORM -->
+  <div id="authSignupForm" class="hidden">
+
+    <h2 class="auth-title">Sign Up</h2>
+
+    <input
+      type="text"
+      id="signupName"
+      class="auth-input"
+      placeholder="Full Name"
+    >
+
+    <input
+      type="email"
+      id="signupEmail"
+      class="auth-input"
+      placeholder="Email"
+    >
+
+    <input
+      type="password"
+      id="signupPassword"
+      class="auth-input"
+      placeholder="Password"
+    >
+
+    <input
+      type="password"
+      id="signupConfirmPassword"
+      class="auth-input"
+      placeholder="Confirm Password"
+    >
+
+    <button class="auth-btn" id="signupEmailBtn">
+      Create Account
+    </button>
+
+    <div class="auth-footer">
+      Already have an account?
+      <span class="auth-link" id="openLoginLink">Login</span>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-link" id="backToWelcomeBtn2">Back</span>
+    </div>
+
+  </div>
+
+
+    <!-- OTP VERIFY FORM -->
+  <div id="authOtpForm" class="hidden">
+
+    <h2 class="auth-title">Verify Code</h2>
+
+    <p class="otp-subtext">
+      Enter the 6-digit verification code sent to your email.
+    </p>
+
+    <input
+      type="text"
+      id="otpCode"
+      class="auth-input"
+      placeholder="Enter 6-digit code"
+      maxlength="6"
+    >
+
+    <button class="auth-btn" id="verifyOtpBtn">
+      Verify Code
+    </button>
+
+    <div class="resend-section">
+      <span id="resendOtpText">Didn't receive code?</span>
+
+      <button id="resendOtpBtn" class="resend-btn" disabled>
+        Resend OTP (30s)
+      </button>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-link" id="backToSignupBtn">Back</span>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+
+<script type="module" src="assets/js/auth.js"></script>
+
 </body>
 </html>
