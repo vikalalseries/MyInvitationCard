@@ -176,6 +176,13 @@ function closePreview() {
   if (previewFrame) {
     previewFrame.src = "";
   }
+
+  // Remove template parameter from URL
+  window.history.replaceState(
+    {},
+    "",
+    "template-dashboard.html"
+  );
 }
 
 
