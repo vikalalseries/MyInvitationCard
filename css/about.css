@@ -880,6 +880,163 @@ html.site-theme-dark .founder-card:hover {
   transform: translateY(0);
 }
 
+
+
+
+
+
+/* Responsive overrides for the about page */
+@media (max-width: 1024px) {
+  .about-hero {
+    padding-top: 104px;
+    padding-bottom: 48px;
+  }
+
+  .about-hero-container,
+  .mission-container,
+  .container,
+  .footer-container {
+    max-width: min(1240px, 92%);
+  }
+
+  .mission-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .mission-icon-grid,
+  .values-grid,
+  .founder-grid,
+  .team-grid,
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .founder-card {
+    max-width: 620px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-hero {
+    padding-top: 96px;
+    padding-bottom: 36px;
+  }
+
+  .about-hero p {
+    font-size: 1.05rem;
+  }
+
+  .mission-section,
+  .values-section,
+  .founder-section,
+  .timeline-section,
+  .cta-banner {
+    padding: 48px 0;
+  }
+
+  .mission-icon-grid,
+  .values-grid,
+  .founder-grid,
+  .team-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .founder-card {
+    padding: 18px 18px 28px;
+  }
+
+  .timeline::before {
+    left: 18px;
+  }
+
+  .timeline-item:nth-child(odd) .timeline-content,
+  .timeline-item:nth-child(even) .timeline-content {
+    width: calc(100% - 48px);
+    margin-left: 48px !important;
+    margin-right: 0 !important;
+    text-align: left !important;
+  }
+
+  .timeline-marker {
+    left: 18px;
+  }
+
+  .auth-modal {
+    width: calc(100vw - 24px);
+    max-width: none;
+    padding: 36px 20px 24px;
+  }
+
+  .custom-toast {
+    width: calc(100vw - 24px);
+    left: 12px;
+    right: 12px;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero-container,
+  .mission-container,
+  .container,
+  .footer-container {
+    max-width: calc(100% - 20px);
+  }
+
+  .about-hero h1 {
+    font-size: clamp(1.9rem, 10vw, 2.4rem);
+  }
+
+  .about-hero p {
+    font-size: 1rem;
+  }
+
+  .mission-content h2,
+  .section-header h2,
+  .cta-banner h2 {
+    font-size: clamp(1.8rem, 8vw, 2.2rem);
+  }
+
+  .mission-highlight {
+    padding: 18px;
+  }
+
+  .mission-icon-box,
+  .value-card,
+  .team-member,
+  .timeline-content {
+    padding: 22px 18px;
+  }
+
+  .brand-watermark {
+    font-size: 1.3rem;
+  }
+
+  .founder-image {
+    width: 128px;
+    height: 128px;
+    margin-top: 34px;
+  }
+
+  .cta-banner {
+    padding: 48px 16px;
+  }
+
+  .btn-hero-primary {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+  }
+
+  .auth-title {
+    font-size: 26px;
+    margin-bottom: 28px;
+  }
+}
+
 .custom-toast.success {
   border-left: 5px solid #10b981;
 }
@@ -922,6 +1079,195 @@ html.site-theme-dark .founder-card:hover {
 .resend-btn:disabled {
   color: var(--gray);
   cursor: not-allowed;
+}
+
+/* Final mobile overrides for about page */
+@media (max-width: 1024px) {
+  .about-hero-container {
+    text-align: center;
+  }
+
+  .mission-icon-grid,
+  .values-grid,
+  .footer-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .founder-card {
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-hero {
+    padding-top: 94px;
+    padding-bottom: 34px;
+  }
+
+  .about-hero h1 {
+    text-align: center;
+  }
+
+  .about-hero p {
+    font-size: 1rem;
+  }
+
+  .mission-section,
+  .values-section,
+  .founder-section,
+  .timeline-section,
+  .cta-banner {
+    padding: 44px 0;
+  }
+
+  .mission-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .mission-icon-grid {
+    gap: 14px;
+  }
+
+  .mission-icon-box {
+    padding: 22px 16px;
+  }
+
+  .mission-icon-box-icon {
+    font-size: 2.4rem;
+  }
+
+  .mission-content h2 {
+    font-size: 1.8rem;
+  }
+
+  .mission-content p,
+  .value-card p {
+    font-size: 0.95rem;
+  }
+
+  .values-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 32px;
+  }
+
+  .value-card {
+    padding: 24px 18px;
+  }
+
+  .value-icon {
+    font-size: 2.6rem;
+    margin-bottom: 14px;
+  }
+
+  .founder-section {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .founder-card {
+    max-width: 100%;
+    padding: 16px 14px 22px;
+    border-radius: 22px;
+  }
+
+  .founder-image {
+    width: 120px;
+    height: 120px;
+    margin: 30px auto 16px;
+  }
+
+  .founder-content h3 {
+    font-size: 1.5rem;
+  }
+
+  .founder-role {
+    font-size: 0.88rem;
+    margin-bottom: 14px;
+  }
+
+  .founder-content p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .footer-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .footer-brand p {
+    max-width: none;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    padding: 10px 0 0;
+  }
+
+  .footer-logo span {
+    font-size: 1rem;
+  }
+
+  .footer-col h5 {
+    font-size: 0.78rem;
+    margin-bottom: 10px;
+  }
+
+  .footer-col a {
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero-container {
+    max-width: calc(100% - 20px);
+  }
+
+  .about-hero h1 {
+    font-size: clamp(1.9rem, 10vw, 2.4rem);
+  }
+
+  .mission-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .mission-content h2,
+  .section-header h2,
+  .cta-banner h2 {
+    font-size: clamp(1.7rem, 8vw, 2.1rem);
+  }
+
+  .mission-icon-box,
+  .value-card,
+  .timeline-content {
+    padding: 18px 14px;
+  }
+
+  .values-grid {
+    gap: 12px;
+  }
+
+  .founder-image {
+    width: 108px;
+    height: 108px;
+    margin-top: 24px;
+  }
+
+  .footer-container {
+    gap: 14px;
+  }
+
+  .footer-links {
+    gap: 12px;
+  }
 }
 
 
