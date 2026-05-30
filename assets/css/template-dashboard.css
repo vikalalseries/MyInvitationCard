@@ -2226,6 +2226,11 @@ html.site-theme-dark .popup-upgrade-btn i{
 
 
 
+
+
+
+
+
 /* 1. The wrapper container MUST be relative and inline-block */
 .logo{
   display: flex;
@@ -2915,4 +2920,298 @@ html.site-theme-dark .wedding-theme-switch .theme-btn.active{
 
 html.site-theme-dark .sidebar-signup-btn {
   color: #000000 !important;
+}
+
+/* Responsive overrides for the template dashboard */
+@media (max-width: 1024px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 300px;
+    min-width: 300px;
+    left: -320px;
+    box-shadow: var(--shadow);
+    z-index: 1200;
+  }
+
+  .sidebar.show {
+    left: 0;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 16px;
+  }
+
+  .mobile-overlay.show {
+    display: block;
+  }
+
+  .hero-section {
+    padding: 24px;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .topbar-left {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 12px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .topbar-left > div {
+    grid-column: 1 / -1;
+  }
+
+  .mobile-menu-btn,
+  .mobile-brand {
+    display: flex;
+  }
+
+  .controls-bar {
+    padding: 20px;
+  }
+
+  .top-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .control-actions,
+  .search-wrapper {
+    width: 100%;
+  }
+
+  .quick-filters {
+    gap: 12px;
+  }
+
+  .filter-select {
+    min-width: calc(50% - 8px);
+    flex: 1 1 calc(50% - 8px);
+  }
+
+  .template-grid {
+    column-count: 2;
+    column-gap: 16px;
+  }
+
+  .preview-modal {
+    width: 96vw;
+  }
+
+  .preview-top {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-info-section {
+    padding: 24px;
+  }
+
+  .suggestion-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+  body {
+    display: block;
+  }
+
+  .sidebar {
+    width: min(86vw, 320px);
+    left: -100%;
+    padding: 20px;
+  }
+
+  .sidebar.show {
+    left: 0;
+  }
+
+  .main-content {
+    padding: 12px;
+  }
+
+  .hero-section {
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topbar-left {
+    grid-template-columns: auto 1fr;
+    width: 100%;
+  }
+
+  .topbar h1 {
+    font-size: 1.5rem;
+  }
+
+  .controls-bar {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .quick-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .template-grid {
+    column-count: 2;
+  }
+
+  .preview-overlay {
+    padding: 8px;
+  }
+
+  .preview-modal {
+    width: 100%;
+    height: calc(100vh - 16px);
+    border-radius: 18px 18px 0 0;
+  }
+
+  .preview-top {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .preview-image-section {
+    padding: 0;
+  }
+
+  .preview-info-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .preview-actions {
+    gap: 10px;
+  }
+
+  .preview-primary-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .icon-btn {
+    width: 46px;
+    height: 46px;
+  }
+
+  .suggestion-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-popup-menu {
+    width: min(240px, calc(100vw - 24px));
+    right: 0;
+    left: auto;
+  }
+
+  .sidebar-account-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 12px;
+  }
+
+  .hero-section h1 {
+    font-size: clamp(1.8rem, 8vw, 2.3rem);
+  }
+
+  .hero-section p {
+    font-size: 0.98rem;
+  }
+
+  .controls-bar {
+    padding: 14px;
+  }
+
+  .search-box {
+    padding: 12px 14px;
+  }
+
+  .import-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .quick-filters {
+    gap: 10px;
+  }
+
+  .filter-select select {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .template-grid {
+    column-count: 1;
+    column-gap: 14px;
+  }
+
+  .template-card {
+    margin-bottom: 18px;
+  }
+
+  .template-content h3 {
+    font-size: 0.75rem;
+  }
+
+  .preview-bottom {
+    padding: 20px 16px;
+  }
+
+  .preview-info-section {
+    padding: 20px 16px 24px;
+  }
+
+  .preview-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sidebar-popup-menu {
+    width: min(240px, calc(100vw - 20px));
+  }
+
+  .custom-toast {
+    width: calc(100vw - 24px);
+    left: 12px;
+    right: 12px;
+  }
 }
