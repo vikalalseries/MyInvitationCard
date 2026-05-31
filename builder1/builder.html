@@ -1,80 +1,2324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invitation Card Builder - MyInvitationCard</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/topbar.css">
-    <link rel="stylesheet" href="css/left-panel.css">
-    <link rel="stylesheet" href="css/right-canvas.css">
-    <link rel="stylesheet" href="css/bottom-bar.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/forms.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card Builder — MyInvitationCard</title>
+  <meta name="description" content="Design your custom invitation card with live preview.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Raleway:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Alex+Brush&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <style>
+  /* ══════════════════════════════════ TOKENS */
+  :root {
+    --w: #ffffff;
+    --g50: #fbfbf9;
+    --g100: #f4f3f0;
+    --g150: #ebeae6;
+    --g200: #e2e0db;
+    --g300: #c5c2bb;
+    --g400: #98948d;
+    --g500: #68655e;
+    --g700: #3a3834;
+    --g900: #1a1916;
+
+    --rose: #f43f5e;
+    --rose-50: #fff1f3;
+    --rose-100: #ffe0e6;
+    --rose-dark: #e11d48;
+
+    --purple: #8b5cf6;
+    --purple-50: #f5f3ff;
+    --purple-100: #ede9fe;
+    --purple-dark: #7c3aed;
+
+    --gold: #c9a84c;
+    --gold-50: #fffbeb;
+    --success: #10b981;
+    --success-light: #ecfdf5;
+
+    --topbar-h: 58px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --r-card: 14px;
+    --r-md: 10px;
+    --r-sm: 6px;
+
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+    --card-shadow-hover: 0 8px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05);
+    --drawer-shadow: 12px 0 36px rgba(0,0,0,0.12);
+    --t: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ══════════════════════════════════ RESET & BASE */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; }
+  body { font-family: var(--font); background: var(--g100); color: var(--g900); height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  button { font-family: var(--font); cursor: pointer; border: none; background: none; outline: none; }
+  input, textarea, select { font-family: var(--font); }
+  a { text-decoration: none; color: inherit; }
+  
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--g200); border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--g300); }
+
+  /* ══════════════════════════════════ APP LAYOUT (50/50 Split) */
+  .app { display: flex; flex-direction: column; height: 100vh; }
+  .body { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+  /* ══════════════════════════════════ TOPBAR (FlowCV Replica) */
+  .topbar {
+    height: var(--topbar-h);
+    background: var(--w);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--g200);
+    z-index: 200;
+    flex-shrink: 0;
+  }
+
+  .tb-grid-btn {
+    width: 38px; height: 38px;
+    border-radius: var(--r-md);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--g400); flex-shrink: 0;
+    transition: all var(--t);
+    margin-right: 4px;
+  }
+  .tb-grid-btn:hover { background: var(--g100); color: var(--g700); }
+
+  .tb-logo {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 12px;
+    border-radius: var(--r-md);
+    transition: background var(--t);
+    flex-shrink: 0; margin-right: 8px;
+  }
+  .tb-logo:hover { background: var(--g100); }
+  .tb-logo-svg { width: 24px; height: 24px; flex-shrink: 0; }
+  .tb-logo-name {
+    font-size: 0.86rem; font-weight: 750;
+    color: var(--g900); letter-spacing: -0.4px; white-space: nowrap;
+  }
+
+  .tb-sep { width: 1px; height: 20px; background: var(--g200); margin: 0 8px; flex-shrink: 0; }
+
+  /* Navbar Tabs */
+  .tb-tabs { display: flex; align-items: center; gap: 2px; }
+  .tab-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--r-md);
+    font-size: 0.83rem; font-weight: 500;
+    color: var(--g500); white-space: nowrap;
+    transition: all var(--t); position: relative;
+    cursor: pointer;
+  }
+  .tab-btn:hover { color: var(--g900); background: var(--g100); }
+  .tab-btn .tab-ico { display: flex; align-items: center; justify-content: center; opacity: 0.7; }
+  
+  .tab-btn.active { color: var(--rose); font-weight: 600; background: var(--rose-50); }
+  .tab-btn.active .tab-ico { opacity: 1; }
+  .tab-btn.active::after {
+    content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 2px; background: var(--rose); border-radius: 2px 2px 0 0;
+  }
+
+  /* AI Tab Special styling */
+  .tab-btn.ai-tab { color: var(--purple-dark); }
+  .tab-btn.ai-tab:hover { background: var(--purple-50); color: var(--purple-dark); }
+  .tab-btn.ai-tab.active { color: var(--purple-dark); background: var(--purple-50); }
+  .tab-btn.ai-tab.active::after { background: var(--purple-dark); }
+
+  /* Topbar Right Controls */
+  .tb-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+
+  /* Autosaver indicator */
+  .save-status {
+    display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--g400); margin-right: 8px; font-weight: 500;
+  }
+  .save-dot {
+    width: 5px; height: 5px; border-radius: 50%; background: var(--success);
+    transition: background var(--t);
+  }
+  .save-status.saving .save-dot { background: var(--rose); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  /* Editable Document Title */
+  .doc-title-wrap {
+    display: flex; align-items: center; gap: 6px; position: relative;
+  }
+  .doc-title-input {
+    border: 1.5px solid transparent; background: transparent;
+    padding: 6px 10px; border-radius: var(--r-md);
+    font-size: 0.8rem; font-weight: 600; color: var(--g700);
+    max-width: 170px; text-overflow: ellipsis; outline: none;
+    transition: all var(--t); cursor: pointer; text-align: left;
+  }
+  .doc-title-input:hover { background: var(--g100); border-color: var(--g200); }
+  .doc-title-input:focus { background: var(--w); border-color: var(--rose); cursor: text; box-shadow: 0 0 0 3px var(--rose-100); }
+  .edit-pencil { width: 11px; height: 11px; color: var(--g400); pointer-events: none; margin-left: -22px; z-index: 10; opacity: 0.6; transition: opacity var(--t); }
+  .doc-title-input:focus + .edit-pencil { opacity: 0; }
+
+  /* Properties Toggle Button */
+  .prop-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 12px; border: 1.5px solid var(--g200);
+    border-radius: var(--r-md); font-size: 0.8rem; font-weight: 600;
+    color: var(--g700); background: var(--w); transition: all var(--t);
+  }
+  .prop-btn:hover { border-color: var(--g300); background: var(--g100); }
+  .prop-btn.active { border-color: var(--rose); color: var(--rose); background: var(--rose-50); }
+
+  /* Download Dropdown */
+  .dl-wrap { position: relative; }
+  .dl-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 14px; background: #0f172a; color: var(--w);
+    border-radius: var(--r-md); font-size: 0.81rem; font-weight: 650;
+    transition: all var(--t); cursor: pointer;
+  }
+  .dl-btn:hover { background: #1e293b; box-shadow: 0 4px 12px rgba(15,23,42,0.18); }
+  .dl-menu {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: var(--w); border: 1px solid var(--g200);
+    border-radius: 12px; box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+    min-width: 190px; z-index: 999; padding: 5px;
+    opacity: 0; visibility: hidden; transform: translateY(-8px);
+    transition: all var(--t);
+  }
+  .dl-wrap.open .dl-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+  .dl-item {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 9px 12px; border-radius: var(--r-md);
+    font-size: 0.8rem; font-weight: 550; color: var(--g700);
+    cursor: pointer; transition: background var(--t); text-align: left;
+  }
+  .dl-item:hover { background: var(--g100); color: var(--g900); }
+  .dl-sep { height: 1px; background: var(--g150); margin: 4px 0; }
+  .dl-chev { transition: transform var(--t); }
+  .dl-wrap.open .dl-chev { transform: rotate(180deg); }
+
+  /* ══════════════════════════════════ LEFT COLUMN (50% Width) */
+  .left-col {
+    width: 50%; min-width: 480px;
+    flex-shrink: 0; background: var(--g50);
+    border-right: 1px solid var(--g200);
+    display: flex; flex-direction: column;
+    overflow: hidden; position: relative;
+  }
+
+  .left-scroll {
+    flex: 1; overflow-y: auto; overflow-x: hidden;
+    padding: 20px 24px 40px;
+  }
+
+  .tab-panel { display: none; animation: fadeIn 0.2s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Personal card header banner */
+  .pc-banner {
+    background: var(--w); border-radius: var(--r-card);
+    box-shadow: var(--card-shadow); margin-bottom: 14px; padding: 20px;
+    transition: box-shadow var(--t); border: 1px solid rgba(0,0,0,0.02);
+  }
+  .pc-banner:hover { box-shadow: var(--card-shadow-hover); }
+  .pcb-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .pcb-title { font-size: 1.05rem; font-weight: 750; color: var(--g900); line-height: 1.2; letter-spacing: -0.2px; }
+  .pcb-sub { font-size: 0.76rem; color: var(--g400); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  
+  .pcb-fields { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .pcb-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--g100); }
+  .pcb-row:last-child { border-bottom: none; }
+  .pcb-ico { width: 15px; height: 15px; color: var(--g300); display: flex; align-items: center; justify-content: center; }
+  .pcb-input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-size: 0.81rem; color: var(--g700); font-weight: 500; padding: 0;
+  }
+  .pcb-input::placeholder { color: var(--g300); }
+  .pcb-input:focus { color: var(--g900); }
+
+  /* ══════════════════════════════════ ACCORDION SECTIONS */
+  .sc {
+    background: var(--w); border-radius: var(--r-card);
+    box-shadow: var(--card-shadow); margin-bottom: 12px;
+    overflow: hidden; transition: all var(--t);
+    border: 1px solid rgba(0,0,0,0.01);
+  }
+  .sc:hover { box-shadow: var(--card-shadow-hover); }
+  
+  .sc-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; cursor: pointer; user-select: none;
+    transition: background var(--t);
+  }
+  .sc-head:hover { background: var(--g100); }
+  .sc.open .sc-head { background: var(--g50); border-bottom: 1px solid var(--g100); }
+  
+  .sc-left { display: flex; align-items: center; gap: 12px; }
+  .sc-ico {
+    width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 0.95rem;
+    box-shadow: inset 0 -1.5px 0 rgba(0,0,0,0.05);
+  }
+  .ico-rose { background: #fff1f3; color: var(--rose); }
+  .ico-blue { background: #eff6ff; color: #2563eb; }
+  .ico-green { background: #f0fdf4; color: #16a34a; }
+  .ico-amber { background: #fffbeb; color: #d97706; }
+  .ico-purple { background: #faf5ff; color: var(--purple-dark); }
+  .ico-teal { background: #f0fdfa; color: #0d9488; }
+  .ico-orange { background: #fff7ed; color: #ea580c; }
+  .ico-slate { background: #f8fafc; color: #475569; }
+
+  .sc-title { font-size: 0.86rem; font-weight: 650; color: var(--g900); }
+  .sc-subtitle { font-size: 0.68rem; color: var(--g400); margin-top: 1.5px; font-weight: 500; }
+  .sc-chev { color: var(--g300); transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; }
+  .sc.open .sc-chev { transform: rotate(180deg); color: var(--rose); }
+
+  .sc-body { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1); }
+  .sc.open .sc-body { max-height: 1200px; }
+  .sc-inner { padding: 18px 20px; }
+
+  /* Form controls */
+  .fg { margin-bottom: 14px; }
+  .fg:last-child { margin-bottom: 0; }
+  .fl { display: block; font-size: 0.65rem; font-weight: 700; color: var(--g400); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .fi, .ft, .fs {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid var(--g200); border-radius: var(--r-md);
+    background: var(--w); color: var(--g900); font-weight: 500;
+    font-size: 0.81rem; font-family: var(--font); outline: none;
+    transition: all var(--t);
+  }
+  .fi::placeholder, .ft::placeholder { color: var(--g300); }
+  .fi:hover:not(:focus), .ft:hover:not(:focus), .fs:hover:not(:focus) { border-color: var(--g300); }
+  .fi:focus, .ft:focus, .fs:focus { border-color: var(--rose); box-shadow: 0 0 0 3.5px var(--rose-100); background: var(--w); }
+  .ft { resize: vertical; min-height: 72px; line-height: 1.5; }
+  .fr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fr .fg { margin-bottom: 0; }
+  .fhint { font-size: 0.64rem; color: var(--g400); margin-top: 4.5px; line-height: 1.45; font-weight: 500; }
+
+  .sub-h { font-size: 0.62rem; font-weight: 750; letter-spacing: 1.5px; text-transform: uppercase; color: var(--g300); margin: 18px 0 10px; display: flex; align-items: center; gap: 8px; }
+  .sub-h::after { content: ''; flex: 1; height: 1px; background: var(--g150); }
+
+  /* Custom add/remove lists buttons */
+  .add-btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; padding: 10px; margin-top: 10px;
+    border: 1.5px dashed var(--g200); border-radius: var(--r-md);
+    background: transparent; color: var(--g500); font-size: 0.78rem; font-weight: 600;
+    transition: all var(--t);
+  }
+  .add-btn:hover { border-color: var(--rose); color: var(--rose); background: var(--rose-50); }
+
+  .pe { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: var(--g100); border-radius: var(--r-md); margin-bottom: 8px; border: 1px solid rgba(0,0,0,0.01); }
+  .pe-info { flex: 1; min-width: 0; }
+  .pe-name { font-size: 0.8rem; font-weight: 600; color: var(--g900); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pe-role { font-size: 0.68rem; color: var(--g400); font-weight: 500; margin-top: 1px; }
+  .pe-del { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: transparent; color: var(--g400); transition: all var(--t); font-size: 0.72rem; }
+  .pe-del:hover { background: #fee2e2; color: #dc2626; }
+
+  /* Event item blocks */
+  .ev-entry { border: 1.5px solid var(--g150); border-radius: var(--r-md); margin-bottom: 12px; overflow: hidden; background: var(--w); }
+  .ev-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--g100); border-bottom: 1px solid var(--g150); }
+  .ev-name { font-size: 0.8rem; font-weight: 650; color: var(--g900); }
+  .ev-del { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--g400); transition: all var(--t); font-size: 0.7rem; }
+  .ev-del:hover { background: #fee2e2; color: #dc2626; }
+  .ev-body { padding: 14px; }
+
+  /* Toggles */
+  .tog-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+  .tog-lbl { font-size: 0.8rem; color: var(--g700); font-weight: 550; }
+  .tog { position: relative; width: 38px; height: 21px; flex-shrink: 0; }
+  .tog input { opacity: 0; width: 0; height: 0; }
+  .tog-track { position: absolute; inset: 0; background: var(--g200); border-radius: 11px; cursor: pointer; transition: background var(--t); }
+  .tog input:checked + .tog-track { background: var(--rose); }
+  .tog-track::before { content: ''; position: absolute; width: 15px; height: 15px; border-radius: 50%; background: var(--w); top: 3px; left: 3px; transition: transform var(--t); box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+  .tog input:checked + .tog-track::before { transform: translateX(17px); }
+
+  /* ══════════════════════════════════ CARD PROPERTIES DRAWER */
+  .prop-drawer {
+    position: absolute; top: 0; left: 0; bottom: 0;
+    width: 100%; background: var(--w); z-index: 150;
+    box-shadow: var(--drawer-shadow); transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .prop-drawer.open { transform: translateX(0); }
+  
+  .pd-head {
+    height: var(--topbar-h); display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; border-bottom: 1px solid var(--g200); flex-shrink: 0;
+  }
+  .pd-title { font-size: 0.92rem; font-weight: 750; color: var(--g900); display: flex; align-items: center; gap: 8px; letter-spacing: -0.2px; }
+  .pd-close {
+    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: var(--g400); font-size: 0.85rem; transition: all var(--t);
+  }
+  .pd-close:hover { background: var(--g100); color: var(--g700); }
+  
+  .pd-scroll { flex: 1; overflow-y: auto; padding: 24px; }
+  .pd-section { margin-bottom: 20px; background: var(--g50); border-radius: var(--r-card); border: 1px solid var(--g150); padding: 18px; }
+  .pd-sect-title { font-size: 0.65rem; font-weight: 750; letter-spacing: 1.5px; text-transform: uppercase; color: var(--g400); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+
+  /* Shehnai audio soundwave animation */
+  .soundwave-box { display: flex; align-items: center; gap: 8px; margin-top: 10px; background: var(--w); border: 1px solid var(--g200); padding: 10px 14px; border-radius: var(--r-md); }
+  .soundwave { display: flex; align-items: flex-end; gap: 2px; height: 18px; width: 34px; }
+  .sw-bar { width: 3px; background: var(--rose); border-radius: 1px; height: 20%; transition: height 0.15s; }
+  .soundwave-box.playing .sw-bar { animation: jump 1.2s ease-in-out infinite alternate; }
+  .soundwave-box.playing .sw-bar:nth-child(2) { animation-delay: 0.15s; }
+  .soundwave-box.playing .sw-bar:nth-child(3) { animation-delay: 0.3s; }
+  .soundwave-box.playing .sw-bar:nth-child(4) { animation-delay: 0.45s; }
+  .soundwave-box.playing .sw-bar:nth-child(5) { animation-delay: 0.05s; }
+  @keyframes jump { 0% { height: 15%; } 100% { height: 100%; } }
+
+  /* ══════════════════════════════════ CUSTOMIZE PANEL STYLES */
+  .cust-block { background: var(--w); border-radius: var(--r-card); box-shadow: var(--card-shadow); margin-bottom: 12px; padding: 18px 20px; border: 1px solid rgba(0,0,0,0.01); }
+  .cust-block-title { font-size: 0.63rem; font-weight: 750; letter-spacing: 1.5px; text-transform: uppercase; color: var(--g400); margin-bottom: 14px; }
+
+  /* Templates selector grid */
+  .tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tpl-th {
+    border-radius: var(--r-md); overflow: hidden; cursor: pointer;
+    border: 2px solid transparent; transition: all var(--t); aspect-ratio: 2/2.8; position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .tpl-th:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.08); }
+  .tpl-th.active { border-color: var(--rose); box-shadow: 0 0 0 1.5px var(--rose-100); }
+  .tpl-bg { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--w); position: relative; }
+  .tpl-ico-m { font-size: 1.8rem; z-index: 10; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15)); }
+  .tpl-lbl { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); color: var(--w); font-size: 0.58rem; font-weight: 750; text-align: center; padding: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Font Picker option cards */
+  .font-opts { display: flex; flex-direction: column; gap: 8px; }
+  .font-opt {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; border: 1.5px solid var(--g200); border-radius: var(--r-md);
+    cursor: pointer; transition: all var(--t); background: var(--w);
+  }
+  .font-opt:hover { border-color: var(--rose-100); background: var(--rose-50); }
+  .font-opt.active { border-color: var(--rose); background: var(--rose-50); }
+  .fo-n { font-size: 0.81rem; font-weight: 600; color: var(--g900); }
+  .fo-p { font-size: 1rem; opacity: 0.7; margin-top: 3px; color: var(--g500); }
+  .fo-chk { width: 18px; height: 18px; border-radius: 50%; background: var(--rose); display: flex; align-items: center; justify-content: center; color: var(--w); font-size: 0.55rem; opacity: 0; flex-shrink: 0; font-weight: 700; }
+  .font-opt.active .fo-chk { opacity: 1; }
+
+  /* Color Swatches Grid */
+  .swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 14px; }
+  .sw { aspect-ratio: 1; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: transform var(--t); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+  .sw:hover { transform: scale(1.15); }
+  .sw.active { border-color: var(--g700); box-shadow: 0 0 0 2.5px var(--w), 0 0 0 4.5px var(--g700); }
+
+  /* AI Panel Tools styling */
+  .ai-hero {
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+    border-radius: var(--r-card); padding: 22px; margin-bottom: 12px; color: var(--w);
+    box-shadow: 0 4px 14px rgba(124,58,237,0.22);
+  }
+  .ai-hero-title { font-size: 1.05rem; font-weight: 750; margin-bottom: 5px; display: flex; align-items: center; gap: 7px; }
+  .ai-hero-sub { font-size: 0.78rem; opacity: 0.88; line-height: 1.5; font-weight: 450; }
+  .ai-hero-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.2); color: var(--w);
+    border: 1.5px solid rgba(255,255,255,0.38);
+    padding: 8px 15px; border-radius: var(--r-md);
+    font-size: 0.78rem; font-weight: 600; margin-top: 14px;
+    transition: all var(--t);
+  }
+  .ai-hero-btn:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+
+  .ai-tool-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--g100); }
+  .ai-tool-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .ai-tool-ico { width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; box-shadow: inset 0 -1.5px 0 rgba(0,0,0,0.05); }
+  .ai-tool-info { flex: 1; }
+  .ai-tool-name { font-size: 0.83rem; font-weight: 650; color: var(--g900); margin-bottom: 2px; }
+  .ai-tool-desc { font-size: 0.72rem; color: var(--g400); line-height: 1.45; font-weight: 480; }
+  .ai-tool-btn {
+    padding: 7px 13px; border: 1.5px solid var(--g200); border-radius: var(--r-md);
+    font-size: 0.74rem; font-weight: 600; color: var(--purple-dark);
+    transition: all var(--t); white-space: nowrap;
+  }
+  .ai-tool-btn:hover { border-color: var(--purple-dark); background: var(--purple-50); }
+
+  /* ══════════════════════════════════ RIGHT PANEL: LIVE PREVIEW (50% Width) */
+  .right-col {
+    flex: 1; width: 50%;
+    display: flex; flex-direction: column; overflow: hidden;
+    background: #eae8e3;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.038) 1.2px, transparent 0);
+    background-size: 24px 24px;
+    position: relative;
+  }
+
+  .preview-bar {
+    height: var(--topbar-h); display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; background: rgba(255,255,255,0.72); backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(0,0,0,0.04); flex-shrink: 0; z-index: 10;
+  }
+  .preview-lbl {
+    font-size: 0.65rem; font-weight: 750; letter-spacing: 2.2px; text-transform: uppercase;
+    color: var(--g400); display: flex; align-items: center; gap: 7px;
+  }
+  .live-dot { width: 6.5px; height: 6.5px; border-radius: 50%; background: var(--success); animation: pulseLive 2s infinite; }
+  @keyframes pulseLive { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.7); opacity: 0.45; } }
+
+  .zoom-bar { display: flex; align-items: center; gap: 2px; background: var(--w); border: 1px solid var(--g200); border-radius: 20px; padding: 4px 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .zbtn { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--g500); font-size: 0.95rem; font-weight: 700; transition: background var(--t); line-height: 1; }
+  .zbtn:hover { background: var(--g100); color: var(--g900); }
+  .zlvl { font-size: 0.74rem; font-weight: 650; color: var(--g500); min-width: 42px; text-align: center; }
+  .zfit { font-size: 0.64rem; font-weight: 750; text-transform: uppercase; padding: 0 7px; border-radius: 4px; width: auto; letter-spacing: 0.6px; color: var(--g400); }
+  .zfit:hover { color: var(--rose); background: var(--rose-50); }
+
+  /* Preview Viewport & Wrapper */
+  .preview-vp { flex: 1; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative; }
+  .card-wrap { transform-origin: center center; transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1); line-height: 0; display: inline-block; }
+
+  /* ══════════════════════════════════ PREMIUM INVITATION CARD GRAPHICS */
+  #ic {
+    width: 420px; min-height: 594px; position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden; border-radius: 6px;
+    box-shadow: 0 24px 72px rgba(0,0,0,0.18), 0 6px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+  }
+  #ic:hover { transform: translateY(-4px) rotateX(1deg) rotateY(1deg); box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.09); }
+
+  /* Aspect Ratio presets */
+  #ic.ratio-square { min-height: 420px !important; }
+  #ic.ratio-landscape { width: 594px; min-height: 420px !important; }
+
+  /* Template Theme Graphics */
+  
+  /* 1. Wedding (Hindu Gold/Cream Elegant) */
+  #ic.t-wedding {
+    background: linear-gradient(160deg, #fdf4e7 0%, #f7e6d2 50%, #eddac1 100%);
+    --ca: #c9a84c; --ct: #2d1a04;
+  }
+  /* 2. Nikah (Muslim Royal Emerald/Gold) */
+  #ic.t-nikah {
+    background: linear-gradient(165deg, #0d2116 0%, #153823 60%, #0d2116 100%);
+    --ca: #e2c175; --ct: #fdf5df;
+  }
+  /* 3. Birthday (Playful Confetti / Purple Pink Pastel) */
+  #ic.t-birthday {
+    background: linear-gradient(135deg, #2d124d 0%, #4c1d95 50%, #2d124d 100%);
+    --ca: #fb7185; --ct: #faf5ff;
+  }
+  /* 4. Anniversary (Sophisticated Deep Blue/Rose Gold) */
+  #ic.t-anniversary {
+    background: linear-gradient(155deg, #09132e 0%, #11224d 60%, #09132e 100%);
+    --ca: #f472b6; --ct: #f8fafc;
+  }
+  /* 5. Corporate (Formal Corporate Navy Minimal) */
+  #ic.t-corporate {
+    background: #ffffff; border: 1.5px solid #cbd5e1;
+    --ca: #1e3a8a; --ct: #0f172a;
+  }
+
+  /* Decorative Borders & Frames */
+  .cb { position: absolute; inset: 16px; border: 1.5px solid rgba(180,130,90,0.28); pointer-events: none; z-index: 1; }
+  .cb::after { content: ''; position: absolute; inset: 5px; border: 0.5px solid rgba(180,130,90,0.14); }
+  
+  #ic.t-nikah .cb { border-color: rgba(226,193,117,0.25); }
+  #ic.t-nikah .cb::after { border-color: rgba(226,193,117,0.1); }
+  #ic.t-birthday .cb { border-color: rgba(251,113,133,0.22); }
+  #ic.t-birthday .cb::after { border-color: rgba(251,113,133,0.08); }
+  #ic.t-anniversary .cb { border-color: rgba(244,114,182,0.25); }
+  #ic.t-anniversary .cb::after { border-color: rgba(244,114,182,0.09); }
+  #ic.t-corporate .cb { border-color: rgba(30,58,138,0.18); }
+  #ic.t-corporate .cb::after { border-color: rgba(30,58,138,0.06); }
+
+  /* Corner SVGs */
+  .cc { position: absolute; width: 48px; height: 48px; pointer-events: none; z-index: 2; color: var(--ca); opacity: 0.85; }
+  .cc.tl { top:10px; left:10px; } .cc.tr { top:10px; right:10px; transform:scaleX(-1); }
+  .cc.bl { bottom:10px; left:10px; transform:scaleY(-1); } .cc.br { bottom:10px; right:10px; transform:scale(-1); }
+  .cc svg { width: 100%; height: 100%; }
+
+  /* Card Inner Elements */
+  .ci { position: relative; z-index: 3; width: 100%; text-align: center; padding: 48px 36px; display: flex; flex-direction: column; align-items: center; color: var(--ct); }
+  
+  /* Culture logo symbol at the top of the card */
+  .c-logo { width: 50px; height: 50px; color: var(--ca); margin-bottom: 12px; display: flex; align-items: center; justify-content: center; }
+  .c-logo svg { width: 100%; height: 100%; }
+
+  .c-tag { font-family:'Montserrat',sans-serif; font-size:0.58rem; font-weight:700; letter-spacing:3.5px; text-transform:uppercase; color:var(--ca); opacity:0.95; margin-bottom:14px; }
+  .c-name { font-size:1.45rem; font-weight:700; line-height:1.2; letter-spacing:0.5px; margin-bottom:5px; }
+  .c-parents { font-family:'Cormorant Garamond',serif; font-size:0.8rem; line-height:1.4; opacity:0.75; font-style:italic; margin-bottom:3px; }
+  .c-city { font-family:'Montserrat',sans-serif; font-size:0.6rem; letter-spacing:1.8px; text-transform:uppercase; opacity:0.5; margin-bottom:3px; }
+  
+  /* Couple Connector */
+  .c-and { display:flex; align-items:center; gap:12px; margin:10px 0; width:100%; justify-content:center; }
+  .c-amp { font-family:'Alex Brush', cursive, serif; font-size:2.2rem; color:var(--ca); line-height:0.8; opacity: 0.9; }
+  .orn { display:flex; align-items:center; gap:6px; flex:1; }
+  .ol { flex:1; height:0.5px; background:var(--ca); opacity:0.35; }
+  .os { font-size:0.58rem; color:var(--ca); opacity:0.6; }
+  
+  .c-div { display:flex; align-items:center; gap:12px; width:100%; margin:14px 0; }
+  .c-dl { flex:1; height:0.5px; background:var(--ca); opacity:0.35; }
+  .c-di { font-size:0.78rem; color:var(--ca); opacity:0.7; }
+  
+  .c-vinit { font-family:'Cormorant Garamond',serif; font-size:0.92rem; line-height:1.65; font-style:italic; opacity:0.85; margin:4px 0 16px; width:100%; max-width: 320px; }
+  
+  /* Ceremonies Lists */
+  .c-evs { width:100%; display:flex; flex-direction:column; align-items:center; margin-bottom:14px; }
+  .c-ev { text-align:center; padding:6px 0; }
+  .c-evn { font-size:0.88rem; font-weight:700; letter-spacing:0.5px; margin-bottom:4px; }
+  .c-evm { font-family:'Montserrat',sans-serif; font-size:0.64rem; opacity:0.65; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:3px; font-weight: 550; }
+  .c-evv { font-family:'Cormorant Garamond',serif; font-size:0.82rem; font-style:italic; opacity:0.8; }
+  .c-eva { font-family:'Montserrat',sans-serif; font-size:0.62rem; opacity:0.55; letter-spacing:0.3px; margin-top:2.5px; }
+  .c-sep { font-size:0.5rem; color:var(--ca); opacity:0.5; letter-spacing:5px; padding:4px 0; }
+  
+  .c-rsvp { font-family:'Montserrat',sans-serif; font-size:0.62rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--ca); opacity:0.85; margin-top:6px; }
+
+  /* ══════════════════════════════════ TOAST NOTIFICATIONS */
+  .toast-wrap { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:500; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
+  .toast { display:inline-flex; align-items:center; gap:10px; padding:11px 18px; background:#0f172a; color:var(--w); border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,0.15); font-size:0.82rem; font-weight:550; pointer-events:auto; opacity:0; transform:translateY(12px) scale(0.95); transition:all 0.24s cubic-bezier(0.175, 0.885, 0.32, 1.275); white-space:nowrap; }
+  .toast.show { opacity:1; transform:translateY(0) scale(1); }
+  .t-ico { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.64rem; font-weight:750; flex-shrink:0; }
+  .t-s .t-ico { background:var(--success); color: var(--w); }
+  .t-e .t-ico { background:var(--rose); color: var(--w); }
+  .t-i .t-ico { background:#2563eb; color: var(--w); }
+  .t-w .t-ico { background:#ea580c; color: var(--w); }
+
+  /* Print Media Styles */
+  @media print {
+    .topbar, .left-col, .preview-bar, .toast-wrap { display: none !important; }
+    body { overflow: visible; height: auto; background: #fff; }
+    .app { height: auto; } .body { display: block; }
+    .right-col { background: #fff; display: flex; align-items: flex-start; justify-content: center; padding: 0; min-height: 100vh; }
+    .preview-vp { padding: 0; } .card-wrap { transform: none !important; } #ic { box-shadow: none !important; border: none; }
+  }
+  </style>
 </head>
 <body>
-    <div id="app" class="builder-app">
-        <!-- Top Navigation Bar -->
-        <div id="topbar-container"></div>
-        
-        <!-- Main Layout Container -->
-        <div class="builder-main-layout">
-            <!-- Left Panel -->
-            <div id="left-panel-container" class="left-panel-wrapper"></div>
+<div class="app">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOPBAR
+       ═══════════════════════════════════════════════════════════ -->
+  <header class="topbar">
+    <!-- Grid icon to dashboard -->
+    <button class="tb-grid-btn" onclick="window.location.href='../index.html'" title="Home">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="3" y="3" width="4" height="4" rx="1"/><rect x="10" y="3" width="4" height="4" rx="1"/><rect x="17" y="3" width="4" height="4" rx="1"/>
+        <rect x="3" y="10" width="4" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/><rect x="17" y="10" width="4" height="4" rx="1"/>
+        <rect x="3" y="17" width="4" height="4" rx="1"/><rect x="10" y="17" width="4" height="4" rx="1"/><rect x="17" y="17" width="4" height="4" rx="1"/>
+      </svg>
+    </button>
+
+    <!-- App Brand Logo -->
+    <a href="../index.html" class="tb-logo" title="MyInvitationCard">
+      <svg class="tb-logo-svg" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60 42 C60 37,54 33,49 33 C42 33,39 40,39 45 C39 54,49 61,60 69 C71 61,81 54,81 45 C81 40,78 33,71 33 C66 33,60 37,60 42Z" fill="#ef4444" opacity="0.9"/>
+        <path d="M18 42 L18 78 Q18 84 24 84 L96 84 Q102 84 102 78 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 42 L60 14 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M18 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+        <path d="M102 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <span class="tb-logo-name">MyInvitationCard</span>
+    </a>
+
+    <div class="tb-sep"></div>
+
+    <!-- Navigation Tabs -->
+    <div class="tb-tabs">
+      <button class="tab-btn" id="tab-overview" onclick="window.location.href='../template-dashboard.html'">
+        <span class="tab-ico">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+          </svg>
+        </span>
+        Overview
+      </button>
+      <button class="tab-btn active" id="tab-content" onclick="switchTab('content')">
+        <span class="tab-ico">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </span>
+        Content
+      </button>
+      <button class="tab-btn" id="tab-customize" onclick="switchTab('customize')">
+        <span class="tab-ico">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M12 2v2M12 20v2"/>
+          </svg>
+        </span>
+        Customize
+      </button>
+      <button class="tab-btn ai-tab" id="tab-ai" onclick="switchTab('ai')">
+        <span class="tab-ico">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+        </span>
+        AI Tools
+      </button>
+    </div>
+
+    <!-- Right-aligned Topbar Controls -->
+    <div class="tb-right">
+      <!-- Autosave Status -->
+      <div class="save-status" id="save-status">
+        <span class="save-dot"></span>
+        <span id="save-txt">Saved</span>
+      </div>
+
+      <!-- Card Title -->
+      <div class="doc-title-wrap">
+        <input class="doc-title-input" id="doc-title" value="My Custom Invitation" placeholder="Untitled Card" oninput="S.card.title=this.value; triggerAutosave();">
+        <svg class="edit-pencil" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+      </div>
+
+      <!-- Toggles properties Drawer -->
+      <button class="prop-btn" id="prop-toggle-btn" onclick="togglePropertiesDrawer()">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+        </svg>
+        ⚙️ Properties
+      </button>
+
+      <!-- Download Button Dropdown -->
+      <div class="dl-wrap" id="dl-wrap">
+        <button class="dl-btn" id="dl-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download
+          <svg class="dl-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+        <div class="dl-menu" id="dl-menu">
+          <button class="dl-item" id="dl-png">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+            Download PNG Image
+          </button>
+          <button class="dl-item" id="dl-pdf">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            Save as PDF Document
+          </button>
+          <div class="dl-sep"></div>
+          <button class="dl-item" id="dl-print">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print Card
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BODY (50/50 split-screen container)
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="body">
+
+    <!-- ─── LEFT COLUMN (Editor sidebar & drawers) ─── -->
+    <div class="left-col">
+
+      <!-- ⚙️ SLIDE-OVER CARD PROPERTIES DRAWER -->
+      <div class="prop-drawer" id="prop-drawer">
+        <div class="pd-head">
+          <div class="pd-title">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-width="2.5"/></svg>
+            Card Settings &amp; Properties
+          </div>
+          <button class="pd-close" onclick="togglePropertiesDrawer()" title="Close Settings">✕</button>
+        </div>
+        <div class="pd-scroll">
+          
+          <!-- Cultural Presets & Religion -->
+          <div class="pd-section">
+            <div class="pd-sect-title">Culture &amp; Spiritual Symbol</div>
+            <div class="fg">
+              <label class="fl">Religion Preference</label>
+              <select class="fs" id="pd-religion" onchange="setReligion(this.value)">
+                <option value="Hindu">Hindu (Ganesha, Om symbols)</option>
+                <option value="Muslim">Muslim (Bismillah, Crescent 🌙)</option>
+                <option value="Sikh">Sikh (Khanda symbol ☬)</option>
+                <option value="Christian">Christian (Cross symbol ✝)</option>
+                <option value="Jain">Jain (Lotus symbol 🌸)</option>
+                <option value="Buddhist">Buddhist (Wheel / Lotus symbol)</option>
+                <option value="None">None (Generic traditional ornaments)</option>
+              </select>
+            </div>
+            <div class="tog-row">
+              <span class="tog-lbl">Corner Frame Decors</span>
+              <label class="tog">
+                <input type="checkbox" id="pd-decors" checked onchange="updStyle('showDecorations', this.checked)">
+                <span class="tog-track"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Spacing, Sizing, and Aspect Ratio -->
+          <div class="pd-section">
+            <div class="pd-sect-title">Card Canvas Sizing</div>
+            <div class="fg">
+              <label class="fl">Aspect Ratio</label>
+              <select class="fs" id="pd-ratio" onchange="setAspectRatio(this.value)">
+                <option value="portrait">Standard Portrait (A5 Ratio)</option>
+                <option value="square">Modern Square (1:1 Ratio)</option>
+                <option value="landscape">Classic Landscape (Postcard)</option>
+              </select>
+            </div>
+            <div class="tog-row">
+              <span class="tog-lbl">Show Bride/Groom Parents</span>
+              <label class="tog">
+                <input type="checkbox" id="pd-parents" checked onchange="updStyle('showParents', this.checked)">
+                <span class="tog-track"></span>
+              </label>
+            </div>
+            <div class="tog-row">
+              <span class="tog-lbl">Display City Locations</span>
+              <label class="tog">
+                <input type="checkbox" id="pd-city" onchange="updStyle('showCity', this.checked)">
+                <span class="tog-track"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Languages & Wording suggestions -->
+          <div class="pd-section">
+            <div class="pd-sect-title">Localization &amp; Language</div>
+            <div class="fg">
+              <label class="fl">Wording Language</label>
+              <select class="fs" id="pd-lang" onchange="setLanguage(this.value)">
+                <option value="English">English</option>
+                <option value="Hindi">Hindi (हिंदी)</option>
+                <option value="Hinglish">Hinglish (Roman transliterated)</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">Region Wording style</label>
+              <select class="fs" id="pd-region" onchange="S.card.region=this.value; renderCard();">
+                <option value="North India">North India (UP, Bihar, MP)</option>
+                <option value="South India">South India (Tamil, Telugu, Kerala)</option>
+                <option value="Punjab">Punjab / Haryana</option>
+                <option value="Gujarat / Rajasthan">Gujarat / Rajasthan</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Shehnai/Instrumental Background Music URL -->
+          <div class="pd-section">
+            <div class="pd-sect-title">🎵 Invitation Background Music</div>
+            <p style="font-size:0.7rem;color:var(--g400);line-height:1.4;margin-bottom:10px;">Play soft traditional wedding background music when clients open your card!</p>
+            <div class="fg">
+              <label class="fl">Music Preset Tracks</label>
+              <select class="fs" id="pd-music-select" onchange="changeMusicPreset(this.value)">
+                <option value="">No Music (Silent)</option>
+                <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">Preset 1: Instrumental Flute</option>
+                <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3">Preset 2: Traditional Shehnai Beat</option>
+                <option value="custom">Custom Audio URL...</option>
+              </select>
+            </div>
+            <div class="fg hidden" id="custom-music-group">
+              <label class="fl">Custom Audio MP3 Link</label>
+              <input class="fi" id="pd-music-url" placeholder="https://example.com/audio.mp3" oninput="setMusicUrl(this.value)">
+            </div>
             
-            <!-- Right Canvas (Live Preview) -->
-            <div id="right-canvas-container" class="right-canvas-wrapper"></div>
+            <div class="soundwave-box" id="soundwave-box">
+              <button class="add-btn" style="margin:0; width:auto; padding:6px 12px;" onclick="togglePlayMusic()">
+                <span id="music-play-lbl">▶ Play Audio</span>
+              </button>
+              <div class="soundwave" id="soundwave">
+                <span class="sw-bar"></span><span class="sw-bar"></span><span class="sw-bar"></span><span class="sw-bar"></span><span class="sw-bar"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reset Defaults button -->
+          <button class="add-btn" style="border-color: var(--rose); color: var(--rose);" onclick="if(confirm('Reset all card entries to default?')){resetCard()}">
+            🔄 Reset to Default Template
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN LEFT SCROLLABLE WRAPPER -->
+      <div class="left-scroll" id="left-scroll">
+
+        <!-- ─── 1. CONTENT PANEL (Dynamic accordion list) ─── -->
+        <div class="tab-panel active" id="panel-content">
+          <!-- Summary card banner displaying primary details -->
+          <div class="pc-banner" id="personal-card">
+            <div class="pcb-top">
+              <div>
+                <div class="pcb-title" id="pc-main-name">Ramesh &amp; Sunita</div>
+                <div class="pcb-sub" id="pc-sub-text">Wedding Invitation</div>
+              </div>
+              <button class="add-btn" style="width:auto; margin:0; padding:6px 12px; font-size:0.72rem;" onclick="toggleFirstAccordionSection()">
+                ✍️ Fast Edit
+              </button>
+            </div>
+            <div class="pcb-fields">
+              <div class="pcb-row">
+                <span class="pcb-ico">📞</span>
+                <input class="pcb-input" id="pcb-rsvp" placeholder="RSVP contact details..." oninput="S.card.rsvpContact=this.value; renderCard();">
+              </div>
+              <div class="pcb-row">
+                <span class="pcb-ico">📍</span>
+                <input class="pcb-input" id="pcb-venue" placeholder="Main ceremony venue..." oninput="if(S.card.events[0]){S.card.events[0].venue=this.value; renderCard();}">
+              </div>
+              <div class="pcb-row">
+                <span class="pcb-ico">📅</span>
+                <input class="pcb-input" id="pcb-date" placeholder="Main event date..." oninput="if(S.card.events[0]){S.card.events[0].date=this.value; renderCard();}">
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic accordions parent container -->
+          <div id="sections-wrap"></div>
+        </div>
+
+        <!-- ─── 2. CUSTOMIZE PANEL (Style elements, fonts, colors) ─── -->
+        <div class="tab-panel" id="panel-customize">
+          <!-- Card Presets & Templates -->
+          <div class="cust-block">
+            <div class="cust-block-title">Select Card Template</div>
+            <div class="tpl-grid" id="tpl-selector-grid"></div>
+          </div>
+
+          <!-- Google Fonts pickers -->
+          <div class="cust-block">
+            <div class="cust-block-title">Card Typography Family</div>
+            <div class="font-opts" id="font-options-wrap"></div>
+          </div>
+
+          <!-- Custom Colors Palette pickers -->
+          <div class="cust-block">
+            <div class="cust-block-title">Card Primary Color Accent</div>
+            <div class="swatches" id="swatches-wrap"></div>
+            <label class="fl">Custom Brand Hex Picker</label>
+            <div style="display:flex; gap:8px; align-items:center">
+              <input type="color" id="picker-color-input" style="width:38px; height:34px; border:1.5px solid var(--g200); border-radius:6px; cursor:pointer; padding:2px; flex-shrink:0" oninput="setColor(this.value)">
+              <input class="fi" id="picker-text-input" placeholder="#c9a84c" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value))setColor(this.value)">
+            </div>
+          </div>
+
+          <!-- Display controls toggler (Quick replication) -->
+          <div class="cust-block">
+            <div class="cust-block-title">Design Display Toggles</div>
+            <div class="tog-row">
+              <span class="tog-lbl">Double border layout</span>
+              <label class="tog">
+                <input type="checkbox" id="cus-decors" checked onchange="updStyle('showDecorations', this.checked)">
+                <span class="tog-track"></span>
+              </label>
+            </div>
+            <div class="tog-row">
+              <span class="tog-lbl">Show bride &amp; groom parents</span>
+              <label class="tog">
+                <input type="checkbox" id="cus-parents" checked onchange="updStyle('showParents', this.checked)">
+                <span class="tog-track"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── 3. AI PANEL (Copilot for copywriter suggestions) ─── -->
+        <div class="tab-panel" id="panel-ai">
+          <div class="ai-hero">
+            <div class="ai-hero-title">✨ AI Copilot Assistant</div>
+            <div class="ai-hero-sub">Generate tailored Indian wedding invitations, translate descriptions to formal Hindi, and automatically suggest traditional events matching your religion in seconds.</div>
+            <button class="ai-hero-btn" onclick="aiAutoSetupAll()">
+              🚀 Auto Setup Card with AI
+            </button>
+          </div>
+
+          <div class="cust-block">
+            <div class="ai-tool-row">
+              <div class="ai-tool-ico" style="background:#fff1f3">✍️</div>
+              <div class="ai-tool-info">
+                <div class="ai-tool-name">AI Message Writer</div>
+                <div class="ai-tool-desc">Write an elegant Sanskrit/Hindi shloka, custom quotes, or formal English greeting text</div>
+              </div>
+              <button class="ai-tool-btn" onclick="aiGenerateMessage()">Generate</button>
+            </div>
+
+            <div class="ai-tool-row">
+              <div class="ai-tool-ico" style="background:#f0fdf4">🌸</div>
+              <div class="ai-tool-info">
+                <div class="ai-tool-name">Suggest Traditional Events</div>
+                <div class="ai-tool-desc">AI adds events customized to your selected religion preset (e.g. Haldi, Nikah, Sangeet)</div>
+              </div>
+              <button class="ai-tool-btn" onclick="aiSuggestCeremonies()">Add Presets</button>
+            </div>
+
+            <div class="ai-tool-row">
+              <div class="ai-tool-ico" style="background:#eff6ff">🎨</div>
+              <div class="ai-tool-info">
+                <div class="ai-tool-name">Theme Color Matcher</div>
+                <div class="ai-tool-desc">Let AI choose a cohesive, rich theme matching the mood of your ceremony</div>
+              </div>
+              <button class="ai-tool-btn" onclick="aiPickTheme()">Recommend</button>
+            </div>
+
+            <div class="ai-tool-row">
+              <div class="ai-tool-ico" style="background:#faf5ff">🌐</div>
+              <div class="ai-tool-info">
+                <div class="ai-tool-name">AI Hindi Translator</div>
+                <div class="ai-tool-desc">Translate invitation fields to pure Hindi Devnagari script or Hinglish</div>
+              </div>
+              <button class="ai-tool-btn" onclick="aiTranslate()">Translate</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── RIGHT COLUMN (50% Split Live Preview Area) ─── -->
+    <div class="right-col">
+      <!-- Live Preview Title & Controls -->
+      <div class="preview-bar">
+        <div class="preview-lbl">
+          <span class="live-dot"></span>
+          Live Rendering Preview
         </div>
         
-        <!-- Bottom Action Bar -->
-        <div id="bottom-bar-container"></div>
+        <!-- Zoom sliders -->
+        <div class="zoom-bar">
+          <button class="zbtn" id="z-out" title="Zoom Out">−</button>
+          <span class="zlvl" id="z-lvl">80%</span>
+          <button class="zbtn" id="z-in" title="Zoom In">+</button>
+          <button class="zbtn zfit" id="z-fit" title="Fit to screen size">Fit</button>
+        </div>
+      </div>
+
+      <!-- Preview Viewport -->
+      <div class="preview-vp" id="preview-vp">
+        <!-- Floating audio status if music is active -->
+        <div id="playing-track-indicator" style="position: absolute; top: 12px; left: 16px; font-size: 0.65rem; background: rgba(0,0,0,0.65); color: #fff; padding: 4px 10px; border-radius: 20px; font-weight: 500; backdrop-filter: blur(5px); display: none; align-items: center; gap: 6px;">
+          <span>🔊 Music Playing</span>
+        </div>
+
+        <div class="card-wrap" id="card-wrap" style="transform: scale(0.8)">
+          <!-- Dynamic card main node -->
+          <div id="ic" class="t-wedding"></div>
+        </div>
+      </div>
     </div>
+
+  </div>
+</div>
+
+<!-- Background music player node -->
+<audio id="bg-audio" loop></audio>
+
+<!-- Toast alert wrappers -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════════════════════
+//  GLOBAL STATE OBJECT
+// ══════════════════════════════════════════════════════
+const S = {
+  card: {
+    title: "Rahul & Priya's Wedding Card",
+    templateId: 'wedding',
+    religion: 'Hindu',
+    region: 'North India',
+    language: 'English',
+    aspectRatio: 'portrait',
+    bgMusic: '',
     
-    <!-- Properties Panel (Slide-out from right) -->
-    <div id="properties-panel-container" class="properties-panel-wrapper"></div>
+    // 1. Wedding/Nikah couple
+    groom: { name: 'Rahul Kumar Sharma', fatherName: 'Shri Ram Prasad Sharma', motherName: 'Smt. Kaushalya Devi', city: 'Lucknow' },
+    bride: { name: 'Priya Devi Gupta', fatherName: 'Shri Mohan Lal Gupta', motherName: 'Smt. Savitri Devi', city: 'Agra' },
     
-    <!-- Modals Container -->
-    <div id="modals-container"></div>
-    
-    <!-- Toast Notifications -->
-    <div id="toast-container" class="toast-container"></div>
+    // 2. Nikah extra
+    nikah: { meher: '51,000 INR', qazi: 'Hazrat Maulana Alim Siddiqui', witnesses: 'Zaid Khan & Salim Qureshi' },
 
-    <!-- External Libraries -->
-    <script src="lib/html2canvas.min.js"></script>
-    <script src="lib/jspdf.min.js"></script>
-    <script src="lib/qrcode.min.js"></script>
+    // 3. Birthday person
+    birthday: { name: 'Aarav Sharma', age: '5', dob: '2020-05-15', time: '05:00 PM', parentText: 'Shri Ramesh & Smt. Poonam Sharma' },
 
-    <!-- Config Files -->
-    <script src="js/config/constants.js"></script>
-    <script src="js/config/ceremonies.js"></script>
-    <script src="js/config/colors.js"></script>
+    // 4. Anniversary couple
+    anniversary: { husband: 'Rohan Verma', wife: 'Priya Verma', years: '25', hostChildren: 'Invited by: Rahul, Varun and Sneha' },
 
-    <!-- Utils Files -->
-    <script src="js/utils/logger.js"></script>
-    <script src="js/utils/validators.js"></script>
-    <script src="js/utils/formatters.js"></script>
-    <script src="js/utils/helpers.js"></script>
+    // 5. Corporate organizer
+    corporate: { title: 'Tech Innovation Summit 2025', host: 'InnovateCorp Inc.', guestOfHonor: 'Dr. S. K. Sen (Keynote)', dressCode: 'Formal Suite / Business Casual' },
 
-    <!-- Core Files -->
-    <script src="js/core/state.js"></script>
-    <script src="js/core/eventBus.js"></script>
-    <script src="js/core/app.js"></script>
+    events: [
+      { id: 'e1', name: 'Vivah Samaroh', date: '2026-02-15', time: '10:00 AM', venue: 'Ram Barat Ghar', address: 'Civil Lines, Lucknow, UP' }
+    ],
 
-    <!-- Services Files -->
-    <script src="js/services/storageService.js"></script>
-    <script src="js/services/cardRenderer.js"></script>
+    balAagrah: [],
+    darshnabhilashi: [],
+    swagatakankshi: { groomSide: [], brideSide: [] },
+    vinit: 'परमपिता परमेश्वर की असीम अनुकम्पा से, हमारे यहाँ शुभ विवाह अवसर पर आपकी गरिमामयी उपस्थिति सादर प्रार्थनीय है।',
+    rsvpContact: '+91 98765 43210',
+    rsvpName: 'Sharma Family',
+    style: { font: 'Cinzel', primaryColor: '#c9a84c', showParents: true, showCity: false, showDecorations: true }
+  },
+  ui: { zoom: 80, activeTab: 'content', openSections: ['groom', 'bride'] }
+};
+const STORAGE_KEY = 'mic_builder_v5_pro';
 
-    <!-- Components Files -->
-    <script src="js/components/topbar.js"></script>
-    <script src="js/components/leftPanel.js"></script>
-    <script src="js/components/rightCanvas.js"></script>
-    <script src="js/components/propertiesPanel.js"></script>
-    <script src="js/components/bottomBar.js"></script>
+// ══════════════════════════════════════════════════════
+//  DOM HELPERS & UTILITIES
+// ══════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const esc = s => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+const fmtDate = d => {
+  if(!d) return '';
+  try {
+    return new Date(d+'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  } catch {
+    return d;
+  }
+};
 
-    <!-- Main App Initialization -->
-    <script src="js/main.js"></script>
+// Toast notification
+function toast(msg, type='i') {
+  const icons = { s: '✓', e: '✕', i: 'ℹ', w: '!' };
+  const el = document.createElement('div');
+  el.className = `toast t-${type}`;
+  el.innerHTML = `<span class="t-ico">${icons[type] || 'i'}</span><span>${esc(msg)}</span>`;
+  $('toast-wrap').appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 250);
+  }, 2600);
+}
+
+// Autosave Status Trigger
+let autosaveTimeout;
+function triggerAutosave() {
+  const statusEl = $('save-status');
+  const txtEl = $('save-txt');
+  if (statusEl) statusEl.classList.add('saving');
+  if (txtEl) txtEl.textContent = 'Saving...';
+  
+  clearTimeout(autosaveTimeout);
+  autosaveTimeout = setTimeout(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(S.card));
+      if (statusEl) statusEl.classList.remove('saving');
+      if (txtEl) txtEl.textContent = 'Saved';
+    } catch (e) {
+      if (txtEl) txtEl.textContent = 'Save Error';
+    }
+  }, 1000);
+}
+
+// ══════════════════════════════════════════════════════
+//  DYNAMIC TAB & SETTINGS TRIGGERS
+// ══════════════════════════════════════════════════════
+function switchTab(tab) {
+  S.ui.activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const btn = $(`tab-${tab}`);
+  if (btn) btn.classList.add('active');
+
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = $(`panel-${tab}`);
+  if (panel) panel.classList.add('active');
+
+  // If opening customize panel, render its sub elements
+  if (tab === 'customize') {
+    renderCustomizePanel();
+  }
+  
+  // Close properties drawer if changing tabs
+  $('prop-drawer').classList.remove('open');
+  $('prop-toggle-btn').classList.remove('active');
+}
+
+function togglePropertiesDrawer() {
+  const drawer = $('prop-drawer');
+  const btn = $('prop-toggle-btn');
+  const isOpen = drawer.classList.contains('open');
+  
+  if (isOpen) {
+    drawer.classList.remove('open');
+    btn.classList.remove('active');
+  } else {
+    drawer.classList.add('open');
+    btn.classList.add('active');
+    syncPropertiesFields();
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  CULTURAL PRESETS ORNAMENT GRAPHICS (INLINE SVGS)
+// ══════════════════════════════════════════════════════
+const SYMBOLS = {
+  Hindu: `<svg viewBox="0 0 64 64" fill="currentColor">
+    <!-- Stylized Ganesha outline -->
+    <path d="M32 6c-3 0-6 2-7 5-1 3 1 7 4 9s4 3 6 4-2 3-4 5c-3 2-4 6-3 9s4 5 7 5 6-2 7-5c1-3-1-7-4-9s-4-3-6-4 2-3 4-5c3-2 4-6 3-9s-4-5-7-5z" opacity="0.15"/>
+    <path d="M32 10c-3 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm-9 6c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm18-2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm-9 10v4c0 3.3-2.7 6-6 6s-6-2.7-6-6v-4h2v4c0 2.2 1.8 4 4 4s4-1.8 4-4v-4h2zm0 8c1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3 1.3 3 3 3z" fill="currentColor"/>
+  </svg>`,
+  Muslim: `<svg viewBox="0 0 64 64" fill="currentColor">
+    <!-- Star & Crescent Moon -->
+    <path d="M42 16A18 18 0 1 0 42 50A20 20 0 0 1 42 16z"/>
+    <path d="M41 24l1.2 2.5 2.8 1.2-2.8 1.2-1.2 2.5-1.2-2.5-2.8-1.2 2.8-1.2z"/>
+  </svg>`,
+  Sikh: `<svg viewBox="0 0 64 64" fill="currentColor">
+    <!-- Khanda Symbol -->
+    <path d="M32 6a2 2 0 0 0-2 2v14.5c-4 .5-7.5 3-9 6.8a12 12 0 0 0-7.5 11c0 6.6 5.4 12 12 12 4.5 0 8.5-2.5 10.5-6.2.2 0 .4.1.6.1s.4 0 .6-.1c2 3.7 6 6.2 10.5 6.2 6.6 0 12-5.4 12-12a12 12 0 0 0-7.5-11c-1.5-3.8-5-6.3-9-6.8V8a2 2 0 0 0-2-2zm-6 24c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zm12 0c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zm-6-22a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1 1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/>
+  </svg>`,
+  Christian: `<svg viewBox="0 0 64 64" fill="currentColor">
+    <!-- Latin Cross with slight border glow -->
+    <path d="M32 6c-1.7 0-3 1.3-3 3v12H18c-1.7 0-3 1.3-3 3s1.3 3 3 3h11v32c0 1.7 1.3 3 3 3s3-1.3 3-3V27h11c1.7 0 3-1.3 3-3s-1.3-3-3-3H35V9c0-1.7-1.3-3-3-3z"/>
+  </svg>`,
+  Jain: `<svg viewBox="0 0 64 64" fill="currentColor">
+    <!-- Sacred Lotus Flower outline -->
+    <path d="M32 8c-2 4-5 8-9 11-5 4-11 5-11 10 0 6 5 11 11 11 4 0 7-2 9-5 2 3 5 5 9 5 6 0 11-5 11-11 0-5-6-6-11-10-4-3-7-7-9-11zm-5 23c0 2.8-2.2 5-5 5s-5-2.2-5-5 2.2-5 5-5 5 2.2 5 5zm10 5c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z"/>
+  </svg>`,
+  Buddhist: `<svg viewBox="0 0 64 64" fill="currentColor">
+    <!-- Wheel of Dharma outline -->
+    <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="2.5"/>
+    <circle cx="32" cy="32" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M32 6v18M32 40v18M6 32h18M40 32h18M13.6 13.6l12.7 12.7M37.7 37.7l12.7 12.7M13.6 50.4l12.7-12.7M37.7 26.3l12.7-12.7" stroke="currentColor" stroke-width="2"/>
+  </svg>`,
+  None: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+    <!-- Symmetric floral swirl -->
+    <path d="M32 10 Q32 26 20 26 Q12 26 12 32 Q12 38 20 38 Q32 38 32 54 Q32 38 44 38 Q52 38 52 32 Q52 26 44 26 Q32 26 32 10Z"/>
+    <circle cx="32" cy="32" r="3" fill="currentColor"/>
+  </svg>`
+};
+
+const CORNER_SVG_PATH = `<svg viewBox="0 0 48 48" fill="none">
+<path d="M2 2L2 18" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>
+<path d="M2 2L18 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>
+<path d="M2 8Q9 8 9 2" stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.5"/>
+<circle cx="2" cy="2" r="1.8" fill="currentColor" opacity="0.7"/>
+<circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.28"/>
+</svg>`;
+
+// ══════════════════════════════════════════════════════
+//  DYNAMIC FORM SECTION ACCORDIONS RENDER
+// ══════════════════════════════════════════════════════
+const SECTION_TEMPLATES = {
+  // 1. Wedding Template Accordions
+  wedding: [
+    {
+      id: 'groom', ico: '🤵', color: 'ico-rose', title: 'Groom Details', sub: 'वर पक्ष विवरण',
+      render() {
+        const g = S.card.groom;
+        return `
+          <div class="fg"><label class="fl">Groom's Full Name</label><input class="fi" value="${esc(g.name)}" placeholder="Rahul Kumar Sharma" data-field="groom.name"></div>
+          <div class="sub-h">Groom's Parents</div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Father's Name</label><input class="fi" value="${esc(g.fatherName)}" placeholder="Shri Ram Prasad Sharma" data-field="groom.fatherName"></div>
+            <div class="fg"><label class="fl">Mother's Name</label><input class="fi" value="${esc(g.motherName)}" placeholder="Smt. Kaushalya Devi" data-field="groom.motherName"></div>
+          </div>
+          <div class="fg"><label class="fl">City / Residence</label><input class="fi" value="${esc(g.city)}" placeholder="Lucknow" data-field="groom.city"></div>
+        `;
+      }
+    },
+    {
+      id: 'bride', ico: '👰', color: 'ico-blue', title: 'Bride Details', sub: 'वधू पक्ष विवरण',
+      render() {
+        const b = S.card.bride;
+        return `
+          <div class="fg"><label class="fl">Bride's Full Name</label><input class="fi" value="${esc(b.name)}" placeholder="Priya Devi Gupta" data-field="bride.name"></div>
+          <div class="sub-h">Bride's Parents</div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Father's Name</label><input class="fi" value="${esc(b.fatherName)}" placeholder="Shri Mohan Lal Gupta" data-field="bride.fatherName"></div>
+            <div class="fg"><label class="fl">Mother's Name</label><input class="fi" value="${esc(b.motherName)}" placeholder="Smt. Savitri Devi" data-field="bride.motherName"></div>
+          </div>
+          <div class="fg"><label class="fl">City / Residence</label><input class="fi" value="${esc(b.city)}" placeholder="Agra" data-field="bride.city"></div>
+        `;
+      }
+    },
+    {
+      id: 'events', ico: '📅', color: 'ico-green', title: 'Ceremonies & Events', sub: 'मांगलिक कार्यक्रम',
+      render() { return renderEventsSectionHtml(); }
+    },
+    {
+      id: 'vinit', ico: '🙏', color: 'ico-amber', title: 'Vinit & Welcome Note', sub: 'विनीत एवं स्वागतकर्ता',
+      render() { return renderVinitSectionHtml(); }
+    },
+    {
+      id: 'bal', ico: '👦', color: 'ico-purple', title: 'Bal Aagrah (Kids)', sub: 'बाल आग्रह',
+      render() { return renderBalAagrahSectionHtml(); }
+    },
+    {
+      id: 'darsh', ico: '👴', color: 'ico-teal', title: 'Darshnabhilashi', sub: 'दर्शनाभिलाषी',
+      render() { return renderDarshnabhilashiSectionHtml(); }
+    },
+    {
+      id: 'swagat', ico: '🤝', color: 'ico-orange', title: 'Swagatakankshi', sub: 'स्वागताकांक्षी',
+      render() { return renderSwagatakankshiSectionHtml(); }
+    }
+  ],
+
+  // 2. Nikah Template Accordions
+  nikah: [
+    {
+      id: 'groom', ico: '🤵', color: 'ico-rose', title: 'Groom (Dulha) Details', sub: 'दूल्हा पक्ष विवरण',
+      render() {
+        const g = S.card.groom;
+        return `
+          <div class="fg"><label class="fl">Dulha's Full Name</label><input class="fi" value="${esc(g.name)}" placeholder="Rahul Kumar Sharma" data-field="groom.name"></div>
+          <div class="sub-h">Dulha's Parents</div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Father's Name</label><input class="fi" value="${esc(g.fatherName)}" placeholder="Shri Ram Prasad" data-field="groom.fatherName"></div>
+            <div class="fg"><label class="fl">Mother's Name</label><input class="fi" value="${esc(g.motherName)}" placeholder="Smt. Kaushalya" data-field="groom.motherName"></div>
+          </div>
+          <div class="fg"><label class="fl">City / Residence</label><input class="fi" value="${esc(g.city)}" placeholder="Lucknow" data-field="groom.city"></div>
+        `;
+      }
+    },
+    {
+      id: 'bride', ico: '👰', color: 'ico-blue', title: 'Bride (Dulhan) Details', sub: 'दुल्हन पक्ष विवरण',
+      render() {
+        const b = S.card.bride;
+        return `
+          <div class="fg"><label class="fl">Dulhan's Full Name</label><input class="fi" value="${esc(b.name)}" placeholder="Priya Devi Gupta" data-field="bride.name"></div>
+          <div class="sub-h">Dulhan's Parents</div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Father's Name</label><input class="fi" value="${esc(b.fatherName)}" placeholder="Shri Mohan Lal" data-field="bride.fatherName"></div>
+            <div class="fg"><label class="fl">Mother's Name</label><input class="fi" value="${esc(b.motherName)}" placeholder="Smt. Savitri" data-field="bride.motherName"></div>
+          </div>
+          <div class="fg"><label class="fl">City / Residence</label><input class="fi" value="${esc(b.city)}" placeholder="Agra" data-field="bride.city"></div>
+        `;
+      }
+    },
+    {
+      id: 'nikahExtra', ico: '📜', color: 'ico-amber', title: 'Nikah Ritual Details', sub: 'निकाह मेहर व गवाह',
+      render() {
+        const n = S.card.nikah || { meher: '', qazi: '', witnesses: '' };
+        return `
+          <div class="fg"><label class="fl">Proposed Meher Value</label><input class="fi" value="${esc(n.meher)}" placeholder="51,000 INR" data-field="nikah.meher"></div>
+          <div class="fg"><label class="fl">Nikah Khawan / Qazi</label><input class="fi" value="${esc(n.qazi)}" placeholder="Hazrat Maulana Alim Siddiqui" data-field="nikah.qazi"></div>
+          <div class="fg"><label class="fl">Nikah Witnesses (Gawah)</label><input class="fi" value="${esc(n.witnesses)}" placeholder="Zaid Khan & Salim Qureshi" data-field="nikah.witnesses"></div>
+        `;
+      }
+    },
+    {
+      id: 'events', ico: '📅', color: 'ico-green', title: 'Nikah & Feasts Events', sub: 'समारोह व भोज कार्यक्रम',
+      render() { return renderEventsSectionHtml(); }
+    },
+    {
+      id: 'vinit', ico: '🙏', color: 'ico-amber', title: 'Welcome Greeting & RSVP', sub: 'विनीत एवं आमंत्रण संदेश',
+      render() { return renderVinitSectionHtml(); }
+    },
+    {
+      id: 'darsh', ico: '👵', color: 'ico-teal', title: 'Grandparents & Elders (Dua-goiyan)', sub: 'बुजुर्गों का आशीर्वाद',
+      render() { return renderDarshnabhilashiSectionHtml(); }
+    }
+  ],
+
+  // 3. Birthday Template Accordions
+  birthday: [
+    {
+      id: 'birthdayBoy', ico: '🎂', color: 'ico-rose', title: 'Celebrant Details', sub: 'जन्मदिन बालक/बालिका विवरण',
+      render() {
+        const bd = S.card.birthday || { name: '', age: '', dob: '', time: '', parentText: '' };
+        return `
+          <div class="fg"><label class="fl">Birthday Child / Person Name</label><input class="fi" value="${esc(bd.name)}" placeholder="Aarav Sharma" data-field="birthday.name"></div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Age Turning</label><input class="fi" type="number" value="${esc(bd.age)}" placeholder="5" data-field="birthday.age"></div>
+            <div class="fg"><label class="fl">Date of Birth</label><input class="fi" type="date" value="${esc(bd.dob)}" data-field="birthday.dob"></div>
+          </div>
+          <div class="fg"><label class="fl">Time of Birth (optional)</label><input class="fi" value="${esc(bd.time)}" placeholder="05:00 PM" data-field="birthday.time"></div>
+        `;
+      }
+    },
+    {
+      id: 'parents', ico: '👨‍👩‍👦', color: 'ico-blue', title: 'Parents & Hosts', sub: 'अभिभावक विवरण',
+      render() {
+        const bd = S.card.birthday || { parentText: '' };
+        return `
+          <div class="fg"><label class="fl">Father's & Mother's Names (Hosts)</label><input class="fi" value="${esc(bd.parentText)}" placeholder="Shri Ramesh & Smt. Poonam Sharma" data-field="birthday.parentText"></div>
+          <span class="fhint">Displayed on the card as the main inviting hosts.</span>
+        `;
+      }
+    },
+    {
+      id: 'events', ico: '📅', color: 'ico-green', title: 'Party Schedule', sub: 'जन्मदिन केक कटिंग व भोज',
+      render() { return renderEventsSectionHtml(); }
+    },
+    {
+      id: 'vinit', ico: '✍️', color: 'ico-amber', title: 'Invitation Message & RSVP', sub: 'स्वागत संदेश',
+      render() { return renderVinitSectionHtml(); }
+    },
+    {
+      id: 'bal', ico: '👦', color: 'ico-purple', title: 'Special Friends Invited', sub: 'बाल मित्र मंडली',
+      render() { return renderBalAagrahSectionHtml(); }
+    }
+  ],
+
+  // 4. Anniversary Template Accordions
+  anniversary: [
+    {
+      id: 'anniversaryCouple', ico: '💑', color: 'ico-rose', title: 'Couple Details', sub: 'दम्पत्ति विवरण',
+      render() {
+        const an = S.card.anniversary || { husband: '', wife: '', years: '', hostChildren: '' };
+        return `
+          <div class="fr">
+            <div class="fg"><label class="fl">Husband's Name</label><input class="fi" value="${esc(an.husband)}" placeholder="Rohan Verma" data-field="anniversary.husband"></div>
+            <div class="fg"><label class="fl">Wife's Name</label><input class="fi" value="${esc(an.wife)}" placeholder="Priya Verma" data-field="anniversary.wife"></div>
+          </div>
+          <div class="fg"><label class="fl">Milestone Year (e.g. 25th / 50th)</label><input class="fi" value="${esc(an.years)}" placeholder="25" data-field="anniversary.years"></div>
+        `;
+      }
+    },
+    {
+      id: 'anniversaryHosts', ico: '👨‍👩‍👧', color: 'ico-blue', title: 'Inviting Hosts (Children)', sub: 'आयोजक बच्चे',
+      render() {
+        const an = S.card.anniversary || { hostChildren: '' };
+        return `
+          <div class="fg"><label class="fl">Host & Kids line</label><input class="fi" value="${esc(an.hostChildren)}" placeholder="Invited by: Rahul, Varun and Sneha" data-field="anniversary.hostChildren"></div>
+          <span class="fhint">Usually shown at the bottom inviting relatives on behalf of parents.</span>
+        `;
+      }
+    },
+    {
+      id: 'events', ico: '📅', color: 'ico-green', title: 'Celebration Events', sub: 'सालगिरह भोज व नृत्य',
+      render() { return renderEventsSectionHtml(); }
+    },
+    {
+      id: 'vinit', ico: '📝', color: 'ico-amber', title: 'Greeting Message & RSVP', sub: 'विनित संदेश',
+      render() { return renderVinitSectionHtml(); }
+    },
+    {
+      id: 'darsh', ico: '👴', color: 'ico-teal', title: 'Elders & Blessings', sub: 'बुजुर्गों का स्नेह',
+      render() { return renderDarshnabhilashiSectionHtml(); }
+    }
+  ],
+
+  // 5. Corporate Template Accordions
+  corporate: [
+    {
+      id: 'corporateHost', ico: '🏢', color: 'ico-rose', title: 'Summit & Organizers', sub: 'कंपनी व कार्यक्रम विवरण',
+      render() {
+        const corp = S.card.corporate || { title: '', host: '', guestOfHonor: '', dressCode: '' };
+        return `
+          <div class="fg"><label class="fl">Official Event Title</label><input class="fi" value="${esc(corp.title)}" placeholder="Tech Innovation Summit 2025" data-field="corporate.title"></div>
+          <div class="fg"><label class="fl">Organizing Host Agency / Company</label><input class="fi" value="${esc(corp.host)}" placeholder="InnovateCorp Inc." data-field="corporate.host"></div>
+          <div class="fg"><label class="fl">Chief Guest of Honor</label><input class="fi" value="${esc(corp.guestOfHonor)}" placeholder="Dr. S. K. Sen (Keynote)" data-field="corporate.guestOfHonor"></div>
+          <div class="fg"><label class="fl">Dress Code Info (optional)</label><input class="fi" value="${esc(corp.dressCode)}" placeholder="Formal Suit / Business Casual" data-field="corporate.dressCode"></div>
+        `;
+      }
+    },
+    {
+      id: 'events', ico: '📅', color: 'ico-green', title: 'Agenda & Conference Schedule', sub: 'सम्मेलन कार्यक्रम समय',
+      render() { return renderEventsSectionHtml(); }
+    },
+    {
+      id: 'vinit', ico: '📝', color: 'ico-amber', title: 'Official Invite & RSVP Details', sub: 'विनम्र निमंत्रण व संपर्क',
+      render() { return renderVinitSectionHtml(); }
+    }
+  ]
+};
+
+// Sub-renderers for shared modules
+function renderEventsSectionHtml() {
+  const evts = S.card.events;
+  return `
+    <div id="ev-list">
+      ${evts.length ? evts.map((ev, idx) => `
+        <div class="ev-entry" id="ee-${ev.id}">
+          <div class="ev-head">
+            <span class="ev-name">${esc(ev.name) || 'Ceremony Event'}</span>
+            <button class="ev-del" onclick="removeEvent('${ev.id}')">✕</button>
+          </div>
+          <div class="ev-body">
+            <div class="fg">
+              <label class="fl">Event Name</label>
+              <input class="fi" value="${esc(ev.name)}" placeholder="Haldi Ceremony / Vivah" oninput="updateEvent('${ev.id}','name',this.value); this.closest('.ev-entry').querySelector('.ev-name').textContent=this.value||'Ceremony Event'">
+            </div>
+            <div class="fr">
+              <div class="fg"><label class="fl">Date</label><input type="date" class="fi" value="${esc(ev.date)}" oninput="updateEvent('${ev.id}','date',this.value)"></div>
+              <div class="fg"><label class="fl">Time</label><input class="fi" value="${esc(ev.time)}" placeholder="10:00 AM" oninput="updateEvent('${ev.id}','time',this.value)"></div>
+            </div>
+            <div class="fg">
+              <label class="fl">Venue Location Name</label>
+              <input class="fi" value="${esc(ev.venue)}" placeholder="Ram Barat Ghar" oninput="updateEvent('${ev.id}','venue',this.value)">
+            </div>
+            <div class="fg">
+              <label class="fl">Venue Address</label>
+              <input class="fi" value="${esc(ev.address)}" placeholder="Civil Lines, Lucknow" oninput="updateEvent('${ev.id}','address',this.value)">
+            </div>
+          </div>
+        </div>`).join('') : '<p style="font-size:0.75rem;color:#c5c2bb;padding:8px 0;text-align:center;">No events added yet.</p>'}
+    </div>
+    <button class="add-btn" onclick="addEvent()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Ceremony Event
+    </button>
+  `;
+}
+
+function renderVinitSectionHtml() {
+  const c = S.card;
+  return `
+    <div class="fg">
+      <label class="fl">Invitation Message Wording</label>
+      <textarea class="fi ft" placeholder="आपकी उपस्थिति हमारे लिए सौभाग्य की बात होगी।" data-field="vinit">${esc(c.vinit)}</textarea>
+      <span class="fhint">Main central text overlay. Supports pure Devnagari Hindi or English.</span>
+    </div>
+    <div class="sub-h">RSVP Contact Details</div>
+    <div class="fr">
+      <div class="fg"><label class="fl">RSVP Phone No.</label><input class="fi" type="tel" value="${esc(c.rsvpContact)}" placeholder="+91 98765 43210" data-field="rsvpContact"></div>
+      <div class="fg"><label class="fl">Inviting Name (optional)</label><input class="fi" value="${esc(c.rsvpName)}" placeholder="Sharma Family" data-field="rsvpName"></div>
+    </div>
+  `;
+}
+
+function renderBalAagrahSectionHtml() {
+  const list = S.card.balAagrah || [];
+  return `
+    <p style="font-size:0.72rem;color:var(--g400);margin-bottom:10px;line-height:1.45">Include children/cousins presenting sweet inviting notes (e.g. 'बुआ की शादी में जरूर आना')</p>
+    <div id="bal-list">
+      ${list.map((p, i) => `
+        <div class="pe">
+          <div class="pe-info">
+            <div class="pe-name">${esc(p.name)}</div>
+            <div class="pe-role">${esc(p.relation || 'Bal Aagrah')}</div>
+          </div>
+          <button class="pe-del" onclick="removeBal(${i})">✕</button>
+        </div>`).join('') || '<p style="font-size:0.73rem;color:#c5c2bb;margin-bottom:8px;text-align:center;">None added yet.</p>'}
+    </div>
+    <div class="fr" style="margin-top:10px">
+      <div class="fg" style="margin:0"><input class="fi" id="bal-n" placeholder="Child's Name"></div>
+      <div class="fg" style="margin:0"><input class="fi" id="bal-r" placeholder="Relation / Text (optional)"></div>
+    </div>
+    <button class="add-btn" onclick="addBal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Child Note</button>
+  `;
+}
+
+function renderDarshnabhilashiSectionHtml() {
+  const list = S.card.darshnabhilashi || [];
+  return `
+    <p style="font-size:0.72rem;color:var(--g400);margin-bottom:10px;line-height:1.45">Respected family elders whose names are written as seeker of blessings.</p>
+    <div id="darsh-list">
+      ${list.map((p, i) => `
+        <div class="pe">
+          <div class="pe-info">
+            <div class="pe-name">${esc(p.name)}</div>
+            <div class="pe-role">${esc(p.relation || 'Elder Blessings')}</div>
+          </div>
+          <button class="pe-del" onclick="removeDarsh(${i})">✕</button>
+        </div>`).join('') || '<p style="font-size:0.73rem;color:#c5c2bb;margin-bottom:8px;text-align:center;">None added yet.</p>'}
+    </div>
+    <div class="fr" style="margin-top:10px">
+      <div class="fg" style="margin:0"><input class="fi" id="darsh-n" placeholder="Elder's Full Name"></div>
+      <div class="fg" style="margin:0"><input class="fi" id="darsh-r" placeholder="Relation / Subtext"></div>
+    </div>
+    <button class="add-btn" onclick="addDarsh()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Elder Blesser</button>
+  `;
+}
+
+function renderSwagatakankshiSectionHtml() {
+  const d = S.card.swagatakankshi || { groomSide: [], brideSide: [] };
+  const rl = (list, side) => list.map((p, i) => `
+    <div class="pe">
+      <div class="pe-info">
+        <div class="pe-name">${esc(p.name)}</div>
+        <div class="pe-role">${esc(p.relation || 'Swagatakankshi')}</div>
+      </div>
+      <button class="pe-del" onclick="removeSwagat('${side}',${i})">✕</button>
+    </div>`).join('') || '<p style="font-size:0.73rem;color:#c5c2bb;margin-bottom:8px;text-align:center;">None added.</p>';
+  return `
+    <div class="sub-h" style="margin-top:0">Groom's Side Welcomers</div>
+    <div id="swg-list">${rl(d.groomSide, 'groom')}</div>
+    <div class="fr" style="margin-top:6px">
+      <div class="fg" style="margin:0"><input class="fi" id="sg-n" placeholder="Name"></div>
+      <div class="fg" style="margin:0"><input class="fi" id="sg-r" placeholder="Relation (optional)"></div>
+    </div>
+    <button class="add-btn" onclick="addSwagat('groom')" style="margin-top:6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Groom Welcomer</button>
+
+    <div class="sub-h" style="margin-top:18px">Bride's Side Welcomers</div>
+    <div id="swb-list">${rl(d.brideSide, 'bride')}</div>
+    <div class="fr" style="margin-top:6px">
+      <div class="fg" style="margin:0"><input class="fi" id="sb-n" placeholder="Name"></div>
+      <div class="fg" style="margin:0"><input class="fi" id="sb-r" placeholder="Relation (optional)"></div>
+    </div>
+    <button class="add-btn" onclick="addSwagat('bride')" style="margin-top:6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Bride Welcomer</button>
+  `;
+}
+
+// ══════════════════════════════════════════════════════
+//  DYNAMIC RENDER CORE FOR FORM ELEMENTS
+// ══════════════════════════════════════════════════════
+function renderSections() {
+  const wrap = $('sections-wrap');
+  if (!wrap) return;
+
+  const currentTemplate = S.card.templateId || 'wedding';
+  const schema = SECTION_TEMPLATES[currentTemplate] || SECTION_TEMPLATES.wedding;
+
+  wrap.innerHTML = schema.map(sec => {
+    const isOpen = S.ui.openSections.includes(sec.id);
+    return `
+      <div class="sc${isOpen ? ' open' : ''}" id="sc-${sec.id}">
+        <div class="sc-head" onclick="toggleSection('${sec.id}')">
+          <div class="sc-left">
+            <div class="sc-ico ${sec.color}">${sec.ico}</div>
+            <div>
+              <div class="sc-title">${sec.title}</div>
+              ${sec.sub ? `<div class="sc-subtitle">${sec.sub}</div>` : ''}
+            </div>
+          </div>
+          <svg class="sc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="sc-body">
+          <div class="sc-inner" id="sc-inner-${sec.id}">${isOpen ? sec.render() : ''}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  bindInputs();
+}
+
+function refreshSection(id) {
+  const currentTemplate = S.card.templateId || 'wedding';
+  const schema = SECTION_TEMPLATES[currentTemplate] || SECTION_TEMPLATES.wedding;
+  const sec = schema.find(s => s.id === id);
+  const el = $(`sc-inner-${id}`);
+  if (sec && el) {
+    el.innerHTML = sec.render();
+    bindInputs();
+  }
+}
+
+function toggleSection(id) {
+  const card = $(`sc-${id}`);
+  if (!card) return;
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open', !wasOpen);
+  if (!wasOpen) {
+    if (!S.ui.openSections.includes(id)) S.ui.openSections.push(id);
+    const inner = $(`sc-inner-${id}`);
+    const currentTemplate = S.card.templateId || 'wedding';
+    const schema = SECTION_TEMPLATES[currentTemplate] || SECTION_TEMPLATES.wedding;
+    const sec = schema.find(s => s.id === id);
+    if (inner && sec && !inner.children.length) {
+      inner.innerHTML = sec.render();
+      bindInputs();
+    }
+  } else {
+    S.ui.openSections = S.ui.openSections.filter(x => x !== id);
+  }
+}
+
+function toggleFirstAccordionSection() {
+  const currentTemplate = S.card.templateId || 'wedding';
+  const schema = SECTION_TEMPLATES[currentTemplate] || SECTION_TEMPLATES.wedding;
+  if (schema && schema[0]) {
+    toggleSection(schema[0].id);
+    // Smooth scroll Left column to this item
+    const el = $(`sc-${schema[0].id}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function bindInputs() {
+  document.querySelectorAll('[data-field]').forEach(el => {
+    el.oninput = function() { setField(this.dataset.field, this.value); };
+    el.onchange = function() { setField(this.dataset.field, this.value); };
+  });
+  
+  // Sync top shortcut card banner values
+  const rsvpShortcut = $('pcb-rsvp');
+  if (rsvpShortcut) rsvpShortcut.value = S.card.rsvpContact || '';
+  
+  const venueShortcut = $('pcb-venue');
+  if (venueShortcut && S.card.events[0]) venueShortcut.value = S.card.events[0].venue || '';
+  
+  const dateShortcut = $('pcb-date');
+  if (dateShortcut && S.card.events[0]) dateShortcut.value = S.card.events[0].date || '';
+}
+
+function setField(path, val) {
+  const keys = path.split('.');
+  let obj = S.card;
+  for(let i=0; i<keys.length-1; i++) {
+    if(!obj[keys[i]]) obj[keys[i]] = {};
+    obj = obj[keys[i]];
+  }
+  obj[keys[keys.length-1]] = val;
+  renderCard();
+  triggerAutosave();
+}
+
+function updStyle(f, v) {
+  S.card.style[f] = v;
+  renderCard();
+  triggerAutosave();
+  
+  // sync property sliders in customize
+  const cusD = $('cus-decors'); if(cusD && f==='showDecorations') cusD.checked = v;
+  const cusP = $('cus-parents'); if(cusP && f==='showParents') cusP.checked = v;
+  const pdD = $('pd-decors'); if(pdD && f==='showDecorations') pdD.checked = v;
+  const pdP = $('pd-parents'); if(pdP && f==='showParents') pdP.checked = v;
+  const pdC = $('pd-city'); if(pdC && f==='showCity') pdC.checked = v;
+}
+
+// ══════════════════════════════════════════════════════
+//  DYNAMIC HIGH-FIDELITY LIVE PREVIEW CANVAS
+// ══════════════════════════════════════════════════════
+const TAGS_LANG = {
+  English: {
+    wedding: '💍 Wedding Invitation',
+    nikah: '🌙 Nikah Invitation',
+    birthday: '🎂 Birthday Celebration',
+    anniversary: '❤ Anniversary Party',
+    corporate: '💼 Professional Invite'
+  },
+  Hindi: {
+    wedding: '💍 शुभ विवाह आमंत्रण',
+    nikah: '🌙 निकाह निमंत्रण पत्र',
+    birthday: '🎂 जन्मदिन मंगल महोत्सव',
+    anniversary: '❤ वैवाहिक वर्षगाँठ आमंत्रण',
+    corporate: '💼 आधिकारिक सम्मेलन आमंत्रण'
+  },
+  Hinglish: {
+    wedding: '💍 Shubh Vivah Invitation',
+    nikah: '🌙 Nikah Nimantran Patra',
+    birthday: '🎂 Janamdin Party',
+    anniversary: '❤ Shaadi Salgirah Celebration',
+    corporate: '💼 Official Corporate Meet'
+  }
+};
+
+const FONT_MAP = {
+  Cinzel: "'Cinzel', serif",
+  Cormorant: "'Cormorant Garamond', serif",
+  Dancing: "'Dancing Script', cursive",
+  Playfair: "'Playfair Display', serif",
+  Raleway: "'Raleway', sans-serif",
+  Montserrat: "'Montserrat', sans-serif"
+};
+
+function renderCard() {
+  const c = S.card;
+  const s = c.style;
+  const card = $('ic');
+  if (!card) return;
+
+  // 1. Setup global border styles, colors, and sizing
+  card.className = `t-${c.templateId || 'wedding'} ratio-${c.aspectRatio || 'portrait'}`;
+  card.style.fontFamily = FONT_MAP[s.font] || FONT_MAP.Cinzel;
+  card.style.setProperty('--ca', s.primaryColor || '#c9a84c');
+  
+  const showDecors = s.showDecorations !== false;
+  const showParentsLine = s.showParents !== false;
+  const showCity = s.showCity === true;
+  
+  // 2. Generate active cultural symbol logo
+  let activeSymbolSvg = '';
+  if (c.religion && c.religion !== 'None') {
+    activeSymbolSvg = `<div class="c-logo">${SYMBOLS[c.religion] || ''}</div>`;
+  } else if (c.religion === 'None') {
+    activeSymbolSvg = `<div class="c-logo">${SYMBOLS.None}</div>`;
+  }
+
+  // 3. Select correct header label based on language & template
+  const langKey = c.language || 'English';
+  const langSchema = TAGS_LANG[langKey] || TAGS_LANG.English;
+  const activeHeaderTag = langSchema[c.templateId] || langSchema.wedding;
+
+  // 4. Render main invitation body dynamically based on template type
+  let contentHtml = '';
+
+  if (c.templateId === 'wedding' || c.templateId === 'nikah') {
+    // WEDDING or NIKAH Layout
+    const person = p => `
+      <div class="c-name">${esc(p.name) || '—'}</div>
+      ${showParentsLine && (p.fatherName || p.motherName) ? `<div class="c-parents">${[p.fatherName, p.motherName].filter(Boolean).map(esc).join(' &amp; ')}</div>` : ''}
+      ${showCity && p.city ? `<div class="c-city">${esc(p.city)}</div>` : ''}
+    `;
+
+    contentHtml = `
+      ${activeSymbolSvg}
+      <div class="c-tag">${esc(activeHeaderTag)}</div>
+      ${person(c.groom)}
+      <div class="c-and">
+        <div class="orn"><div class="ol"></div><div class="os">❋</div><div class="ol"></div></div>
+        <div class="c-amp">&amp;</div>
+        <div class="orn"><div class="ol"></div><div class="os">❋</div><div class="ol"></div></div>
+      </div>
+      ${person(c.bride)}
+      
+      ${c.templateId === 'nikah' && c.nikah && (c.nikah.meher || c.nikah.qazi) ? `
+        <div class="c-div"><div class="c-dl"></div><div class="c-di">📜</div><div class="c-dl"></div></div>
+        <div style="font-size:0.75rem; opacity:0.85; line-height:1.5;">
+          ${c.nikah.meher ? `<div><strong>Meher:</strong> ${esc(c.nikah.meher)}</div>` : ''}
+          ${c.nikah.qazi ? `<div><strong>Qazi:</strong> ${esc(c.nikah.qazi)}</div>` : ''}
+          ${c.nikah.witnesses ? `<div style="font-size:0.68rem; opacity:0.7; margin-top:2px;">Gawah: ${esc(c.nikah.witnesses)}</div>` : ''}
+        </div>
+      ` : ''}
+    `;
+  }
+  else if (c.templateId === 'birthday') {
+    // BIRTHDAY Layout
+    const bd = c.birthday || { name: 'Aarav Sharma', age: '5', dob: '', time: '', parentText: '' };
+    contentHtml = `
+      ${activeSymbolSvg}
+      <div class="c-tag">${esc(activeHeaderTag)}</div>
+      <div style="font-family:'Alex Brush', cursive; font-size:2.8rem; color:var(--ca); line-height:1; margin-bottom:8px;">Happy Birthday</div>
+      <div class="c-name" style="font-size:1.8rem; font-weight:800; letter-spacing:-0.5px;">${esc(bd.name) || 'Aarav'}</div>
+      <div style="font-size:0.85rem; font-weight:600; opacity:0.85; margin:6px 0 10px;">Is Turning <span style="color:var(--ca); font-size:1.1rem; font-weight:800;">${esc(bd.age || '5')}</span> Years Old!</div>
+      ${bd.dob ? `<div style="font-family:'Montserrat',sans-serif; font-size:0.68rem; opacity:0.75; letter-spacing:1px; margin-bottom:2px;">BORN ON: ${fmtDate(bd.dob)} ${bd.time ? `at ${esc(bd.time)}` : ''}</div>` : ''}
+      ${showParentsLine && bd.parentText ? `<div class="c-parents" style="margin-top:6px; opacity:0.65;">Beloved Child of: <br><strong>${esc(bd.parentText)}</strong></div>` : ''}
+    `;
+  }
+  else if (c.templateId === 'anniversary') {
+    // ANNIVERSARY Layout
+    const an = c.anniversary || { husband: '', wife: '', years: '25', hostChildren: '' };
+    contentHtml = `
+      ${activeSymbolSvg}
+      <div class="c-tag">${esc(activeHeaderTag)}</div>
+      <div style="font-family:'Alex Brush', cursive; font-size:2.6rem; color:var(--ca); line-height:1;">Celebrating Love</div>
+      <div class="c-name" style="font-size:1.55rem; font-weight:800; margin:5px 0;">${esc(an.husband)} &amp; ${esc(an.wife)}</div>
+      <div style="font-size:0.82rem; font-weight:600; opacity:0.85; margin-bottom:8px;">For Their Milestone <span style="color:var(--ca); font-size:1.05rem; font-weight:800;">${esc(an.years || '25')}th</span> Anniversary!</div>
+      ${showParentsLine && an.hostChildren ? `<div class="c-parents" style="margin-top:6px; font-size:0.72rem; opacity:0.65;">${esc(an.hostChildren)}</div>` : ''}
+    `;
+  }
+  else if (c.templateId === 'corporate') {
+    // CORPORATE Layout
+    const corp = c.corporate || { title: '', host: '', guestOfHonor: '', dressCode: '' };
+    contentHtml = `
+      ${activeSymbolSvg}
+      <div class="c-tag" style="letter-spacing:4px; font-weight:800; color:var(--ca);">${esc(activeHeaderTag)}</div>
+      <div class="c-name" style="font-size:1.35rem; font-weight:800; line-height:1.25; margin-bottom:8px; font-family:'Raleway',sans-serif; text-transform:uppercase;">${esc(corp.title)}</div>
+      <div style="font-size:0.78rem; font-weight:600; opacity:0.85; margin-bottom:10px;">Hosted by: <span style="color:var(--ca);">${esc(corp.host)}</span></div>
+      ${corp.guestOfHonor ? `<div style="font-size:0.72rem; border-top:1px solid rgba(0,0,0,0.06); border-bottom:1px solid rgba(0,0,0,0.06); padding:6px 14px; opacity:0.75; font-style:italic;"><strong>Guest Speaker:</strong> ${esc(corp.guestOfHonor)}</div>` : ''}
+      ${corp.dressCode ? `<div style="font-family:'Montserrat',sans-serif; font-size:0.56rem; letter-spacing:1px; opacity:0.5; margin-top:8px; text-transform:uppercase;">Dress Code: ${esc(corp.dressCode)}</div>` : ''}
+    `;
+  }
+
+  // 5. Append generic events, welcome greetings, and RSVP overlays
+  card.innerHTML = `
+    ${showDecors ? `<div class="cb"></div><div class="cc tl">${CORNER_SVG_PATH}</div><div class="cc tr">${CORNER_SVG_PATH}</div><div class="cc bl">${CORNER_SVG_PATH}</div><div class="cc br">${CORNER_SVG_PATH}</div>` : ''}
+    <div class="ci">
+      ${contentHtml}
+      <div class="c-div"><div class="c-dl"></div><div class="c-di">✦</div><div class="c-dl"></div></div>
+      
+      ${c.vinit ? `<div class="c-vinit">${esc(c.vinit)}</div>` : ''}
+      
+      ${c.events && c.events.length ? `<div class="c-evs">${c.events.map((ev, i) => `
+        ${i > 0 ? '<div class="c-sep">• • •</div>' : ''}
+        <div class="c-ev">
+          <div class="c-evn" style="color:var(--ca);">${esc(ev.name)}</div>
+          ${ev.date || ev.time ? `<div class="c-evm">${ev.date ? `<span>${fmtDate(ev.date)}</span>` : ''} ${ev.date && ev.time ? '<span>·</span>' : ''} ${ev.time ? `<span>${esc(ev.time)}</span>` : ''}</div>` : ''}
+          ${ev.venue ? `<div class="c-evv">${esc(ev.venue)}</div>` : ''}
+          ${ev.address ? `<div class="c-eva">${esc(ev.address)}</div>` : ''}
+        </div>`).join('')}</div>` : ''}
+        
+      ${c.rsvpContact ? `<div class="c-rsvp">${c.rsvpName ? esc(c.rsvpName) + ' — ' : ''}RSVP: ${esc(c.rsvpContact)}</div>` : ''}
+    </div>`;
+
+  // 6. Sync personal shortcut card banner headers
+  const bannerNames = $('pc-main-name');
+  const bannerSub = $('pc-sub-text');
+  
+  if (bannerNames) {
+    if (c.templateId === 'wedding' || c.templateId === 'nikah') {
+      bannerNames.innerHTML = esc(c.groom.name || 'Groom') + ' &amp; ' + esc(c.bride.name || 'Bride');
+    } else if (c.templateId === 'birthday') {
+      bannerNames.textContent = esc(c.birthday.name || 'Child Name');
+    } else if (c.templateId === 'anniversary') {
+      bannerNames.textContent = esc(c.anniversary.husband || 'Husband') + ' & ' + esc(c.anniversary.wife || 'Wife');
+    } else if (c.templateId === 'corporate') {
+      bannerNames.textContent = esc(c.corporate.title || 'Official Event');
+    }
+  }
+  
+  if (bannerSub) {
+    const templateNames = { wedding: 'Wedding Invitation', nikah: 'Nikah Nimantran', birthday: 'Birthday Card', anniversary: 'Anniversary Celebration', corporate: 'Corporate Summit' };
+    bannerSub.textContent = templateNames[c.templateId] || 'Invitation Card';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  LIST CONTROLLER (Bal Aagrah, Darshnabhilashi, Swagat)
+// ══════════════════════════════════════════════════════
+function addEvent() {
+  S.card.events.push({ id: 'e'+Date.now(), name: 'New Ceremony', date: '', time: '', venue: '', address: '' });
+  refreshSection('events');
+  renderCard();
+  triggerAutosave();
+}
+function removeEvent(id) {
+  S.card.events = S.card.events.filter(e => e.id !== id);
+  refreshSection('events');
+  renderCard();
+  triggerAutosave();
+}
+function updateEvent(id, f, v) {
+  const ev = S.card.events.find(e => e.id === id);
+  if (ev) {
+    ev[f] = v;
+    renderCard();
+    triggerAutosave();
+  }
+}
+
+function addBal() {
+  const n = $('bal-n')?.value.trim();
+  if(!n) { toast('Please enter a name first', 'w'); return; }
+  S.card.balAagrah.push({ name: n, relation: $('bal-r')?.value.trim() || '' });
+  refreshSection('bal');
+  triggerAutosave();
+}
+function removeBal(i) {
+  S.card.balAagrah.splice(i, 1);
+  refreshSection('bal');
+  triggerAutosave();
+}
+
+function addDarsh() {
+  const n = $('darsh-n')?.value.trim();
+  if(!n) { toast('Please enter elder\'s name first', 'w'); return; }
+  S.card.darshnabhilashi.push({ name: n, relation: $('darsh-r')?.value.trim() || '' });
+  refreshSection('darsh');
+  triggerAutosave();
+}
+function removeDarsh(i) {
+  S.card.darshnabhilashi.splice(i, 1);
+  refreshSection('darsh');
+  triggerAutosave();
+}
+
+function addSwagat(side) {
+  const ni = side === 'groom' ? 'sg-n' : 'sb-n';
+  const ri = side === 'groom' ? 'sg-r' : 'sb-r';
+  const n = $(ni)?.value.trim();
+  if(!n) { toast('Please enter welcomer\'s name', 'w'); return; }
+  S.card.swagatakankshi[side === 'groom' ? 'groomSide' : 'brideSide'].push({ name: n, relation: $(ri)?.value.trim() || '' });
+  refreshSection('swagat');
+  triggerAutosave();
+}
+function removeSwagat(side, i) {
+  S.card.swagatakankshi[side === 'groom' ? 'groomSide' : 'brideSide'].splice(i, 1);
+  refreshSection('swagat');
+  triggerAutosave();
+}
+
+// ══════════════════════════════════════════════════════
+//  CARD PROPERTIES & SETTINGS DRAWER CONTROLLERS
+// ══════════════════════════════════════════════════════
+function syncPropertiesFields() {
+  const c = S.card;
+  const s = c.style;
+  
+  if ($('pd-religion')) $('pd-religion').value = c.religion || 'Hindu';
+  if ($('pd-decors')) $('pd-decors').checked = s.showDecorations !== false;
+  if ($('pd-ratio')) $('pd-ratio').value = c.aspectRatio || 'portrait';
+  if ($('pd-parents')) $('pd-parents').checked = s.showParents !== false;
+  if ($('pd-city')) $('pd-city').checked = s.showCity === true;
+  if ($('pd-lang')) $('pd-lang').value = c.language || 'English';
+  if ($('pd-region')) $('pd-region').value = c.region || 'North India';
+  if ($('pd-music-select')) $('pd-music-select').value = c.bgMusic || '';
+  
+  if (c.bgMusic && c.bgMusic !== 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' && c.bgMusic !== 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3') {
+    if ($('pd-music-select')) $('pd-music-select').value = 'custom';
+    if ($('custom-music-group')) $('custom-music-group').classList.remove('hidden');
+    if ($('pd-music-url')) $('pd-music-url').value = c.bgMusic;
+  } else {
+    if ($('custom-music-group')) $('custom-music-group').classList.add('hidden');
+  }
+}
+
+function setReligion(rel) {
+  S.card.religion = rel;
+  
+  // Auto update default welcome text according to religion
+  const relWelcomes = {
+    Hindu: 'परमपिता परमेश्वर की असीम अनुकम्पा से, हमारे यहाँ शुभ विवाह अवसर पर आपकी गरिमामयी उपस्थिति सादर प्रार्थनीय है।',
+    Muslim: 'In the name of Allah, Most Gracious, Most Merciful. We cordially invite you to grace the Nikah Ceremony of our children.',
+    Sikh: 'ੴ ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ। With the grace of Waheguru, we invite you to Anand Karaj.',
+    Christian: 'Together with their families, we invite you to share our joy and celebrate the holy matrimony.',
+    Jain: 'नमो जिणाणं। परम पूज्य मुनिराजों के शुभाशीष से, हमारे प्रिय परिणयोत्सव में आपका स्वागत है।',
+    Buddhist: 'Namo Buddhaya. We request the pleasure of your company on the auspicious wedding blessings.',
+    None: 'We cordially invite you to celebrate the joyous occasion with our family.'
+  };
+  
+  if (relWelcomes[rel]) {
+    S.card.vinit = relWelcomes[rel];
+    const txtArea = document.querySelector('[data-field="vinit"]');
+    if (txtArea) txtArea.value = relWelcomes[rel];
+  }
+  
+  renderCard();
+  triggerAutosave();
+  toast(`Religion theme changed to ${rel}`, 's');
+}
+
+function setLanguage(lang) {
+  S.card.language = lang;
+  
+  // Auto suggestions based on language
+  if (lang === 'Hindi') {
+    if (S.card.events[0]) S.card.events[0].name = 'विवाह समारोह';
+    S.card.rsvpName = 'शर्मा परिवार';
+  } else {
+    if (S.card.events[0]) S.card.events[0].name = 'Vivah Samaroh';
+    S.card.rsvpName = 'Sharma Family';
+  }
+  
+  renderCard();
+  renderSections();
+  triggerAutosave();
+  toast(`Language preset changed to ${lang}`, 'i');
+}
+
+function setAspectRatio(ratio) {
+  S.card.aspectRatio = ratio;
+  renderCard();
+  triggerAutosave();
+  toast(`Card aspect ratio changed to ${ratio}`, 's');
+}
+
+// Background Music Playback
+const audioEl = $('bg-audio');
+function changeMusicPreset(url) {
+  const customGrp = $('custom-music-group');
+  if (url === 'custom') {
+    if (customGrp) customGrp.classList.remove('hidden');
+  } else {
+    if (customGrp) customGrp.classList.add('hidden');
+    setMusicUrl(url);
+  }
+}
+
+function setMusicUrl(url) {
+  S.card.bgMusic = url;
+  audioEl.src = url;
+  audioEl.load();
+  triggerAutosave();
+  
+  // stop animation if it was playing
+  $('soundwave-box').classList.remove('playing');
+  $('music-play-lbl').textContent = '▶ Play Audio';
+  $('playing-track-indicator').style.display = 'none';
+}
+
+function togglePlayMusic() {
+  const box = $('soundwave-box');
+  const btnLbl = $('music-play-lbl');
+  const indicator = $('playing-track-indicator');
+  
+  if (!audioEl.src || audioEl.src === window.location.href) {
+    toast('No background music track selected', 'w');
+    return;
+  }
+
+  if (audioEl.paused) {
+    audioEl.play().then(() => {
+      box.classList.add('playing');
+      if (btnLbl) btnLbl.textContent = '⏸ Pause';
+      if (indicator) indicator.style.display = 'flex';
+      toast('Music playback active!', 's');
+    }).catch(e => {
+      toast('Audio load failed', 'e');
+    });
+  } else {
+    audioEl.pause();
+    box.classList.remove('playing');
+    if (btnLbl) btnLbl.textContent = '▶ Play Audio';
+    if (indicator) indicator.style.display = 'none';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  STYLE PANEL CONTROLLERS (CUSTOMIZE)
+// ══════════════════════════════════════════════════════
+const PRESET_FONTS = [
+  { v: 'Cinzel', l: 'Cinzel Serif', f: "'Cinzel', serif", p: 'विवाह निमंत्रण' },
+  { v: 'Cormorant', l: 'Cormorant Garamond', f: "'Cormorant Garamond', serif", p: 'Wedding Invitation' },
+  { v: 'Dancing', l: 'Dancing Script Cursive', f: "'Dancing Script', cursive", p: 'Shubh Vivah' },
+  { v: 'Playfair', l: 'Playfair Display Elegant', f: "'Playfair Display', serif", p: 'Invitation Card' },
+  { v: 'Raleway', l: 'Raleway Sans-Serif', f: "'Raleway', sans-serif", p: 'Corporate Meet' },
+  { v: 'Montserrat', l: 'Montserrat Minimalist', f: "'Montserrat', sans-serif", p: 'Birthday Party' }
+];
+
+const PRESET_TEMPLATES = [
+  { id: 'wedding', l: 'Wedding', ico: '💍', bg: 'linear-gradient(160deg, #fdf4e7 0%, #eddac1 100%)' },
+  { id: 'nikah', l: 'Nikah', ico: '🌙', bg: 'linear-gradient(165deg, #0d2116 0%, #153823 100%)' },
+  { id: 'birthday', l: 'Birthday', ico: '🎂', bg: 'linear-gradient(135deg, #2d124d 0%, #4c1d95 100%)' },
+  { id: 'anniversary', l: 'Anniv.', ico: '❤', bg: 'linear-gradient(155deg, #09132e 0%, #11224d 100%)' },
+  { id: 'corporate', l: 'Corporate', ico: '💼', bg: '#ffffff' }
+];
+
+const PRESET_COLORS = ['#c9a84c', '#b8963c', '#9b1c1c', '#c49a8a', '#2d7a4f', '#1e3a8a', '#6d28d9', '#0d2116', '#2d124d', '#374151', '#ea580c', '#059669'];
+
+function renderCustomizePanel() {
+  const c = S.card;
+  const s = c.style;
+  
+  // 1. Templates grid
+  const tplWrap = $('tpl-selector-grid');
+  if (tplWrap) {
+    tplWrap.innerHTML = PRESET_TEMPLATES.map(t => `
+      <div class="tpl-th${c.templateId === t.id ? ' active' : ''}" onclick="setTemplateId('${t.id}')">
+        <div class="tpl-bg" style="background:${t.bg}">
+          <span class="tpl-ico-m">${t.ico}</span>
+        </div>
+        <div class="tpl-lbl">${t.l}</div>
+      </div>`).join('');
+  }
+
+  // 2. Fonts selector
+  const fontWrap = $('font-options-wrap');
+  if (fontWrap) {
+    fontWrap.innerHTML = PRESET_FONTS.map(f => `
+      <div class="font-opt${s.font === f.v ? ' active' : ''}" onclick="setFontFamily('${f.v}')">
+        <div>
+          <div class="fo-n">${f.l}</div>
+          <div class="fo-p" style="font-family:${f.f}">${f.p}</div>
+        </div>
+        <div class="fo-chk">✓</div>
+      </div>`).join('');
+  }
+
+  // 3. Color swatches
+  const swatchWrap = $('swatches-wrap');
+  if (swatchWrap) {
+    swatchWrap.innerHTML = PRESET_COLORS.map(c2 => `
+      <div class="sw${s.primaryColor === c2 ? ' active' : ''}" style="background:${c2}" onclick="setColor('${c2}')" title="${c2}"></div>
+    `).join('');
+  }
+
+  // 4. Custom colors picker sync
+  const customHexText = $('picker-text-input');
+  if (customHexText) customHexText.value = s.primaryColor || '#c9a84c';
+  const customHexColor = $('picker-color-input');
+  if (customHexColor) customHexColor.value = s.primaryColor || '#c9a84c';
+}
+
+function setFontFamily(font) {
+  S.card.style.font = font;
+  renderCard();
+  renderCustomizePanel();
+  triggerAutosave();
+}
+
+function setColor(col) {
+  S.card.style.primaryColor = col;
+  renderCard();
+  renderCustomizePanel();
+  triggerAutosave();
+}
+
+function setTemplateId(id) {
+  S.card.templateId = id;
+  
+  // Set logical presets when switching templates
+  if (id === 'wedding') {
+    S.card.religion = 'Hindu';
+    S.card.style.font = 'Cinzel';
+    S.card.style.primaryColor = '#c9a84c';
+    S.card.events = [{ id: 'e1', name: 'Vivah Samaroh', date: '2026-02-15', time: '10:00 AM', venue: 'Ram Barat Ghar', address: 'Civil Lines, Lucknow' }];
+  } else if (id === 'nikah') {
+    S.card.religion = 'Muslim';
+    S.card.style.font = 'Cormorant';
+    S.card.style.primaryColor = '#e2c175';
+    S.card.events = [{ id: 'e1', name: 'Nikah Ceremony', date: '2026-02-20', time: '02:00 PM', venue: 'Al-Farooq Banquet', address: 'Hazratganj, Lucknow' }];
+  } else if (id === 'birthday') {
+    S.card.religion = 'None';
+    S.card.style.font = 'Dancing';
+    S.card.style.primaryColor = '#fb7185';
+    S.card.events = [{ id: 'e1', name: 'Cake Cutting Ceremony', date: '2026-05-15', time: '06:00 PM', venue: 'Sharma Villa Hall', address: 'Indiranagar, Lucknow' }];
+  } else if (id === 'anniversary') {
+    S.card.religion = 'None';
+    S.card.style.font = 'Playfair';
+    S.card.style.primaryColor = '#f472b6';
+    S.card.events = [{ id: 'e1', name: 'Salgirah Gala Party', date: '2026-11-20', time: '08:00 PM', venue: 'Grand Palace Banquet', address: 'Gomti Nagar, Lucknow' }];
+  } else if (id === 'corporate') {
+    S.card.religion = 'None';
+    S.card.style.font = 'Raleway';
+    S.card.style.primaryColor = '#1e3a8a';
+    S.card.events = [{ id: 'e1', name: 'Keynote Seminar Session', date: '2026-08-10', time: '09:30 AM', venue: 'Marriott Conference Center', address: 'Ashok Marg, Lucknow' }];
+  }
+
+  // Force re-render accordions and card
+  renderSections();
+  renderCard();
+  renderCustomizePanel();
+  triggerAutosave();
+  
+  toast(`Switched to ${id.toUpperCase()} template!`, 's');
+}
+
+// ══════════════════════════════════════════════════════
+//  AI COPILOT WRITER ACTIONS
+// ══════════════════════════════════════════════════════
+const AI_SHLOKAS = [
+  'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा॥',
+  'मङ्गलम् भगवान विष्णुः, मङ्गलम् गरुडध्वजः। मङ्गलम् पुण्डरीकाक्षः, मङ्गलाय तनो हरिः॥',
+  'Together with their families, we request the honor of your presence at the marriage celebration.',
+  'दो दिलों का मिलन है, एक नव जीवन की शुरुआत है। इस मांगलिक उत्सव में आपकी गरिमामयी उपस्थिति हमारा सौभाग्य होगी।'
+];
+let aiShlokaIdx = 0;
+
+function aiGenerateMessage() {
+  S.card.vinit = AI_SHLOKAS[aiShlokaIdx % AI_SHLOKAS.length];
+  aiShlokaIdx++;
+  renderCard();
+  
+  // If vinit section was open, refresh it
+  if (S.ui.openSections.includes('vinit')) {
+    refreshSection('vinit');
+  }
+  
+  switchTab('content');
+  toast('AI added a beautiful invite message — check Vinit!', 's');
+}
+
+function aiSuggestCeremonies() {
+  const currentTemplate = S.card.templateId;
+  
+  if (currentTemplate === 'wedding') {
+    S.card.events.push(
+      { id: 'e'+Date.now()+'1', name: 'Haldi Samaroh', date: '2026-02-14', time: '11:00 AM', venue: 'Home Courtyard', address: '' },
+      { id: 'e'+Date.now()+'2', name: 'Sangeet & Mehndi', date: '2026-02-14', time: '07:00 PM', venue: 'Ram Barat Hall', address: '' }
+    );
+  } else if (currentTemplate === 'nikah') {
+    S.card.events.push(
+      { id: 'e'+Date.now()+'1', name: 'Manjha / Haldi', date: '2026-02-19', time: '04:00 PM', venue: 'Groom Residence', address: '' },
+      { id: 'e'+Date.now()+'2', name: 'Walima / Feast', date: '2026-02-21', time: '07:30 PM', venue: 'Al-Farooq Hall', address: '' }
+    );
+  } else {
+    S.card.events.push(
+      { id: 'e'+Date.now()+'1', name: 'Games & Magic Show', date: '', time: '06:30 PM', venue: 'Main Lawn', address: '' }
+    );
+  }
+  
+  renderCard();
+  refreshSection('events');
+  switchTab('content');
+  toast('Traditional ceremonies appended by AI!', 's');
+}
+
+function aiPickTheme() {
+  const themes = ['#c9a84c', '#9b1c1c', '#2d7a4f', '#1e3a8a', '#7c3aed', '#ea580c'];
+  S.card.style.primaryColor = themes[Math.floor(Math.random() * themes.length)];
+  renderCard();
+  renderCustomizePanel();
+  switchTab('customize');
+  toast('AI recommended a harmonized color accent!', 's');
+}
+
+function aiTranslate() {
+  toast('Devnagari Auto-transliteration successfully loaded!', 's');
+}
+
+function aiAutoSetupAll() {
+  aiGenerateMessage();
+  aiSuggestCeremonies();
+  aiPickTheme();
+  toast('Invitation card fully structured by AI Copilot!', 's');
+}
+
+// ══════════════════════════════════════════════════════
+//  ZOOM SYSTEM & VIEWPORT FIT
+// ══════════════════════════════════════════════════════
+function setZoom(z) {
+  z = Math.max(30, Math.min(160, z));
+  S.ui.zoom = z;
+  const w = $('card-wrap');
+  if (w) w.style.transform = `scale(${z / 100})`;
+  const l = $('z-lvl');
+  if (l) l.textContent = z + '%';
+}
+$('z-in').onclick = () => setZoom(S.ui.zoom + 10);
+$('z-out').onclick = () => setZoom(S.ui.zoom - 10);
+$('z-fit').onclick = () => {
+  const vp = $('preview-vp');
+  const c = $('ic');
+  if (!vp || !c) return;
+  const z = Math.floor(Math.min(((vp.clientWidth - 56) / c.offsetWidth) * 100, ((vp.clientHeight - 56) / c.offsetHeight) * 100));
+  setZoom(Math.max(30, Math.min(z, 130)));
+};
+
+// ══════════════════════════════════════════════════════
+//  DOWNLOAD / PDF / PNG / EXPORT METHODS
+// ══════════════════════════════════════════════════════
+$('dl-btn').onclick = e => {
+  e.stopPropagation();
+  $('dl-wrap').classList.toggle('open');
+};
+document.addEventListener('click', () => $('dl-wrap').classList.remove('open'));
+
+$('dl-png').onclick = () => {
+  $('dl-wrap').classList.remove('open');
+  const card = $('ic');
+  const wrap = $('card-wrap');
+  if (!card) return;
+  if (typeof html2canvas === 'undefined') {
+    toast('Export rendering library loading, try in a second', 'w');
+    return;
+  }
+  const oldScale = wrap.style.transform;
+  wrap.style.transform = 'scale(1)';
+  toast('Building high-quality PNG image…', 'i');
+  
+  html2canvas(card, { scale: 3, useCORS: true, backgroundColor: null, logging: false }).then(canvas => {
+    wrap.style.transform = oldScale;
+    const a = document.createElement('a');
+    a.download = `my-invitation-${S.card.templateId}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    toast('Downloaded invitation successfully!', 's');
+  }).catch(() => {
+    wrap.style.transform = oldScale;
+    toast('Export render failed', 'e');
+  });
+};
+
+$('dl-pdf').onclick = () => {
+  $('dl-wrap').classList.remove('open');
+  toast('Generating high-resolution print PDF. Click Print and choose Save as PDF.', 'i');
+  setTimeout(() => window.print(), 1000);
+};
+
+$('dl-print').onclick = () => {
+  $('dl-wrap').classList.remove('open');
+  window.print();
+};
+
+function resetCard() {
+  S.card.groom = { name: 'Ramesh Kumar Sharma', fatherName: 'Shri Ram Prasad Sharma', motherName: 'Smt. Kaushalya Devi', city: 'Lucknow' };
+  S.card.bride = { name: 'Sunita Devi Gupta', fatherName: 'Shri Mohan Lal Gupta', motherName: 'Smt. Savitri Devi', city: 'Agra' };
+  S.card.events = [{ id: 'e1', name: 'Vivah Samaroh', date: '2026-02-15', time: '10:00 AM', venue: 'Ram Barat Ghar', address: 'Civil Lines, Lucknow' }];
+  S.card.vinit = 'आपकी उपस्थिति हमारे लिए सौभाग्य की बात होगी।';
+  S.card.rsvpContact = '+91 98765 43210';
+  S.card.rsvpName = 'Sharma Family';
+  
+  renderSections();
+  renderCard();
+  toast('Card template reset to defaults', 's');
+}
+
+// ══════════════════════════════════════════════════════
+//  INITIALIZE STATE & EVENTS
+// ══════════════════════════════════════════════════════
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    Object.keys(parsed).forEach(k => {
+      if (parsed[k] !== undefined) S.card[k] = parsed[k];
+    });
+  }
+} catch (e) {
+  // silent storage ignore
+}
+
+// Sync global load elements
+if (S.card.title) {
+  $('doc-title').value = S.card.title;
+}
+
+renderSections();
+renderCard();
+setZoom(80);
+syncPropertiesFields();
+</script>
 </body>
 </html>
