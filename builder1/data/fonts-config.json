@@ -1,0 +1,9 @@
+{
+  "fonts": [
+    {"value": "Cinzel", "label": "Cinzel", "category": "serif"},
+    {"value": "Cormorant", "label": "Cormorant Garamond", "category": "serif"},
+    {"value": "Dancing", "label": "Dancing Script", "category": "script"},
+    {"value": "Playfair", "label": "Playfair Display", "category": "serif"},
+    {"value": "Raleway", "label": "Raleway", "category": "sans"}
+  ]
+}

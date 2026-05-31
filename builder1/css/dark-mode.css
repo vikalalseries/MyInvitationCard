@@ -1,0 +1,38 @@
+/* =====================================================
+   DARK MODE CSS — Dark Theme Variable Overrides
+   ===================================================== */
+
+/* Dark mode via data-theme="dark" on <html> or <body> */
+[data-theme="dark"],
+.theme-dark {
+  --bg-app: #0f1117;
+  --bg-topbar: #0a0a14;
+  --bg-topbar-border: rgba(255, 255, 255, 0.05);
+  --bg-panel: #161622;
+  --bg-canvas: #1a1a28;
+  --bg-drawer: #161622;
+  --bg-input: #1e1e2e;
+  --bg-hover: #1e1e30;
+  --bg-active: rgba(201, 168, 76, 0.08);
+  --bg-section-header: #1a1a28;
+
+  --text-primary: #e8e8f0;
+  --text-secondary: #8892a4;
+  --text-muted: #555e72;
+  --text-hint: #3d4556;
+
+  --border: #242438;
+  --border-strong: #2e2e4a;
+  --border-input: #2a2a3e;
+  --border-section: #1e1e32;
+
+  --shadow-card: 0 24px 64px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3);
+  --shadow-drawer: -6px 0 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Dark mode scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #2e2e4a;
+}
+
+/* Dark mode card previews look fine since they have their own color scheme */

@@ -1,0 +1,324 @@
+/* =====================================================
+   RIGHT PANEL CSS — Design Drawer Panel
+   ===================================================== */
+
+/* === Drawer Panel Container === */
+.right-panel {
+  position: fixed;
+  top: var(--topbar-h);
+  right: 0;
+  width: var(--drawer-w);
+  height: calc(100vh - var(--topbar-h));
+  background: var(--bg-drawer);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-drawer);
+  z-index: var(--z-drawer);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  /* Hidden by default, slides in from right */
+  transform: translateX(100%);
+  transition: transform var(--t-drawer);
+}
+
+.right-panel.open {
+  transform: translateX(0);
+}
+
+/* === Drawer Overlay (backdrop) === */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  top: var(--topbar-h);
+  background: rgba(0, 0, 0, 0.12);
+  z-index: calc(var(--z-drawer) - 1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--t-drawer), visibility var(--t-drawer);
+  cursor: pointer;
+}
+
+.drawer-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* === Drawer Header === */
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s4) var(--s5);
+  border-bottom: 1px solid var(--border-section);
+  flex-shrink: 0;
+  height: 52px;
+}
+
+.drawer-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+}
+
+.drawer-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all var(--t-fast);
+  font-family: var(--font-ui);
+}
+
+.drawer-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* === Drawer Tab Bar === */
+.drawer-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-section);
+  padding: 0 var(--s3);
+  flex-shrink: 0;
+  overflow-x: auto;
+  gap: 0;
+}
+
+.drawer-tabs::-webkit-scrollbar { height: 0; }
+
+.drawer-tab {
+  padding: var(--s3) var(--s3);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: all var(--t-fast);
+  white-space: nowrap;
+  font-family: var(--font-ui);
+  letter-spacing: 0.3px;
+  margin-bottom: -1px;
+}
+
+.drawer-tab:hover {
+  color: var(--text-secondary);
+}
+
+.drawer-tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--gold);
+}
+
+/* === Drawer Body === */
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* === Tab Content Sections === */
+.drawer-section {
+  padding: var(--s5);
+  border-bottom: 1px solid var(--border-section);
+}
+
+.drawer-section:last-child {
+  border-bottom: none;
+}
+
+.drawer-section-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--s4);
+}
+
+/* === Font Option Picker === */
+.font-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.font-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border-input);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  background: var(--bg-input);
+}
+
+.font-option:hover {
+  border-color: var(--gold-light);
+  background: var(--bg-active);
+}
+
+.font-option.active {
+  border-color: var(--gold);
+  background: var(--bg-active);
+}
+
+.font-option-name {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+.font-option-preview {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.font-option-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.55rem;
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+.font-option.active .font-option-check {
+  opacity: 1;
+}
+
+/* === Color Swatches === */
+.color-swatches-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--s2);
+  margin-bottom: var(--s3);
+}
+
+.color-swatch {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2.5px solid transparent;
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+  position: relative;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch.active {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--text-primary);
+}
+
+/* === Palette Picker === */
+.palette-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.palette-option {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s3);
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border-input);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  background: var(--bg-input);
+}
+
+.palette-option:hover {
+  border-color: var(--gold-light);
+  background: var(--bg-active);
+}
+
+.palette-option.active {
+  border-color: var(--gold);
+}
+
+.palette-color-row {
+  display: flex;
+  gap: 3px;
+}
+
+.palette-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.palette-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+/* === Template Grid in Drawer === */
+.template-grid-drawer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s3);
+}
+
+.template-card-option {
+  border-radius: var(--r-md);
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--t-base);
+  aspect-ratio: 3/4;
+  position: relative;
+}
+
+.template-card-option:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.template-card-option.active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+
+.template-card-bg {
+  width: 100%;
+  height: 100%;
+}
+
+.template-card-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}

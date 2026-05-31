@@ -1,0 +1,9 @@
+{
+  "templates": [
+    {"id": "wedding", "label": "Wedding", "labelHi": "विवाह", "emoji": "💍"},
+    {"id": "nikah", "label": "Nikah", "labelHi": "निकाह", "emoji": "🌙"},
+    {"id": "birthday", "label": "Birthday", "labelHi": "जन्मदिन", "emoji": "🎂"},
+    {"id": "anniversary", "label": "Anniversary", "labelHi": "सालगिरह", "emoji": "❤"},
+    {"id": "corporate", "label": "Corporate", "labelHi": "कॉर्पोरेट", "emoji": "💼"}
+  ]
+}

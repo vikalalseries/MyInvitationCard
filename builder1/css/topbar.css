@@ -1,0 +1,292 @@
+/* =====================================================
+   TOPBAR CSS — Top Navigation Bar Styles
+   ===================================================== */
+
+/* === Topbar Container === */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--bg-topbar);
+  border-bottom: 1px solid var(--bg-topbar-border);
+  z-index: var(--z-topbar);
+  flex-shrink: 0;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 var(--s5);
+  gap: var(--s4);
+}
+
+/* === Left Group === */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Back button */
+.topbar-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-topbar-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 5px 8px;
+  border-radius: var(--r-md);
+  transition: color var(--t-fast), background var(--t-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.topbar-back:hover {
+  color: var(--text-topbar);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.topbar-back svg {
+  flex-shrink: 0;
+}
+
+/* Vertical divider */
+.topbar-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+/* Logo */
+.topbar-logo {
+  font-family: var(--font-card-serif);
+  color: var(--gold);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color var(--t-fast);
+}
+
+.topbar-logo:hover {
+  color: var(--gold-light);
+}
+
+.topbar-logo span {
+  color: var(--text-topbar);
+}
+
+/* Template badge */
+.topbar-template-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-topbar-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.topbar-template-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+#topbar-template-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* === Right Group === */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex-shrink: 0;
+}
+
+/* Separator line */
+.topbar-sep {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0 var(--s1);
+}
+
+/* === Base Button Styles === */
+.topbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--r-md);
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: var(--font-ui);
+  white-space: nowrap;
+  transition: all var(--t-fast);
+  cursor: pointer;
+  border: none;
+  height: 32px;
+}
+
+/* Ghost (icon only or icon+text) */
+.topbar-btn-ghost {
+  background: transparent;
+  color: var(--text-topbar-muted);
+  padding: 6px 8px;
+}
+
+.topbar-btn-ghost:hover {
+  color: var(--text-topbar);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.topbar-btn-ghost:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.topbar-btn-ghost:disabled:hover {
+  background: transparent;
+  color: var(--text-topbar-muted);
+}
+
+/* Outline button */
+.topbar-btn-outline {
+  background: transparent;
+  color: var(--text-topbar);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.topbar-btn-outline:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Panel toggle button — highlighted */
+.topbar-btn-panel {
+  background: var(--btn-panel-bg);
+  color: var(--btn-panel-text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.topbar-btn-panel:hover {
+  background: var(--btn-panel-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.topbar-btn-panel.active {
+  background: var(--btn-panel-active);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.topbar-btn-panel.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+/* Primary (Download) */
+.topbar-btn-primary {
+  background: var(--gold);
+  color: #1a1a0a;
+  font-weight: 600;
+}
+
+.topbar-btn-primary:hover {
+  background: var(--gold-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(201, 168, 76, 0.35);
+}
+
+/* === Download Dropdown === */
+.topbar-download-wrap {
+  position: relative;
+}
+
+.topbar-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 180px;
+  z-index: var(--z-dropdown, 1000);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity var(--t-base), transform var(--t-base), visibility var(--t-base);
+  overflow: hidden;
+  padding: var(--s1);
+}
+
+.topbar-download-wrap.open .topbar-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--r-md);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--t-fast);
+  border: none;
+  background: none;
+  font-family: var(--font-ui);
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.dropdown-item svg {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: var(--s1) 0;
+}
+
+/* Chevron animation for dropdown */
+.topbar-btn-primary .chevron {
+  transition: transform var(--t-base);
+}
+
+.topbar-download-wrap.open .topbar-btn-primary .chevron {
+  transform: rotate(180deg);
+}

@@ -1,0 +1,8 @@
+{
+  "palettes": [
+    {"id": "gold-cream", "label": "Gold & Cream", "primary": "#c9a84c", "bg": "#fdf5e8", "text": "#2a1f14"},
+    {"id": "rose-gold", "label": "Rose Gold", "primary": "#c49a8a", "bg": "#fff5f2", "text": "#3d2218"},
+    {"id": "emerald", "label": "Emerald", "primary": "#2d7a4f", "bg": "#f0fff4", "text": "#1a3a2a"},
+    {"id": "royal-blue", "label": "Royal Blue", "primary": "#1e3a8a", "bg": "#eff6ff", "text": "#1e2a4a"}
+  ]
+}

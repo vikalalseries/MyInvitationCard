@@ -1,0 +1,11 @@
+{
+  "ceremonies": [
+    {"id": "vivah", "name": "Vivah Samaroh", "nameHi": "विवाह समारोह", "type": "main"},
+    {"id": "sagai", "name": "Sagai / Engagement", "nameHi": "सगाई", "type": "pre"},
+    {"id": "haldi", "name": "Haldi Ceremony", "nameHi": "हल्दी", "type": "pre"},
+    {"id": "mehendi", "name": "Mehendi Night", "nameHi": "मेहंदी", "type": "pre"},
+    {"id": "sangeet", "name": "Sangeet Night", "nameHi": "संगीत", "type": "pre"},
+    {"id": "baraat", "name": "Baraat", "nameHi": "बारात", "type": "main"},
+    {"id": "reception", "name": "Reception", "nameHi": "रिसेप्शन", "type": "post"}
+  ]
+}

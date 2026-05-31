@@ -1,0 +1,460 @@
+/* =====================================================
+   CENTER-CANVAS CSS — Live Preview Area & Card Styles
+   ===================================================== */
+
+/* === Canvas Wrapper === */
+.right-canvas {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-canvas);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.04) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* === Canvas Top Header Bar === */
+.canvas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s3) var(--s5);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  height: 44px;
+}
+
+.canvas-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.canvas-label-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.8); }
+}
+
+/* === Zoom Controls === */
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--s1);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  padding: 3px 6px;
+  box-shadow: var(--shadow-xs);
+}
+
+.zoom-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  line-height: 1;
+  font-family: var(--font-ui);
+}
+
+.zoom-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.zoom-btn.zoom-fit {
+  width: auto;
+  padding: 0 6px;
+  font-size: 0.65rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+}
+
+.zoom-btn.zoom-fit:hover {
+  color: var(--gold);
+  background: var(--bg-active);
+}
+
+.zoom-level {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 38px;
+  text-align: center;
+}
+
+/* === Card Preview Area === */
+.canvas-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: var(--s8);
+}
+
+/* Card wrapper — handles zoom transform */
+.card-wrap {
+  transform-origin: center center;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  line-height: 0;
+}
+
+/* === Invitation Card Base === */
+.invitation-card {
+  width: 420px;
+  min-height: 594px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 2px;
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-card-serif);
+  color: #2a1f14;
+  transition: box-shadow 0.3s ease;
+  cursor: default;
+  /* Card-specific CSS variables */
+  --card-accent: #c9a84c;
+  --card-text: #2a1f14;
+  --card-bg-from: #fdf5e8;
+  --card-bg-to: #f0e0d0;
+}
+
+/* === TEMPLATE 1: Wedding (Rose Gold/Cream) === */
+.invitation-card.template-wedding {
+  background: linear-gradient(160deg, var(--card-bg-from, #fdf5e8) 0%, #f8ede0 50%, var(--card-bg-to, #f0e0d0) 100%);
+}
+
+/* === TEMPLATE 2: Nikah (Emerald) === */
+.invitation-card.template-nikah {
+  background: linear-gradient(170deg, #0f2318 0%, #1a3d28 50%, #0f2318 100%);
+  --card-accent: #a8c4a0;
+  --card-text: #e8d9b0;
+}
+
+/* === TEMPLATE 3: Birthday (Purple) === */
+.invitation-card.template-birthday {
+  background: linear-gradient(135deg, #1a0533 0%, #2d1060 50%, #1a0533 100%);
+  --card-accent: #c084fc;
+  --card-text: #f0e6ff;
+}
+
+/* === TEMPLATE 4: Anniversary (Navy) === */
+.invitation-card.template-anniversary {
+  background: linear-gradient(160deg, #0a0f2e 0%, #141b4d 60%, #0a0f2e 100%);
+  --card-accent: #a8b8e8;
+  --card-text: #e8e4f0;
+}
+
+/* === TEMPLATE 5: Corporate (White) === */
+.invitation-card.template-corporate {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  --card-accent: #4a5a8a;
+  --card-text: #1a1a2e;
+}
+
+/* === Card Border Ornament === */
+.card-border {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(180, 130, 90, 0.3);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-border::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 0.5px solid rgba(180, 130, 90, 0.15);
+}
+
+.template-nikah .card-border {
+  border-color: rgba(168, 196, 160, 0.25);
+}
+
+.template-nikah .card-border::after {
+  border-color: rgba(168, 196, 160, 0.1);
+}
+
+.template-birthday .card-border,
+.template-anniversary .card-border {
+  border-color: rgba(192, 132, 252, 0.2);
+}
+
+.template-corporate .card-border {
+  border-color: rgba(74, 90, 138, 0.2);
+}
+
+/* === Card Corner SVG Ornaments === */
+.card-corner {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  z-index: 2;
+  color: var(--card-accent, #c9a84c);
+}
+
+.card-corner.tl { top: 8px; left: 8px; }
+.card-corner.tr { top: 8px; right: 8px; transform: scaleX(-1); }
+.card-corner.bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
+.card-corner.br { bottom: 8px; right: 8px; transform: scale(-1); }
+
+.card-corner svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* === Card Inner Content === */
+.card-inner {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  text-align: center;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  color: var(--card-text, #2a1f14);
+}
+
+/* Ceremony tag / header label */
+.card-ceremony-tag {
+  font-family: var(--font-card-body);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--card-accent, #c9a84c);
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+/* === Names Section === */
+.card-names-section {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.card-person {
+  margin-bottom: 4px;
+}
+
+.card-main-name {
+  font-family: var(--font-card-serif, 'Cinzel', serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--card-text, #2a1f14);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.card-parents {
+  font-family: var(--font-card-accent, 'Cormorant Garamond', serif);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.card-city {
+  font-family: var(--font-card-body);
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-top: 2px;
+}
+
+/* And block between groom & bride */
+.card-and-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  width: 100%;
+  justify-content: center;
+}
+
+.card-amp {
+  font-family: var(--font-card-accent);
+  font-size: 1.8rem;
+  font-style: italic;
+  color: var(--card-accent, #c9a84c);
+  line-height: 1;
+  opacity: 0.9;
+}
+
+/* Ornamental divider */
+.card-divider-ornament {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.ornament-line {
+  flex: 1;
+  height: 0.5px;
+  background: var(--card-accent, #c9a84c);
+  opacity: 0.4;
+}
+
+.ornament-symbol {
+  font-size: 0.6rem;
+  color: var(--card-accent, #c9a84c);
+  opacity: 0.6;
+}
+
+/* Main Divider */
+.card-main-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.card-main-divider .divider-line {
+  flex: 1;
+  height: 0.5px;
+  background: var(--card-accent, #c9a84c);
+  opacity: 0.35;
+}
+
+.card-main-divider .divider-icon {
+  font-size: 0.8rem;
+  color: var(--card-accent, #c9a84c);
+  opacity: 0.7;
+}
+
+/* Vinit text (invitation request in Hindi) */
+.card-vinit-block {
+  margin: 4px 0 16px;
+  width: 100%;
+}
+
+.card-vinit-text {
+  font-family: var(--font-card-accent);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  font-style: italic;
+  opacity: 0.8;
+  color: var(--card-text);
+}
+
+/* === Events Section === */
+.card-events-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 16px;
+}
+
+.card-event {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.card-event-name {
+  font-family: var(--font-card-serif);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--card-text);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.card-event-meta {
+  font-family: var(--font-card-body);
+  font-size: 0.7rem;
+  opacity: 0.65;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+.card-event-venue {
+  font-family: var(--font-card-accent);
+  font-size: 0.82rem;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.card-event-address {
+  font-family: var(--font-card-body);
+  font-size: 0.65rem;
+  opacity: 0.55;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.card-event-sep {
+  font-size: 0.5rem;
+  color: var(--card-accent, #c9a84c);
+  opacity: 0.5;
+  letter-spacing: 4px;
+  padding: 4px 0;
+}
+
+/* === RSVP Block === */
+.card-rsvp-block {
+  margin-top: 4px;
+}
+
+.card-rsvp-text {
+  font-family: var(--font-card-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--card-accent, #c9a84c);
+  opacity: 0.8;
+}
+
+/* === Empty State (when no events) === */
+.card-empty-state {
+  font-family: var(--font-card-accent);
+  font-style: italic;
+  opacity: 0.4;
+  font-size: 0.8rem;
+  padding: 8px 0;
+}

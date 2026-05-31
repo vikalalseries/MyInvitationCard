@@ -1,0 +1,19 @@
+/* colors.css - Color utility classes */
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-gold { color: var(--gold); }
+.text-success { color: var(--success); }
+.text-error { color: var(--error); }
+.text-white { color: #ffffff; }
+
+.bg-white { background-color: #ffffff; }
+.bg-app { background-color: var(--bg-app); }
+.bg-panel { background-color: var(--bg-panel); }
+.bg-gold { background-color: var(--gold); }
+.bg-success { background-color: var(--success); }
+.bg-error { background-color: var(--error); }
+
+.border-gold { border-color: var(--gold); }
+.border-default { border-color: var(--border); }

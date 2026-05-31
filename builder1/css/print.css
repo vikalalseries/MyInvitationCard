@@ -1,0 +1,49 @@
+/* print.css - Print-specific styles */
+
+@media print {
+  .topbar,
+  .left-panel,
+  .right-panel,
+  .drawer-overlay,
+  .canvas-header,
+  .toast-container {
+    display: none !important;
+  }
+
+  .builder-app {
+    height: auto;
+    overflow: visible;
+  }
+
+  .builder-layout {
+    display: block;
+  }
+
+  .right-canvas {
+    width: 100%;
+    height: auto;
+    background: white;
+    padding: 0;
+  }
+
+  .canvas-area {
+    overflow: visible;
+    justify-content: flex-start;
+  }
+
+  .card-wrap {
+    transform: none !important;
+    box-shadow: none;
+  }
+
+  .invitation-card {
+    width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+  }
+
+  @page {
+    margin: 1cm;
+    size: A5 portrait;
+  }
+}

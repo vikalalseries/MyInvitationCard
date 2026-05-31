@@ -1,0 +1,28 @@
+/* =====================================================
+   DRAWER CSS — Drawer Animation Supplementary
+   ===================================================== */
+
+/* Additional drawer animation utilities */
+/* Core drawer styles are in right-panel.css */
+
+/* Drawer slide animation when first opening */
+@keyframes drawerSlideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* Overlay fade-in */
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Tab content fade when switching tabs */
+.drawer-tab-content {
+  animation: tabFadeIn 0.15s ease;
+}
+
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateX(6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}

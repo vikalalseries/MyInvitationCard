@@ -1,0 +1,69 @@
+/* =====================================================
+   ANIMATIONS CSS — Transitions & Keyframes
+   ===================================================== */
+
+/* === Fade === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* === Slide === */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* === Scale === */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* === Pulse (for live dot) === */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* === Shimmer (skeleton loading) === */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+
+/* === Utility Animation Classes === */
+.animate-fade-in      { animation: fadeIn 0.2s ease; }
+.animate-fade-in-up   { animation: fadeInUp 0.25s ease; }
+.animate-fade-in-down { animation: fadeInDown 0.2s ease; }
+.animate-scale-in     { animation: scaleIn 0.2s ease; }
+.animate-slide-right  { animation: slideInRight 0.28s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* === Hover Lift === */
+.hover-lift {
+  transition: transform var(--t-base), box-shadow var(--t-base);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* === Transition Utilities === */
+.transition-all  { transition: all var(--t-base); }
+.transition-fast { transition: all var(--t-fast); }
+.transition-slow { transition: all var(--t-slow); }

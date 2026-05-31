@@ -1,0 +1,5 @@
+{
+  "regions": ["UP / Uttarakhand", "Bihar / Jharkhand", "Punjab / Haryana", "Rajasthan", "Maharashtra", "Gujarat", "South India"],
+  "religions": ["Hindu", "Muslim", "Sikh", "Christian", "Jain", "Buddhist"],
+  "states": ["Uttar Pradesh", "Bihar", "Rajasthan", "Madhya Pradesh", "Maharashtra", "Gujarat", "Punjab", "Haryana", "Delhi", "West Bengal"]
+}

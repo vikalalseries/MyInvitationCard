@@ -1,0 +1,16 @@
+/* bottom-bar.css - Bottom action bar styles */
+/* Note: In the current design, bottom bar is not used.
+   Actions are in the topbar. This file reserved for future use. */
+
+.bottom-bar {
+  display: none; /* Hidden by default - actions are in topbar */
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  height: 60px;
+  flex-shrink: 0;
+  gap: 12px;
+  z-index: var(--z-panel);
+}

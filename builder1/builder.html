@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation Card Builder - MyInvitationCard</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/topbar.css">
+    <link rel="stylesheet" href="css/left-panel.css">
+    <link rel="stylesheet" href="css/right-canvas.css">
+    <link rel="stylesheet" href="css/bottom-bar.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/forms.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div id="app" class="builder-app">
+        <!-- Top Navigation Bar -->
+        <div id="topbar-container"></div>
+        
+        <!-- Main Layout Container -->
+        <div class="builder-main-layout">
+            <!-- Left Panel -->
+            <div id="left-panel-container" class="left-panel-wrapper"></div>
+            
+            <!-- Right Canvas (Live Preview) -->
+            <div id="right-canvas-container" class="right-canvas-wrapper"></div>
+        </div>
+        
+        <!-- Bottom Action Bar -->
+        <div id="bottom-bar-container"></div>
+    </div>
+    
+    <!-- Properties Panel (Slide-out from right) -->
+    <div id="properties-panel-container" class="properties-panel-wrapper"></div>
+    
+    <!-- Modals Container -->
+    <div id="modals-container"></div>
+    
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- External Libraries -->
+    <script src="lib/html2canvas.min.js"></script>
+    <script src="lib/jspdf.min.js"></script>
+    <script src="lib/qrcode.min.js"></script>
+
+    <!-- Config Files -->
+    <script src="js/config/constants.js"></script>
+    <script src="js/config/ceremonies.js"></script>
+    <script src="js/config/colors.js"></script>
+
+    <!-- Utils Files -->
+    <script src="js/utils/logger.js"></script>
+    <script src="js/utils/validators.js"></script>
+    <script src="js/utils/formatters.js"></script>
+    <script src="js/utils/helpers.js"></script>
+
+    <!-- Core Files -->
+    <script src="js/core/state.js"></script>
+    <script src="js/core/eventBus.js"></script>
+    <script src="js/core/app.js"></script>
+
+    <!-- Services Files -->
+    <script src="js/services/storageService.js"></script>
+    <script src="js/services/cardRenderer.js"></script>
+
+    <!-- Components Files -->
+    <script src="js/components/topbar.js"></script>
+    <script src="js/components/leftPanel.js"></script>
+    <script src="js/components/rightCanvas.js"></script>
+    <script src="js/components/propertiesPanel.js"></script>
+    <script src="js/components/bottomBar.js"></script>
+
+    <!-- Main App Initialization -->
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+/* =====================================================
+   ACCORDION CSS — Standalone Accordion Styles
+   (Structural animation, not content)
+   ===================================================== */
+
+/* NOTE: Most accordion styles are in left-panel.css.
+   This file has supplementary accordion utilities. */
+
+/* Smooth open/close animation for accordion body */
+.accordion-body {
+  will-change: max-height;
+}
+
+/* When JS sets transition via class */
+.accordion-item.animating .accordion-body {
+  transition: max-height 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stagger children fade-in when accordion opens */
+.accordion-item.open .accordion-content > * {
+  animation: accordionFadeIn 0.2s ease both;
+}
+
+.accordion-item.open .accordion-content > *:nth-child(1) { animation-delay: 0.02s; }
+.accordion-item.open .accordion-content > *:nth-child(2) { animation-delay: 0.04s; }
+.accordion-item.open .accordion-content > *:nth-child(3) { animation-delay: 0.06s; }
+.accordion-item.open .accordion-content > *:nth-child(4) { animation-delay: 0.08s; }
+.accordion-item.open .accordion-content > *:nth-child(5) { animation-delay: 0.10s; }
+
+@keyframes accordionFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Active indicator dot on header when section has data */
+.accordion-header.has-data .accordion-title::after {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-left: 6px;
+  vertical-align: middle;
+  opacity: 0.8;
+}

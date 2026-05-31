@@ -1,0 +1,187 @@
+/* =====================================================
+   MAIN CSS — Global Styles, Variables & Reset
+   MyInvitationCard Builder
+   ===================================================== */
+
+/* === CSS Custom Properties === */
+:root {
+  /* Brand Gold */
+  --gold: #c9a84c;
+  --gold-light: #e8d5a3;
+  --gold-dark: #8b6914;
+  --gold-hover: #b89340;
+  --gold-glow: rgba(201, 168, 76, 0.2);
+
+  /* UI Surfaces */
+  --bg-app: #f0ebe3;
+  --bg-topbar: #1a1a2a;
+  --bg-topbar-border: rgba(255, 255, 255, 0.08);
+  --bg-panel: #ffffff;
+  --bg-canvas: #e8e2d9;
+  --bg-drawer: #ffffff;
+  --bg-input: #fafaf8;
+  --bg-hover: #f6f2ee;
+  --bg-active: rgba(201, 168, 76, 0.07);
+  --bg-section-header: #fafaf8;
+
+  /* Text */
+  --text-primary: #1a1a2a;
+  --text-secondary: #5f6b7a;
+  --text-muted: #9ca3af;
+  --text-hint: #b0b8c1;
+  --text-topbar: rgba(255, 255, 255, 0.92);
+  --text-topbar-muted: rgba(255, 255, 255, 0.5);
+
+  /* Borders */
+  --border: #e5e0d8;
+  --border-strong: #ccc6bc;
+  --border-input: #ddd8d0;
+  --border-focus: #c9a84c;
+  --border-section: #eeebe5;
+
+  /* Status */
+  --success: #16a34a;
+  --success-bg: #dcfce7;
+  --error: #dc2626;
+  --error-bg: #fee2e2;
+  --warning: #d97706;
+  --warning-bg: #fef3c7;
+  --info: #2563eb;
+  --info-bg: #dbeafe;
+
+  /* Panel Toggle Button (Design/Style button in topbar) */
+  --btn-panel-bg: #4f46e5;
+  --btn-panel-hover: #4338ca;
+  --btn-panel-active: #3730a3;
+  --btn-panel-text: #ffffff;
+
+  /* Layout Dimensions */
+  --topbar-h: 52px;
+  --panel-w: 360px;
+  --drawer-w: 320px;
+
+  /* Typography */
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-card-serif: 'Cinzel', serif;
+  --font-card-accent: 'Cormorant Garamond', serif;
+  --font-card-script: 'Dancing Script', cursive;
+  --font-card-body: 'Montserrat', sans-serif;
+
+  /* Spacing (4px base) */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+
+  /* Radii */
+  --r-xs: 3px;
+  --r-sm: 5px;
+  --r-md: 7px;
+  --r-lg: 10px;
+  --r-xl: 14px;
+  --r-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 24px 64px rgba(0, 0, 0, 0.2), 0 8px 20px rgba(0, 0, 0, 0.1);
+  --shadow-drawer: -6px 0 30px rgba(0, 0, 0, 0.14);
+
+  /* Transitions */
+  --t-fast: 120ms ease;
+  --t-base: 180ms ease;
+  --t-slow: 300ms ease;
+  --t-drawer: 280ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index Scale */
+  --z-base: 0;
+  --z-panel: 10;
+  --z-sticky: 50;
+  --z-overlay: 100;
+  --z-drawer: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+  --z-topbar: 500;
+}
+
+/* === Reset === */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body.builder-body {
+  font-family: var(--font-ui);
+  background: var(--bg-app);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: var(--font-ui);
+  cursor: pointer;
+  border: none;
+  background: none;
+  line-height: 1;
+}
+
+input, textarea, select {
+  font-family: var(--font-ui);
+  font-size: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* === Focus === */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+button:focus-visible {
+  outline-offset: -1px;
+}

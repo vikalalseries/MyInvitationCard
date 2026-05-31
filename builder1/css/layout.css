@@ -1,0 +1,43 @@
+/* =====================================================
+   LAYOUT CSS — Two-Panel Builder Layout
+   ===================================================== */
+
+/* === App Root === */
+.builder-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* === Main Two-Panel Grid === */
+.builder-layout {
+  display: grid;
+  grid-template-columns: var(--panel-w) 1fr;
+  flex: 1;
+  height: calc(100vh - var(--topbar-h));
+  overflow: hidden;
+  position: relative;
+}
+
+/* === Left Panel Wrapper === */
+.left-panel {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-section);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: var(--z-panel);
+  display: flex;
+  flex-direction: column;
+}
+
+/* === Right Canvas Wrapper === */
+.right-canvas {
+  background: var(--bg-canvas);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  flex: 1;
+}

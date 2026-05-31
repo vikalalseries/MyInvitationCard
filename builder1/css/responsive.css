@@ -1,0 +1,116 @@
+/* =====================================================
+   RESPONSIVE CSS — Media Queries
+   ===================================================== */
+
+/* === Tablet (900px - 1200px) === */
+@media (max-width: 1200px) {
+  :root {
+    --panel-w: 320px;
+    --drawer-w: 300px;
+  }
+}
+
+/* === Small Laptop (768px - 900px) === */
+@media (max-width: 900px) {
+  :root {
+    --panel-w: 300px;
+  }
+
+  .canvas-area {
+    padding: var(--s5);
+  }
+
+  .invitation-card {
+    width: 360px;
+  }
+}
+
+/* === Mobile (<768px) === */
+@media (max-width: 768px) {
+  body.builder-body {
+    overflow: auto;
+  }
+
+  .builder-app {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* Stack layout vertically on mobile */
+  .builder-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .left-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border-section);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .right-canvas {
+    min-height: 70vh;
+  }
+
+  /* Right panel becomes full-width */
+  .right-panel {
+    width: 100%;
+    --drawer-w: 100%;
+  }
+
+  /* Topbar compact */
+  .topbar-template-badge {
+    display: none;
+  }
+
+  .topbar-back span {
+    display: none;
+  }
+
+  .topbar-btn span {
+    display: none;
+  }
+
+  /* Card scales down */
+  .canvas-area {
+    padding: var(--s4);
+  }
+
+  .invitation-card {
+    width: min(340px, calc(100vw - 40px));
+  }
+
+  /* Form rows collapse */
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === Small Mobile (<480px) === */
+@media (max-width: 480px) {
+  .topbar-logo span {
+    display: none;
+  }
+
+  .topbar-inner {
+    padding: 0 var(--s3);
+    gap: var(--s2);
+  }
+
+  .invitation-card {
+    width: 100%;
+  }
+}
+
+/* === Large Screens (>1440px) === */
+@media (min-width: 1440px) {
+  :root {
+    --panel-w: 380px;
+  }
+
+  .invitation-card {
+    width: 460px;
+    min-height: 650px;
+  }
+}

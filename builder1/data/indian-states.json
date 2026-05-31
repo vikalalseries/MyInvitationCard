@@ -1,0 +1,9 @@
+{
+  "states": [
+    {"name": "Uttar Pradesh", "code": "UP", "cities": ["Lucknow", "Agra", "Varanasi", "Kanpur", "Prayagraj", "Mathura", "Ayodhya"]},
+    {"name": "Bihar", "code": "BR", "cities": ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur"]},
+    {"name": "Rajasthan", "code": "RJ", "cities": ["Jaipur", "Jodhpur", "Udaipur", "Ajmer", "Kota"]},
+    {"name": "Maharashtra", "code": "MH", "cities": ["Mumbai", "Pune", "Nashik", "Nagpur", "Aurangabad"]},
+    {"name": "Delhi", "code": "DL", "cities": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"]}
+  ]
+}

@@ -1,0 +1,55 @@
+/**
+ * Templates Config - Card template definitions
+ */
+const TEMPLATES_CONFIG = [
+  {
+    id: 'wedding',
+    label: 'Wedding',
+    labelHi: 'विवाह',
+    emoji: '💍',
+    bg: 'linear-gradient(160deg, #fdf5e8 0%, #f8ede0 50%, #f0e0d0 100%)',
+    textColor: '#2a1f14',
+    accentColor: '#c9a84c',
+    font: 'Cinzel',
+  },
+  {
+    id: 'nikah',
+    label: 'Nikah',
+    labelHi: 'निकाह',
+    emoji: '🌙',
+    bg: 'linear-gradient(170deg, #0f2318 0%, #1a3d28 50%, #0f2318 100%)',
+    textColor: '#e8d9b0',
+    accentColor: '#a8c4a0',
+    font: 'Cormorant',
+  },
+  {
+    id: 'birthday',
+    label: 'Birthday',
+    labelHi: 'जन्मदिन',
+    emoji: '🎂',
+    bg: 'linear-gradient(135deg, #1a0533 0%, #2d1060 50%, #1a0533 100%)',
+    textColor: '#f0e6ff',
+    accentColor: '#c084fc',
+    font: 'Dancing',
+  },
+  {
+    id: 'anniversary',
+    label: 'Anniversary',
+    labelHi: 'सालगिरह',
+    emoji: '❤',
+    bg: 'linear-gradient(160deg, #0a0f2e 0%, #141b4d 60%, #0a0f2e 100%)',
+    textColor: '#e8e4f0',
+    accentColor: '#a8b8e8',
+    font: 'Playfair',
+  },
+  {
+    id: 'corporate',
+    label: 'Corporate',
+    labelHi: 'कॉर्पोरेट',
+    emoji: '💼',
+    bg: '#ffffff',
+    textColor: '#1a1a2e',
+    accentColor: '#4a5a8a',
+    font: 'Raleway',
+  },
+];
