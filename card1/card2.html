@@ -81,15 +81,18 @@ body {
 }
 
 .s1-mantras  { text-align:center; }
-.s1-mantras p { font-size:0.4cm; color:#6e0035; line-height:1.5; }
-.s1-mantras p:first-child { font-size:0.4cm; font-weight:600; }
-.s1-row1 .s1-icon:last-child{
+.s1-mantras p { font-size:0.4cm; color:#6e0035; line-height:1.5; position:relative; top:-2.2cm; }
+.s1-mantras p:first-child{
+    font-size:0.4cm;
+    font-weight:600;
+
     position:relative;
-    right:1.8cm;
+    top:-2.2cm;   /* move up */
 }
 
+
 .ganesh-icon img{
-    width:1.4cm;
+    width:3cm;
     height:auto;
 }
 .sun-icon img{
@@ -112,6 +115,7 @@ body {
     margin:auto;
 }
 
+
 /* Row 2: मांगलिक heading */
 .s1-heading {
   text-align:center;
@@ -120,15 +124,15 @@ body {
   color:#6e0035;
   line-height:1.2;
   position:relative;
-  top:.3cm;
+  top:-3.8cm;
   
 }
 .swirl { text-align:center; color:#9b1050; font-size:0.27cm; letter-spacing:0.04cm; line-height:1; position:relative;
-  top:.2cm; }
+  top:-0.5cm; }
 
 /* Row 3: हल्दी */
 .s1-haldi { text-align:center; }
-.s1-haldi-t { font-size:0.50cm; font-weight:700; color:#6e0035; margin-top:0.2cm; }
+.s1-haldi-t { font-size:0.50cm; font-weight:700; color:#6e0035; margin-top:-4.9cm; }
 .s1-haldi-d { font-size:0.42cm; color:#6e0035; }
 
 /* Row 4: chain | vivah | couple | vidai | chain */
@@ -136,14 +140,16 @@ body {
   display:grid;
   grid-template-columns:0.55cm 1fr 2.1cm 1fr 0.55cm;
   align-items:center;
-  flex:1;
+  flex:none;
   min-height:0;
+  
 }
 
 .chain {
   display:flex; flex-direction:column;
   align-items:center; justify-content:center;
   height:100%; gap:0.04cm;
+
 }
 .ch-ring {
   width:0.40cm; height:0.40cm; border-radius:50%;
@@ -154,8 +160,8 @@ body {
 .ch-line { width:0.03cm; height:0.30cm; background:#8b0040; }
 .ch-dot  { width:0.09cm; height:0.09cm; border-radius:50%; background:#8b0040; }
 
-.s1-ev { text-align:center; }
-.s1-ev-t { font-size:0.65cm; font-weight:700; color:#6e0035; line-height:1.2; }
+.s1-ev { text-align:center;}
+.s1-ev-t { font-size:0.65cm; font-weight:700; color:#6e0035; line-height:1.2; position:relative;top:-3.8cm; }
 .s1-ev-d { font-size:0.47cm; color:#6e0035; margin-top:0.04cm; }
 .s1-ev-sw { font-size:0.22cm; color:#9b1050; letter-spacing:0.04cm; margin-top:0.04cm; }
 
@@ -375,7 +381,7 @@ body {
           <text x="35" y="41" text-anchor="middle" font-size="18" fill="#8b0040" font-family="serif" font-weight="bold">ॐ</text>
         </svg>
       </div>
-    </div>s1-row1 -->
+    </div><!-- s1-row1 -->
 
     <div class="s1-icon sun-icon">
         <img src="../builder1/assets/icons/om.png" alt="Om">
@@ -416,12 +422,7 @@ body {
     <div class="s1-events">
 
       <div class="chain">
-        <div class="ch-ring">ॐ</div>
-        <div class="ch-line"></div>
-        <div class="ch-dot"></div>
-        <div class="ch-ring">ॐ</div>
-        <div class="ch-line"></div>
-        <div class="ch-dot"></div>
+          <img src="../builder1/assets/icons/side.png" alt="">
       </div>
 
       <div class="s1-ev">
@@ -544,18 +545,9 @@ body {
       </div>
 
       <div class="s2-center">
-        <svg viewBox="0 0 100 75" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="38" r="26" fill="rgba(200,80,120,0.1)" stroke="#8b0040" stroke-width="1.8"/>
-          <circle cx="50" cy="38" r="20" fill="none" stroke="#8b0040" stroke-width="0.8"/>
-          <path d="M12 40 Q18 30 26 34 L40 38 Q44 39 45 43 Q46 48 41 49 L26 51 Q18 52 12 46 Z" fill="rgba(230,140,170,0.3)" stroke="#8b0040" stroke-width="1.5"/>
-          <path d="M38 34 Q40 27 43 29 Q44 31 42 34" stroke="#8b0040" stroke-width="1" fill="none"/>
-          <path d="M34 34 Q35 26 38 28 Q39 30 38 33" stroke="#8b0040" stroke-width="1" fill="none"/>
-          <path d="M88 40 Q82 30 74 34 L60 38 Q56 39 55 43 Q54 48 59 49 L74 51 Q82 52 88 46 Z" fill="rgba(230,140,170,0.3)" stroke="#8b0040" stroke-width="1.5"/>
-          <path d="M62 34 Q60 27 57 29 Q56 31 58 34" stroke="#8b0040" stroke-width="1" fill="none"/>
-          <path d="M66 34 Q65 26 62 28 Q61 30 62 33" stroke="#8b0040" stroke-width="1" fill="none"/>
-          <text x="50" y="36" text-anchor="middle" font-size="13" fill="#8b0040" font-family="serif" font-weight="bold">संग</text>
-          <text x="50" y="49" text-anchor="middle" font-size="9" fill="#8b0040" font-family="serif">सात फेरे</text>
-        </svg>
+        <img src="builder1/assets/icons/weds.png" alt="">
+      </div>
+
         <div class="s2-damp-t">।। दाम्पत्य-सूत्र-बन्धन ।।</div>
         <div class="s2-damp-d">
           की मधुर बेला पर पधार कर नवयुगल को अपने<br>
