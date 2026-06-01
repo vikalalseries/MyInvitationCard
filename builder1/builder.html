@@ -1029,9 +1029,12 @@ const S = {
     aspectRatio: 'portrait',
     bgMusic: '',
     
+    // Opening Shloka / Mantra
+    shloka: { line1: '।।श्री गणेशाय नमः।।', line2: 'वक्रतुण्ड महाकाय, सूर्यकोटि समप्रभः।।', line3: 'निर्विघ्नं कुरुमे देव, सर्वकार्येषु सर्वदा।।' },
+
     // 1. Wedding/Nikah couple
-    groom: { name: 'Rahul Kumar Sharma', fatherName: 'Shri Ram Prasad Sharma', motherName: 'Smt. Kaushalya Devi', city: 'Lucknow' },
-    bride: { name: 'Priya Devi Gupta', fatherName: 'Shri Mohan Lal Gupta', motherName: 'Smt. Savitri Devi', city: 'Agra' },
+    groom: { title: 'चि॰', name: 'Rahul Kumar Sharma', grandfatherName: '', fatherName: 'Shri Ram Prasad Sharma', motherName: 'Smt. Kaushalya Devi', address: '', post: '', city: 'Lucknow' },
+    bride: { title: 'आयु॰ कु॰', name: 'Priya Devi Gupta', grandfatherName: '', fatherName: 'Shri Mohan Lal Gupta', motherName: 'Smt. Savitri Devi', address: '', post: '', city: 'Agra' },
     
     // 2. Nikah extra
     nikah: { meher: '51,000 INR', qazi: 'Hazrat Maulana Alim Siddiqui', witnesses: 'Zaid Khan & Salim Qureshi' },
@@ -1046,11 +1049,13 @@ const S = {
     corporate: { title: 'Tech Innovation Summit 2025', host: 'InnovateCorp Inc.', guestOfHonor: 'Dr. S. K. Sen (Keynote)', dressCode: 'Formal Suite / Business Casual' },
 
     events: [
-      { id: 'e1', name: 'Vivah Samaroh', date: '2026-02-15', time: '10:00 AM', venue: 'Ram Barat Ghar', address: 'Civil Lines, Lucknow, UP' }
+      { id: 'e1', name: 'Vivah Samaroh', date: '2026-02-15', time: '10:00 AM', dayName: '', venue: 'Ram Barat Ghar', address: 'Civil Lines, Lucknow, UP' }
     ],
 
     balAagrah: [],
     darshnabhilashi: [],
+    vandanabhilashi: [],
+    nimantrak: { name: '', address: '', post: '', city: '' },
     swagatakankshi: { groomSide: [], brideSide: [] },
     vinit: 'परमपिता परमेश्वर की असीम अनुकम्पा से, हमारे यहाँ शुभ विवाह अवसर पर आपकी गरिमामयी उपस्थिति सादर प्रार्थनीय है।',
     rsvpContact: '+91 98765 43210',
@@ -1201,17 +1206,30 @@ const SECTION_TEMPLATES = {
   // 1. Wedding Template Accordions
   wedding: [
     {
+      id: 'shloka', ico: '🕉️', color: 'ico-amber', title: 'Opening Shloka / Mantra', sub: 'शुभारंभ श्लोक एवं मंत्र',
+      render() { return renderShlokaSectionHtml(); }
+    },
+    {
       id: 'groom', ico: '🤵', color: 'ico-rose', title: 'Groom Details', sub: 'वर पक्ष विवरण',
       render() {
         const g = S.card.groom;
         return `
-          <div class="fg"><label class="fl">Groom's Full Name</label><input class="fi" value="${esc(g.name)}" placeholder="Rahul Kumar Sharma" data-field="groom.name"></div>
-          <div class="sub-h">Groom's Parents</div>
           <div class="fr">
-            <div class="fg"><label class="fl">Father's Name</label><input class="fi" value="${esc(g.fatherName)}" placeholder="Shri Ram Prasad Sharma" data-field="groom.fatherName"></div>
-            <div class="fg"><label class="fl">Mother's Name</label><input class="fi" value="${esc(g.motherName)}" placeholder="Smt. Kaushalya Devi" data-field="groom.motherName"></div>
+            <div class="fg"><label class="fl">Groom's Title / Prefix</label><input class="fi" value="${esc(g.title||'चि॰')}" placeholder="चि॰ / Sh." data-field="groom.title"></div>
+            <div class="fg"><label class="fl">Groom's Full Name</label><input class="fi" value="${esc(g.name)}" placeholder="Rahul Kumar Sharma" data-field="groom.name"></div>
           </div>
-          <div class="fg"><label class="fl">City / Residence</label><input class="fi" value="${esc(g.city)}" placeholder="Lucknow" data-field="groom.city"></div>
+          <div class="sub-h">Groom's Family</div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Grandfather's Name (optional)</label><input class="fi" value="${esc(g.grandfatherName||'')}" placeholder="Sv. Damodar Prasad" data-field="groom.grandfatherName"></div>
+            <div class="fg"><label class="fl">Father's Name</label><input class="fi" value="${esc(g.fatherName)}" placeholder="Shri Ram Prasad Sharma" data-field="groom.fatherName"></div>
+          </div>
+          <div class="fg"><label class="fl">Mother's Name</label><input class="fi" value="${esc(g.motherName)}" placeholder="Smt. Kaushalya Devi" data-field="groom.motherName"></div>
+          <div class="sub-h">Groom's Address</div>
+          <div class="fg"><label class="fl">पता / Village / Street Address</label><input class="fi" value="${esc(g.address||'')}" placeholder="Guniyabad, Rajapur" data-field="groom.address"></div>
+          <div class="fr">
+            <div class="fg"><label class="fl">पोस्ट / Post Office</label><input class="fi" value="${esc(g.post||'')}" placeholder="Bharat Ganj" data-field="groom.post"></div>
+            <div class="fg"><label class="fl">City / District</label><input class="fi" value="${esc(g.city)}" placeholder="Prayagraj" data-field="groom.city"></div>
+          </div>
         `;
       }
     },
@@ -1220,13 +1238,22 @@ const SECTION_TEMPLATES = {
       render() {
         const b = S.card.bride;
         return `
-          <div class="fg"><label class="fl">Bride's Full Name</label><input class="fi" value="${esc(b.name)}" placeholder="Priya Devi Gupta" data-field="bride.name"></div>
-          <div class="sub-h">Bride's Parents</div>
           <div class="fr">
-            <div class="fg"><label class="fl">Father's Name</label><input class="fi" value="${esc(b.fatherName)}" placeholder="Shri Mohan Lal Gupta" data-field="bride.fatherName"></div>
-            <div class="fg"><label class="fl">Mother's Name</label><input class="fi" value="${esc(b.motherName)}" placeholder="Smt. Savitri Devi" data-field="bride.motherName"></div>
+            <div class="fg"><label class="fl">Bride's Title / Prefix</label><input class="fi" value="${esc(b.title||'आयु॰ कु॰')}" placeholder="आयु॰ कु॰ / Ku." data-field="bride.title"></div>
+            <div class="fg"><label class="fl">Bride's Full Name</label><input class="fi" value="${esc(b.name)}" placeholder="Priya Devi Gupta" data-field="bride.name"></div>
           </div>
-          <div class="fg"><label class="fl">City / Residence</label><input class="fi" value="${esc(b.city)}" placeholder="Agra" data-field="bride.city"></div>
+          <div class="sub-h">Bride's Family</div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Grandfather's Name (optional)</label><input class="fi" value="${esc(b.grandfatherName||'')}" placeholder="Sv. Dukhi Ram Yadav" data-field="bride.grandfatherName"></div>
+            <div class="fg"><label class="fl">Father's Name</label><input class="fi" value="${esc(b.fatherName)}" placeholder="Shri Daya Shankar Yadav" data-field="bride.fatherName"></div>
+          </div>
+          <div class="fg"><label class="fl">Mother's Name</label><input class="fi" value="${esc(b.motherName)}" placeholder="Smt. Savitri Devi" data-field="bride.motherName"></div>
+          <div class="sub-h">Bride's Address</div>
+          <div class="fg"><label class="fl">पता / Village / Street Address</label><input class="fi" value="${esc(b.address||'')}" placeholder="Guniyabad, Rajapur" data-field="bride.address"></div>
+          <div class="fr">
+            <div class="fg"><label class="fl">पोस्ट / Post Office</label><input class="fi" value="${esc(b.post||'')}" placeholder="Bharat Ganj" data-field="bride.post"></div>
+            <div class="fg"><label class="fl">City / District</label><input class="fi" value="${esc(b.city)}" placeholder="Prayagraj" data-field="bride.city"></div>
+          </div>
         `;
       }
     },
@@ -1247,8 +1274,16 @@ const SECTION_TEMPLATES = {
       render() { return renderDarshnabhilashiSectionHtml(); }
     },
     {
+      id: 'vandan', ico: '🙌', color: 'ico-slate', title: 'Vandanabhilashi', sub: 'वन्दनाभिलाषी',
+      render() { return renderVandanabhilashiSectionHtml(); }
+    },
+    {
       id: 'swagat', ico: '🤝', color: 'ico-orange', title: 'Swagatakankshi', sub: 'स्वागताकांक्षी',
       render() { return renderSwagatakankshiSectionHtml(); }
+    },
+    {
+      id: 'nimantrak', ico: '📬', color: 'ico-blue', title: 'Nimantrak (Inviter)', sub: 'निमंत्रक विवरण',
+      render() { return renderNimantrakSectionHtml(); }
     }
   ],
 
@@ -1414,8 +1449,19 @@ const SECTION_TEMPLATES = {
 };
 
 // Sub-renderers for shared modules
+function renderShlokaSectionHtml() {
+  const sh = S.card.shloka || { line1: '', line2: '', line3: '' };
+  return `
+    <p style="font-size:0.72rem;color:var(--g400);margin-bottom:10px;line-height:1.45">The sacred opening lines printed at the very top of the card (e.g. श्री गणेशाय नमः).</p>
+    <div class="fg"><label class="fl">पहली पंक्ति / Line 1 (Name of God)</label><input class="fi" value="${esc(sh.line1||'।।श्री गणेशाय नमः।।')}" placeholder="।।श्री गणेशाय नमः।।" data-field="shloka.line1"></div>
+    <div class="fg"><label class="fl">दूसरी पंक्ति / Line 2 (Shloka)</label><input class="fi" value="${esc(sh.line2||'')}" placeholder="वक्रतुण्ड महाकाय, सूर्यकोटि समप्रभः।।" data-field="shloka.line2"></div>
+    <div class="fg"><label class="fl">तीसरी पंक्ति / Line 3 (Shloka conclusion)</label><input class="fi" value="${esc(sh.line3||'')}" placeholder="निर्विघ्नं कुरुमे देव, सर्वकार्येषु सर्वदा।।" data-field="shloka.line3"></div>
+  `;
+}
+
 function renderEventsSectionHtml() {
   const evts = S.card.events;
+  const DAY_NAMES = ['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
   return `
     <div id="ev-list">
       ${evts.length ? evts.map((ev, idx) => `
@@ -1430,8 +1476,13 @@ function renderEventsSectionHtml() {
               <input class="fi" value="${esc(ev.name)}" placeholder="Haldi Ceremony / Vivah" oninput="updateEvent('${ev.id}','name',this.value); this.closest('.ev-entry').querySelector('.ev-name').textContent=this.value||'Ceremony Event'">
             </div>
             <div class="fr">
-              <div class="fg"><label class="fl">Date</label><input type="date" class="fi" value="${esc(ev.date)}" oninput="updateEvent('${ev.id}','date',this.value)"></div>
+              <div class="fg"><label class="fl">Date</label><input type="date" class="fi" value="${esc(ev.date)}" oninput="updateEvent('${ev.id}','date',this.value); autoFillDay('${ev.id}',this.value)"></div>
               <div class="fg"><label class="fl">Time</label><input class="fi" value="${esc(ev.time)}" placeholder="10:00 AM" oninput="updateEvent('${ev.id}','time',this.value)"></div>
+            </div>
+            <div class="fg">
+              <label class="fl">दिन / Day Name (auto-filled or custom)</label>
+              <input class="fi" id="ev-day-${ev.id}" value="${esc(ev.dayName||'')}" placeholder="बुधवार / Wednesday" oninput="updateEvent('${ev.id}','dayName',this.value)">
+              <span class="fhint">Auto-filled from date. You can override with custom day text (e.g. दिन-बुधवार).</span>
             </div>
             <div class="fg">
               <label class="fl">Venue Location Name</label>
@@ -1511,6 +1562,42 @@ function renderDarshnabhilashiSectionHtml() {
   `;
 }
 
+function renderVandanabhilashiSectionHtml() {
+  const list = S.card.vandanabhilashi || [];
+  return `
+    <p style="font-size:0.72rem;color:var(--g400);margin-bottom:10px;line-height:1.45">वन्दनाभिलाषी — Elders/relatives who are offering their reverential blessings (those who are shown separately from Darshnabhilashi).</p>
+    <div id="vandan-list">
+      ${list.map((p, i) => `
+        <div class="pe">
+          <div class="pe-info">
+            <div class="pe-name">${esc(p.name)}</div>
+            <div class="pe-role">${esc(p.relation || 'वन्दनाभिलाषी')}</div>
+          </div>
+          <button class="pe-del" onclick="removeVandan(${i})">✕</button>
+        </div>`).join('') || '<p style="font-size:0.73rem;color:#c5c2bb;margin-bottom:8px;text-align:center;">None added yet.</p>'}
+    </div>
+    <div class="fr" style="margin-top:10px">
+      <div class="fg" style="margin:0"><input class="fi" id="vandan-n" placeholder="Elder's Full Name"></div>
+      <div class="fg" style="margin:0"><input class="fi" id="vandan-r" placeholder="Relation / Subtext"></div>
+    </div>
+    <button class="add-btn" onclick="addVandan()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Vandanabhilashi</button>
+  `;
+}
+
+function renderNimantrakSectionHtml() {
+  const n = S.card.nimantrak || { name: '', address: '', post: '', city: '' };
+  return `
+    <p style="font-size:0.72rem;color:var(--g400);margin-bottom:10px;line-height:1.45">निमंत्रक — The person(s) formally extending the invitation, printed at the bottom of the card.</p>
+    <div class="fg"><label class="fl">निमंत्रक Name</label><input class="fi" value="${esc(n.name||'')}" placeholder="Chopari Lal Yadav" data-field="nimantrak.name"></div>
+    <div class="sub-h">Nimantrak Address</div>
+    <div class="fg"><label class="fl">पता / Village / Street</label><input class="fi" value="${esc(n.address||'')}" placeholder="Guniyabad, Rajapur" data-field="nimantrak.address"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">पोस्ट / Post Office</label><input class="fi" value="${esc(n.post||'')}" placeholder="Bharat Ganj" data-field="nimantrak.post"></div>
+      <div class="fg"><label class="fl">City / District</label><input class="fi" value="${esc(n.city||'')}" placeholder="Prayagraj" data-field="nimantrak.city"></div>
+    </div>
+  `;
+}
+
 function renderSwagatakankshiSectionHtml() {
   const d = S.card.swagatakankshi || { groomSide: [], brideSide: [] };
   const rl = (list, side) => list.map((p, i) => `
@@ -1585,13 +1672,13 @@ function refreshSection(id) {
 }
 
 function toggleSection(id) {
-  const card = $(`sc-${id}`);
-  if (!card) return;
-  const wasOpen = card.classList.contains('open');
-  card.classList.toggle('open', !wasOpen);
+  const sc = document.getElementById('sc-'+id);
+  if (!sc) return;
+  const wasOpen = sc.classList.contains('open');
+  sc.classList.toggle('open', !wasOpen);
   if (!wasOpen) {
     if (!S.ui.openSections.includes(id)) S.ui.openSections.push(id);
-    const inner = $(`sc-inner-${id}`);
+    const inner = document.getElementById('sc-inner-'+id);
     const currentTemplate = S.card.templateId || 'wedding';
     const schema = SECTION_TEMPLATES[currentTemplate] || SECTION_TEMPLATES.wedding;
     const sec = schema.find(s => s.id === id);
@@ -1609,8 +1696,7 @@ function toggleFirstAccordionSection() {
   const schema = SECTION_TEMPLATES[currentTemplate] || SECTION_TEMPLATES.wedding;
   if (schema && schema[0]) {
     toggleSection(schema[0].id);
-    // Smooth scroll Left column to this item
-    const el = $(`sc-${schema[0].id}`);
+    const el = document.getElementById('sc-'+schema[0].id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   }
 }
@@ -1620,17 +1706,14 @@ function bindInputs() {
     el.oninput = function() { setField(this.dataset.field, this.value); };
     el.onchange = function() { setField(this.dataset.field, this.value); };
   });
-  
-  // Sync top shortcut card banner values
-  const rsvpShortcut = $('pcb-rsvp');
+  const rsvpShortcut = document.getElementById('pcb-rsvp');
   if (rsvpShortcut) rsvpShortcut.value = S.card.rsvpContact || '';
-  
-  const venueShortcut = $('pcb-venue');
+  const venueShortcut = document.getElementById('pcb-venue');
   if (venueShortcut && S.card.events[0]) venueShortcut.value = S.card.events[0].venue || '';
-  
-  const dateShortcut = $('pcb-date');
+  const dateShortcut = document.getElementById('pcb-date');
   if (dateShortcut && S.card.events[0]) dateShortcut.value = S.card.events[0].date || '';
 }
+
 
 function setField(path, val) {
   const keys = path.split('.');
@@ -1727,9 +1810,10 @@ function renderCard() {
   if (c.templateId === 'wedding' || c.templateId === 'nikah') {
     // WEDDING or NIKAH Layout
     const person = p => `
+      ${p.title ? `<div style="font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:700;opacity:0.85;letter-spacing:0.5px;margin-bottom:2px;color:var(--ca);">${esc(p.title)}</div>` : ''}
       <div class="c-name">${esc(p.name) || '—'}</div>
-      ${showParentsLine && (p.fatherName || p.motherName) ? `<div class="c-parents">${[p.fatherName, p.motherName].filter(Boolean).map(esc).join(' &amp; ')}</div>` : ''}
-      ${showCity && p.city ? `<div class="c-city">${esc(p.city)}</div>` : ''}
+      ${showParentsLine && (p.grandfatherName || p.fatherName || p.motherName) ? `<div class="c-parents">${[p.grandfatherName ? 'स्व॰ '+p.grandfatherName : '', p.fatherName, p.motherName].filter(Boolean).map(esc).join(' &amp; ')}</div>` : ''}
+      ${(p.address || p.post || p.city) ? `<div class="c-city" style="font-size:0.58rem;opacity:0.6;letter-spacing:0.5px;">${[p.address, p.post ? 'पोस्ट-'+p.post : '', p.city].filter(Boolean).map(esc).join(', ')}</div>` : ''}
     `;
 
     contentHtml = `
@@ -1792,9 +1876,31 @@ function renderCard() {
   }
 
   // 5. Append generic events, welcome greetings, and RSVP overlays
+  const sh = c.shloka || {};
+  const shlokaHtml = (sh.line1 || sh.line2 || sh.line3) ? `
+    <div style="font-family:'Cormorant Garamond',serif;font-size:0.68rem;line-height:1.7;opacity:0.78;text-align:center;margin-bottom:4px;font-style:italic;">
+      ${sh.line1 ? `<div style="font-weight:700;font-style:normal;font-size:0.72rem;">${esc(sh.line1)}</div>` : ''}
+      ${sh.line2 ? `<div>${esc(sh.line2)}</div>` : ''}
+      ${sh.line3 ? `<div>${esc(sh.line3)}</div>` : ''}
+    </div>` : '';
+
+  const vandanHtml = (c.vandanabhilashi && c.vandanabhilashi.length) ? `
+    <div style="margin-top:6px;font-size:0.6rem;opacity:0.7;line-height:1.6;text-align:center;">
+      <div style="font-weight:700;font-size:0.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ca);margin-bottom:2px;">।। वन्दनाभिलाषी ।।</div>
+      <div>${c.vandanabhilashi.map(p => esc(p.name) + (p.relation ? ' ('+esc(p.relation)+')' : '')).join(', ')}</div>
+    </div>` : '';
+
+  const nimantrakHtml = (c.nimantrak && c.nimantrak.name) ? `
+    <div style="margin-top:8px;font-size:0.62rem;opacity:0.75;text-align:center;line-height:1.6;">
+      <div style="font-weight:700;font-size:0.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ca);">।। निमंत्रक ।।</div>
+      <div>${esc(c.nimantrak.name)}</div>
+      ${c.nimantrak.address || c.nimantrak.post || c.nimantrak.city ? `<div style="font-size:0.58rem;opacity:0.65;">${[c.nimantrak.address, c.nimantrak.post ? 'पोस्ट-'+c.nimantrak.post : '', c.nimantrak.city].filter(Boolean).map(esc).join(', ')}</div>` : ''}
+    </div>` : '';
+
   card.innerHTML = `
     ${showDecors ? `<div class="cb"></div><div class="cc tl">${CORNER_SVG_PATH}</div><div class="cc tr">${CORNER_SVG_PATH}</div><div class="cc bl">${CORNER_SVG_PATH}</div><div class="cc br">${CORNER_SVG_PATH}</div>` : ''}
     <div class="ci">
+      ${shlokaHtml}
       ${contentHtml}
       <div class="c-div"><div class="c-dl"></div><div class="c-di">✦</div><div class="c-dl"></div></div>
       
@@ -1803,13 +1909,16 @@ function renderCard() {
       ${c.events && c.events.length ? `<div class="c-evs">${c.events.map((ev, i) => `
         ${i > 0 ? '<div class="c-sep">• • •</div>' : ''}
         <div class="c-ev">
-          <div class="c-evn" style="color:var(--ca);">${esc(ev.name)}</div>
+          <div class="c-evn" style="color:var(--ca);"><b>${esc(ev.name)}</b></div>
           ${ev.date || ev.time ? `<div class="c-evm">${ev.date ? `<span>${fmtDate(ev.date)}</span>` : ''} ${ev.date && ev.time ? '<span>·</span>' : ''} ${ev.time ? `<span>${esc(ev.time)}</span>` : ''}</div>` : ''}
+          ${ev.dayName ? `<div style="font-family:'Montserrat',sans-serif;font-size:0.6rem;opacity:0.65;letter-spacing:0.5px;margin-bottom:2px;">दिन — ${esc(ev.dayName)}</div>` : ''}
           ${ev.venue ? `<div class="c-evv">${esc(ev.venue)}</div>` : ''}
           ${ev.address ? `<div class="c-eva">${esc(ev.address)}</div>` : ''}
         </div>`).join('')}</div>` : ''}
         
       ${c.rsvpContact ? `<div class="c-rsvp">${c.rsvpName ? esc(c.rsvpName) + ' — ' : ''}RSVP: ${esc(c.rsvpContact)}</div>` : ''}
+      ${vandanHtml}
+      ${nimantrakHtml}
     </div>`;
 
   // 6. Sync personal shortcut card banner headers
@@ -1837,8 +1946,20 @@ function renderCard() {
 // ══════════════════════════════════════════════════════
 //  LIST CONTROLLER (Bal Aagrah, Darshnabhilashi, Swagat)
 // ══════════════════════════════════════════════════════
+function autoFillDay(evId, dateVal) {
+  if (!dateVal) return;
+  const DAY_NAMES_HI = ['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+  try {
+    const d = new Date(dateVal + 'T00:00:00');
+    const dayHi = DAY_NAMES_HI[d.getDay()];
+    updateEvent(evId, 'dayName', dayHi);
+    const inp = $('ev-day-' + evId);
+    if (inp) inp.value = dayHi;
+  } catch(e) {}
+}
+
 function addEvent() {
-  S.card.events.push({ id: 'e'+Date.now(), name: 'New Ceremony', date: '', time: '', venue: '', address: '' });
+  S.card.events.push({ id: 'e'+Date.now(), name: 'New Ceremony', date: '', time: '', dayName: '', venue: '', address: '' });
   refreshSection('events');
   renderCard();
   triggerAutosave();
@@ -1881,6 +2002,20 @@ function addDarsh() {
 function removeDarsh(i) {
   S.card.darshnabhilashi.splice(i, 1);
   refreshSection('darsh');
+  triggerAutosave();
+}
+
+function addVandan() {
+  if (!S.card.vandanabhilashi) S.card.vandanabhilashi = [];
+  const n = $('vandan-n')?.value.trim();
+  if(!n) { toast('Please enter elder\'s name first', 'w'); return; }
+  S.card.vandanabhilashi.push({ name: n, relation: $('vandan-r')?.value.trim() || '' });
+  refreshSection('vandan');
+  triggerAutosave();
+}
+function removeVandan(i) {
+  S.card.vandanabhilashi.splice(i, 1);
+  refreshSection('vandan');
   triggerAutosave();
 }
 
