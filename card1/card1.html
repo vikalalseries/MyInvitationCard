@@ -549,5 +549,147 @@ body {
 </div><!-- sec 2 -->
 
 </div><!-- card -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  BUILDER ↔ CARD1 LIVE SYNC  (postMessage receiver)
+// ══════════════════════════════════════════════════════
+window.addEventListener('message', function(e) {
+  const d = e.data;
+  if (!d || d.type !== 'MIC_CARD_UPDATE') return;
+  const c = d.card;
+  if (!c) return;
+  syncCard(c);
+});
+
+function syncCard(c) {
+
+  // ── SECTION 1: Opening Shloka ────────────────────────
+  setTxt('.s1-mantras p:first-child', c.shloka && c.shloka.line1 ? c.shloka.line1 : '।। श्री गणेशाय नमः ।।');
+  setTxt('.s1-mantras p:last-child',  c.shloka && c.shloka.line2 ? c.shloka.line2 : 'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥');
+
+  // ── SECTION 1: Haldi ────────────────────────────────
+  if (c.haldi) {
+    setTxt('.s1-haldi-t', c.haldi.name || 'हल्दी व मेहन्दी');
+    setTxt('.s1-haldi-d', 'दिनांक - ' + fmtHi(c.haldi.date));
+  }
+
+  // ── SECTION 1: Vivah & Vidai ─────────────────────────
+  const evEls = document.querySelectorAll('.s1-ev');
+  if (evEls[0] && c.vivah) {
+    setTxtEl(evEls[0].querySelector('.s1-ev-t'), c.vivah.name || 'शुभ विवाह');
+    setTxtEl(evEls[0].querySelector('.s1-ev-d'), 'दिनांक - ' + fmtHi(c.vivah.date));
+  }
+  if (evEls[1] && c.vidai) {
+    setTxtEl(evEls[1].querySelector('.s1-ev-t'), c.vidai.name || 'विदाई');
+    setTxtEl(evEls[1].querySelector('.s1-ev-d'), 'दिनांक - ' + fmtHi(c.vidai.date));
+  }
+
+  // ── SECTION 1: Bal Aagrah ───────────────────────────
+  if (c.balAagrah) {
+    const balEl = document.querySelector('.s1-bal');
+    if (balEl) {
+      const nameSpan = balEl.querySelector('.s1-bal-n');
+      const textNode = Array.from(balEl.childNodes).find(n => n.nodeType === 3);
+      if (textNode) textNode.textContent = (c.balAagrah.text || '') + '\n';
+      if (nameSpan)  nameSpan.textContent = c.balAagrah.names || '';
+    }
+  }
+
+  // ── SECTION 2: Snehi ────────────────────────────────
+  setTxt('.s2-snehi', c.snehi || 'स्नेही स्वजन,');
+
+  // ── SECTION 2: Vindhyavasini ────────────────────────
+  if (c.vindhya) {
+    setTxt('.s2-vm', c.vindhya.mantra   || '।। श्री विन्ध्यवासिनी देव्यै नमः ।।');
+    setTxt('.s2-vs', c.vindhya.subtitle || 'आदि शक्ति जगत जननी माँ विन्ध्यवासिनी जी की असीम अनुकम्पा से....');
+  }
+
+  // ── SECTION 2: Bride ────────────────────────────────
+  if (c.bride) {
+    setTxt('.s2-bride', (c.bride.title || 'आयु॰कु॰') + ' ' + (c.bride.name || 'नीलम मौर्या'));
+    const famL = document.querySelector('.s2-fam');
+    if (famL) {
+      const lines = [];
+      if (c.bride.grandfatherName) lines.push('सुपौत्री- स्व0 ' + c.bride.grandfatherName);
+      if (c.bride.fatherName || c.bride.motherName)
+        lines.push('सुपुत्री- ' + [c.bride.fatherName, c.bride.motherName].filter(Boolean).join('- '));
+      if (c.bride.address)
+        lines.push('ग्राम- ' + c.bride.address + (c.bride.post ? ' पो0- ' + c.bride.post : ''));
+      if (c.bride.city) lines.push(c.bride.city);
+      famL.innerHTML = lines.join('<br>');
+    }
+  }
+
+  // ── SECTION 2: Groom ────────────────────────────────
+  if (c.groom) {
+    setTxt('.s2-groom', (c.groom.title || 'चि॰') + ' ' + (c.groom.name || 'राजेश मौर्य'));
+    const famR = document.querySelector('.s2-fam-r');
+    if (famR) {
+      const lines = [];
+      if (c.groom.grandfatherName) lines.push('सुपौत्र- स्व0 ' + c.groom.grandfatherName);
+      if (c.groom.fatherName || c.groom.motherName)
+        lines.push('सुपुत्र- ' + [c.groom.fatherName, c.groom.motherName].filter(Boolean).join('- '));
+      if (c.groom.address)
+        lines.push('ग्राम- ' + c.groom.address + (c.groom.post ? ' पो0- ' + c.groom.post : ''));
+      if (c.groom.city) lines.push(c.groom.city);
+      famR.innerHTML = lines.join('<br>');
+    }
+  }
+
+  // ── SECTION 2: Vinit (center greeting) ──────────────
+  const dampD = document.querySelector('.s2-damp-d');
+  if (dampD && c.vinit !== undefined) {
+    dampD.innerHTML = c.vinit.replace(/\n/g, '<br>');
+  }
+
+  // ── FOOTER: Darshnabhilashi (left) ──────────────────
+  if (c.darshnabhilashi) {
+    setTxt('.fc-l .f-label', c.darshnabhilashi.label || 'दर्शनाभिलाषी -');
+    const fcLName = document.querySelector('.fc-l .f-name');
+    if (fcLName) fcLName.innerHTML = (c.darshnabhilashi.names || '').replace(/\n/g, '<br>');
+  }
+
+  // ── FOOTER: Swagatakankshi (center) ─────────────────
+  if (c.swagatakankshi) {
+    setTxt('.fc-c .f-label', c.swagatakankshi.label || '- स्वागताकांक्षी -');
+    const fcCName = document.querySelector('.fc-c .f-name');
+    if (fcCName) fcCName.innerHTML = (c.swagatakankshi.names || '').replace(/\n/g, '<br>');
+  }
+
+  // ── FOOTER: Nimantrak / Vinit (right) ───────────────
+  if (c.nimantrak) {
+    setTxt('.fc-r .f-label', c.nimantrak.label || '- विनीत -');
+    setTxt('.fc-r .f-name',  c.nimantrak.name  || '');
+    const fcRAddr = document.querySelector('.fc-r .f-addr');
+    if (fcRAddr) {
+      const n = c.nimantrak;
+      const parts = [n.address, n.post ? 'पो0- ' + n.post : '', n.city].filter(Boolean);
+      fcRAddr.innerHTML = parts.join('<br>');
+    }
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────
+const _HI_MONTHS = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+const _HI_DAYS   = ['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+
+function fmtHi(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.getDate() + ' ' + _HI_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + _HI_DAYS[d.getDay()];
+  } catch(e) { return dateStr; }
+}
+
+function setTxt(sel, txt) {
+  const el = document.querySelector(sel);
+  if (el) el.textContent = txt;
+}
+
+function setTxtEl(el, txt) {
+  if (el) el.textContent = txt;
+}
+</script>
 </body>
 </html>
