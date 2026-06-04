@@ -232,14 +232,32 @@ function reportTemplate() {
 }
 
 
-/* USE TEMPLATE */
+/* USE TEMPLATE — route each template to its own builder */
+const TEMPLATE_BUILDER_MAP = {
+  37: "builder1/builder.html"
+  // Add future template→builder mappings here, e.g.:
+  // 28: "builder2/builder.html",
+};
+
 function useTemplate() {
+  if (!selectedTemplate) return;
+
+  const builderPath = TEMPLATE_BUILDER_MAP[selectedTemplate.id];
+
+  if (!builderPath) {
+    alert(
+      "Builder for \"" + selectedTemplate.title + "\" is coming soon!\n\n" +
+      "We're working on it. Stay tuned."
+    );
+    return;
+  }
+
   localStorage.setItem(
     "selectedTemplate",
     JSON.stringify(selectedTemplate)
   );
 
-  window.top.location.href = "builder.html";
+  window.top.location.href = builderPath + "?templateId=" + selectedTemplate.id;
 }
 
 
