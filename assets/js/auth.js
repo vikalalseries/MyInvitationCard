@@ -666,3 +666,23 @@ document.addEventListener(
   },
   true
 );
+
+// Check query parameters to open login/signup forms automatically
+if (authOverlay && authModal) {
+  const urlParams = new URLSearchParams(window.location.search);
+  let opened = false;
+  if (urlParams.get('openLogin') === 'true') {
+    showModal();
+    showLoginForm();
+    opened = true;
+  } else if (urlParams.get('openSignup') === 'true') {
+    showModal();
+    showSignupForm();
+    opened = true;
+  }
+  if (opened) {
+    // Clean up query parameters from the browser's address bar
+    const newUrl = window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+  }
+}

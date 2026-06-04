@@ -380,9 +380,143 @@
   .t-i .t-ico { background:#2563eb; color:var(--w); }
   .t-w .t-ico { background:#ea580c; color:var(--w); }
 
+  /* ══════════════════════════════════════ DOWNLOAD AUTH GATE */
+  .dl-item.dl-disabled {
+    opacity:0.4; cursor:default;
+  }
+  .dl-login-btn {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; padding:10px 12px; margin-top:4px;
+    background:linear-gradient(135deg,#f43f5e,#e11d48); color:#fff;
+    border-radius:var(--r-md); font-size:0.8rem; font-weight:650;
+    transition:all var(--t); border:none; cursor:pointer;
+  }
+  .dl-login-btn:hover { box-shadow:0 4px 14px rgba(244,63,94,0.35); transform:translateY(-1px); }
+  .dl-login-btn.hidden { display:none; }
+
+  /* ══════════════════════════════════════ LOGIN POPUP MODAL */
+  .login-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9998;
+    opacity:0; visibility:hidden; transition:all 0.25s ease;
+  }
+  .login-overlay.show { opacity:1; visibility:visible; }
+
+  .login-popup {
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.92);
+    background:var(--w); border-radius:24px; padding:40px 32px 32px;
+    box-shadow:0 32px 80px rgba(0,0,0,0.22); z-index:9999;
+    min-width:370px; max-width:430px; text-align:center;
+    opacity:0; visibility:hidden; transition:all 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  .login-popup.show { opacity:1; visibility:visible; transform:translate(-50%,-50%) scale(1); }
+
+  .lp-close {
+    position:absolute; top:14px; right:14px;
+    width:32px; height:32px; border-radius:50%; display:flex;
+    align-items:center; justify-content:center; color:var(--g400);
+    transition:all var(--t); font-size:1.1rem; border:none; background:none; cursor:pointer;
+  }
+  .lp-close:hover { background:var(--g100); color:var(--g700); }
+  .lp-close-icon { display:inline-block; transition:transform 0.25s ease; }
+  .lp-close:hover .lp-close-icon { transform:rotate(90deg) scale(1.1); }
+
+  .lp-icon {
+    width:56px; height:56px; margin:0 auto 16px; border-radius:50%;
+    background:linear-gradient(135deg,#fff1f3,#ffe0e6);
+    display:flex; align-items:center; justify-content:center; font-size:1.5rem;
+  }
+  .lp-title {
+    font-size:1.22rem; font-weight:750; color:var(--g900); margin-bottom:16px;
+    letter-spacing:-0.3px;
+  }
+  .lp-google-btn {
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; padding:11px 16px; background:var(--w);
+    border:1.5px solid var(--g200); border-radius:12px;
+    font-size:0.85rem; font-weight:600; color:var(--g700);
+    transition:all var(--t); cursor:pointer; margin-bottom:10px;
+  }
+  .lp-google-btn:hover { border-color:var(--g300); box-shadow:0 4px 12px rgba(0,0,0,0.06); background:var(--g50); }
+  .lp-google-btn img { width:18px; height:18px; }
+
+  .lp-divider {
+    display:flex; align-items:center; gap:12px;
+    margin:16px 0; color:var(--g300); font-size:0.72rem; font-weight:500;
+  }
+  .lp-divider::before, .lp-divider::after {
+    content:''; flex:1; height:1px; background:var(--g150);
+  }
+
+  /* Inline Forms */
+  .lp-view { display: none; }
+  .lp-view.active { display: block; }
+  .lp-form { margin-top: 14px; }
+  .lp-input {
+    width:100%; padding:11px 14px; border:1.5px solid var(--g200); border-radius:12px;
+    font-size:0.85rem; margin-bottom:12px; transition:all var(--t); background:var(--w);
+    color:var(--g800); outline:none; text-align:left;
+  }
+  .lp-input:focus { border-color:var(--rose); box-shadow:0 0 0 3px rgba(244,63,94,0.15); }
+  .lp-action-btn {
+    width:100%; padding:11px 16px; background:linear-gradient(135deg,#f43f5e,#e11d48);
+    color:#fff; border-radius:12px; font-size:0.85rem; font-weight:650;
+    transition:all var(--t); cursor:pointer; border:none; margin-top:4px; margin-bottom:12px;
+  }
+  .lp-action-btn:hover { box-shadow:0 6px 18px rgba(244,63,94,0.3); transform:translateY(-1px); }
+  .lp-switch-link { font-size:0.8rem; color:var(--g500); margin-top:14px; }
+  .lp-switch-link span { color:var(--rose); font-weight:650; cursor:pointer; }
+  .lp-switch-link span:hover { text-decoration:underline; }
+  .lp-otp-text { font-size:0.8rem; color:var(--g500); margin-bottom:16px; line-height:1.4; }
+  .lp-resend-section { margin-top:8px; font-size:0.8rem; color:var(--g400); }
+  .lp-resend-btn {
+    background:none; border:none; color:var(--rose); font-weight:650; cursor:pointer;
+    font-size:0.8rem; padding:0;
+  }
+  .lp-resend-btn:disabled { color:var(--g300); cursor:default; }
+
+  /* Success Greeting Popup styling */
+  .gp-logo-wrap {
+    display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:20px;
+  }
+  .gp-logo { width:34px; height:34px; }
+  .gp-site-name { font-size:1.1rem; font-weight:800; color:#6d28d9; letter-spacing:-0.3px; }
+  .gp-avatar {
+    font-size: 2.8rem; margin-bottom:12px; animation: wave-hand 1.2s infinite alternate;
+    display:inline-block; transform-origin: 70% 70%;
+  }
+  @keyframes wave-hand {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(15deg); }
+  }
+  .gp-title { font-size:1.3rem; font-weight:750; color:var(--g900); margin-bottom:6px; }
+  .gp-sub { font-size:0.82rem; color:var(--g500); margin-bottom:22px; }
+  .gp-countdown { font-size:0.75rem; color:var(--g400); font-weight:500; }
+
+  .lp-signin-btn {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; padding:11px 16px; background:var(--g900); color:#fff;
+    border-radius:12px; font-size:0.85rem; font-weight:650;
+    transition:all var(--t); cursor:pointer; border:none; margin-bottom:10px;
+  }
+  .lp-signin-btn:hover { background:var(--g700); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+
+  .lp-create-link {
+    display:block; text-align:center; margin-top:14px;
+    font-size:0.8rem; color:var(--g500); font-weight:450;
+  }
+  .lp-create-link span {
+    color:var(--rose); font-weight:650; cursor:pointer;
+    transition:color var(--t);
+  }
+  .lp-create-link span:hover { color:var(--rose-dark); text-decoration:underline; }
+
+  .lp-footer {
+    margin-top:18px; font-size:0.7rem; color:var(--g400); font-weight:450;
+  }
+
   /* Print */
   @media print {
-    .topbar,.left-col,.preview-bar,.toast-wrap { display:none !important; }
+    .topbar,.left-col,.preview-bar,.toast-wrap,.login-overlay,.login-popup { display:none !important; }
     body { overflow:visible; height:auto; background:#fff; }
     .app { height:auto; } .body { display:block; }
     .right-col { background:#fff; }
@@ -505,15 +639,15 @@
           <svg class="dl-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div class="dl-menu" id="dl-menu">
-          <button class="dl-item" onclick="downloadCard('png')">
+          <button class="dl-item dl-auth-gate" id="dlb-png" onclick="handleDownload('png', event)">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
             Download PNG
           </button>
-          <button class="dl-item" onclick="downloadCard('jpg')">
+          <button class="dl-item dl-auth-gate" id="dlb-jpg" onclick="handleDownload('jpg', event)">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
             Download JPG
           </button>
-          <button class="dl-item" onclick="downloadCard('pdf')">
+          <button class="dl-item dl-auth-gate" id="dlb-pdf" onclick="handleDownload('pdf', event)">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             Download PDF
           </button>
@@ -526,6 +660,11 @@
           <button class="dl-item" id="dl-card1-direct">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             Open Card Directly
+          </button>
+          <div class="dl-sep"></div>
+          <button class="dl-login-btn hidden" id="dl-login-btn" onclick="showLoginPopup(event)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10,17 15,12 10,7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Login to Download
           </button>
         </div>
       </div>
@@ -602,6 +741,102 @@
 
 <audio id="bg-audio" loop></audio>
 <div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- ══════════════════════════════════════════ LOGIN POPUP -->
+<div class="login-overlay" id="login-overlay"></div>
+<div class="login-popup" id="login-popup" onclick="event.stopPropagation()">
+  <button class="lp-close" onclick="hideLoginPopup(event)" title="Close"><span class="lp-close-icon">&times;</span></button>
+  
+  <!-- VIEW 1: WELCOME / CHOICES -->
+  <div id="lp-view-welcome" class="lp-view active">
+    <div class="lp-icon">🔒</div>
+    <div class="lp-title">Login to Download</div>
+    <button class="lp-google-btn" id="lp-google-btn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Continue with Google
+    </button>
+    <div class="lp-divider">or</div>
+    <button class="lp-signin-btn" id="lp-signin-btn-show" onclick="switchPopupView('lp-view-signin')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10,17 15,12 10,7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Sign In with Email
+    </button>
+    <div class="lp-create-link">
+      Don't have an account? <span id="lp-create-btn-show" onclick="switchPopupView('lp-view-signup')">Create it</span>
+    </div>
+    <div class="lp-footer">Free account &middot; No credit card required</div>
+  </div>
+
+  <!-- VIEW 2: SIGN IN FORM -->
+  <div id="lp-view-signin" class="lp-view">
+    <div class="lp-icon">🔑</div>
+    <div class="lp-title">Sign In</div>
+    <div class="lp-form">
+      <input type="email" id="lp-login-email" class="lp-input" placeholder="Email" required>
+      <input type="password" id="lp-login-password" class="lp-input" placeholder="Password" required>
+      <button class="lp-action-btn" id="lp-login-action-btn">Sign In</button>
+    </div>
+    <div class="lp-switch-link">
+      <span onclick="switchPopupView('lp-view-welcome')">Back</span>
+    </div>
+  </div>
+
+  <!-- VIEW 3: SIGN UP FORM -->
+  <div id="lp-view-signup" class="lp-view">
+    <div class="lp-icon">📝</div>
+    <div class="lp-title">Sign Up</div>
+    <div class="lp-form">
+      <input type="text" id="lp-signup-name" class="lp-input" placeholder="Full Name" required>
+      <input type="email" id="lp-signup-email" class="lp-input" placeholder="Email" required>
+      <input type="password" id="lp-signup-password" class="lp-input" placeholder="Password" required>
+      <input type="password" id="lp-signup-confirm" class="lp-input" placeholder="Confirm Password" required>
+      <button class="lp-action-btn" id="lp-signup-action-btn">Create Account</button>
+    </div>
+    <div class="lp-switch-link">
+      Already have an account? <span onclick="switchPopupView('lp-view-signin')">Sign In</span> | <span onclick="switchPopupView('lp-view-welcome')">Back</span>
+    </div>
+  </div>
+
+  <!-- VIEW 4: OTP VERIFICATION -->
+  <div id="lp-view-otp" class="lp-view">
+    <div class="lp-icon">✉️</div>
+    <div class="lp-title">Verify Code</div>
+    <p class="lp-otp-text">Enter the 6-digit verification code sent to your email.</p>
+    <div class="lp-form">
+      <input type="text" id="lp-otp-code" class="lp-input" placeholder="Enter 6-digit code" maxlength="6" required>
+      <button class="lp-action-btn" id="lp-otp-action-btn">Verify Code</button>
+    </div>
+    <div class="lp-resend-section">
+      <button id="lp-resend-btn" class="lp-resend-btn" disabled>Resend OTP (30s)</button>
+    </div>
+    <div class="lp-switch-link">
+      <span onclick="switchPopupView('lp-view-signup')">Back</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ GREETING POPUP -->
+<div class="login-popup" id="greeting-popup" onclick="event.stopPropagation()">
+  <button class="lp-close" id="gp-close-btn" title="Close"><span class="lp-close-icon">&times;</span></button>
+  
+  <div class="gp-logo-wrap">
+    <svg class="gp-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60 42 C60 37, 54 33, 49 33 C42 33, 39 40, 39 45 C39 54, 49 61, 60 69 C71 61, 81 54, 81 45 C81 40, 78 33, 71 33 C66 33, 60 37, 60 42Z" fill="#ef4444"/>
+      <path d="M18 42 L18 78 Q18 84 24 84 L96 84 Q102 84 102 78 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18 42 L60 14 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M18 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+      <path d="M102 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+    </svg>
+    <div class="gp-site-name">MyInvitationCard</div>
+  </div>
+
+  <div class="gp-content">
+    <div class="gp-avatar">👋</div>
+    <h2 class="gp-title" id="gp-welcome-msg">Welcome back!</h2>
+    <p class="gp-sub">You can now download your card in premium formats.</p>
+  </div>
+
+  <div class="gp-countdown" id="gp-countdown">Auto-closing in 3s...</div>
+</div>
 
 <script>
 'use strict';
@@ -1380,6 +1615,349 @@ renderSections();
 updateTemplateSize();
 autoFit();
 updateBanner();
+</script>
+
+<!-- ══════════════════════════════════════════ FIREBASE AUTH -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB1pvj8S6MbQ_EIs5YuMUz917wFRV1t4Fw",
+  authDomain: "myinvitationcard-405e1.firebaseapp.com",
+  projectId: "myinvitationcard-405e1",
+  storageBucket: "myinvitationcard-405e1.firebasestorage.app",
+  messagingSenderId: "55444531950",
+  appId: "1:55444531950:web:bbf1ea91e1330032b7e1ff"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+// ── Auth state tracking ──
+let isLoggedIn = false;
+
+function updateDownloadAuthUI(loggedIn) {
+  isLoggedIn = loggedIn;
+  const gates = document.querySelectorAll('.dl-auth-gate');
+  const loginBtn = document.getElementById('dl-login-btn');
+
+  gates.forEach(btn => {
+    if (loggedIn) {
+      btn.classList.remove('dl-disabled');
+    } else {
+      btn.classList.add('dl-disabled');
+    }
+  });
+
+  if (loginBtn) {
+    if (loggedIn) {
+      loginBtn.classList.add('hidden');
+    } else {
+      loginBtn.classList.remove('hidden');
+    }
+  }
+}
+
+onAuthStateChanged(auth, (user) => {
+  updateDownloadAuthUI(!!user);
+});
+
+// ── Popup Views Switcher ──
+window.switchPopupView = function(viewId) {
+  document.querySelectorAll('.lp-view').forEach(view => {
+    view.classList.remove('active');
+  });
+  const targetView = document.getElementById(viewId);
+  if (targetView) targetView.classList.add('active');
+};
+
+// ── Login popup ──
+window.showLoginPopup = function(event) {
+  if (event) event.stopPropagation();
+  switchPopupView('lp-view-welcome');
+  document.getElementById('dl-wrap').classList.remove('open');
+  document.getElementById('login-overlay').classList.add('show');
+  document.getElementById('login-popup').classList.add('show');
+};
+
+window.hideLoginPopup = function(event) {
+  if (event) event.stopPropagation();
+  document.getElementById('login-overlay').classList.remove('show');
+  document.getElementById('login-popup').classList.remove('show');
+};
+
+// Close popup when clicking the overlay (outside the popup)
+document.getElementById('login-overlay').addEventListener('click', (e) => {
+  e.stopPropagation();
+  hideLoginPopup();
+  hideGreetingPopup();
+});
+
+// Prevent popup from closing when clicking inside it
+document.getElementById('login-popup').addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+// ── Download gate ──
+window.handleDownload = function(format, event) {
+  if (event) event.stopPropagation();
+  if (!isLoggedIn) {
+    // Close the download menu first, then show popup
+    document.getElementById('dl-wrap').classList.remove('open');
+    showLoginPopup(event);
+    return;
+  }
+  downloadCard(format);
+};
+
+// ── Success Greeting Popup logic ──
+let greetingTimeout = null;
+let greetingInterval = null;
+
+window.showGreetingPopup = function(userName, isNew = false) {
+  // Hide login popup first (overlay remains visible)
+  document.getElementById('login-popup').classList.remove('show');
+
+  const titleEl = document.getElementById('gp-welcome-msg');
+  if (titleEl) {
+    const greeting = isNew ? "Welcome" : "Welcome back";
+    titleEl.textContent = `${greeting}, ${userName || 'User'}!`;
+  }
+
+  // Show overlay and greeting popup
+  document.getElementById('login-overlay').classList.add('show');
+  document.getElementById('greeting-popup').classList.add('show');
+
+  // Set up 3s countdown
+  let seconds = 3;
+  const countdownEl = document.getElementById('gp-countdown');
+  if (countdownEl) countdownEl.textContent = `Auto-closing in ${seconds}s...`;
+
+  if (greetingInterval) clearInterval(greetingInterval);
+  greetingInterval = setInterval(() => {
+    seconds--;
+    if (countdownEl) countdownEl.textContent = `Auto-closing in ${seconds}s...`;
+    if (seconds <= 0) {
+      clearInterval(greetingInterval);
+    }
+  }, 1000);
+
+  if (greetingTimeout) clearTimeout(greetingTimeout);
+  greetingTimeout = setTimeout(() => {
+    hideGreetingPopup();
+  }, 3000);
+};
+
+window.hideGreetingPopup = function() {
+  if (greetingInterval) clearInterval(greetingInterval);
+  if (greetingTimeout) clearTimeout(greetingTimeout);
+  document.getElementById('login-overlay').classList.remove('show');
+  document.getElementById('greeting-popup').classList.remove('show');
+};
+
+// Wire up GP close button
+document.getElementById('gp-close-btn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  hideGreetingPopup();
+});
+
+// Prevent greeting popup from closing when clicking inside it
+document.getElementById('greeting-popup').addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+
+// ── Google login from popup ──
+document.getElementById('lp-google-btn').addEventListener('click', async (e) => {
+  e.stopPropagation();
+  try {
+    await signInWithPopup(auth, googleProvider);
+    const user = auth.currentUser;
+    hideLoginPopup();
+    showGreetingPopup(user ? user.displayName : 'User', false);
+    if (typeof toast === 'function') toast('Logged in successfully!', 's');
+  } catch (error) {
+    if (error.code !== 'auth/popup-closed-by-user') {
+      if (typeof toast === 'function') toast('Login failed. Try again.', 'e');
+    }
+  }
+});
+
+// ── Email Sign In ──
+document.getElementById('lp-login-action-btn').addEventListener('click', async (e) => {
+  e.stopPropagation();
+  const email = document.getElementById('lp-login-email').value.trim();
+  const password = document.getElementById('lp-login-password').value;
+
+  if (!email || !password) {
+    if (typeof toast === 'function') toast('Please fill all fields.', 'e');
+    return;
+  }
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    hideLoginPopup();
+    showGreetingPopup(user ? user.displayName : 'User', false);
+    if (typeof toast === 'function') toast('Logged in successfully!', 's');
+  } catch (error) {
+    if (typeof toast === 'function') toast('Incorrect email or password.', 'e');
+  }
+});
+
+// ── Email Signup & OTP flows ──
+let pendingSignupEmail = '';
+let pendingSignupPassword = '';
+let resendInterval = null;
+
+function startPopupResendTimer() {
+  const btn = document.getElementById('lp-resend-btn');
+  if (!btn) return;
+  
+  let seconds = 30;
+  btn.disabled = true;
+  btn.textContent = `Resend OTP (${seconds}s)`;
+  
+  if (resendInterval) clearInterval(resendInterval);
+  resendInterval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(resendInterval);
+      btn.disabled = false;
+      btn.textContent = 'Resend OTP';
+    } else {
+      btn.textContent = `Resend OTP (${seconds}s)`;
+    }
+  }, 1000);
+}
+
+// ── Email Signup Action ──
+document.getElementById('lp-signup-action-btn').addEventListener('click', async (e) => {
+  e.stopPropagation();
+  const fullName = document.getElementById('lp-signup-name').value.trim();
+  const email = document.getElementById('lp-signup-email').value.trim();
+  const password = document.getElementById('lp-signup-password').value;
+  const confirm = document.getElementById('lp-signup-confirm').value;
+
+  if (!fullName || !email || !password || !confirm) {
+    if (typeof toast === 'function') toast('Please fill all fields.', 'e');
+    return;
+  }
+
+  if (password !== confirm) {
+    if (typeof toast === 'function') toast('Passwords do not match.', 'e');
+    return;
+  }
+
+  try {
+    if (typeof toast === 'function') toast('Sending verification code...', 'i');
+    const response = await fetch("https://myinvitationcard-backend.onrender.com/send-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ fullName, email, password })
+    });
+
+    const data = await response.json();
+    if (!data.success) {
+      if (typeof toast === 'function') toast(data.message || 'Failed to send OTP.', 'e');
+      return;
+    }
+
+    pendingSignupEmail = email;
+    pendingSignupPassword = password;
+
+    if (typeof toast === 'function') toast('Verification code sent to your email.', 's');
+    switchPopupView('lp-view-otp');
+    startPopupResendTimer();
+  } catch (err) {
+    if (typeof toast === 'function') toast('Unable to send verification code.', 'e');
+  }
+});
+
+// ── Resend OTP Action ──
+document.getElementById('lp-resend-btn').addEventListener('click', async (e) => {
+  e.stopPropagation();
+  const fullName = document.getElementById('lp-signup-name').value.trim();
+  try {
+    if (typeof toast === 'function') toast('Resending verification code...', 'i');
+    const response = await fetch("https://myinvitationcard-backend.onrender.com/send-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fullName,
+        email: pendingSignupEmail,
+        password: pendingSignupPassword
+      })
+    });
+
+    const data = await response.json();
+    if (!data.success) {
+      if (typeof toast === 'function') toast(data.message, 'e');
+      return;
+    }
+
+    if (typeof toast === 'function') toast('New verification code sent.', 's');
+    startPopupResendTimer();
+  } catch (err) {
+    if (typeof toast === 'function') toast('Failed to resend OTP.', 'e');
+  }
+});
+
+// ── Verify OTP Action ──
+document.getElementById('lp-otp-action-btn').addEventListener('click', async (e) => {
+  e.stopPropagation();
+  const otp = document.getElementById('lp-otp-code').value.trim();
+
+  if (!otp) {
+    if (typeof toast === 'function') toast('Enter verification code.', 'e');
+    return;
+  }
+
+  try {
+    if (typeof toast === 'function') toast('Verifying code...', 'i');
+    const response = await fetch("https://myinvitationcard-backend.onrender.com/verify-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: pendingSignupEmail,
+        otp
+      })
+    });
+
+    const data = await response.json();
+    if (!data.success) {
+      if (typeof toast === 'function') toast(data.message || 'Invalid code.', 'e');
+      return;
+    }
+
+    await signInWithEmailAndPassword(auth, pendingSignupEmail, pendingSignupPassword);
+    
+    // Store signup name
+    const fullName = document.getElementById('lp-signup-name').value.trim();
+    localStorage.setItem('signupFullName', fullName);
+
+    // Reset inputs
+    document.getElementById('lp-signup-name').value = '';
+    document.getElementById('lp-signup-email').value = '';
+    document.getElementById('lp-signup-password').value = '';
+    document.getElementById('lp-signup-confirm').value = '';
+    document.getElementById('lp-otp-code').value = '';
+
+    hideLoginPopup();
+    showGreetingPopup(fullName, true);
+    if (typeof toast === 'function') toast('Account created and logged in!', 's');
+  } catch (err) {
+    if (typeof toast === 'function') toast('Failed to verify OTP.', 'e');
+  }
+});
 </script>
 </body>
 </html>
