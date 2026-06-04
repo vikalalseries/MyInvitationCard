@@ -405,9 +405,9 @@
   /* ══════════════════════════════════════ AUTH MODAL STYLE (same as index page) */
   .login-popup {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
-    width: 480px; max-width: 92vw; background: var(--w); border-radius: 22px;
-    padding: 52px 42px 42px; z-index: 9999; opacity: 0; visibility: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 460px; max-width: 92vw; background: #ffffff; border-radius: 28px;
+    padding: 56px 40px 40px; z-index: 9999; opacity: 0; visibility: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
     text-align: center;
   }
@@ -416,40 +416,38 @@
   }
 
   .lp-close {
-    position: absolute; top: 14px; right: 14px;
-    width: 38px; height: 38px; border: none; border-radius: 12px;
-    background: var(--g100); color: var(--g900); font-size: 20px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: 0.2s ease;
+    position: absolute; top: 20px; right: 20px;
+    width: 36px; height: 36px; border: none; border-radius: 50%;
+    background: #f1f5f9; color: #0f172a; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s ease-in-out;
   }
   .lp-close:hover {
-    background: var(--g150);
+    background: #e2e8f0;
+    transform: rotate(90deg);
   }
   .lp-close-icon {
-    display: inline-block; transition: transform 0.25s ease, opacity 0.25s ease;
-  }
-  .lp-close:hover .lp-close-icon {
-    transform: rotate(90deg) scale(1.12); opacity: 0.85;
+    display: flex; align-items: center; justify-content: center;
   }
 
   .lp-title {
-    font-size: 34px; font-weight: 800; line-height: 1; text-align: center;
-    color: var(--g900); margin-bottom: 42px; letter-spacing: -0.5px;
+    font-size: 32px; font-weight: 800; line-height: 1.2; text-align: center;
+    color: #0f172a; margin-bottom: 32px; letter-spacing: -0.5px;
   }
 
   .lp-google-btn, .lp-signin-btn {
-    width: 100%; height: 56px; border: 1px solid var(--g200); background: var(--w);
-    border-radius: 6px; font-size: 15px; font-weight: 600; color: var(--g900);
-    display: flex; align-items: center; justify-content: center; gap: 14px;
-    cursor: pointer; margin-bottom: 14px; transition: all 0.15s ease;
+    width: 100%; height: 56px; border: 1px solid #e2e8f0; background: #ffffff;
+    border-radius: 10px; font-size: 16px; font-weight: 600; color: #0f172a;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    cursor: pointer; margin-bottom: 16px; transition: all 0.15s ease;
   }
   .lp-google-btn:hover, .lp-signin-btn:hover {
-    background: var(--g50); border-color: var(--g300);
+    background: #f8fafc; border-color: #cbd5e1;
   }
   .lp-google-btn img {
-    width: 22px; height: 22px;
+    width: 20px; height: 20px;
   }
   .lp-signin-btn i {
-    font-size: 22px; width: 24px; text-align: center;
+    font-size: 18px; color: #0f172a;
   }
 
   .lp-divider {
@@ -461,28 +459,28 @@
   }
 
   .lp-input {
-    width: 100%; height: 54px; border: 1px solid var(--g200); border-radius: 6px;
-    padding: 0 16px; font-size: 15px; margin-bottom: 14px; background: var(--w);
-    color: var(--g900); outline: none; transition: all 0.15s ease;
+    width: 100%; height: 54px; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 0 16px; font-size: 15px; margin-bottom: 14px; background: #ffffff;
+    color: #0f172a; outline: none; transition: all 0.15s ease;
   }
   .lp-input:focus {
     border-color: var(--rose);
   }
 
   .lp-action-btn {
-    width: 100%; height: 54px; border: none; border-radius: 6px;
-    background: var(--g900); color: #fff; font-size: 15px; font-weight: 700;
+    width: 100%; height: 54px; border: none; border-radius: 10px;
+    background: #0f172a; color: #fff; font-size: 15px; font-weight: 700;
     cursor: pointer; transition: all 0.15s ease; margin-top: 4px; margin-bottom: 14px;
   }
   .lp-action-btn:hover {
-    background: var(--g700);
+    background: #1e293b;
   }
 
   .lp-create-link, .lp-switch-link {
-    text-align: center; margin-top: 34px; font-size: 15px; color: var(--g500);
+    text-align: center; margin-top: 28px; font-size: 15px; color: #64748b;
   }
   .lp-create-link span, .lp-switch-link span {
-    color: var(--g900); font-weight: 700; cursor: pointer; text-decoration: none;
+    color: #0f172a; font-weight: 700; cursor: pointer; text-decoration: none;
   }
   .lp-create-link span:hover, .lp-switch-link span:hover {
     text-decoration: underline;
@@ -893,7 +891,7 @@
 <!-- ══════════════════════════════════════════ LOGIN POPUP -->
 <div class="login-overlay" id="login-overlay"></div>
 <div class="login-popup" id="login-popup" onclick="event.stopPropagation()">
-  <button class="lp-close" onclick="hideLoginPopup(event)" title="Close"><span class="lp-close-icon">&times;</span></button>
+  <button class="lp-close" onclick="hideLoginPopup(event)" title="Close"><i class="fa-solid fa-xmark"></i></button>
   
   <!-- VIEW 1: WELCOME / CHOICES -->
   <div id="lp-view-welcome" class="lp-view active">
@@ -902,7 +900,6 @@
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
       Continue with Google
     </button>
-    <div class="lp-divider">or</div>
     <button class="lp-signin-btn" id="lp-signin-btn-show" onclick="switchPopupView('lp-view-signin')">
       <i class="fa-regular fa-envelope"></i>
       Login with Email
@@ -960,7 +957,7 @@
 
 <!-- ══════════════════════════════════════════ GREETING POPUP -->
 <div class="login-popup" id="greeting-popup" onclick="event.stopPropagation()">
-  <button class="lp-close" id="gp-close-btn" title="Close"><span class="lp-close-icon">&times;</span></button>
+  <button class="lp-close" id="gp-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
   
   <div class="gp-logo-wrap">
     <svg class="gp-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
