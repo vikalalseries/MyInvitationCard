@@ -227,7 +227,7 @@
     padding:5px 0; border-bottom:1px solid var(--g100);
   }
   .pcb-row:last-child { border-bottom:none; }
-  .pcb-ico { font-size:0.82rem; width:16px; text-align:center; flex-shrink:0; }
+  .pcb-ico { font-size:0.85rem; width:16px; text-align:center; flex-shrink:0; color:var(--g500); }
   .pcb-val {
     font-size:0.8rem; color:var(--g700); font-weight:500;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -839,16 +839,16 @@
             <div class="pcb-tag">Wedding Invitation</div>
           </div>
           <button class="fast-edit-btn" onclick="toggleSec('vivah'); document.getElementById('sci-vivah')?.scrollIntoView({behavior:'smooth'})" title="Quick jump to main event">
-            ✍️ Fast Edit
+            <i class="fa-solid fa-pen-to-square"></i> Fast Edit
           </button>
         </div>
         <div class="pcb-rows">
           <div class="pcb-row">
-            <span class="pcb-ico">📅</span>
+            <span class="pcb-ico"><i class="fa-regular fa-calendar"></i></span>
             <span class="pcb-val" id="pcb-date">—</span>
           </div>
           <div class="pcb-row">
-            <span class="pcb-ico">📍</span>
+            <span class="pcb-ico"><i class="fa-solid fa-location-dot"></i></span>
             <span class="pcb-val" id="pcb-venue">—</span>
           </div>
         </div>
@@ -904,7 +904,7 @@
   <div id="lp-view-welcome" class="lp-view active">
     <div class="lp-title">Login</div>
     <button class="lp-google-btn" id="lp-google-btn">
-      <i class="fa-brands fa-google"></i>
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
       Continue with Google
     </button>
     <button class="lp-signin-btn" id="lp-signin-btn-show" onclick="switchPopupView('lp-view-signin')">
