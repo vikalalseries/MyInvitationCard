@@ -69,6 +69,7 @@
 
 .auth-close-btn:hover {
   background: #ececec;
+  transform: rotate(90deg);
 }
 
 .auth-title {
