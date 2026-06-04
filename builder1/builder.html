@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
   <style>
   /* ══════════════════════════════════════ DESIGN TOKENS */
   :root {
@@ -401,78 +402,108 @@
   }
   .login-overlay.show { opacity:1; visibility:visible; }
 
+  /* ══════════════════════════════════════ AUTH MODAL STYLE (same as index page) */
   .login-popup {
-    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.92);
-    background:var(--w); border-radius:24px; padding:40px 32px 32px;
-    box-shadow:0 32px 80px rgba(0,0,0,0.22); z-index:9999;
-    min-width:370px; max-width:430px; text-align:center;
-    opacity:0; visibility:hidden; transition:all 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
+    width: 480px; max-width: 92vw; background: var(--w); border-radius: 22px;
+    padding: 52px 42px 42px; z-index: 9999; opacity: 0; visibility: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    text-align: center;
   }
-  .login-popup.show { opacity:1; visibility:visible; transform:translate(-50%,-50%) scale(1); }
+  .login-popup.show {
+    opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1);
+  }
 
   .lp-close {
-    position:absolute; top:14px; right:14px;
-    width:32px; height:32px; border-radius:50%; display:flex;
-    align-items:center; justify-content:center; color:var(--g400);
-    transition:all var(--t); font-size:1.1rem; border:none; background:none; cursor:pointer;
+    position: absolute; top: 14px; right: 14px;
+    width: 38px; height: 38px; border: none; border-radius: 12px;
+    background: var(--g100); color: var(--g900); font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: 0.2s ease;
   }
-  .lp-close:hover { background:var(--g100); color:var(--g700); }
-  .lp-close-icon { display:inline-block; transition:transform 0.25s ease; }
-  .lp-close:hover .lp-close-icon { transform:rotate(90deg) scale(1.1); }
+  .lp-close:hover {
+    background: var(--g150);
+  }
+  .lp-close-icon {
+    display: inline-block; transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+  .lp-close:hover .lp-close-icon {
+    transform: rotate(90deg) scale(1.12); opacity: 0.85;
+  }
 
-  .lp-icon {
-    width:56px; height:56px; margin:0 auto 16px; border-radius:50%;
-    background:linear-gradient(135deg,#fff1f3,#ffe0e6);
-    display:flex; align-items:center; justify-content:center; font-size:1.5rem;
-  }
   .lp-title {
-    font-size:1.22rem; font-weight:750; color:var(--g900); margin-bottom:16px;
-    letter-spacing:-0.3px;
+    font-size: 34px; font-weight: 800; line-height: 1; text-align: center;
+    color: var(--g900); margin-bottom: 42px; letter-spacing: -0.5px;
   }
-  .lp-google-btn {
-    display:flex; align-items:center; justify-content:center; gap:10px;
-    width:100%; padding:11px 16px; background:var(--w);
-    border:1.5px solid var(--g200); border-radius:12px;
-    font-size:0.85rem; font-weight:600; color:var(--g700);
-    transition:all var(--t); cursor:pointer; margin-bottom:10px;
+
+  .lp-google-btn, .lp-signin-btn {
+    width: 100%; height: 56px; border: 1px solid var(--g200); background: var(--w);
+    border-radius: 6px; font-size: 15px; font-weight: 600; color: var(--g900);
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    cursor: pointer; margin-bottom: 14px; transition: all 0.15s ease;
   }
-  .lp-google-btn:hover { border-color:var(--g300); box-shadow:0 4px 12px rgba(0,0,0,0.06); background:var(--g50); }
-  .lp-google-btn img { width:18px; height:18px; }
+  .lp-google-btn:hover, .lp-signin-btn:hover {
+    background: var(--g50); border-color: var(--g300);
+  }
+  .lp-google-btn img {
+    width: 22px; height: 22px;
+  }
+  .lp-signin-btn i {
+    font-size: 22px; width: 24px; text-align: center;
+  }
 
   .lp-divider {
-    display:flex; align-items:center; gap:12px;
-    margin:16px 0; color:var(--g300); font-size:0.72rem; font-weight:500;
+    display: flex; align-items: center; gap: 12px; margin: 16px 0;
+    color: var(--g300); font-size: 0.85rem; font-weight: 500;
   }
   .lp-divider::before, .lp-divider::after {
-    content:''; flex:1; height:1px; background:var(--g150);
+    content: ''; flex: 1; height: 1px; background: var(--g150);
   }
 
-  /* Inline Forms */
-  .lp-view { display: none; }
-  .lp-view.active { display: block; }
-  .lp-form { margin-top: 14px; }
   .lp-input {
-    width:100%; padding:11px 14px; border:1.5px solid var(--g200); border-radius:12px;
-    font-size:0.85rem; margin-bottom:12px; transition:all var(--t); background:var(--w);
-    color:var(--g800); outline:none; text-align:left;
+    width: 100%; height: 54px; border: 1px solid var(--g200); border-radius: 6px;
+    padding: 0 16px; font-size: 15px; margin-bottom: 14px; background: var(--w);
+    color: var(--g900); outline: none; transition: all 0.15s ease;
   }
-  .lp-input:focus { border-color:var(--rose); box-shadow:0 0 0 3px rgba(244,63,94,0.15); }
+  .lp-input:focus {
+    border-color: var(--rose);
+  }
+
   .lp-action-btn {
-    width:100%; padding:11px 16px; background:linear-gradient(135deg,#f43f5e,#e11d48);
-    color:#fff; border-radius:12px; font-size:0.85rem; font-weight:650;
-    transition:all var(--t); cursor:pointer; border:none; margin-top:4px; margin-bottom:12px;
+    width: 100%; height: 54px; border: none; border-radius: 6px;
+    background: var(--g900); color: #fff; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s ease; margin-top: 4px; margin-bottom: 14px;
   }
-  .lp-action-btn:hover { box-shadow:0 6px 18px rgba(244,63,94,0.3); transform:translateY(-1px); }
-  .lp-switch-link { font-size:0.8rem; color:var(--g500); margin-top:14px; }
-  .lp-switch-link span { color:var(--rose); font-weight:650; cursor:pointer; }
-  .lp-switch-link span:hover { text-decoration:underline; }
-  .lp-otp-text { font-size:0.8rem; color:var(--g500); margin-bottom:16px; line-height:1.4; }
-  .lp-resend-section { margin-top:8px; font-size:0.8rem; color:var(--g400); }
+  .lp-action-btn:hover {
+    background: var(--g700);
+  }
+
+  .lp-create-link, .lp-switch-link {
+    text-align: center; margin-top: 34px; font-size: 15px; color: var(--g500);
+  }
+  .lp-create-link span, .lp-switch-link span {
+    color: var(--g900); font-weight: 700; cursor: pointer; text-decoration: none;
+  }
+  .lp-create-link span:hover, .lp-switch-link span:hover {
+    text-decoration: underline;
+  }
+
+  .lp-footer {
+    margin-top: 18px; font-size: 0.78rem; color: var(--g400);
+  }
+  .lp-otp-text {
+    font-size: 0.95rem; color: var(--g500); margin-bottom: 24px; line-height: 1.5;
+  }
+  .lp-resend-section {
+    margin-top: 14px; font-size: 0.9rem; color: var(--g500);
+  }
   .lp-resend-btn {
-    background:none; border:none; color:var(--rose); font-weight:650; cursor:pointer;
-    font-size:0.8rem; padding:0;
+    background: none; border: none; color: var(--rose); font-weight: 700;
+    cursor: pointer; font-size: 0.9rem; padding: 0; margin-left: 6px;
   }
-  .lp-resend-btn:disabled { color:var(--g300); cursor:default; }
+  .lp-resend-btn:disabled {
+    color: var(--g300); cursor: default;
+  }
 
   /* Success Greeting Popup styling */
   .gp-logo-wrap {
@@ -492,27 +523,95 @@
   .gp-sub { font-size:0.82rem; color:var(--g500); margin-bottom:22px; }
   .gp-countdown { font-size:0.75rem; color:var(--g400); font-weight:500; }
 
-  .lp-signin-btn {
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    width:100%; padding:11px 16px; background:var(--g900); color:#fff;
-    border-radius:12px; font-size:0.85rem; font-weight:650;
-    transition:all var(--t); cursor:pointer; border:none; margin-bottom:10px;
+  /* ══════════════════════════════════════ USER PROFILE HEADER & POPUP */
+  .user-profile-wrap {
+    position: relative; margin-left: 12px; display: flex; align-items: center;
   }
-  .lp-signin-btn:hover { background:var(--g700); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+  .btn-login-header {
+    padding: 8px 16px; border: 1.5px solid var(--g200); border-radius: 12px;
+    font-size: 0.85rem; font-weight: 600; color: var(--g700); background: var(--w);
+    transition: all var(--t); cursor: pointer; height: 36px; display: flex; align-items: center;
+  }
+  .btn-login-header:hover {
+    background: var(--g50); border-color: var(--g300);
+  }
+  .nav-avatar-btn {
+    border: none; background: none; padding: 0; cursor: pointer; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-avatar {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--g100);
+    border: 2px solid var(--rose); display: flex; align-items: center;
+    justify-content: center; color: var(--g500); font-size: 14px;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .nav-avatar img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .avatar-initial {
+    width: 100%; height: 100%; display: flex; align-items: center;
+    justify-content: center; color: #ffffff; font-size: 15px; font-weight: 700;
+  }
 
-  .lp-create-link {
-    display:block; text-align:center; margin-top:14px;
-    font-size:0.8rem; color:var(--g500); font-weight:450;
+  .nav-user-popup {
+    position: absolute; top: 48px; right: 0; width: 280px; background: var(--w);
+    border-radius: 18px; box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+    border: 1px solid var(--g150); padding: 16px; display: none; z-index: 9995;
+    transform-origin: top right; text-align: left;
   }
-  .lp-create-link span {
-    color:var(--rose); font-weight:650; cursor:pointer;
-    transition:color var(--t);
+  .nav-user-popup.show {
+    display: block;
   }
-  .lp-create-link span:hover { color:var(--rose-dark); text-decoration:underline; }
+  .popup-user-header {
+    display: flex; align-items: center; gap: 12px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--g150); margin-bottom: 12px;
+  }
+  .popup-avatar {
+    width: 42px; height: 42px; border-radius: 50%; background: var(--g100);
+    border: 1.5px solid var(--g200); display: flex; align-items: center;
+    justify-content: center; overflow: hidden; flex-shrink: 0;
+  }
+  .popup-avatar img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  #builderPopupUserName {
+    font-size: 0.92rem; font-weight: 700; color: var(--g900);
+  }
+  #builderPopupUserEmail {
+    font-size: 0.78rem; color: var(--g500); margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px;
+  }
+  .popup-menu-btn {
+    width: 100%; border: none; background: transparent; display: flex;
+    align-items: center; gap: 12px; padding: 9px 8px; font-size: 0.85rem;
+    font-weight: 500; color: var(--g700); cursor: pointer; text-align: left;
+    border-radius: 8px; transition: all var(--t);
+  }
+  .popup-menu-btn:hover {
+    background: var(--g50); color: var(--g900);
+  }
+  .popup-menu-btn i {
+    font-size: 1rem; color: var(--g500); width: 16px; text-align: center;
+  }
+  .popup-divider {
+    height: 1px; background: var(--g150); margin: 12px 0;
+  }
+  .popup-upgrade-btn {
+    width: 100%; padding: 10px 14px; border: none; border-radius: 10px;
+    background: var(--g900); color: #fff; font-size: 0.85rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    cursor: pointer; transition: all var(--t);
+  }
+  .popup-upgrade-btn:hover {
+    background: var(--g700);
+  }
+  .popup-upgrade-btn i {
+    color: #eab308;
+  }
 
-  .lp-footer {
-    margin-top:18px; font-size:0.7rem; color:var(--g400); font-weight:450;
-  }
+  /* Inline Forms */
+  .lp-view { display: none; }
+  .lp-view.active { display: block; }
 
   /* Print */
   @media print {
@@ -669,6 +768,55 @@
         </div>
       </div>
 
+      <!-- Profile / Auth Area -->
+      <div class="user-profile-wrap" id="user-profile-wrap">
+        <!-- If logged in, shows this avatar button -->
+        <button class="nav-avatar-btn" id="builderUserMenuBtn" style="display: none;">
+          <span class="nav-avatar" id="builderAvatar">
+            <i class="fa-solid fa-user"></i>
+          </span>
+        </button>
+        
+        <!-- If logged out, shows this login button instead -->
+        <button class="btn-login-header" id="builderHeaderLoginBtn" onclick="showLoginPopup(event)">
+          Login
+        </button>
+
+        <!-- Profile Popup Menu (same as index page) -->
+        <div class="nav-user-popup" id="builderUserPopup">
+          <div class="popup-user-header">
+            <div class="popup-avatar" id="builderPopupAvatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="popup-user-meta">
+              <div id="builderPopupUserName">My Account</div>
+              <div id="builderPopupUserEmail">user@email.com</div>
+            </div>
+          </div>
+          <button class="popup-menu-btn" onclick="toast('Profile page coming soon!', 'i')">
+            <i class="fa-regular fa-user"></i>
+            My Profile
+          </button>
+          <button class="popup-menu-btn" onclick="toast('Feedback submitted!', 's')">
+            <i class="fa-regular fa-message"></i>
+            <span>Feedback</span>
+          </button>
+          <button class="popup-menu-btn" onclick="toast('Help Center coming soon!', 'i')">
+            <i class="fa-regular fa-circle-question"></i>
+            <span>Help Center</span>
+          </button>
+          <button class="popup-menu-btn" id="builderLogoutBtn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            Log Out
+          </button>
+          <div class="popup-divider"></div>
+          <button class="popup-upgrade-btn" onclick="toast('Premium upgrade coming soon!', 'i')">
+            <i class="fa-solid fa-crown"></i>
+            Upgrade to Premium
+          </button>
+        </div>
+      </div>
+
     </div>
   </header>
 
@@ -749,31 +897,28 @@
   
   <!-- VIEW 1: WELCOME / CHOICES -->
   <div id="lp-view-welcome" class="lp-view active">
-    <div class="lp-icon">🔒</div>
-    <div class="lp-title">Login to Download</div>
+    <div class="lp-title">Login</div>
     <button class="lp-google-btn" id="lp-google-btn">
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
       Continue with Google
     </button>
     <div class="lp-divider">or</div>
     <button class="lp-signin-btn" id="lp-signin-btn-show" onclick="switchPopupView('lp-view-signin')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10,17 15,12 10,7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-      Sign In with Email
+      <i class="fa-regular fa-envelope"></i>
+      Login with Email
     </button>
     <div class="lp-create-link">
-      Don't have an account? <span id="lp-create-btn-show" onclick="switchPopupView('lp-view-signup')">Create it</span>
+      Don't have an account? <span id="lp-create-btn-show" onclick="switchPopupView('lp-view-signup')">Sign up</span>
     </div>
-    <div class="lp-footer">Free account &middot; No credit card required</div>
   </div>
 
   <!-- VIEW 2: SIGN IN FORM -->
   <div id="lp-view-signin" class="lp-view">
-    <div class="lp-icon">🔑</div>
-    <div class="lp-title">Sign In</div>
+    <div class="lp-title">Login</div>
     <div class="lp-form">
       <input type="email" id="lp-login-email" class="lp-input" placeholder="Email" required>
       <input type="password" id="lp-login-password" class="lp-input" placeholder="Password" required>
-      <button class="lp-action-btn" id="lp-login-action-btn">Sign In</button>
+      <button class="lp-action-btn" id="lp-login-action-btn">Login</button>
     </div>
     <div class="lp-switch-link">
       <span onclick="switchPopupView('lp-view-welcome')">Back</span>
@@ -782,7 +927,6 @@
 
   <!-- VIEW 3: SIGN UP FORM -->
   <div id="lp-view-signup" class="lp-view">
-    <div class="lp-icon">📝</div>
     <div class="lp-title">Sign Up</div>
     <div class="lp-form">
       <input type="text" id="lp-signup-name" class="lp-input" placeholder="Full Name" required>
@@ -792,13 +936,12 @@
       <button class="lp-action-btn" id="lp-signup-action-btn">Create Account</button>
     </div>
     <div class="lp-switch-link">
-      Already have an account? <span onclick="switchPopupView('lp-view-signin')">Sign In</span> | <span onclick="switchPopupView('lp-view-welcome')">Back</span>
+      Already have an account? <span onclick="switchPopupView('lp-view-signin')">Login</span> | <span onclick="switchPopupView('lp-view-welcome')">Back</span>
     </div>
   </div>
 
   <!-- VIEW 4: OTP VERIFICATION -->
   <div id="lp-view-otp" class="lp-view">
-    <div class="lp-icon">✉️</div>
     <div class="lp-title">Verify Code</div>
     <p class="lp-otp-text">Enter the 6-digit verification code sent to your email.</p>
     <div class="lp-form">
@@ -806,6 +949,7 @@
       <button class="lp-action-btn" id="lp-otp-action-btn">Verify Code</button>
     </div>
     <div class="lp-resend-section">
+      <span>Didn't receive code?</span>
       <button id="lp-resend-btn" class="lp-resend-btn" disabled>Resend OTP (30s)</button>
     </div>
     <div class="lp-switch-link">
@@ -1620,7 +1764,7 @@ updateBanner();
 <!-- ══════════════════════════════════════════ FIREBASE AUTH -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB1pvj8S6MbQ_EIs5YuMUz917wFRV1t4Fw",
@@ -1660,8 +1804,135 @@ function updateDownloadAuthUI(loggedIn) {
   }
 }
 
+// ── Success Greeting Popup logic ──
+let greetingTimeout = null;
+let greetingInterval = null;
+
+window.showGreetingPopup = function(userName, isNew = false) {
+  // Hide login popup first (overlay remains visible)
+  document.getElementById('login-popup').classList.remove('show');
+
+  const titleEl = document.getElementById('gp-welcome-msg');
+  if (titleEl) {
+    const greeting = isNew ? "Welcome" : "Welcome back";
+    titleEl.textContent = `${greeting}, ${userName || 'User'}!`;
+  }
+
+  // Show overlay and greeting popup
+  document.getElementById('login-overlay').classList.add('show');
+  document.getElementById('greeting-popup').classList.add('show');
+
+  // Set up 3s countdown
+  let seconds = 3;
+  const countdownEl = document.getElementById('gp-countdown');
+  if (countdownEl) countdownEl.textContent = `Auto-closing in ${seconds}s...`;
+
+  if (greetingInterval) clearInterval(greetingInterval);
+  greetingInterval = setInterval(() => {
+    seconds--;
+    if (countdownEl) countdownEl.textContent = `Auto-closing in ${seconds}s...`;
+    if (seconds <= 0) {
+      clearInterval(greetingInterval);
+    }
+  }, 1000);
+
+  if (greetingTimeout) clearTimeout(greetingTimeout);
+  greetingTimeout = setTimeout(() => {
+    hideGreetingPopup();
+  }, 3000);
+};
+
+window.hideGreetingPopup = function() {
+  if (greetingInterval) clearInterval(greetingInterval);
+  if (greetingTimeout) clearTimeout(greetingTimeout);
+  document.getElementById('login-overlay').classList.remove('show');
+  document.getElementById('greeting-popup').classList.remove('show');
+};
+
+// Consistent hashing function for random matching background color
+function getAvatarBgColor(name) {
+  const colors = [
+    '#f43f5e', '#ec4899', '#d946ef', '#a855f7', '#8b5cf6',
+    '#6366f1', '#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6',
+    '#10b981', '#22c55e', '#84cc16', '#eab308', '#f97316'
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+}
+
+// ── Update profile avatar & button in header ──
+function updateHeaderProfileUI(user) {
+  const avatarBtn = document.getElementById('builderUserMenuBtn');
+  const loginBtn = document.getElementById('builderHeaderLoginBtn');
+  const avatarSpan = document.getElementById('builderAvatar');
+  const popupAvatar = document.getElementById('builderPopupAvatar');
+  const popupName = document.getElementById('builderPopupUserName');
+  const popupEmail = document.getElementById('builderPopupUserEmail');
+
+  if (user) {
+    if (avatarBtn) avatarBtn.style.display = 'flex';
+    if (loginBtn) loginBtn.style.display = 'none';
+
+    const displayName = user.displayName || localStorage.getItem('signupFullName') || 'User';
+    if (popupName) popupName.textContent = displayName;
+    if (popupEmail) popupEmail.textContent = user.email || 'No email';
+
+    if (user.photoURL) {
+      const imgHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      if (avatarSpan) avatarSpan.innerHTML = imgHTML;
+      if (popupAvatar) popupAvatar.innerHTML = imgHTML;
+    } else {
+      const initial = displayName.charAt(0).toUpperCase();
+      const bgColor = getAvatarBgColor(displayName);
+      const avatarHTML = `<div class="avatar-initial" style="background-color: ${bgColor}">${initial}</div>`;
+      if (avatarSpan) avatarSpan.innerHTML = avatarHTML;
+      if (popupAvatar) popupAvatar.innerHTML = avatarHTML;
+    }
+  } else {
+    if (avatarBtn) avatarBtn.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'flex';
+    const userPopup = document.getElementById('builderUserPopup');
+    if (userPopup) userPopup.classList.remove('show');
+  }
+}
+
 onAuthStateChanged(auth, (user) => {
   updateDownloadAuthUI(!!user);
+  updateHeaderProfileUI(user);
+});
+
+// Toggle profile popup dropdown
+const profileBtn = document.getElementById('builderUserMenuBtn');
+const userPopup = document.getElementById('builderUserPopup');
+if (profileBtn && userPopup) {
+  profileBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userPopup.classList.toggle('show');
+  });
+  userPopup.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+}
+
+// Click anywhere else to close profile popup dropdown
+document.addEventListener('click', () => {
+  const popup = document.getElementById('builderUserPopup');
+  if (popup) popup.classList.remove('show');
+});
+
+// Log out action from profile popup dropdown
+document.getElementById('builderLogoutBtn').addEventListener('click', async (e) => {
+  e.stopPropagation();
+  try {
+    await signOut(auth);
+    if (typeof toast === 'function') toast('Logged out successfully!', 's');
+  } catch (error) {
+    if (typeof toast === 'function') toast('Logout failed. Try again.', 'e');
+  }
 });
 
 // ── Popup Views Switcher ──
@@ -1710,51 +1981,6 @@ window.handleDownload = function(format, event) {
     return;
   }
   downloadCard(format);
-};
-
-// ── Success Greeting Popup logic ──
-let greetingTimeout = null;
-let greetingInterval = null;
-
-window.showGreetingPopup = function(userName, isNew = false) {
-  // Hide login popup first (overlay remains visible)
-  document.getElementById('login-popup').classList.remove('show');
-
-  const titleEl = document.getElementById('gp-welcome-msg');
-  if (titleEl) {
-    const greeting = isNew ? "Welcome" : "Welcome back";
-    titleEl.textContent = `${greeting}, ${userName || 'User'}!`;
-  }
-
-  // Show overlay and greeting popup
-  document.getElementById('login-overlay').classList.add('show');
-  document.getElementById('greeting-popup').classList.add('show');
-
-  // Set up 3s countdown
-  let seconds = 3;
-  const countdownEl = document.getElementById('gp-countdown');
-  if (countdownEl) countdownEl.textContent = `Auto-closing in ${seconds}s...`;
-
-  if (greetingInterval) clearInterval(greetingInterval);
-  greetingInterval = setInterval(() => {
-    seconds--;
-    if (countdownEl) countdownEl.textContent = `Auto-closing in ${seconds}s...`;
-    if (seconds <= 0) {
-      clearInterval(greetingInterval);
-    }
-  }, 1000);
-
-  if (greetingTimeout) clearTimeout(greetingTimeout);
-  greetingTimeout = setTimeout(() => {
-    hideGreetingPopup();
-  }, 3000);
-};
-
-window.hideGreetingPopup = function() {
-  if (greetingInterval) clearInterval(greetingInterval);
-  if (greetingTimeout) clearTimeout(greetingTimeout);
-  document.getElementById('login-overlay').classList.remove('show');
-  document.getElementById('greeting-popup').classList.remove('show');
 };
 
 // Wire up GP close button
