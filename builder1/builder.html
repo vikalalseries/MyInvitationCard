@@ -309,9 +309,24 @@
     background:rgba(255,255,255,0.85); backdrop-filter:blur(14px);
     border-bottom:1px solid var(--g200); flex-shrink:0; z-index:10;
   }
+  .preview-left-grp {
+    display:flex; align-items:center; gap:12px;
+  }
   .preview-lbl {
     font-size:0.65rem; font-weight:750; letter-spacing:2.2px; text-transform:uppercase;
     color:var(--g500); display:flex; align-items:center; gap:7px;
+  }
+  .preview-reset-btn {
+    height:30px; padding:0 12px; border:1px solid var(--g200);
+    border-radius:var(--r-sm); background:var(--w); color:var(--g700);
+    font-size:0.68rem; font-weight:750; text-transform:uppercase;
+    letter-spacing:0.5px; transition:all var(--t);
+    box-shadow:0 1px 2px rgba(0,0,0,0.05);
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .preview-reset-btn:hover {
+    background:var(--g50); border-color:var(--g300); color:var(--rose-dark);
+    box-shadow:0 2px 4px rgba(0,0,0,0.08);
   }
   .live-dot { width:7px; height:7px; border-radius:50%; background:var(--success); animation:pulseLive 2s infinite; box-shadow:0 0 0 2px rgba(16,185,129,0.2); }
   @keyframes pulseLive { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(0.75);opacity:0.5} }
@@ -862,9 +877,12 @@
     <!-- ─── RIGHT: Live Card1 Preview ─── -->
     <div class="right-col">
       <div class="preview-bar">
-        <div class="preview-lbl">
-          <span class="live-dot"></span>
-          Live Rendering Preview
+        <div class="preview-left-grp">
+          <div class="preview-lbl">
+            <span class="live-dot"></span>
+            Live Preview
+          </div>
+          <button class="preview-reset-btn" onclick="showResetConfirm(event)" title="Reset all changes to default template">RESET</button>
         </div>
         <div class="zoom-bar">
           <button class="zbtn" id="z-out" title="Zoom Out">−</button>
@@ -983,6 +1001,19 @@
   </div>
 
   <div class="gp-countdown" id="gp-countdown">Auto-closing in 3s...</div>
+</div>
+
+<!-- ══════════════════════════════════════════ CUSTOM RESET CONFIRM POPUP -->
+<div class="login-popup" id="reset-confirm-popup" onclick="event.stopPropagation()" style="width: 380px; padding: 32px 24px; border-radius: 24px;">
+  <button class="lp-close" onclick="closeResetConfirm()" title="Close"><i class="fa-solid fa-xmark"></i></button>
+  <div style="margin-top: 10px; margin-bottom: 24px; text-align: center;">
+    <h3 style="font-size: 1.2rem; font-weight: 750; color: #0f172a; line-height: 1.4; margin-bottom: 8px;">Reset Card</h3>
+    <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5; font-weight: 500;">Do you want to reset all text to the original template default?</p>
+  </div>
+  <div style="display: flex; gap: 12px; justify-content: center;">
+    <button class="lp-action-btn" onclick="executeResetCard()" style="margin: 0; width: 120px; background: #0f172a; height: 42px; border-radius: 8px; font-size: 0.9rem;">Yes</button>
+    <button class="lp-action-btn" onclick="closeResetConfirm()" style="margin: 0; width: 120px; background: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; height: 42px; border-radius: 8px; font-size: 0.9rem;">No</button>
+  </div>
 </div>
 
 <script>
@@ -1931,8 +1962,11 @@ document.addEventListener('click', () => {
 document.getElementById('builderLogoutBtn').addEventListener('click', async (e) => {
   e.stopPropagation();
   try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('mic_active_template');
     await signOut(auth);
     if (typeof toast === 'function') toast('Logged out successfully!', 's');
+    setTimeout(() => window.location.reload(), 800);
   } catch (error) {
     if (typeof toast === 'function') toast('Logout failed. Try again.', 'e');
   }
@@ -1967,6 +2001,7 @@ document.getElementById('login-overlay').addEventListener('click', (e) => {
   e.stopPropagation();
   hideLoginPopup();
   hideGreetingPopup();
+  closeResetConfirm();
 });
 
 // Prevent popup from closing when clicking inside it
@@ -2187,6 +2222,25 @@ document.getElementById('lp-otp-action-btn').addEventListener('click', async (e)
     if (typeof toast === 'function') toast('Failed to verify OTP.', 'e');
   }
 });
+
+window.showResetConfirm = function(e) {
+  if (e) e.stopPropagation();
+  const dlWrap = document.getElementById('dl-wrap');
+  if (dlWrap) dlWrap.classList.remove('open');
+  document.getElementById('login-overlay').classList.add('show');
+  document.getElementById('reset-confirm-popup').classList.add('show');
+};
+
+window.closeResetConfirm = function() {
+  document.getElementById('login-overlay').classList.remove('show');
+  document.getElementById('reset-confirm-popup').classList.remove('show');
+};
+
+window.executeResetCard = function() {
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem('mic_active_template');
+  window.location.reload();
+};
 </script>
 </body>
 </html>
