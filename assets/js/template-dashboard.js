@@ -448,16 +448,48 @@ const popupUserEmail = document.getElementById("popupUserEmail");
 const sidebarAvatar = document.getElementById("sidebarAvatar");
 const popupAvatar = document.getElementById("popupAvatar");
 const logoutBtn = document.getElementById("logoutBtn");
+const logoutConfirmOverlay = document.getElementById("logoutConfirmOverlay");
+const logoutConfirmModal = document.getElementById("logoutConfirmModal");
+const closeLogoutConfirmModal = document.getElementById("closeLogoutConfirmModal");
+const confirmLogoutBtn = document.getElementById("confirmLogoutBtn");
+const cancelLogoutBtn = document.getElementById("cancelLogoutBtn");
 
+function showLogoutConfirm() {
+  if (sidebarPopupMenu) sidebarPopupMenu.classList.remove("show");
+  if (logoutConfirmOverlay) logoutConfirmOverlay.classList.add("show");
+  if (logoutConfirmModal) logoutConfirmModal.classList.add("show");
+}
+
+function hideLogoutConfirm() {
+  if (logoutConfirmOverlay) logoutConfirmOverlay.classList.remove("show");
+  if (logoutConfirmModal) logoutConfirmModal.classList.remove("show");
+}
 
 if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
+  logoutBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    showLogoutConfirm();
+  });
+}
+
+if (closeLogoutConfirmModal) {
+  closeLogoutConfirmModal.addEventListener("click", hideLogoutConfirm);
+}
+
+if (cancelLogoutBtn) {
+  cancelLogoutBtn.addEventListener("click", hideLogoutConfirm);
+}
+
+if (logoutConfirmOverlay) {
+  logoutConfirmOverlay.addEventListener("click", hideLogoutConfirm);
+}
+
+if (confirmLogoutBtn) {
+  confirmLogoutBtn.addEventListener("click", async () => {
     try {
       await signOut(auth);
-
       localStorage.removeItem("signupFullName");
-
-      sidebarPopupMenu.classList.remove("show");
+      hideLogoutConfirm();
     } catch (error) {
       console.error(error);
     }

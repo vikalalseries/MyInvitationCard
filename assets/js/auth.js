@@ -403,18 +403,21 @@ if (forgotPasswordBtn) {
 
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
+    if (document.getElementById("logoutConfirmModal")) return;
     await signOut(auth);
   });
 }
 
 if (logoutBtnNavbar) {
   logoutBtnNavbar.addEventListener("click", async () => {
+    if (document.getElementById("logoutConfirmModal")) return;
     await signOut(auth);
   });
 }
 
 if (mobileLogoutBtn) {
   mobileLogoutBtn.addEventListener("click", async () => {
+    if (document.getElementById("logoutConfirmModal")) return;
     await signOut(auth);
   });
 }
