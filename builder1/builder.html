@@ -73,14 +73,15 @@
     color:var(--g400); flex-shrink:0; transition:all var(--t);
     margin-right:4px;
   }
-  .tb-home:hover { background:var(--g100); color:var(--g700); }
+  .tb-home:hover { background:var(--rose-50); color:var(--rose); }
 
   .tb-logo {
     display:flex; align-items:center; gap:8px;
     padding:6px 10px; border-radius:8px;
-    transition:background var(--t); flex-shrink:0;
+    transition:all var(--t); flex-shrink:0;
   }
-  .tb-logo:hover { background:var(--g100); }
+  .tb-logo:hover { background:var(--rose-50); }
+  .tb-logo:hover .tb-logo-name { color:var(--rose); }
   .tb-logo-svg { width:32px; height:28px; flex-shrink:0; }
   .tb-logo-svg path:first-of-type {
     transition: transform 0.4s ease;
@@ -89,7 +90,7 @@
   .tb-logo:hover .tb-logo-svg path:first-of-type {
     transform: scale(1.15) rotate(-8deg);
   }
-  .tb-logo-name { font-size:1.05rem; font-weight:750; color:var(--g900); letter-spacing:-0.4px; white-space:nowrap; }
+  .tb-logo-name { font-size:1.05rem; font-weight:750; color:var(--g900); letter-spacing:-0.4px; white-space:nowrap; transition:all var(--t); }
 
   .tb-sep { width:1px; height:24px; background:var(--g200); margin:0 8px; flex-shrink:0; }
 
@@ -102,7 +103,8 @@
     color:var(--g500); white-space:nowrap;
     transition:all var(--t); cursor:pointer; position:relative;
   }
-  .tab-btn:hover { color:var(--g900); background:var(--g100); }
+  .tab-btn:hover { color:var(--rose); background:var(--rose-50); }
+  .tab-btn:hover .tab-ico { opacity:1; }
   .tab-btn .tab-ico { display:flex; align-items:center; opacity:0.7; }
   .tab-btn.active { color:var(--rose); font-weight:600; background:var(--rose-50); }
   .tab-btn.active .tab-ico { opacity:1; }
@@ -125,7 +127,7 @@
     border-radius:8px; font-size:0.86rem; font-weight:600;
     color:var(--g700); background:var(--w); transition:all var(--t);
   }
-  .prop-btn:hover { border-color:var(--g300); background:var(--g100); }
+  .prop-btn:hover { border-color:var(--rose-100); color:var(--rose); background:var(--rose-50); }
 
   /* Stats icon button */
   .stats-btn {
@@ -134,7 +136,7 @@
     border:1.5px solid var(--g200); color:var(--g500);
     transition:all var(--t);
   }
-  .stats-btn:hover { border-color:var(--g300); color:var(--g900); background:var(--g100); }
+  .stats-btn:hover { border-color:var(--rose-100); color:var(--rose); background:var(--rose-50); }
 
   .tb-right { display:flex; align-items:center; gap:7px; margin-left:auto; flex-shrink:0; }
 
@@ -160,7 +162,7 @@
     border-radius:8px; font-size:0.86rem; font-weight:650;
     transition:all var(--t);
   }
-  .dl-btn:hover { background:#1e293b; box-shadow:0 4px 12px rgba(15,23,42,0.18); }
+  .dl-btn:hover { background:var(--rose); box-shadow:0 4px 12px rgba(244,63,94,0.22); }
   .dl-menu {
     position:absolute; top:calc(100% + 8px); right:0;
     background:var(--w); border:1px solid var(--g200);
@@ -174,9 +176,9 @@
     display:flex; align-items:center; gap:10px; width:100%;
     padding:9px 12px; border-radius:var(--r-md);
     font-size:0.8rem; font-weight:550; color:var(--g700);
-    cursor:pointer; transition:background var(--t); text-align:left;
+    cursor:pointer; transition:all var(--t); text-align:left;
   }
-  .dl-item:hover { background:var(--g100); color:var(--g900); }
+  .dl-item:hover { background:var(--rose-50); color:var(--rose); }
   .dl-sep { height:1px; background:var(--g150); margin:4px 0; }
   .dl-chev { transition:transform var(--t); }
   .dl-wrap.open .dl-chev { transform:rotate(180deg); }
@@ -244,9 +246,11 @@
   .sc-head {
     display:flex; align-items:center; justify-content:space-between;
     padding:18px 22px; cursor:pointer; user-select:none;
-    transition:background var(--t);
+    transition:all var(--t);
   }
-  .sc-head:hover { background:var(--g100); }
+  .sc-head:hover { background:var(--rose-50); }
+  .sc-head:hover .sc-title { color:var(--rose); }
+  .sc-head:hover .sc-chev { color:var(--rose); }
   .sc.open .sc-head { background:var(--g50); border-bottom:1px solid var(--g100); }
   .sc-left { display:flex; align-items:center; gap:10px; }
   .sc-title    { font-size:1.05rem; font-weight:720; color:var(--g900); letter-spacing:-0.2px; }
@@ -341,11 +345,11 @@
     width:32px; height:30px; border-radius:0;
     display:flex; align-items:center; justify-content:center;
     color:var(--g500); font-size:1rem; font-weight:600;
-    transition:background var(--t); line-height:1;
+    transition:all var(--t); line-height:1;
     border-right:1px solid var(--g200);
   }
   .zbtn:last-child { border-right:none; }
-  .zbtn:hover { background:var(--g100); color:var(--g900); }
+  .zbtn:hover { background:var(--rose-50); color:var(--rose); }
   .zlvl {
     font-size:0.76rem; font-weight:650; color:var(--g700);
     min-width:46px; text-align:center;
@@ -553,17 +557,20 @@
     transition: all var(--t); cursor: pointer; height: 38px; display: flex; align-items: center;
   }
   .btn-login-header:hover {
-    background: var(--g50); border-color: var(--g300);
+    background: var(--rose-50); border-color: var(--rose-100); color: var(--rose);
   }
   .nav-avatar-btn {
     border: none; background: none; padding: 0; cursor: pointer; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
   }
+  .nav-avatar-btn:hover .nav-avatar {
+    transform: scale(1.05); box-shadow: 0 0 0 3px var(--rose-100);
+  }
   .nav-avatar {
     width: 38px; height: 38px; border-radius: 50%; background: var(--g100);
     border: 2px solid var(--rose); display: flex; align-items: center;
     justify-content: center; color: var(--g500); font-size: 16px;
-    overflow: hidden; flex-shrink: 0;
+    overflow: hidden; flex-shrink: 0; transition: all var(--t);
   }
   .nav-avatar img {
     width: 100%; height: 100%; object-fit: cover;
@@ -608,7 +615,10 @@
     border-radius: 8px; transition: all var(--t);
   }
   .popup-menu-btn:hover {
-    background: var(--g50); color: var(--g900);
+    background: var(--rose-50); color: var(--rose);
+  }
+  .popup-menu-btn:hover i {
+    color: var(--rose);
   }
   .popup-menu-btn i {
     font-size: 1rem; color: var(--g500); width: 16px; text-align: center;
