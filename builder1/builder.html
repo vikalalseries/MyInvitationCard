@@ -662,6 +662,69 @@
   .lp-view { display: none; }
   .lp-view.active { display: block; }
 
+
+
+  /* Transliteration Toggle Switch */
+  .editor-controls {
+    margin: 0 16px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: var(--w);
+    border-radius: var(--r-md);
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(0,0,0,0.03);
+    transition: all var(--t);
+  }
+  .editor-controls:hover {
+    box-shadow: var(--card-shadow-hover);
+  }
+  
+  .tgl-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .tgl-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .tgl-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--g200);
+    transition: .3s;
+    border-radius: 28px;
+  }
+  .tgl-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .tgl-switch input:checked + .tgl-slider {
+    background-color: var(--success);
+  }
+  .tgl-switch input:checked + .tgl-slider:before {
+    transform: translateX(22px);
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
   /* Print */
   @media print {
     .topbar,.left-col,.preview-bar,.toast-wrap,.login-overlay,.login-popup { display:none !important; }
@@ -882,6 +945,23 @@
             <span class="pcb-val" id="pcb-venue">—</span>
           </div>
         </div>
+      </div>
+
+      <!-- Hinglish to Hindi Translation Toggle -->
+      <div class="editor-controls">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div>
+            <div style="font-size: 0.95rem; font-weight: 600; color: var(--g900); display: flex; align-items: center; gap: 6px;">
+              Hinglish to Hindi Translator
+              <span id="translit-indicator" style="width: 7px; height: 7px; border-radius: 50%; background: var(--success); display: inline-block; animation: pulse 2s infinite;"></span>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--g400); margin-top: 2px;">Type in English, press Space to write in Hindi</div>
+          </div>
+        </div>
+        <label class="tgl-switch">
+          <input type="checkbox" id="translit-toggle" checked onchange="document.getElementById('translit-indicator').style.background = this.checked ? 'var(--success)' : 'var(--g300)'">
+          <span class="tgl-slider"></span>
+        </label>
       </div>
 
       <div class="left-scroll" id="sections-wrap">
@@ -1483,7 +1563,101 @@ function bindInputs() {
   document.querySelectorAll('[data-field]').forEach(el => {
     el.oninput = function() { setField(this.dataset.field, this.value); };
     el.onchange = function() { setField(this.dataset.field, this.value); };
+    
+    // Bind Hindi transliteration event listener
+    if ((el.classList.contains('fi-hi') || el.classList.contains('ft-hi')) && !el.dataset.translitBound) {
+      el.dataset.translitBound = 'true';
+      el.addEventListener('keydown', handleTranslitKeydown);
+    }
   });
+}
+
+function handleTranslitKeydown(e) {
+  const toggle = document.getElementById('translit-toggle');
+  if (toggle && !toggle.checked) return;
+
+  if (e.key === ' ' || e.code === 'Space') {
+    const input = this;
+    const cursorPos = input.selectionStart;
+    const textBeforeCursor = input.value.substring(0, cursorPos);
+    
+    // Match only English alphabet word right before the cursor
+    const match = textBeforeCursor.match(/[a-zA-Z]+$/);
+    if (match) {
+      const word = match[0];
+      const start = cursorPos - word.length;
+      const end = cursorPos;
+      
+      // Perform transliteration
+      transliterateWord(input, word, start, end);
+    }
+  }
+}
+
+function transliterateWord(input, word, start, end) {
+  const cbName = 'translit_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+  const script = document.createElement('script');
+  
+  window[cbName] = function(data) {
+    cleanup();
+    if (data && data[0] === 'SUCCESS') {
+      const suggestions = data[1]?.[0]?.[1];
+      if (suggestions && suggestions.length > 0) {
+        const hindiWord = suggestions[0];
+        replaceWordInInput(input, word, hindiWord, start, end);
+      }
+    }
+  };
+
+  function cleanup() {
+    script.remove();
+    delete window[cbName];
+  }
+
+  script.src = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=hi-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&cb=${cbName}`;
+  script.onerror = cleanup;
+  document.head.appendChild(script);
+}
+
+function replaceWordInInput(input, originalWord, newWord, start, end) {
+  const currentVal = input.value;
+  // Verify word at target range is still the original word (user hasn't edited)
+  if (currentVal.substring(start, end) !== originalWord) {
+    return;
+  }
+
+  const before = currentVal.substring(0, start);
+  const after = currentVal.substring(end);
+  const selectionStart = input.selectionStart;
+  const selectionEnd = input.selectionEnd;
+
+  // Set new value
+  input.value = before + newWord + after;
+
+  // Adjust cursor positions
+  const diff = newWord.length - originalWord.length;
+  let newSelStart = selectionStart;
+  let newSelEnd = selectionEnd;
+
+  if (selectionStart >= end) {
+    newSelStart += diff;
+  } else if (selectionStart > start) {
+    newSelStart = start + newWord.length;
+  }
+
+  if (selectionEnd >= end) {
+    newSelEnd += diff;
+  } else if (selectionEnd > start) {
+    newSelEnd = start + newWord.length;
+  }
+
+  input.setSelectionRange(newSelStart, newSelEnd);
+
+  // Trigger input change handlers to sync with live preview and save
+  const inputEvent = new Event('input', { bubbles: true });
+  input.dispatchEvent(inputEvent);
+  const changeEvent = new Event('change', { bubbles: true });
+  input.dispatchEvent(changeEvent);
 }
 
 // ══════════════════════════════════════════════════════

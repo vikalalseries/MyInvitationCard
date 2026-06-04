@@ -123,6 +123,7 @@ html.site-theme-dark .about-hero {
 .mission-icon-box-icon {
   font-size: 3rem;
   margin-bottom: 12px;
+  color: var(--gray);
 }
 
 .mission-icon-box h4 {
@@ -168,6 +169,7 @@ html.site-theme-dark .about-hero {
 .value-icon {
   font-size: 3.2rem;
   margin-bottom: 20px;
+  color: var(--gray);
 }
 
 .value-card h3 {
@@ -2219,3 +2221,49 @@ section {
     bottom: 12px;
   }
 }
+
+/* Mission and Values Badges */
+.mission-icon-badge,
+.value-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-light), rgba(255, 255, 255, 0.4));
+  border: 1px solid rgba(124, 58, 237, 0.15);
+  color: var(--primary);
+  font-size: 1.25rem;
+  margin: 0 auto 16px auto;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.05);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.mission-icon-badge {
+  margin-bottom: 12px;
+}
+
+.value-icon-badge {
+  margin-bottom: 20px;
+}
+
+html.site-theme-dark .mission-icon-badge,
+html.site-theme-dark .value-icon-badge {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mission-icon-box:hover .mission-icon-badge,
+.value-card:hover .value-icon-badge {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.12);
+}
+
+html.site-theme-dark .mission-icon-box:hover .mission-icon-badge,
+html.site-theme-dark .value-card:hover .value-icon-badge {
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.08);
+}
+
