@@ -137,8 +137,8 @@ html.site-theme-dark .navbar.scrolled{
   align-items: center;
   justify-content: center;
   color: var(--gray);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: transparent;
+  border: none;
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.25s ease;
@@ -152,7 +152,6 @@ html.site-theme-dark .navbar.scrolled{
 .tb-home:hover {
   background: var(--primary-light) !important;
   color: var(--primary) !important;
-  border-color: var(--primary-light) !important;
 }
 
 .custom-logo{

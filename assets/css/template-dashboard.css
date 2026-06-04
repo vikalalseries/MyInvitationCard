@@ -157,9 +157,8 @@ body {
   align-items: center;
   justify-content: center;
   color: var(--muted);
-  background: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  background: transparent;
+  border: none;
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.28s ease;
@@ -173,7 +172,6 @@ body {
 .tb-home:hover {
   background: var(--accent-light) !important;
   color: var(--accent) !important;
-  border-color: var(--accent-light) !important;
 }
 
 
