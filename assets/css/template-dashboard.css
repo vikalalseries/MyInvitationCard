@@ -127,6 +127,56 @@ body {
   font-size: 1.5rem;
 }
 
+.sidebar-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.sidebar-logo-container .logo {
+  margin-bottom: 0;
+  gap: 8px;
+}
+
+.sidebar-logo-container .logo span {
+  font-size: 1.1rem;
+}
+
+.sidebar-logo-container .custom-logo {
+  width: 34px;
+  height: 30px;
+}
+
+.tb-home {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.28s ease;
+}
+
+.tb-home svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tb-home:hover {
+  background: var(--accent-light) !important;
+  color: var(--accent) !important;
+  border-color: var(--accent-light) !important;
+}
+
+
 .theme-switch {
   display: flex;
   background: var(--bg);
@@ -420,24 +470,28 @@ body.bride-theme .main-content {
   gap: 18px;
 }
 
+.topbar-left .tb-home {
+  display: none;
+}
+
 .mobile-brand {
   display: none;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   text-decoration: none;
   color: var(--accent);
   flex-shrink: 0;
 }
 
 .mobile-brand span {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   line-height: 1;
 }
 
 .mobile-brand .custom-logo {
-  width: 34px;
-  height: 30px;
+  width: 32px;
+  height: 28px;
 }
 
 .topbar h1 {
@@ -818,7 +872,7 @@ body.bride-theme .main-content {
 
   .topbar-left {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto auto 1fr;
     align-items: center;
     column-gap: 10px;
     row-gap: 10px;
@@ -842,6 +896,17 @@ body.bride-theme .main-content {
   .mobile-brand {
     display: flex;
     justify-self: start;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-brand span {
+    font-size: 0.95rem;
+  }
+
+  .mobile-brand .custom-logo {
+    width: 32px;
+    height: 28px;
   }
 
   .template-grid {
@@ -2961,10 +3026,14 @@ html.site-theme-dark .sidebar-signup-btn {
 
   .topbar-left {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto auto 1fr;
     gap: 10px 12px;
     align-items: center;
     width: 100%;
+  }
+
+  .topbar-left .tb-home {
+    display: flex;
   }
 
   .topbar-left > div {
@@ -3064,7 +3133,7 @@ html.site-theme-dark .sidebar-signup-btn {
   }
 
   .topbar-left {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto auto 1fr;
     width: 100%;
   }
 

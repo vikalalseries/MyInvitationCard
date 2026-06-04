@@ -37,68 +37,77 @@
 
   <div class="sidebar-top">
 
-    <!-- LOGO -->
-    <div class="logo">
-      <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- LOGO CONTAINER -->
+    <div class="sidebar-logo-container">
+      <button class="tb-home" onclick="window.location.href='index.html'" title="Dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="3" y="3" width="4" height="4" rx="1"/><rect x="10" y="3" width="4" height="4" rx="1"/><rect x="17" y="3" width="4" height="4" rx="1"/>
+          <rect x="3" y="10" width="4" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/><rect x="17" y="10" width="4" height="4" rx="1"/>
+          <rect x="3" y="17" width="4" height="4" rx="1"/><rect x="10" y="17" width="4" height="4" rx="1"/><rect x="17" y="17" width="4" height="4" rx="1"/>
+        </svg>
+      </button>
+      <div class="logo" onclick="window.location.reload()" style="cursor: pointer;">
+        <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
 
-        <!-- SMALL HEART -->
-        <path
-          d="M60 42
-             C60 37, 54 33, 49 33
-             C42 33, 39 40, 39 45
-             C39 54, 49 61, 60 69
-             C71 61, 81 54, 81 45
-             C81 40, 78 33, 71 33
-             C66 33, 60 37, 60 42Z"
-          fill="#ef4444"
-        />
+          <!-- SMALL HEART -->
+          <path
+            d="M60 42
+               C60 37, 54 33, 49 33
+               C42 33, 39 40, 39 45
+               C39 54, 49 61, 60 69
+               C71 61, 81 54, 81 45
+               C81 40, 78 33, 71 33
+               C66 33, 60 37, 60 42Z"
+            fill="#ef4444"
+          />
 
-        <!-- ENVELOPE OUTER BORDER -->
-        <path
-          d="M18 42
-             L18 78
-             Q18 84 24 84
-             L96 84
-             Q102 84 102 78
-             L102 42"
-          fill="none"
-          stroke="#6d28d9"
-          stroke-width="6"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
+          <!-- ENVELOPE OUTER BORDER -->
+          <path
+            d="M18 42
+               L18 78
+               Q18 84 24 84
+               L96 84
+               Q102 84 102 78
+               L102 42"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
 
-        <!-- TOP FLAP -->
-        <path
-          d="M18 42 L60 14 L102 42"
-          fill="none"
-          stroke="#6d28d9"
-          stroke-width="6"
-          stroke-linejoin="round"
-          stroke-linecap="round"
-        />
+          <!-- TOP FLAP -->
+          <path
+            d="M18 42 L60 14 L102 42"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
 
-        <!-- LEFT INNER LINE -->
-        <path
-          d="M18 42 L60 68"
-          fill="none"
-          stroke="#6d28d9"
-          stroke-width="6"
-          stroke-linecap="round"
-        />
+          <!-- LEFT INNER LINE -->
+          <path
+            d="M18 42 L60 68"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
 
-        <!-- RIGHT INNER LINE -->
-        <path
-          d="M102 42 L60 68"
-          fill="none"
-          stroke="#6d28d9"
-          stroke-width="6"
-          stroke-linecap="round"
-        />
+          <!-- RIGHT INNER LINE -->
+          <path
+            d="M102 42 L60 68"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
 
-      </svg>
+        </svg>
 
-      <span>MyInvitationCard</span>
+        <span>MyInvitationCard</span>
+      </div>
     </div>
 
     
@@ -310,7 +319,15 @@
           <i class="fa-solid fa-bars"></i>
         </button>
 
-        <a href="index.html" class="mobile-brand">
+        <button class="tb-home" onclick="window.location.href='index.html'" title="Dashboard" style="margin-right: 4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="3" y="3" width="4" height="4" rx="1"/><rect x="10" y="3" width="4" height="4" rx="1"/><rect x="17" y="3" width="4" height="4" rx="1"/>
+            <rect x="3" y="10" width="4" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/><rect x="17" y="10" width="4" height="4" rx="1"/>
+            <rect x="3" y="17" width="4" height="4" rx="1"/><rect x="10" y="17" width="4" height="4" rx="1"/><rect x="17" y="17" width="4" height="4" rx="1"/>
+          </svg>
+        </button>
+
+        <a href="javascript:void(0)" onclick="window.location.reload()" class="mobile-brand">
           <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M60 42
