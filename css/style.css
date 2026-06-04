@@ -129,6 +129,32 @@ html.site-theme-dark .navbar.scrolled{
   line-height: 1;
 }
 
+.tb-home {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+.tb-home svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tb-home:hover {
+  background: var(--primary-light) !important;
+  color: var(--primary) !important;
+  border-color: var(--primary-light) !important;
+}
+
 .custom-logo{
   width: 44px;
   height: 40px;
