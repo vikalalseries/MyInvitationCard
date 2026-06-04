@@ -741,6 +741,22 @@
   </div>
 </div>
 
+<!-- LOGOUT CONFIRMATION MODAL -->
+<div class="auth-overlay" id="logoutConfirmOverlay"></div>
+<div class="auth-modal" id="logoutConfirmModal" style="width: 380px; padding: 32px 24px; border-radius: 24px; box-sizing: border-box;">
+  <button id="closeLogoutConfirmModal" class="auth-close-btn">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+  <div style="margin-top: 10px; margin-bottom: 24px; text-align: center;">
+    <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--dark); line-height: 1.4; margin-bottom: 8px; font-family: sans-serif;">Log Out</h3>
+    <p style="font-size: 0.88rem; color: var(--gray); line-height: 1.5; font-weight: 500; font-family: sans-serif; margin: 0;">Are you sure you want to log out of your account?</p>
+  </div>
+  <div style="display: flex; gap: 12px; justify-content: center;">
+    <button class="dashboard-confirm-btn" id="confirmLogoutBtn">Yes</button>
+    <button class="dashboard-cancel-btn" id="cancelLogoutBtn">No</button>
+  </div>
+</div>
+
 <script src="js/main.js"></script>
 
 <script type="module" src="assets/js/auth.js"></script>

@@ -402,22 +402,34 @@ if (forgotPasswordBtn) {
 
 
 if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    if (document.getElementById("logoutConfirmModal")) return;
+  logoutBtn.addEventListener("click", async (e) => {
+    if (document.getElementById("logoutConfirmModal")) {
+      e.stopPropagation();
+      showGlobalLogoutConfirm();
+      return;
+    }
     await signOut(auth);
   });
 }
 
 if (logoutBtnNavbar) {
-  logoutBtnNavbar.addEventListener("click", async () => {
-    if (document.getElementById("logoutConfirmModal")) return;
+  logoutBtnNavbar.addEventListener("click", async (e) => {
+    if (document.getElementById("logoutConfirmModal")) {
+      e.stopPropagation();
+      showGlobalLogoutConfirm();
+      return;
+    }
     await signOut(auth);
   });
 }
 
 if (mobileLogoutBtn) {
-  mobileLogoutBtn.addEventListener("click", async () => {
-    if (document.getElementById("logoutConfirmModal")) return;
+  mobileLogoutBtn.addEventListener("click", async (e) => {
+    if (document.getElementById("logoutConfirmModal")) {
+      e.stopPropagation();
+      showGlobalLogoutConfirm();
+      return;
+    }
     await signOut(auth);
   });
 }
@@ -688,4 +700,43 @@ if (authOverlay && authModal) {
     const newUrl = window.location.pathname;
     window.history.replaceState({}, document.title, newUrl);
   }
+}
+
+// Global Logout Confirmation Popup Handlers (for index page and dashboard page)
+const logoutConfirmOverlay = document.getElementById("logoutConfirmOverlay");
+const logoutConfirmModal = document.getElementById("logoutConfirmModal");
+const closeLogoutConfirmModal = document.getElementById("closeLogoutConfirmModal");
+const confirmLogoutBtn = document.getElementById("confirmLogoutBtn");
+const cancelLogoutBtn = document.getElementById("cancelLogoutBtn");
+
+function showGlobalLogoutConfirm() {
+  if (navUserPopup) navUserPopup.classList.remove("show");
+  if (logoutConfirmOverlay) logoutConfirmOverlay.classList.add("show");
+  if (logoutConfirmModal) logoutConfirmModal.classList.add("show");
+}
+
+function hideGlobalLogoutConfirm() {
+  if (logoutConfirmOverlay) logoutConfirmOverlay.classList.remove("show");
+  if (logoutConfirmModal) logoutConfirmModal.classList.remove("show");
+}
+
+if (closeLogoutConfirmModal) {
+  closeLogoutConfirmModal.addEventListener("click", hideGlobalLogoutConfirm);
+}
+if (cancelLogoutBtn) {
+  cancelLogoutBtn.addEventListener("click", hideGlobalLogoutConfirm);
+}
+if (logoutConfirmOverlay) {
+  logoutConfirmOverlay.addEventListener("click", hideGlobalLogoutConfirm);
+}
+if (confirmLogoutBtn) {
+  confirmLogoutBtn.addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      localStorage.removeItem("signupFullName");
+      hideGlobalLogoutConfirm();
+    } catch (err) {
+      console.error(err);
+    }
+  });
 }

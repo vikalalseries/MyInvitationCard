@@ -853,6 +853,7 @@ html.site-theme-dark .hero {
 
 .auth-close-btn:hover {
   background: var(--surface);
+  transform: rotate(90deg);
 }
 
 .close-icon{
@@ -2546,4 +2547,30 @@ html.site-theme-dark .theme-icon-btn:hover{
     top: auto;
     bottom: 12px;
   }
+}
+
+/* Custom Index Page Logout Popup Buttons */
+.dashboard-confirm-btn,
+.dashboard-cancel-btn {
+  margin: 0;
+  width: 120px;
+  height: 42px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  color: var(--dark) !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.dashboard-confirm-btn:hover,
+.dashboard-cancel-btn:hover {
+  background: var(--primary) !important;
+  color: var(--white) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 4px 12px var(--primary-light);
 }
