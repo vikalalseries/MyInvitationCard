@@ -303,3 +303,29 @@
     bottom: 12px;
   }
 }
+
+/* Custom Dashboard Logout Popup Buttons */
+.dashboard-confirm-btn,
+.dashboard-cancel-btn {
+  margin: 0;
+  width: 120px;
+  height: 42px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 8px;
+  background: var(--card);
+  border: 2px solid var(--border);
+  color: var(--text) !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.dashboard-confirm-btn:hover,
+.dashboard-cancel-btn:hover {
+  background: var(--accent) !important;
+  color: var(--white) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 4px 12px var(--accent-light);
+}
