@@ -1035,16 +1035,16 @@
           <span class="translit-select-label">Target Language:</span>
           <select id="translit-language" class="translit-select" onchange="handleTranslitLanguageChange(this)">
             <option value="hi-t-i0-und" data-name="Hindi" data-help="Type in English, press Space to write in Hindi">🇮🇳 Hindi / हिन्दी</option>
+            <option value="pa-t-i0-und" data-name="Punjabi" data-help="Type in English, press Space to write in Punjabi">🇮🇳 Punjabi / ਪੰਜਾਬੀ</option>
+            <option value="ur-t-i0-und" data-name="Urdu" data-help="Type in English, press Space to write in Urdu">🇮🇳 Urdu / اردو</option>
             <option value="gu-t-i0-und" data-name="Gujarati" data-help="Type in English, press Space to write in Gujarati">🇮🇳 Gujarati / ગુજરાતી</option>
             <option value="mr-t-i0-und" data-name="Marathi" data-help="Type in English, press Space to write in Marathi">🇮🇳 Marathi / मराठी</option>
             <option value="bn-t-i0-und" data-name="Bengali" data-help="Type in English, press Space to write in Bengali">🇮🇳 Bengali / বাংলা</option>
-            <option value="te-t-i0-und" data-name="Telugu" data-help="Type in English, press Space to write in Telugu">🇮🇳 Telugu / తెలుగు</option>
             <option value="ta-t-i0-und" data-name="Tamil" data-help="Type in English, press Space to write in Tamil">🇮🇳 Tamil / தமிழ்</option>
+            <option value="te-t-i0-und" data-name="Telugu" data-help="Type in English, press Space to write in Telugu">🇮🇳 Telugu / తెలుగు</option>
             <option value="kn-t-i0-und" data-name="Kannada" data-help="Type in English, press Space to write in Kannada">🇮🇳 Kannada / ಕನ್ನಡ</option>
-            <option value="pa-t-i0-und" data-name="Punjabi" data-help="Type in English, press Space to write in Punjabi">🇮🇳 Punjabi / ਪੰਜਾਬੀ</option>
             <option value="ml-t-i0-und" data-name="Malayalam" data-help="Type in English, press Space to write in Malayalam">🇮🇳 Malayalam / മലയാളം</option>
             <option value="or-t-i0-und" data-name="Odia" data-help="Type in English, press Space to write in Odia">🇮🇳 Odia / ଓଡ଼ିଆ</option>
-            <option value="ur-t-i0-und" data-name="Urdu" data-help="Type in English, press Space to write in Urdu">🇮🇳 Urdu / اردو</option>
           </select>
         </div>
       </div>
@@ -1669,6 +1669,7 @@ function handleTranslitKeydown(e) {
     // Match only English alphabet word right before the cursor
     const match = textBeforeCursor.match(/[a-zA-Z]+$/);
     if (match) {
+      e.preventDefault(); // Stop space from being inserted; we add it after transliteration
       const word = match[0];
       const start = cursorPos - word.length;
       const end = cursorPos;
@@ -1680,32 +1681,43 @@ function handleTranslitKeydown(e) {
 }
 
 function transliterateWord(input, word, start, end) {
-  const cbName = 'translit_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-  const script = document.createElement('script');
-  
   // Get currently selected language code, fallback to hindi
   const langSelect = document.getElementById('translit-language');
-  const langCode = langSelect ? langSelect.value : 'hi-t-i0-und';
+  const fullCode = langSelect ? langSelect.value : 'hi-t-i0-und';
   
-  window[cbName] = function(data) {
-    cleanup();
-    if (data && data[0] === 'SUCCESS') {
-      const suggestions = data[1]?.[0]?.[1];
-      if (suggestions && suggestions.length > 0) {
-        const translitWord = suggestions[0];
-        replaceWordInInput(input, word, translitWord, start, end);
+  // Use Google Input Tools API for proper phonetic transliteration
+  const url = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=${encodeURIComponent(fullCode)}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage`;
+  
+  // Add timeout to avoid hanging forever
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  
+  fetch(url, { signal: controller.signal })
+    .then(res => res.json())
+    .then(data => {
+      clearTimeout(timeoutId);
+      // Google Input Tools response format: ["SUCCESS",[["word",[candidates],{},{}]]]
+      if (data && data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
+        const transliteratedWord = data[1][0][1][0];
+        replaceWordInInput(input, word, transliteratedWord + ' ', start, end);
+      } else {
+        // Fallback: just insert space if transliteration fails
+        insertSpaceAt(input, end);
       }
-    }
-  };
+    })
+    .catch(err => {
+      clearTimeout(timeoutId);
+      console.error('Transliteration error:', err);
+      // Fallback: insert space so user can keep typing
+      insertSpaceAt(input, end);
+    });
+}
 
-  function cleanup() {
-    script.remove();
-    delete window[cbName];
-  }
-
-  script.src = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=${langCode}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&cb=${cbName}`;
-  script.onerror = cleanup;
-  document.head.appendChild(script);
+function insertSpaceAt(input, pos) {
+  const val = input.value;
+  input.value = val.substring(0, pos) + ' ' + val.substring(pos);
+  input.setSelectionRange(pos + 1, pos + 1);
+  input.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 function handleTranslitToggleChange(el) {
