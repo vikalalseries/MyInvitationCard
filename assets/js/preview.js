@@ -234,7 +234,8 @@ function reportTemplate() {
 
 /* USE TEMPLATE — route each template to its own builder */
 const TEMPLATE_BUILDER_MAP = {
-  37: "builder1/builder.html"
+  37: "builder1/builder.html",
+  38: "builder1/builder.html"
   // Add future template→builder mappings here, e.g.:
   // 28: "builder2/builder.html",
 };

@@ -1082,6 +1082,26 @@
               scrolling="no"
               sandbox="allow-scripts allow-same-origin"
             ></iframe>
+            <script>
+              (function() {
+                var activeId = 37;
+                var urlParams = new URLSearchParams(window.location.search);
+                var urlId = urlParams.get('templateId');
+                if (urlId) {
+                  activeId = parseInt(urlId, 10);
+                } else {
+                  try {
+                    var activeRaw = localStorage.getItem('mic_active_template');
+                    if (activeRaw) {
+                      activeId = JSON.parse(activeRaw).id;
+                    }
+                  } catch(e) {}
+                }
+                if (activeId === 38) {
+                  document.getElementById('card1-iframe').src = "../card1/card1_swapped.html";
+                }
+              })();
+            </script>
           </div>
         </div>
       </div>
@@ -1894,7 +1914,15 @@ $('dl-print').onclick = () => {
 
 $('dl-card1-direct').onclick = () => {
   $('dl-wrap').classList.remove('open');
-  window.open('../card1/card1.html', '_blank');
+  let activeId = 37;
+  try {
+    const activeRaw = localStorage.getItem('mic_active_template');
+    if (activeRaw) {
+      activeId = JSON.parse(activeRaw).id;
+    }
+  } catch(e) {}
+  const file = activeId === 38 ? '../card1/card1_swapped.html' : '../card1/card1.html';
+  window.open(file, '_blank');
 };
 
 // ══════════════════════════════════════════════════════
@@ -1933,13 +1961,28 @@ function updateBanner() {
   const g = S.groom;
   const b = S.bride;
 
-  // Names: Bride संग Groom (First names only, Bride is on left side of template)
+  // Detect if groom is on the left side (swapped template ID 38)
+  let activeId = 37;
+  try {
+    const activeRaw = localStorage.getItem('mic_active_template');
+    if (activeRaw) {
+      activeId = JSON.parse(activeRaw).id;
+    }
+  } catch(e) {}
+
+  const isGroomLeft = (activeId === 38);
+
+  // Names: Bride संग Groom (or Groom संग Bride if swapped)
   const nameEl = $('pcb-names');
   if (nameEl) {
     const brideFirst = (b.name || '').trim().split(/\s+/)[0];
     const groomFirst = (g.name || '').trim().split(/\s+/)[0];
     if (brideFirst && groomFirst) {
-      nameEl.innerHTML = `${esc(brideFirst)} <span style="font-weight: 400; color: var(--g500); margin: 0 5px; font-size: 0.9em;">संग</span> ${esc(groomFirst)}`;
+      if (isGroomLeft) {
+        nameEl.innerHTML = `${esc(groomFirst)} <span style="font-weight: 400; color: var(--g500); margin: 0 5px; font-size: 0.9em;">संग</span> ${esc(brideFirst)}`;
+      } else {
+        nameEl.innerHTML = `${esc(brideFirst)} <span style="font-weight: 400; color: var(--g500); margin: 0 5px; font-size: 0.9em;">संग</span> ${esc(groomFirst)}`;
+      }
     } else {
       nameEl.textContent = esc(brideFirst || groomFirst || '—');
     }
@@ -1951,16 +1994,18 @@ function updateBanner() {
     dateEl.textContent = fmtDateHi(S.vivah.date) || '—';
   }
 
-  // Address — from left side (bride's details)
+  // Address — from left side (bride's details in template 37, groom's details in template 38)
   const venueEl = $('pcb-venue');
   if (venueEl) {
     const addrParts = [];
-    if (b.address) addrParts.push('ग्राम- ' + b.address);
-    if (b.post) addrParts.push('पो0- ' + b.post);
-    if (b.city) addrParts.push(b.city);
+    const leftPerson = isGroomLeft ? g : b;
+    if (leftPerson.address) addrParts.push('ग्राम- ' + leftPerson.address);
+    if (leftPerson.post) addrParts.push('पो0- ' + leftPerson.post);
+    if (leftPerson.city) addrParts.push(leftPerson.city);
     venueEl.textContent = addrParts.join(', ') || '—';
   }
 }
+
 
 // ══════════════════════════════════════════════════════
 //  DOWNLOAD — PNG, JPG, PDF
@@ -1969,6 +2014,18 @@ function getDownloadFilename() {
   const brideFirst = (S.bride.name || '').trim().split(/\s+/)[0] || 'Card';
   const groomFirst = (S.groom.name || '').trim().split(/\s+/)[0] || 'Card';
   if (brideFirst === 'Card' && groomFirst === 'Card') return 'MyInvitationCard';
+  
+  let activeId = 37;
+  try {
+    const activeRaw = localStorage.getItem('mic_active_template');
+    if (activeRaw) {
+      activeId = JSON.parse(activeRaw).id;
+    }
+  } catch(e) {}
+
+  if (activeId === 38) {
+    return 'MyInvitationCard_' + groomFirst + '_संग_' + brideFirst;
+  }
   return 'MyInvitationCard_' + brideFirst + '_संग_' + groomFirst;
 }
 

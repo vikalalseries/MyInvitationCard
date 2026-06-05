@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>विवाह निमंत्रण</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background:#c8829a;
+  display:flex;
+  justify-content:center;
+  padding:20px;
+  font-family:'Noto Serif Devanagari', serif;
+}
+
+/* ── CARD: 23.5 × 19 cm with 1cm padding ── */
+.card {
+  width:23.5cm;
+  min-height:19cm;
+  background:#f2aec8;
+  padding:1cm;
+  display:flex;
+  flex-direction:column;
+  gap:0.3cm;
+}
+
+/* ── EACH SECTION: 21.5 × 8 cm ── */
+.sec {
+  width:21.5cm;
+  height:8.5cm;
+  position:relative;
+  border:0.07cm solid #8b0040;
+  box-shadow:inset 0 0 0 0.13cm #f2aec8, inset 0 0 0 0.20cm #8b0040;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(255,255,255,0.52) 0%, transparent 28%),
+    radial-gradient(ellipse at 80% 75%, rgba(255,255,255,0.4)  0%, transparent 32%),
+    linear-gradient(140deg,#fce4ef 0%,#f9d5e8 45%,#f6cde1 75%,#fad8eb 100%);
+}
+.sec::before {
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:radial-gradient(rgba(160,0,60,0.06) 1px, transparent 1px);
+  background-size:5px 5px;
+}
+
+/* 4 corner flowers — exactly one each */
+.fl { position:absolute; color:#8b0040; font-size:1.2cm; line-height:1; z-index:10; }
+.tl { top:0.4cm;  left:0.2cm; }
+.tr { top:0.4cm;  right:0.2cm; }
+.bl { bottom:-0.07cm; left:0.2cm; }
+.br { bottom:-0.07cm; right:0.2cm; }
+
+/* ════════════════════════════════════════
+   SECTION 1  — Top card
+   ════════════════════════════════════════ */
+.s1-wrap {
+  position:relative; z-index:1;
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  padding:0.25cm 0.75cm 0.18cm 0.75cm;
+  gap:0.04cm;
+  
+}
+
+
+.ganesh-icon img{
+    width:3.5cm;
+    height:auto;
+    position: relative;
+    top:-6.4cm;
+    left:-8.75cm;
+}
+
+.sun-icon img{
+    width:3cm;
+    height:auto;
+    position: relative;
+    top: -6.5cm;
+    left: 4.9cm;
+}
+
+.chainleft img{
+    width:1.8cm;
+    height:auto;
+    position: relative;
+    top: -3.25cm;
+    right: 0.51cm;
+}
+
+.chainright img{
+    width:1.8cm;
+    height:auto;
+    position: relative;
+    top: -3.25cm;
+    left: 18.1cm;
+}
+
+
+.top-icon img{
+    width:3.4cm;
+    height:auto;
+    position: relative;
+    top: -3.35cm;
+    left:-11.2cm;
+    
+}
+
+.top1-icon img{
+    width:3.4cm;
+    height:auto;
+    position: relative;
+    bottom: -0.2cm;
+    right:-3.0cm;
+    
+}
+
+.bottom-icon img{
+    width:3.4cm;
+    height:auto;
+    position: relative;
+    top: -4.9cm;
+    right:-13.6cm;
+    
+}
+
+
+.mid-icon img{
+    width:2.5cm;
+    height:auto;
+    position: relative;
+    top: -5.3cm;
+    right:-8.0cm;
+    
+}
+
+
+
+
+
+/* Row 1: Ganesh | Mantras | Om-Sun */
+.s1-row1 {
+  display:grid;
+  grid-template-columns:1.1cm 1fr 1.1cm;
+  align-items:center;
+  gap:0.05cm;
+  position:relative;
+  margin-top:.10cm;
+}
+.s1-icon svg { width:1cm; height:1cm; display:block; }
+.s1-mantras  { font-size:0.6cm; text-align:center; }
+.s1-mantras p { font-size:0.39cm; color:#6e0035; line-height:1.5; position:relative;  }
+.s1-mantras p:first-child { font-size:0.4cm; font-weight:600; }
+
+/* Row 2: मांगलिक heading */
+.s1-heading {
+  text-align:center;
+  font-size:0.5cm;
+  font-weight:700;
+  color:#6e0035;
+  line-height:1.2;
+  position:relative;
+  margin-top:.30cm;
+}
+.swirl { text-align:center; color:#9b1050; font-size:0.27cm; letter-spacing:0.04cm; line-height:0.1; position:relative;
+  margin-top:0.1cm; }
+
+/* Row 3: हल्दी */
+.s1-haldi { text-align:center; }
+.s1-haldi-t { font-size:0.60cm; font-weight:700; color:#6e0035; position: relative; top: 0.1cm; }
+.s1-haldi-d { font-size:0.47cm; color:#6e0035; margin-top: -0.1cm; }
+
+/* Row 4: chain | vivah | couple | vidai | chain */
+.s1-events {
+  display:grid;
+  grid-template-columns:0.55cm 1fr 2.1cm 1fr 0.55cm;
+  align-items:center;
+  flex:1;
+  min-height:0;
+}
+
+
+.s1-ev { text-align:center; }
+.s1-ev-t { font-size:0.70cm; font-weight:700; color:#6e0035; line-height:1.2; }
+.s1-ev-d { font-size:0.5cm; color:#6e0035; margin-top:0.04cm; }
+.s1-ev-sw { font-size:0.22cm; color:#9b1050; letter-spacing:0.04cm; margin-top:0.04cm; }
+
+.couple-box { display:flex; align-items:center; justify-content:center; }
+.couple-box svg { width:2cm; height:2.4cm; }
+
+/* Row 5: बाल आग्रह */
+.s1-bal { text-align:center; font-size:0.4cm; color:#6e0035; line-height:1.6; }
+.s1-bal-n { font-weight:700; font-size:0.4cm; }
+
+
+/* ════════════════════════════════════════
+   SECTION 2  — Bottom card
+   ════════════════════════════════════════ */
+.s2-wrap {
+  position:relative;
+  z-index:1;
+  width:100%;
+  height:100%;
+  padding:.20cm 0.75cm 0.15cm 0.75cm;
+}
+
+
+
+
+/* Row A: snehi-left | vindhya-center | spacer-right */
+.s2-rowa {
+  display:grid;
+  grid-template-columns:2.8cm 1fr 1cm;
+  align-items:start;
+  margin-bottom:0.04cm;
+}
+.s2-snehi { font-size:0.380cm; font-weight:600; color:#6e0035; padding-top:0.6cm; padding-left:1.2cm; width:10cm }
+.s2-vindhya { text-align:center; padding-top:0.25cm; }
+.s2-vm { font-size:0.40cm; font-weight:700; color:#6e0035; padding-right:4.9cm;}
+.s2-vs { font-size:0.380cm; font-weight:600; color:#6e0035; margin-top:0.2cm; padding-right:8.9cm; width: 19cm;}
+
+/* Row B: Groom name LEFT | Bride name RIGHT — full width (Swapped) */
+.s2-rowb {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  margin-bottom:.75cm;
+}
+
+.s2-bride{
+    font-size:0.65cm;
+    font-weight:700;
+    color:#6e0035;
+    text-align:right; /* Align right since Bride is now on the right side */
+
+    position:relative;
+    top:0.10cm;
+}
+
+.s2-groom{
+    font-size:0.65cm;
+    font-weight:700;
+    color:#6e0035;
+    /* Removed text-align: right so Groom is left-aligned on the left side */
+
+    position:relative;
+    top:0.10cm;
+}
+
+/* Row C: groom-family | center-block | bride-family */
+.s2-rowc {
+  display:grid;
+  grid-template-columns:1fr 2.8cm 1fr;
+  gap:0.1cm;
+  flex:1;
+  align-items:start;
+  padding: 0cm 0cm 0cm 0cm ;
+}
+
+.couple-box img{
+    width:3cm;
+    height:auto;
+    position: relative;
+    bottom:4.3cm;
+    left: 5.9cm;
+
+}
+
+
+.s2-fam   { font-size:0.4cm; color:#6e0035; line-height:1.72; position:relative; top:-0.80cm; }
+.s2-fam-r { font-size:0.4cm; color:#6e0035; line-height:1.72; text-align:right; position:relative; top:-0.80cm; }
+
+.s2-center{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    text-align:center;
+    gap:0.08cm;
+
+    position:relative;
+    bottom:-0.3cm;
+}
+
+.s2-center{
+    position:relative;
+    left:0.15cm;
+}
+
+.s2-center svg { width:2cm; height:1.5cm; }
+.s2-damp-t{
+    font-size:0.4cm;
+    font-weight:700;
+    color:#6e0035;
+    line-height:1.5;
+    width:9cm;
+    text-align:center;
+}
+
+.s2-damp-d{
+    font-size:0.37cm;
+    color:#6e0035;
+    line-height:1.5;
+
+    width: 11cm;
+    text-align:center;
+
+    position:relative;
+    
+}
+
+
+
+/* Row D: footer 3-col */
+.s2-rowd{
+    position:absolute;
+    left:1.5cm;
+    right:1.5cm;
+    bottom:0.25cm;
+
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    align-items:end;
+
+    padding-top:0.06cm;
+}
+
+
+.fc-l { text-align:left; }
+.fc-c { text-align:center; }
+.fc-r { text-align:center; }
+.f-label { font-size:0.45cm; color:#6e0035; margin-bottom:0.02cm; }
+.f-name  { font-size:0.43cm; font-weight:700; color:#6e0035; line-height:1.5; }
+.f-addr  { font-size:0.38cm; color:#6e0035; line-height:1.5; margin-top:0.02cm; }
+
+@page { size:23.5cm 19cm; margin:0; }
+@media print { body { background:none; padding:0; } }
+</style>
+</head>
+<body>
+<div class="card">
+
+<!-- ══════════════════════════════
+     SECTION 1
+     ══════════════════════════════ -->
+
+<div class="sec">
+  <div class="fl tl">✿</div>
+  <div class="fl tr">✿</div>
+  <div class="fl bl">✿</div>
+  <div class="fl br">✿</div>
+
+  <div class="s1-wrap">
+
+
+
+    <!-- Row 1: Ganesh | Mantras | Om-Sun -->
+    <div class="s1-row1">
+
+      <!-- Ganesh SVG -->
+      <div class="s1-icon">
+      </div>
+
+      <!-- Mantras -->
+      <div class="s1-mantras">
+        <p>।। श्री गणेशाय नमः ।।</p>
+        <p>वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</p>
+      </div>
+
+      <!-- Om-Sun SVG -->
+      <div class="s1-icon" style="display:flex;justify-content:flex-end;">
+      </div>
+    </div><!-- s1-row1 -->
+
+
+    <div class="swirl">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
+    <!-- मांगलिक -->
+    <div class="s1-heading">।। मांगलिक क्षणिकायें ।।</div>
+    <div class="swirl">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
+
+    <!-- हल्दी -->
+    <div class="s1-haldi">
+      <div class="s1-haldi-t">हल्दी व मेहन्दी</div>
+      <div class="s1-haldi-d">दिनांक - 30 मई 2026, शनिवार</div>
+    </div>
+    
+
+
+
+    
+
+    <!-- Events row -->
+    <div class="s1-events">
+
+      <div class="chain">
+      </div>
+
+      <div class="s1-ev">
+        <div class="s1-ev-t">शुभ विवाह</div>
+        <div class="s1-ev-d">दिनांक - 31 मई 2026, रविवार</div>
+        
+      </div>
+
+      <div class="couple-box">
+      </div>
+
+      <div class="s1-ev">
+        <div class="s1-ev-t">विदाई</div>
+        <div class="s1-ev-d">दिनांक - 01 जून 2026, सोमवार</div>
+        
+      </div>
+
+      <div class="chain">
+      </div>
+      <div class="chainleft">
+          <img src="../builder1/assets/icons/side.png" alt="">
+      </div> 
+
+      <div class="chainright">
+          <img src="../builder1/assets/icons/side.png" alt="">
+      </div> 
+      
+      <div class="s1-icon ganesh-icon">
+          <img src="../builder1/assets/icons/ganesh.png" alt="Ganesh">
+      </div>
+
+      <div class="s1-icon sun-icon">
+        <img src="../builder1/assets/icons/om.png" alt="Om">
+      </div>
+
+      <div class="s1-icon top-icon">
+        <img src="../builder1/assets/icons/top2.png" alt="Top">
+      </div>
+
+      <div class="s1-icon bottom-icon">
+        <img src="../builder1/assets/icons/top2.png" alt="Top">
+      </div>
+
+      <div class="s1-icon mid-icon">
+        <img src="../builder1/assets/icons/mid.png" alt="Top">
+      </div>
+
+      
+      
+      
+
+
+      
+
+    </div><!-- s1-events -->
+
+    <div class="s1-icon top1-icon">
+        <img src="../builder1/assets/icons/top2.png" alt="Top">
+    </div>
+
+
+    
+
+    <!-- बाल आग्रह -->
+    <div class="s1-bal">
+      बाल आग्रह- गाना होगा, बजाना होगा, मिलकर धूम मचाना होगा, मेरी दीदी की शादी है आप सभी को आना होगा -<br>
+      <span class="s1-bal-n">जानकी, जान, अनन्या, अनाया (डोडो)</span>
+    </div>
+
+    
+
+  </div><!-- s1-wrap -->
+</div><!-- sec 1 -->
+
+
+<!-- ══════════════════════════════
+     SECTION 2
+     ══════════════════════════════ -->
+<div class="sec">
+  <div class="fl tl">✿</div>
+  <div class="fl tr">✿</div>
+  <div class="fl bl">✿</div>
+  <div class="fl br">✿</div>
+
+  <div class="s2-wrap">
+
+    <!-- Row A: snehi | vindhya | gap -->
+    <div class="s2-rowa">
+      <div class="s2-snehi">स्नेही स्वजन,</div>
+      <div class="s2-vindhya">
+        <div class="s2-vm">।। श्री विन्ध्यवासिनी देव्यै नमः ।।</div>
+        <div class="s2-vs">आदि शक्ति जगत जननी माँ विन्ध्यवासिनी जी की असीम अनुकम्पा से....</div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- Row B: Groom name | Bride name (Swapped) -->
+    <div class="s2-rowb">
+      <div class="s2-groom">चि॰ राजेश मौर्य</div>
+      <div class="s2-bride">आयु॰कु॰ नीलम मौर्या</div>
+    </div>
+
+    <!-- Row C: groom-family | center | bride-family (Swapped) -->
+    <div class="s2-rowc">
+
+      <div class="s2-fam">
+        सुपौत्र- स्व0 शिवनाथ मौर्य- श्रीमती प्रेमा देवी<br>
+        सुपुत्र- श्री रामकेशवर मौर्य- श्रीमती मालती देवी<br>
+        ग्राम- झगड़हा पो0- नौगवां<br>
+        जिला- मीरजापुर
+      </div>
+
+      <div class="s2-center">
+        <div class="s2-damp-t">।। दाम्पत्य-सूत्र-बन्धन ।।</div>
+        <div class="s2-damp-d">
+          की मधुर बेला पर पधार कर नवयुगल को अपने<br>
+          स्नेहिल आशीर्वाद की मृदुल ज्योत्सना से अभिसिंचित कर हमें अनुगृहीत करें।
+        </div>
+      </div>
+
+      <div class="s2-fam-r">
+        सुपौत्री- स्व0 श्री बनारसी प्रसाद मौर्य- श्रीमती कलावती देवी<br>
+        सुपुत्री- श्री शमशेर बहादुर मौर्य- श्रीमती चन्द्रकला देवी<br>
+        ग्राम- थरपरिसया पो0- नदौली करौदी<br>
+        लालगंज, जिला- मीरजापुर
+      </div>
+
+      <div class="s2-icon couple-box">
+          <img src="../builder1/assets/icons/weds.png" alt="Weds">
+      </div>
+
+    </div><!-- s2-rowc -->
+
+    <!-- Row D: footer -->
+    <div class="s2-rowd">
+
+      <div class="fc-l">
+        <div class="f-label">दर्शनाभिलाषी -</div>
+        <div class="f-name">पुष्पराज मौर्य, जयप्रकाश मौर्य<br>एवं समस्त मौर्य परिवार ।</div>
+      </div>
+
+      <div class="fc-c">
+        <div class="f-label">- स्वागताकांक्षी -</div>
+        <div class="f-name">शमशेर बहादुर मौर्य<br>अनिल मौर्य</div>
+      </div>
+
+      <div class="fc-r">
+        <div class="f-label">- विनीत -</div>
+        <div class="f-name">फूलचन्द मौर्य</div>
+        <div class="f-addr">ग्राम- थरपरिसया पो0- नदौली करौदी<br>लालगंज, जिला- मीरजापुर</div>
+      </div>
+
+    </div><!-- s2-rowd -->
+
+  </div><!-- s2-wrap -->
+</div><!-- sec 2 -->
+
+</div><!-- card -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  BUILDER ↔ CARD1 LIVE SYNC  (postMessage receiver)
+// ══════════════════════════════════════════════════════
+window.addEventListener('message', function(e) {
+  const d = e.data;
+  if (!d || d.type !== 'MIC_CARD_UPDATE') return;
+  const c = d.card;
+  if (!c) return;
+  syncCard(c);
+});
+
+function syncCard(c) {
+
+  // ── SECTION 1: Opening Shloka ────────────────────────
+  setTxt('.s1-mantras p:first-child', c.shloka && c.shloka.line1 ? c.shloka.line1 : '।। श्री गणेशाय नमः ।।');
+  setTxt('.s1-mantras p:last-child',  c.shloka && c.shloka.line2 ? c.shloka.line2 : 'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥');
+
+  // ── SECTION 1: Haldi ────────────────────────────────
+  if (c.haldi) {
+    setTxt('.s1-haldi-t', c.haldi.name || 'हल्दी व मेहन्दी');
+    setTxt('.s1-haldi-d', 'दिनांक - ' + fmtHi(c.haldi.date));
+  }
+
+  // ── SECTION 1: Vivah & Vidai ─────────────────────────
+  const evEls = document.querySelectorAll('.s1-ev');
+  if (evEls[0] && c.vivah) {
+    setTxtEl(evEls[0].querySelector('.s1-ev-t'), c.vivah.name || 'शुभ विवाह');
+    setTxtEl(evEls[0].querySelector('.s1-ev-d'), 'दिनांक - ' + fmtHi(c.vivah.date));
+  }
+  if (evEls[1] && c.vidai) {
+    setTxtEl(evEls[1].querySelector('.s1-ev-t'), c.vidai.name || 'विदाई');
+    setTxtEl(evEls[1].querySelector('.s1-ev-d'), 'दिनांक - ' + fmtHi(c.vidai.date));
+  }
+
+  // ── SECTION 1: Bal Aagrah ───────────────────────────
+  if (c.balAagrah) {
+    const balEl = document.querySelector('.s1-bal');
+    if (balEl) {
+      const nameSpan = balEl.querySelector('.s1-bal-n');
+      const textNode = Array.from(balEl.childNodes).find(n => n.nodeType === 3);
+      if (textNode) textNode.textContent = (c.balAagrah.text || '') + '\n';
+      if (nameSpan)  nameSpan.textContent = c.balAagrah.names || '';
+    }
+  }
+
+  // ── SECTION 2: Snehi ────────────────────────────────
+  setTxt('.s2-snehi', c.snehi || 'स्नेही स्वजन,');
+
+  // ── SECTION 2: Vindhyavasini ────────────────────────
+  if (c.vindhya) {
+    setTxt('.s2-vm', c.vindhya.mantra   || '।। श्री विन्ध्यवासिनी देव्यै नमः ।।');
+    setTxt('.s2-vs', c.vindhya.subtitle || 'आदि शक्ति जगत जननी माँ विन्ध्यवासिनी जी की असीम अनुकम्पा से....');
+  }
+
+  // ── SECTION 2: Bride (Swapped to Right column) ───────
+  if (c.bride) {
+    setTxt('.s2-bride', (c.bride.title || 'आयु॰कु॰') + ' ' + (c.bride.name || 'नीलम मौर्या'));
+    const famR = document.querySelector('.s2-fam-r');
+    if (famR) {
+      const lines = [];
+      if (c.bride.grandfatherName) lines.push('सुपौत्री- स्व0 ' + c.bride.grandfatherName);
+      if (c.bride.fatherName || c.bride.motherName)
+        lines.push('सुपुत्री- ' + [c.bride.fatherName, c.bride.motherName].filter(Boolean).join('- '));
+      if (c.bride.address)
+        lines.push('ग्राम- ' + c.bride.address + (c.bride.post ? ' पो0- ' + c.bride.post : ''));
+      if (c.bride.city) lines.push(c.bride.city);
+      famR.innerHTML = lines.join('<br>');
+    }
+  }
+
+  // ── SECTION 2: Groom (Swapped to Left column) ────────
+  if (c.groom) {
+    setTxt('.s2-groom', (c.groom.title || 'चि॰') + ' ' + (c.groom.name || 'राजेश मौर्य'));
+    const famL = document.querySelector('.s2-fam');
+    if (famL) {
+      const lines = [];
+      if (c.groom.grandfatherName) lines.push('सुपौत्र- स्व0 ' + c.groom.grandfatherName);
+      if (c.groom.fatherName || c.groom.motherName)
+        lines.push('सुपुत्र- ' + [c.groom.fatherName, c.groom.motherName].filter(Boolean).join('- '));
+      if (c.groom.address)
+        lines.push('ग्राम- ' + c.groom.address + (c.groom.post ? ' पो0- ' + c.groom.post : ''));
+      if (c.groom.city) lines.push(c.groom.city);
+      famL.innerHTML = lines.join('<br>');
+    }
+  }
+
+  // ── SECTION 2: Vinit (center greeting) ──────────────
+  const dampD = document.querySelector('.s2-damp-d');
+  if (dampD && c.vinit !== undefined) {
+    dampD.innerHTML = c.vinit.replace(/\n/g, '<br>');
+  }
+
+  // ── FOOTER: Darshnabhilashi (left) ──────────────────
+  if (c.darshnabhilashi) {
+    setTxt('.fc-l .f-label', c.darshnabhilashi.label || 'दर्शनाभिलाषी -');
+    const fcLName = document.querySelector('.fc-l .f-name');
+    if (fcLName) fcLName.innerHTML = (c.darshnabhilashi.names || '').replace(/\n/g, '<br>');
+  }
+
+  // ── FOOTER: Swagatakankshi (center) ─────────────────
+  if (c.swagatakankshi) {
+    setTxt('.fc-c .f-label', c.swagatakankshi.label || '- स्वागताकांक्षी -');
+    const fcCName = document.querySelector('.fc-c .f-name');
+    if (fcCName) fcCName.innerHTML = (c.swagatakankshi.names || '').replace(/\n/g, '<br>');
+  }
+
+  // ── FOOTER: Nimantrak / Vinit (right) ───────────────
+  if (c.nimantrak) {
+    setTxt('.fc-r .f-label', c.nimantrak.label || '- विनीत -');
+    setTxt('.fc-r .f-name',  c.nimantrak.name  || '');
+    const fcRAddr = document.querySelector('.fc-r .f-addr');
+    if (fcRAddr) {
+      const n = c.nimantrak;
+      const parts = [n.address, n.post ? 'पो0- ' + n.post : '', n.city].filter(Boolean);
+      fcRAddr.innerHTML = parts.join('<br>');
+    }
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────
+const _HI_MONTHS = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+const _HI_DAYS   = ['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+
+function fmtHi(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.getDate() + ' ' + _HI_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + _HI_DAYS[d.getDay()];
+  } catch(e) { return dateStr; }
+}
+
+function setTxt(sel, txt) {
+  const el = document.querySelector(sel);
+  if (el) el.textContent = txt;
+}
+
+function setTxtEl(el, txt) {
+  if (el) el.textContent = txt;
+}
+</script>
+</body>
+</html>
