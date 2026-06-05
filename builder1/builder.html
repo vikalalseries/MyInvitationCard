@@ -7,7 +7,7 @@
   <meta name="description" content="Edit your Hindu wedding invitation card with live preview.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&family=Noto+Sans+Gujarati:wght@400;700&family=Noto+Sans+Bengali:wght@400;700&family=Noto+Sans+Telugu:wght@400;700&family=Noto+Sans+Tamil:wght@400;700&family=Noto+Sans+Kannada:wght@400;700&family=Noto+Sans+Gurmukhi:wght@400;700&family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Sans+Oriya:wght@400;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
   <style>
   /* ══════════════════════════════════════ DESIGN TOKENS */
@@ -286,8 +286,21 @@
   }
   .sub-h::after { content:''; flex:1; height:1px; background:var(--g150); }
 
-  /* Hindi font for Devanagari inputs */
-  .fi-hi, .ft-hi { font-family:'Noto Serif Devanagari', serif; font-size:0.85rem; }
+  /* Language-specific fonts for transliterated inputs */
+  .fi-hi, .ft-hi {
+    transition: font-family var(--t);
+  }
+  [data-translit-lang="hi-t-i0-und"] .fi-hi, [data-translit-lang="hi-t-i0-und"] .ft-hi { font-family: 'Noto Serif Devanagari', serif; font-size: 0.85rem; }
+  [data-translit-lang="gu-t-i0-und"] .fi-hi, [data-translit-lang="gu-t-i0-und"] .ft-hi { font-family: 'Noto Sans Gujarati', sans-serif; font-size: 0.85rem; }
+  [data-translit-lang="mr-t-i0-und"] .fi-hi, [data-translit-lang="mr-t-i0-und"] .ft-hi { font-family: 'Noto Serif Devanagari', serif; font-size: 0.85rem; }
+  [data-translit-lang="bn-t-i0-und"] .fi-hi, [data-translit-lang="bn-t-i0-und"] .ft-hi { font-family: 'Noto Sans Bengali', sans-serif; font-size: 0.85rem; }
+  [data-translit-lang="te-t-i0-und"] .fi-hi, [data-translit-lang="te-t-i0-und"] .ft-hi { font-family: 'Noto Sans Telugu', sans-serif; font-size: 0.85rem; }
+  [data-translit-lang="ta-t-i0-und"] .fi-hi, [data-translit-lang="ta-t-i0-und"] .ft-hi { font-family: 'Noto Sans Tamil', sans-serif; font-size: 0.85rem; }
+  [data-translit-lang="kn-t-i0-und"] .fi-hi, [data-translit-lang="kn-t-i0-und"] .ft-hi { font-family: 'Noto Sans Kannada', sans-serif; font-size: 0.85rem; }
+  [data-translit-lang="pa-t-i0-und"] .fi-hi, [data-translit-lang="pa-t-i0-und"] .ft-hi { font-family: 'Noto Sans Gurmukhi', sans-serif; font-size: 0.85rem; }
+  [data-translit-lang="ml-t-i0-und"] .fi-hi, [data-translit-lang="ml-t-i0-und"] .ft-hi { font-family: 'Noto Sans Malayalam', sans-serif; font-size: 0.85rem; }
+  [data-translit-lang="or-t-i0-und"] .fi-hi, [data-translit-lang="or-t-i0-und"] .ft-hi { font-family: 'Noto Sans Oriya', sans-serif; font-size: 0.85rem; }
+  [data-translit-lang="ur-t-i0-und"] .fi-hi, [data-translit-lang="ur-t-i0-und"] .ft-hi { font-family: 'Noto Sans Arabic', 'Inter', sans-serif; font-size: 0.85rem; }
 
   /* Date row helpers */
   .date-row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:end; }
@@ -664,13 +677,13 @@
 
 
 
-  /* Transliteration Toggle Switch */
+  /* ══════════════════════════════════════ INPUT TRANSLITERATOR PANEL */
   .editor-controls {
     margin: 0 16px 12px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 18px;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 18px;
     background: var(--w);
     border-radius: var(--r-md);
     box-shadow: var(--card-shadow);
@@ -679,6 +692,59 @@
   }
   .editor-controls:hover {
     box-shadow: var(--card-shadow-hover);
+  }
+  .translit-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .translit-selector-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1.5px solid var(--g100);
+    padding-top: 10px;
+    width: 100%;
+    transition: opacity var(--t);
+  }
+  .translit-selector-row.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .translit-select-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--g500);
+  }
+  .translit-select {
+    padding: 6px 28px 6px 10px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--g900);
+    background-color: var(--g50);
+    border: 1.5px solid var(--g200);
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    transition: all var(--t);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2368655e' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    width: 100%;
+    max-width: 200px;
+  }
+  .translit-select:hover {
+    border-color: var(--g300);
+    background-color: var(--w);
+  }
+  .translit-select:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px var(--rose-100);
+    background-color: var(--w);
   }
   
   .tgl-switch {
@@ -947,21 +1013,40 @@
         </div>
       </div>
 
-      <!-- Hinglish to Hindi Translation Toggle -->
+      <!-- Input Transliteration Panel -->
       <div class="editor-controls">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div>
-            <div style="font-size: 0.95rem; font-weight: 600; color: var(--g900); display: flex; align-items: center; gap: 6px;">
-              Hinglish to Hindi Translator
-              <span id="translit-indicator" style="width: 7px; height: 7px; border-radius: 50%; background: var(--success); display: inline-block; animation: pulse 2s infinite;"></span>
+        <div class="translit-header-row">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div>
+              <div style="font-size: 0.95rem; font-weight: 600; color: var(--g900); display: flex; align-items: center; gap: 6px;">
+                Input Transliterator
+                <span id="translit-indicator" style="width: 7px; height: 7px; border-radius: 50%; background: var(--success); display: inline-block; animation: pulse 2s infinite;"></span>
+              </div>
+              <div id="translit-help-text" style="font-size: 0.75rem; color: var(--g400); margin-top: 2px;">Type in English, press Space to write in Hindi</div>
             </div>
-            <div style="font-size: 0.75rem; color: var(--g400); margin-top: 2px;">Type in English, press Space to write in Hindi</div>
           </div>
+          <label class="tgl-switch">
+            <input type="checkbox" id="translit-toggle" checked onchange="handleTranslitToggleChange(this)">
+            <span class="tgl-slider"></span>
+          </label>
         </div>
-        <label class="tgl-switch">
-          <input type="checkbox" id="translit-toggle" checked onchange="document.getElementById('translit-indicator').style.background = this.checked ? 'var(--success)' : 'var(--g300)'">
-          <span class="tgl-slider"></span>
-        </label>
+        
+        <div class="translit-selector-row" id="translit-selector-row">
+          <span class="translit-select-label">Target Language:</span>
+          <select id="translit-language" class="translit-select" onchange="handleTranslitLanguageChange(this)">
+            <option value="hi-t-i0-und" data-name="Hindi" data-help="Type in English, press Space to write in Hindi">🇮🇳 Hindi / हिन्दी</option>
+            <option value="gu-t-i0-und" data-name="Gujarati" data-help="Type in English, press Space to write in Gujarati">🇮🇳 Gujarati / ગુજરાતી</option>
+            <option value="mr-t-i0-und" data-name="Marathi" data-help="Type in English, press Space to write in Marathi">🇮🇳 Marathi / मराठी</option>
+            <option value="bn-t-i0-und" data-name="Bengali" data-help="Type in English, press Space to write in Bengali">🇮🇳 Bengali / বাংলা</option>
+            <option value="te-t-i0-und" data-name="Telugu" data-help="Type in English, press Space to write in Telugu">🇮🇳 Telugu / తెలుగు</option>
+            <option value="ta-t-i0-und" data-name="Tamil" data-help="Type in English, press Space to write in Tamil">🇮🇳 Tamil / தமிழ்</option>
+            <option value="kn-t-i0-und" data-name="Kannada" data-help="Type in English, press Space to write in Kannada">🇮🇳 Kannada / ಕನ್ನಡ</option>
+            <option value="pa-t-i0-und" data-name="Punjabi" data-help="Type in English, press Space to write in Punjabi">🇮🇳 Punjabi / ਪੰਜਾਬੀ</option>
+            <option value="ml-t-i0-und" data-name="Malayalam" data-help="Type in English, press Space to write in Malayalam">🇮🇳 Malayalam / മലയാളം</option>
+            <option value="or-t-i0-und" data-name="Odia" data-help="Type in English, press Space to write in Odia">🇮🇳 Odia / ଓଡ଼ିଆ</option>
+            <option value="ur-t-i0-und" data-name="Urdu" data-help="Type in English, press Space to write in Urdu">🇮🇳 Urdu / اردو</option>
+          </select>
+        </div>
       </div>
 
       <div class="left-scroll" id="sections-wrap">
@@ -1598,13 +1683,17 @@ function transliterateWord(input, word, start, end) {
   const cbName = 'translit_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
   const script = document.createElement('script');
   
+  // Get currently selected language code, fallback to hindi
+  const langSelect = document.getElementById('translit-language');
+  const langCode = langSelect ? langSelect.value : 'hi-t-i0-und';
+  
   window[cbName] = function(data) {
     cleanup();
     if (data && data[0] === 'SUCCESS') {
       const suggestions = data[1]?.[0]?.[1];
       if (suggestions && suggestions.length > 0) {
-        const hindiWord = suggestions[0];
-        replaceWordInInput(input, word, hindiWord, start, end);
+        const translitWord = suggestions[0];
+        replaceWordInInput(input, word, translitWord, start, end);
       }
     }
   };
@@ -1614,9 +1703,69 @@ function transliterateWord(input, word, start, end) {
     delete window[cbName];
   }
 
-  script.src = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=hi-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&cb=${cbName}`;
+  script.src = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=${langCode}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&cb=${cbName}`;
   script.onerror = cleanup;
   document.head.appendChild(script);
+}
+
+function handleTranslitToggleChange(el) {
+  const indicator = document.getElementById('translit-indicator');
+  const selectorRow = document.getElementById('translit-selector-row');
+  
+  if (indicator) {
+    indicator.style.background = el.checked ? 'var(--success)' : 'var(--g300)';
+  }
+  
+  if (selectorRow) {
+    if (el.checked) {
+      selectorRow.classList.remove('disabled');
+    } else {
+      selectorRow.classList.add('disabled');
+    }
+  }
+  
+  try {
+    localStorage.setItem('mic_translit_enabled', el.checked ? 'true' : 'false');
+  } catch(e) {}
+}
+
+function handleTranslitLanguageChange(el) {
+  const selectedOption = el.options[el.selectedIndex];
+  const helpText = selectedOption.dataset.help || 'Type in English, press Space to write';
+  const helpEl = document.getElementById('translit-help-text');
+  
+  if (helpEl) {
+    helpEl.textContent = helpText;
+  }
+  
+  // Update data attribute on body to swap font families
+  document.body.setAttribute('data-translit-lang', el.value);
+  
+  try {
+    localStorage.setItem('mic_translit_lang', el.value);
+  } catch(e) {}
+}
+
+function initTransliterationState() {
+  try {
+    const enabled = localStorage.getItem('mic_translit_enabled') !== 'false'; // default true
+    const lang = localStorage.getItem('mic_translit_lang') || 'hi-t-i0-und'; // default hindi
+    
+    const toggle = document.getElementById('translit-toggle');
+    const langSelect = document.getElementById('translit-language');
+    
+    if (toggle) {
+      toggle.checked = enabled;
+      handleTranslitToggleChange(toggle);
+    }
+    
+    if (langSelect) {
+      langSelect.value = lang;
+      handleTranslitLanguageChange(langSelect);
+    }
+  } catch(e) {
+    console.error('Failed to init transliteration state:', e);
+  }
 }
 
 function replaceWordInInput(input, originalWord, newWord, start, end) {
@@ -1995,6 +2144,7 @@ renderSections();
 updateTemplateSize();
 autoFit();
 updateBanner();
+initTransliterationState();
 </script>
 
 <!-- ══════════════════════════════════════════ FIREBASE AUTH -->
