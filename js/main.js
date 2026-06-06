@@ -294,3 +294,12 @@ homeLinks.forEach(link => {
     window.location.href = 'index.html';
   });
 });
+
+// Handle About Us navigation
+const aboutLinks = document.querySelectorAll('a[href="about.html"], a[href="./about.html"]');
+aboutLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = 'about.html';
+  });
+});
