@@ -223,12 +223,12 @@
           <div class="price-upgrade-row">
             <div class="price-container">
               <span class="currency">₹</span>
-              <span class="amount" id="basicAmount">199</span>
+              <span class="amount" id="basicAmount">59</span>
               <span class="period" id="basicPeriod">/month</span>
             </div>
             <button class="btn-upgrade" onclick="showToast('Basic plan upgrade option coming soon!')">Upgrade</button>
           </div>
-          <p class="billing-subtext" id="basicBilling">₹199.00 billed monthly</p>
+          <p class="billing-subtext" id="basicBilling">₹59.00 billed monthly</p>
 
           <ul class="plan-features">
             <li class="feature-row">
@@ -263,12 +263,12 @@
           <div class="price-upgrade-row">
             <div class="price-container">
               <span class="currency">₹</span>
-              <span class="amount" id="proAmount">399</span>
+              <span class="amount" id="proAmount">99</span>
               <span class="period" id="proPeriod">/month</span>
             </div>
             <button class="btn-upgrade" onclick="showToast('Pro plan upgrade option coming soon!')">Upgrade</button>
           </div>
-          <p class="billing-subtext" id="proBilling">₹399.00 billed monthly</p>
+          <p class="billing-subtext" id="proBilling">₹99.00 billed monthly</p>
 
           <ul class="plan-features">
             <li class="feature-row">
@@ -529,24 +529,24 @@
         toggleYearly.classList.add("active");
         toggleMonthly.classList.remove("active");
         
-        basicAmount.textContent = "99";
+        basicAmount.textContent = "29";
         basicPeriod.textContent = "/month";
-        basicBilling.textContent = "₹1,188 billed yearly (Save 50%)";
+        basicBilling.textContent = "₹348 billed yearly (Save 50%)";
 
-        proAmount.textContent = "199";
+        proAmount.textContent = "49";
         proPeriod.textContent = "/month";
-        proBilling.textContent = "₹2,388 billed yearly (Save 50%)";
+        proBilling.textContent = "₹588 billed yearly (Save 50%)";
       } else {
         toggleMonthly.classList.add("active");
         toggleYearly.classList.remove("active");
 
-        basicAmount.textContent = "199";
+        basicAmount.textContent = "59";
         basicPeriod.textContent = "/month";
-        basicBilling.textContent = "₹199.00 billed monthly";
+        basicBilling.textContent = "₹59.00 billed monthly";
 
-        proAmount.textContent = "399";
+        proAmount.textContent = "99";
         proPeriod.textContent = "/month";
-        proBilling.textContent = "₹399.00 billed monthly";
+        proBilling.textContent = "₹99.00 billed monthly";
       }
     }
 
