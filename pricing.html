@@ -152,17 +152,17 @@
               </div>
             </div>
 
-            <button class="popup-menu-btn">
+            <button class="popup-menu-btn" onclick="showToast('Profile page coming soon!')">
               <i class="fa-regular fa-user"></i>
               My Profile
             </button>
 
-            <button class="popup-menu-btn">
+            <button class="popup-menu-btn" onclick="showToast('Feedback page coming soon!')">
               <i class="fa-regular fa-message"></i>
               <span>Feedback</span>
             </button>
 
-            <button class="popup-menu-btn">
+            <button class="popup-menu-btn" onclick="showToast('Help Center coming soon!')">
               <i class="fa-regular fa-circle-question"></i>
               <span>Help Center</span>
             </button>
@@ -174,7 +174,7 @@
 
             <div class="popup-divider"></div>
 
-            <button class="popup-upgrade-btn">
+            <button class="popup-upgrade-btn" onclick="showToast('Premium upgrade option coming soon!')">
               <i class="fa-solid fa-crown"></i>
               Upgrade to Premium
             </button>
@@ -223,12 +223,12 @@
           <div class="price-upgrade-row">
             <div class="price-container">
               <span class="currency">₹</span>
-              <span class="amount" id="basicAmount">29</span>
+              <span class="amount" id="basicAmount">199</span>
               <span class="period" id="basicPeriod">/month</span>
             </div>
-            <button class="btn-upgrade">Upgrade</button>
+            <button class="btn-upgrade" onclick="showToast('Basic plan upgrade option coming soon!')">Upgrade</button>
           </div>
-          <p class="billing-subtext" id="basicBilling">₹29.00 billed monthly</p>
+          <p class="billing-subtext" id="basicBilling">₹199.00 billed monthly</p>
 
           <ul class="plan-features">
             <li class="feature-row">
@@ -263,12 +263,12 @@
           <div class="price-upgrade-row">
             <div class="price-container">
               <span class="currency">₹</span>
-              <span class="amount" id="proAmount">59</span>
+              <span class="amount" id="proAmount">399</span>
               <span class="period" id="proPeriod">/month</span>
             </div>
-            <button class="btn-upgrade">Upgrade</button>
+            <button class="btn-upgrade" onclick="showToast('Pro plan upgrade option coming soon!')">Upgrade</button>
           </div>
-          <p class="billing-subtext" id="proBilling">₹59.00 billed monthly</p>
+          <p class="billing-subtext" id="proBilling">₹399.00 billed monthly</p>
 
           <ul class="plan-features">
             <li class="feature-row">
@@ -504,6 +504,9 @@
       </div>
     </div>
   </div>
+
+  <!-- TOAST MESSAGE -->
+  <div id="toastMessage" class="custom-toast"></div>
 
   <script src="js/main.js"></script>
   <script type="module" src="assets/js/auth.js"></script>

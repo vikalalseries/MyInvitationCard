@@ -12,6 +12,7 @@ import {
 const toastMessage = document.getElementById("toastMessage");
 
 function showToast(message, type = "success") {
+  if (!toastMessage) return;
   toastMessage.textContent = message;
   toastMessage.className = `custom-toast show ${type}`;
 
@@ -19,6 +20,8 @@ function showToast(message, type = "success") {
     toastMessage.className = "custom-toast";
   }, 3500);
 }
+
+window.showToast = showToast;
 
 
 const authModal = document.getElementById("authModal");
