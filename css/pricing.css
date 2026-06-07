@@ -1,0 +1,317 @@
+/* PRICING PAGE SPECIFIC STYLES */
+
+.pricing-hero {
+  background:
+    radial-gradient(circle at top left, rgba(168,85,247,0.18), transparent 42%),
+    radial-gradient(circle at top right, rgba(236,72,153,0.14), transparent 38%),
+    linear-gradient(135deg, #faf5ff 0%, #fff7ed 100%); 
+  position: relative;
+  overflow: hidden;
+  padding-top: 120px;
+  padding-bottom: 60px;
+}
+
+html.site-theme-dark .pricing-hero {
+  background:
+    radial-gradient(circle at top left, rgba(245, 158, 11, 0.16), transparent 42%),
+    radial-gradient(circle at top right, rgba(248, 113, 113, 0.12), transparent 38%),
+    linear-gradient(135deg, #0f172a 0%, #111827 100%);
+}
+
+.pricing-hero-container {
+  max-width: min(1240px, 85%);
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.pricing-hero h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.pricing-hero p {
+  font-size: 1.2rem;
+  color: var(--gray);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* PRICING SECTION */
+.pricing-section {
+  padding: 60px 0;
+  background: var(--bg);
+}
+
+.pricing-container {
+  max-width: min(960px, 90%);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.pricing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.pricing-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+/* TOGGLE SWITCH */
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--light-gray);
+  padding: 6px;
+  border-radius: 40px;
+  border: 1px solid var(--border);
+  transition: background-color 0.25s, border-color 0.25s;
+}
+
+html.site-theme-dark .toggle-wrapper {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gray);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+  background: #1e1b4b; /* dark indigo from screenshot */
+  color: var(--white);
+}
+
+html.site-theme-dark .toggle-btn.active {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* PRICING GRID */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto 40px;
+  }
+  .pricing-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.pricing-card {
+  background: var(--surface);
+  border: 1.5px solid rgba(124, 58, 237, 0.08);
+  border-radius: 24px;
+  padding: 40px 32px 32px;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.pricing-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+.pricing-card.popular {
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.06);
+}
+
+html.site-theme-dark .pricing-card.popular {
+  border: 1.5px solid rgba(16, 185, 129, 0.6);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
+}
+
+.popular-badge {
+  position: absolute;
+  top: -14px;
+  right: 32px;
+  background: #10b981;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+}
+
+.plan-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 6px;
+  line-height: 1.1;
+}
+
+.plan-desc {
+  font-size: 0.95rem;
+  color: var(--gray);
+  margin-bottom: 24px;
+}
+
+/* PRICE & UPGRADE BUTTON ROW */
+.price-upgrade-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.price-container {
+  display: flex;
+  align-items: baseline;
+  color: var(--dark);
+}
+
+.currency {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-right: 2px;
+}
+
+.amount {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.period {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--gray);
+  margin-left: 4px;
+}
+
+.btn-upgrade {
+  background: #1e1b4b;
+  color: var(--white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(30, 27, 75, 0.15);
+}
+
+.btn-upgrade:hover {
+  background: #2e2a70;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(30, 27, 75, 0.25);
+}
+
+html.site-theme-dark .btn-upgrade {
+  background: #f8fafc;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+html.site-theme-dark .btn-upgrade:hover {
+  background: #e2e8f0;
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.billing-subtext {
+  font-size: 0.82rem;
+  color: var(--gray);
+  margin-bottom: 30px;
+}
+
+/* FEATURES TABLE */
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1.5px solid rgba(124, 58, 237, 0.08);
+  font-size: 0.95rem;
+  color: var(--dark);
+}
+
+html.site-theme-dark .feature-row {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.feature-row:last-child {
+  border-bottom: none;
+}
+
+.feature-label {
+  font-weight: 500;
+}
+
+.feature-value {
+  font-weight: 700;
+}
+
+.feature-value i.fa-check {
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+html.site-theme-dark .feature-value i.fa-check {
+  color: #10b981;
+}
+
+.feature-value i.fa-lock {
+  color: var(--gray);
+  opacity: 0.6;
+}
+
+/* BILLING FAQ SECTION */
+.billing-faq {
+  padding: 80px 0;
+  background: var(--bg);
+}
+
+.billing-faq .section-header {
+  margin-bottom: 48px;
+}
+
+.billing-faq .faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
