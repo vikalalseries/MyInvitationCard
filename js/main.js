@@ -303,3 +303,12 @@ aboutLinks.forEach(link => {
     window.location.href = 'about.html';
   });
 });
+
+// Handle Pricing navigation
+const pricingLinks = document.querySelectorAll('a[href="pricing.html"], a[href="./pricing.html"]');
+pricingLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = 'pricing.html';
+  });
+});
