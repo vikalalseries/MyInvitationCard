@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing Plans | MyInvitationCard - Free Online Invitation Card Maker</title>
+  <script>
+  (function () {
+    try {
+      const savedTheme = localStorage.getItem("siteTheme");
+
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("site-theme-dark");
+        document.documentElement.dataset.siteTheme = "dark";
+      }
+    } catch (e) {}
+  })();
+  </script>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pricing.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
+  
+  <script src="js/site-theme.js" defer></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <button class="tb-home" onclick="window.location.href='index.html'" title="Dashboard" style="margin-right: 8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="3" y="3" width="4" height="4" rx="1"/><rect x="10" y="3" width="4" height="4" rx="1"/><rect x="17" y="3" width="4" height="4" rx="1"/>
+          <rect x="3" y="10" width="4" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/><rect x="17" y="10" width="4" height="4" rx="1"/>
+          <rect x="3" y="17" width="4" height="4" rx="1"/><rect x="10" y="17" width="4" height="4" rx="1"/><rect x="17" y="17" width="4" height="4" rx="1"/>
+        </svg>
+      </button>
+
+      <a href="javascript:void(0)" onclick="window.location.reload()" class="nav-logo">
+        <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- SMALL HEART -->
+          <path
+            d="M60 42
+               C60 37, 54 33, 49 33
+               C42 33, 39 40, 39 45
+               C39 54, 49 61, 60 69
+               C71 61, 81 54, 81 45
+               C81 40, 78 33, 71 33
+               C66 33, 60 37, 60 42Z"
+            fill="#ef4444"
+          />
+          <!-- ENVELOPE OUTER BORDER -->
+          <path
+            d="M18 42
+               L18 78
+               Q18 84 24 84
+               L96 84
+               Q102 84 102 78
+               L102 42"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <!-- TOP FLAP -->
+          <path
+            d="M18 42 L60 14 L102 42"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
+          <!-- LEFT INNER LINE -->
+          <path
+            d="M18 42 L60 68"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+          <!-- RIGHT INNER LINE -->
+          <path
+            d="M102 42 L60 68"
+            fill="none"
+            stroke="#6d28d9"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span>MyInvitationCard</span>
+      </a>
+
+      <div class="mobile-nav-actions">
+        <button class="hamburger" id="hamburger">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="./template-dashboard.html" class="nav-btn" onclick="window.location.href='./template-dashboard.html'">Templates</a>
+        <a href="pricing.html" class="nav-btn" onclick="window.location.href='pricing.html'">Pricing</a>
+        <a href="about.html" class="nav-btn" onclick="window.location.href='about.html'">About Us</a>
+
+        <div class="nav-theme-dropdown">
+          <button class="nav-theme-trigger" id="navThemeTrigger">
+            Theme
+          </button>
+
+          <div class="nav-theme-popup" id="navThemePopup">
+            <button data-site-theme="light" class="theme-popup-btn">
+              <span>☀️</span>
+              <span>Light</span>
+            </button>
+
+            <button data-site-theme="dark" class="theme-popup-btn">
+              <span>🌙</span>
+              <span>Dark</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGGED OUT -->
+      <div id="navLoggedOut">
+        <a href="#" class="btn-login" id="openAccountAuthBtn">Login</a>
+      </div>
+
+      <!-- LOGGED IN -->
+      <div id="navLoggedIn" style="display:none;">
+        <div class="nav-user-box">
+          <button class="nav-avatar-btn" id="navUserMenuBtn">
+            <span class="nav-avatar" id="navAvatar">            
+              <i class="fa-solid fa-user"></i>
+            </span>
+          </button>
+
+          <div class="nav-user-popup" id="navUserPopup">
+            <div class="popup-user-header">
+              <div class="popup-avatar" id="popupNavAvatar">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div class="popup-user-meta">
+                <div id="popupNavUserName">My Account</div>
+                <div id="popupNavUserEmail">user@email.com</div>
+              </div>
+            </div>
+
+            <button class="popup-menu-btn">
+              <i class="fa-regular fa-user"></i>
+              My Profile
+            </button>
+
+            <button class="popup-menu-btn">
+              <i class="fa-regular fa-message"></i>
+              <span>Feedback</span>
+            </button>
+
+            <button class="popup-menu-btn">
+              <i class="fa-regular fa-circle-question"></i>
+              <span>Help Center</span>
+            </button>
+
+            <button class="popup-menu-btn" id="logoutBtnNavbar">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              Log Out
+            </button>
+
+            <div class="popup-divider"></div>
+
+            <button class="popup-upgrade-btn">
+              <i class="fa-solid fa-crown"></i>
+              Upgrade to Premium
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <div id="mobileMenuLoggedOut">
+        <a href="index.html">Home</a>
+        <a href="template-dashboard.html" onclick="window.location.href='template-dashboard.html'">Templates</a>
+        <a href="pricing.html" onclick="window.location.href='pricing.html'">Pricing</a>
+        <a href="about.html" onclick="window.location.href='about.html'">About Us</a>
+        <button class="mobile-menu-link-btn" id="openAccountAuthBtnMobile">Login</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="pricing-hero" id="top-section">
+    <div class="pricing-hero-container">
+      <h1>Simple, Transparent Pricing</h1>
+      <p>Create beautiful digital invitation cards for any occasion. Try for free, upgrade when you need more power.</p>
+    </div>
+  </section>
+
+  <!-- PRICING SECTION -->
+  <section class="pricing-section">
+    <div class="pricing-container">
+      <div class="pricing-header">
+        <h2>Select a plan</h2>
+        
+        <div class="toggle-wrapper">
+          <button class="toggle-btn" id="toggleYearly">Yearly</button>
+          <button class="toggle-btn active" id="toggleMonthly">Monthly</button>
+        </div>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- BASIC PLAN -->
+        <div class="pricing-card">
+          <h3 class="plan-name">Basic</h3>
+          <p class="plan-desc">for personal celebrations</p>
+          
+          <div class="price-upgrade-row">
+            <div class="price-container">
+              <span class="currency">₹</span>
+              <span class="amount" id="basicAmount">199</span>
+              <span class="period" id="basicPeriod">/month</span>
+            </div>
+            <button class="btn-upgrade">Upgrade</button>
+          </div>
+          <p class="billing-subtext" id="basicBilling">₹199.00 billed monthly</p>
+
+          <ul class="plan-features">
+            <li class="feature-row">
+              <span class="feature-label">PDF Downloads</span>
+              <span class="feature-value">Unlimited</span>
+            </li>
+            <li class="feature-row">
+              <span class="feature-label">Invitation Cards</span>
+              <span class="feature-value">3</span>
+            </li>
+            <li class="feature-row">
+              <span class="feature-label">Premium Templates</span>
+              <span class="feature-value">20</span>
+            </li>
+            <li class="feature-row">
+              <span class="feature-label">RSVP Manager</span>
+              <span class="feature-value"><i class="fa-solid fa-check"></i></span>
+            </li>
+            <li class="feature-row">
+              <span class="feature-label">AI Content Assistant</span>
+              <span class="feature-value"><i class="fa-solid fa-lock"></i></span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- PRO PLAN -->
+        <div class="pricing-card popular">
+          <div class="popular-badge">Popular</div>
+          <h3 class="plan-name">Pro</h3>
+          <p class="plan-desc">for serious creators & event planners</p>
+          
+          <div class="price-upgrade-row">
+            <div class="price-container">
+              <span class="currency">₹</span>
+              <span class="amount" id="proAmount">399</span>
+              <span class="period" id="proPeriod">/month</span>
+            </div>
+            <button class="btn-upgrade">Upgrade</button>
+          </div>
+          <p class="billing-subtext" id="proBilling">₹399.00 billed monthly</p>
+
+          <ul class="plan-features">
+            <li class="feature-row">
+              <span class="feature-label">PDF Downloads</span>
+              <span class="feature-value">Unlimited</span>
+            </li>
+            <li class="feature-row">
+              <span class="feature-label">Invitation Cards</span>
+              <span class="feature-value">Unlimited</span>
+            </li>
+            <li class="feature-row">
+              <span class="feature-label">Premium Templates</span>
+              <span class="feature-value">Unlimited</span>
+            </li>
+            <li class="feature-row">
+              <span class="feature-label">RSVP Manager</span>
+              <span class="feature-value"><i class="fa-solid fa-check"></i></span>
+            </li>
+            <li class="feature-row">
+              <span class="feature-label">AI Content Assistant</span>
+              <span class="feature-value"><i class="fa-solid fa-check"></i></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BILLING FAQ SECTION -->
+  <section class="billing-faq faq-section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag">FAQ</p>
+        <h2>Billing Questions</h2>
+        <p class="section-sub">Have questions about plans, pricing, or payment? Find answers below.</p>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">How does the free tier work? <span class="faq-icon">+</span></button>
+          <div class="faq-answer">Your first invitation card is completely free forever. You get full access to design tools, unlimited PDF downloads, and standard templates. No credit card is required. You only upgrade if you want to create more cards or unlock premium features.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">Can I cancel my plan anytime? <span class="faq-icon">+</span></button>
+          <div class="faq-answer">Yes, absolutely! You can cancel your subscription at any time from your Profile settings. Once cancelled, your premium benefits will continue to work until the end of your current billing period.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">What payment methods do you support? <span class="faq-icon">+</span></button>
+          <div class="faq-answer">We accept all major debit cards, credit cards, UPI, net banking, and digital wallets through our secure payment gateway in India and worldwide.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">Are there any hidden fees? <span class="faq-icon">+</span></button>
+          <div class="faq-answer">No, there are no hidden fees, commissions, or transaction costs. The price listed is exactly what you pay. Standard government taxes may apply depending on your location.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Ready to Create Your Invitation?</h2>
+      <p>Choose from our beautiful designs. Start building your perfect invitation card today.</p>
+      <a href="template-dashboard.html" class="btn-hero-primary">Create My Invitation Card ✨</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo">
+          <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- SMALL HEART -->
+            <path
+              d="M60 42
+                 C60 37, 54 33, 49 33
+                 C42 33, 39 40, 39 45
+                 C39 54, 49 61, 60 69
+                 C71 61, 81 54, 81 45
+                 C81 40, 78 33, 71 33
+                 C66 33, 60 37, 60 42Z"
+              fill="#ef4444"
+            />
+            <!-- ENVELOPE OUTER BORDER -->
+            <path
+              d="M18 42
+                 L18 78
+                 Q18 84 24 84
+                 L96 84
+                 Q102 84 102 78
+                 L102 42"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <!-- TOP FLAP -->
+            <path
+              d="M18 42 L60 14 L102 42"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            />
+            <!-- LEFT INNER LINE -->
+            <path
+              d="M18 42 L60 68"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+            <!-- RIGHT INNER LINE -->
+            <path
+              d="M102 42 L60 68"
+              fill="none"
+              stroke="#6d28d9"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span>MyInvitationCard</span>
+        </a>
+
+        <p>Empowering people to create beautiful invitations for every occasion — free, fast, and professional.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h5>Product</h5>
+          <a href="template-dashboard.html">All Templates</a>
+          <a href="pricing.html">Pricing</a>
+        </div>
+        <div class="footer-col">
+          <h5>Company</h5>
+          <a href="about.html">About Us</a>
+          <a href="contact.html">Contact</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div class="footer-col">
+          <h5>Resources</h5>
+          <a href="index.html">Home</a>
+          <a href="template-dashboard.html">Templates</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 MyInvitationCard. Made with ❤️ in India.</p>
+    </div>
+  </footer>
+
+  <!-- AUTH OVERLAY -->
+  <div class="auth-overlay" id="authOverlay"></div>
+
+  <!-- AUTH MODAL -->
+  <div class="auth-modal" id="authModal">
+    <button id="closeAuthModal" class="auth-close-btn">
+      <i class="fa-solid fa-xmark close-icon"></i>
+    </button>
+
+    <!-- WELCOME -->
+    <div id="authWelcome">
+      <h2 class="auth-title">Login</h2>
+      <button class="auth-btn" id="googleLoginBtn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:20px;height:20px;">
+        Continue with Google
+      </button>
+      <button class="auth-btn" id="openEmailLoginBtn">
+        <i class="fa-regular fa-envelope"></i>
+        Login with Email
+      </button>
+      <div class="auth-footer">
+        Don't have an account?
+        <span class="auth-link" id="openSignupLink">Sign up</span>
+      </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="authLoginForm" class="hidden">
+      <h2 class="auth-title">Login</h2>
+      <input type="email" id="loginEmail" class="auth-input" placeholder="Email">
+      <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
+      <button class="auth-btn" id="loginEmailBtn">Login</button>
+      <div class="auth-footer" style="margin-top: 8px; margin-bottom: 20px;">
+        <span class="auth-link" id="forgotPasswordBtn">Forgot Password?</span>
+      </div>
+      <div class="auth-footer">
+        <span class="auth-link" id="backToWelcomeBtn">Back</span>
+      </div>
+
+      <div id="authResetForm" class="hidden">
+        <h2 class="auth-title">Reset Password</h2>
+        <p class="otp-subtext">Enter your email address to receive a password reset link.</p>
+        <input type="email" id="resetEmail" class="auth-input" placeholder="Email">
+        <button class="auth-btn" id="sendResetBtn">Send Reset Link</button>
+        <div class="auth-footer">
+          <span class="auth-link" id="backToLoginBtn">Back to Login</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="authSignupForm" class="hidden">
+      <h2 class="auth-title">Sign Up</h2>
+      <input type="text" id="signupName" class="auth-input" placeholder="Full Name">
+      <input type="email" id="signupEmail" class="auth-input" placeholder="Email">
+      <input type="password" id="signupPassword" class="auth-input" placeholder="Password">
+      <input type="password" id="signupConfirmPassword" class="auth-input" placeholder="Confirm Password">
+      <button class="auth-btn" id="signupEmailBtn">Create Account</button>
+      <div class="auth-footer">
+        Already have an account?
+        <span class="auth-link" id="openLoginLink">Login</span>
+      </div>
+      <div class="auth-footer">
+        <span class="auth-link" id="backToWelcomeBtn2">Back</span>
+      </div>
+    </div>
+
+    <!-- OTP VERIFY FORM -->
+    <div id="authOtpForm" class="hidden">
+      <h2 class="auth-title">Verify Code</h2>
+      <p class="otp-subtext">Enter the 6-digit verification code sent to your email.</p>
+      <input type="text" id="otpCode" class="auth-input" placeholder="Enter 6-digit code" maxlength="6">
+      <button class="auth-btn" id="verifyOtpBtn">Verify Code</button>
+      <div class="resend-section">
+        <span id="resendOtpText">Didn't receive code?</span>
+        <button id="resendOtpBtn" class="resend-btn" disabled>Resend OTP (30s)</button>
+      </div>
+      <div class="auth-footer">
+        <span class="auth-link" id="backToSignupBtn">Back</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script type="module" src="assets/js/auth.js"></script>
+
+  <!-- INTERACTIVE TOGGLE SCRIPT -->
+  <script>
+    const toggleMonthly = document.getElementById("toggleMonthly");
+    const toggleYearly = document.getElementById("toggleYearly");
+    
+    const basicAmount = document.getElementById("basicAmount");
+    const basicPeriod = document.getElementById("basicPeriod");
+    const basicBilling = document.getElementById("basicBilling");
+    
+    const proAmount = document.getElementById("proAmount");
+    const proPeriod = document.getElementById("proPeriod");
+    const proBilling = document.getElementById("proBilling");
+
+    function setBillingState(isYearly) {
+      if (isYearly) {
+        toggleYearly.classList.add("active");
+        toggleMonthly.classList.remove("active");
+        
+        basicAmount.textContent = "99";
+        basicPeriod.textContent = "/month";
+        basicBilling.textContent = "₹1,188 billed yearly (Save 50%)";
+
+        proAmount.textContent = "199";
+        proPeriod.textContent = "/month";
+        proBilling.textContent = "₹2,388 billed yearly (Save 50%)";
+      } else {
+        toggleMonthly.classList.add("active");
+        toggleYearly.classList.remove("active");
+
+        basicAmount.textContent = "199";
+        basicPeriod.textContent = "/month";
+        basicBilling.textContent = "₹199.00 billed monthly";
+
+        proAmount.textContent = "399";
+        proPeriod.textContent = "/month";
+        proBilling.textContent = "₹399.00 billed monthly";
+      }
+    }
+
+    toggleMonthly.addEventListener("click", () => setBillingState(false));
+    toggleYearly.addEventListener("click", () => setBillingState(true));
+  </script>
+</body>
+</html>
