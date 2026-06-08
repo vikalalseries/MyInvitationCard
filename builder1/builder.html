@@ -195,46 +195,6 @@
 
   .left-scroll { flex:1; overflow-y:auto; overflow-x:hidden; padding:0 16px 40px; }
 
-  /* ══════════════════════════════════════ PERSONAL CARD BANNER */
-  .pc-banner {
-    background:var(--w); border-radius:var(--r-card);
-    box-shadow:var(--card-shadow); margin:14px 16px 12px;
-    padding:18px 20px; flex-shrink:0;
-    border:1px solid rgba(0,0,0,0.03);
-    transition:box-shadow var(--t);
-  }
-  .pc-banner:hover { box-shadow:var(--card-shadow-hover); }
-  .pcb-top {
-    display:flex; justify-content:space-between; align-items:flex-start;
-    margin-bottom:14px;
-  }
-  .pcb-names {
-    font-size:1.05rem; font-weight:750; color:var(--g900);
-    line-height:1.25; letter-spacing:-0.2px;
-  }
-  .pcb-tag {
-    font-size:0.62rem; font-weight:700; color:var(--g400);
-    text-transform:uppercase; letter-spacing:0.8px; margin-top:3px;
-  }
-  .fast-edit-btn {
-    display:inline-flex; align-items:center; gap:5px;
-    padding:6px 11px; border-radius:var(--r-md);
-    background:#fff7ed; border:1.5px solid #fed7aa;
-    font-size:0.75rem; font-weight:650; color:#c2410c;
-    transition:all var(--t); white-space:nowrap; flex-shrink:0;
-  }
-  .fast-edit-btn:hover { background:#ffedd5; border-color:#fb923c; }
-  .pcb-rows { display:flex; flex-direction:column; gap:0; }
-  .pcb-row {
-    display:flex; align-items:center; gap:10px;
-    padding:5px 0; border-bottom:1px solid var(--g100);
-  }
-  .pcb-row:last-child { border-bottom:none; }
-  .pcb-ico { font-size:0.85rem; width:16px; text-align:center; flex-shrink:0; color:var(--g500); }
-  .pcb-val {
-    font-size:0.8rem; color:var(--g700); font-weight:500;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
 
   /* ══════════════════════════════════════ ACCORDION SECTIONS */
   .sc {
@@ -689,6 +649,7 @@
     box-shadow: var(--card-shadow);
     border: 1px solid rgba(0,0,0,0.03);
     transition: all var(--t);
+    position: relative;
   }
   .editor-controls:hover {
     box-shadow: var(--card-shadow-hover);
@@ -704,10 +665,26 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    border-top: 1.5px solid var(--g100);
-    padding-top: 10px;
-    width: 100%;
-    transition: opacity var(--t);
+    border: 1px solid var(--g200);
+    border-radius: var(--r-md);
+    padding: 10px 14px;
+    background: var(--w);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity var(--t), transform var(--t), visibility var(--t);
+  }
+  .editor-controls:has(#translit-toggle:checked):hover .translit-selector-row,
+  .editor-controls:has(#translit-toggle:checked):focus-within .translit-selector-row {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
   }
   .translit-selector-row.disabled {
     opacity: 0.5;
@@ -887,7 +864,7 @@
       <!-- Editable card title -->
       <div class="doc-title-wrap">
         <input class="doc-title-input" id="doc-title" value="विवाह निमंत्रण पत्र" placeholder="Card Title"
-          oninput="S.title=this.value; triggerAutosave(); updateBanner();">
+          oninput="S.title=this.value; triggerAutosave();">
       </div>
 
 
@@ -989,29 +966,6 @@
 
     <!-- ─── LEFT: Accordion Editor ─── -->
     <div class="left-col">
-
-      <!-- Personal Card Banner -->
-      <div class="pc-banner" id="pc-banner">
-        <div class="pcb-top">
-          <div>
-            <div class="pcb-names" id="pcb-names">—</div>
-            <div class="pcb-tag">Wedding Invitation</div>
-          </div>
-          <button class="fast-edit-btn" onclick="toggleSec('vivah'); document.getElementById('sci-vivah')?.scrollIntoView({behavior:'smooth'})" title="Quick jump to main event">
-            <i class="fa-solid fa-pen-to-square"></i> Fast Edit
-          </button>
-        </div>
-        <div class="pcb-rows">
-          <div class="pcb-row">
-            <span class="pcb-ico"><i class="fa-regular fa-calendar"></i></span>
-            <span class="pcb-val" id="pcb-date">—</span>
-          </div>
-          <div class="pcb-row">
-            <span class="pcb-ico"><i class="fa-solid fa-location-dot"></i></span>
-            <span class="pcb-val" id="pcb-venue">—</span>
-          </div>
-        </div>
-      </div>
 
       <!-- Input Transliteration Panel -->
       <div class="editor-controls">
@@ -1385,9 +1339,6 @@ function setField(path, val) {
   obj[keys[keys.length - 1]] = val;
   sendToCard1();
   triggerAutosave();
-  // Refresh banner when names, dates, or bride's address change
-  const bannerFields = ['bride.name','groom.name','vivah.date','bride.address','bride.post','bride.city'];
-  if (bannerFields.includes(path)) updateBanner();
 }
 
 // ══════════════════════════════════════════════════════
@@ -1930,7 +1881,6 @@ $('dl-card1-direct').onclick = () => {
 // ══════════════════════════════════════════════════════
 $('card1-iframe').addEventListener('load', () => {
   sendToCard1();
-  updateBanner();
   updateTemplateSize();
   autoFit();
 });
@@ -1954,57 +1904,7 @@ function switchBuilderTab(tab) {
   }
 }
 
-// ══════════════════════════════════════════════════════
-//  PERSONAL CARD BANNER — live updates
-// ══════════════════════════════════════════════════════
-function updateBanner() {
-  const g = S.groom;
-  const b = S.bride;
 
-  // Detect if groom is on the left side (swapped template ID 38)
-  let activeId = 37;
-  try {
-    const activeRaw = localStorage.getItem('mic_active_template');
-    if (activeRaw) {
-      activeId = JSON.parse(activeRaw).id;
-    }
-  } catch(e) {}
-
-  const isGroomLeft = (activeId === 38);
-
-  // Names: Bride संग Groom (or Groom संग Bride if swapped)
-  const nameEl = $('pcb-names');
-  if (nameEl) {
-    const brideFirst = (b.name || '').trim().split(/\s+/)[0];
-    const groomFirst = (g.name || '').trim().split(/\s+/)[0];
-    if (brideFirst && groomFirst) {
-      if (isGroomLeft) {
-        nameEl.innerHTML = `${esc(groomFirst)} <span style="font-weight: 400; color: var(--g500); margin: 0 5px; font-size: 0.9em;">संग</span> ${esc(brideFirst)}`;
-      } else {
-        nameEl.innerHTML = `${esc(brideFirst)} <span style="font-weight: 400; color: var(--g500); margin: 0 5px; font-size: 0.9em;">संग</span> ${esc(groomFirst)}`;
-      }
-    } else {
-      nameEl.textContent = esc(brideFirst || groomFirst || '—');
-    }
-  }
-
-  // Date — vivah date with day
-  const dateEl = $('pcb-date');
-  if (dateEl) {
-    dateEl.textContent = fmtDateHi(S.vivah.date) || '—';
-  }
-
-  // Address — from left side (bride's details in template 37, groom's details in template 38)
-  const venueEl = $('pcb-venue');
-  if (venueEl) {
-    const addrParts = [];
-    const leftPerson = isGroomLeft ? g : b;
-    if (leftPerson.address) addrParts.push('ग्राम- ' + leftPerson.address);
-    if (leftPerson.post) addrParts.push('पो0- ' + leftPerson.post);
-    if (leftPerson.city) addrParts.push(leftPerson.city);
-    venueEl.textContent = addrParts.join(', ') || '—';
-  }
-}
 
 
 // ══════════════════════════════════════════════════════
@@ -2212,7 +2112,6 @@ if (S.title) $('doc-title').value = S.title;
 renderSections();
 updateTemplateSize();
 autoFit();
-updateBanner();
 initTransliterationState();
 </script>
 
