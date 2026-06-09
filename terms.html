@@ -651,6 +651,21 @@
       window.addEventListener('scroll', updateActiveLink);
       window.addEventListener('load', updateActiveLink);
       updateActiveLink();
+
+      // Smooth scroll click handler for sidebar navigation links
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('href').substring(1);
+          const targetSection = document.getElementById(targetId);
+          if (targetSection) {
+            window.scrollTo({
+              top: targetSection.offsetTop - 100,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
     });
   </script>
 
