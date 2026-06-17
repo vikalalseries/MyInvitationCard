@@ -768,6 +768,275 @@
     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
   }
 
+  /* ══════════════════════════════════════ FLOWCV STYLE CUSTOMIZER */
+  .customizer-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    background: var(--w);
+  }
+  .customizer-sidebar {
+    width: 85px;
+    background: var(--g50);
+    border-right: 1px solid var(--g200);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 12px 4px;
+    gap: 4px;
+    overflow-y: auto;
+    align-items: center;
+  }
+  .customizer-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    padding: 10px 4px;
+    border-radius: 10px;
+    color: var(--g500);
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: all var(--t);
+    text-align: center;
+    background: transparent;
+    cursor: pointer;
+  }
+  .customizer-nav-btn i {
+    font-size: 1.15rem;
+    opacity: 0.8;
+  }
+  .customizer-nav-btn:hover {
+    color: var(--rose);
+    background: var(--rose-50);
+  }
+  .customizer-nav-btn.active {
+    color: var(--rose);
+    background: var(--w);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+  }
+  .customizer-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 18px 40px;
+    background: var(--w);
+  }
+  .customizer-section-panel {
+    display: none;
+  }
+  .customizer-section-panel.active {
+    display: block;
+    animation: customizerFadeIn 0.22s ease-out;
+  }
+  @keyframes customizerFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .customizer-group-title {
+    font-size: 0.95rem;
+    font-weight: 750;
+    color: var(--g900);
+    margin-bottom: 2px;
+    letter-spacing: -0.2px;
+  }
+  .customizer-group-desc {
+    font-size: 0.72rem;
+    color: var(--g400);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .customizer-card {
+    background: var(--g50);
+    border: 1px solid var(--g200);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .customizer-card-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--g700);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .customizer-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .customizer-field:last-child {
+    margin-bottom: 0;
+  }
+  .customizer-field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--g150);
+  }
+  .customizer-field-row:last-child {
+    border-bottom: none;
+  }
+  .customizer-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--g700);
+  }
+  .customizer-label-sub {
+    font-size: 0.68rem;
+    color: var(--g400);
+    font-weight: 500;
+    margin-top: 1px;
+  }
+  
+  /* Color Presets */
+  .presets-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .preset-card {
+    border: 1.5px solid var(--g200);
+    border-radius: 10px;
+    padding: 8px;
+    cursor: pointer;
+    background: var(--w);
+    transition: all var(--t);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .preset-card:hover {
+    border-color: var(--rose-100);
+    background: var(--rose-50);
+  }
+  .preset-card.active {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px var(--rose-100);
+  }
+  .preset-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--g700);
+  }
+  .preset-dots {
+    display: flex;
+    gap: 4px;
+  }
+  .preset-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+
+  /* Sliders and Range */
+  .range-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+  .range-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--g200);
+    outline: none;
+    -webkit-appearance: none;
+    transition: background var(--t);
+  }
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--rose);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+  .range-value {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--g500);
+    min-width: 32px;
+    text-align: right;
+  }
+
+  /* Color Input Wrapper */
+  .color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .color-input-preview {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1.5px solid var(--g200);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .color-input-preview input[type="color"] {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 40px;
+    height: 40px;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .color-value-text {
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: var(--g500);
+    text-transform: uppercase;
+  }
+
+  /* Segmented Controls (Radio groups styled as buttons) */
+  .segmented-control {
+    display: flex;
+    background: var(--g100);
+    border-radius: 8px;
+    padding: 3px;
+    width: 100%;
+  }
+  .segmented-btn {
+    flex: 1;
+    padding: 6px 8px;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--g500);
+    border-radius: 6px;
+    transition: all var(--t);
+    cursor: pointer;
+  }
+  .segmented-btn:hover {
+    color: var(--rose);
+  }
+  .segmented-btn.active {
+    background: var(--w);
+    color: var(--rose);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  }
+
   /* Print */
   @media print {
     .topbar,.left-col,.preview-bar,.toast-wrap,.login-overlay,.login-popup { display:none !important; }
@@ -1005,6 +1274,338 @@
 
       <div class="left-scroll" id="sections-wrap">
         <!-- Sections rendered by JS -->
+      </div>
+
+      <!-- Customization Panel -->
+      <div id="customize-wrap" style="display: none; height: 100%; width: 100%; overflow: hidden;">
+        <div class="customizer-container">
+          <!-- Left Sub-Sidebar -->
+          <div class="customizer-sidebar">
+            <button class="customizer-nav-btn active" id="c-nav-colors" onclick="switchCustomizerSection('colors')">
+              <i class="fa-solid fa-palette"></i>
+              <span>Colors</span>
+            </button>
+            <button class="customizer-nav-btn" id="c-nav-fonts" onclick="switchCustomizerSection('fonts')">
+              <i class="fa-solid fa-font"></i>
+              <span>Font</span>
+            </button>
+            <button class="customizer-nav-btn" id="c-nav-sizes" onclick="switchCustomizerSection('sizes')">
+              <i class="fa-solid fa-text-height"></i>
+              <span>Text Size</span>
+            </button>
+            <button class="customizer-nav-btn" id="c-nav-icons" onclick="switchCustomizerSection('icons')">
+              <i class="fa-solid fa-icons"></i>
+              <span>Icons</span>
+            </button>
+            <button class="customizer-nav-btn" id="c-nav-spacing" onclick="switchCustomizerSection('spacing')">
+              <i class="fa-solid fa-arrows-left-right-to-line"></i>
+              <span>Spacing</span>
+            </button>
+            <button class="customizer-nav-btn" id="c-nav-card" onclick="switchCustomizerSection('card')">
+              <i class="fa-solid fa-id-card"></i>
+              <span>Card Style</span>
+            </button>
+          </div>
+          
+          <!-- Right scrollable settings -->
+          <div class="customizer-content" id="customizer-content">
+            <!-- COLORS PANEL -->
+            <div id="c-sec-colors" class="customizer-section-panel active">
+              <h3 class="customizer-group-title">Color Palettes</h3>
+              <p class="customizer-group-desc">Select a curated theme palette or customize colors below.</p>
+              
+              <div class="presets-grid" id="color-presets-grid">
+                <!-- Presets populated by JS -->
+              </div>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Custom Colors</div>
+                
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Card Background</span>
+                    <div class="customizer-label-sub">Main card color</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-cardBg">#f2aec8</span>
+                    <div class="color-input-preview" id="preview-cardBg">
+                      <input type="color" data-style-key="cardBg" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Outer Background</span>
+                    <div class="customizer-label-sub">Page layout backdrop</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-bodyBg">#c8829a</span>
+                    <div class="color-input-preview" id="preview-bodyBg">
+                      <input type="color" data-style-key="bodyBg" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Accent / Borders</span>
+                    <div class="customizer-label-sub">Frames and borders</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-accentColor">#8b0040</span>
+                    <div class="color-input-preview" id="preview-accentColor">
+                      <input type="color" data-style-key="accentColor" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Main Text</span>
+                    <div class="customizer-label-sub">All details, date text</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-textColor">#6e0035</span>
+                    <div class="color-input-preview" id="preview-textColor">
+                      <input type="color" data-style-key="textColor" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Headings</span>
+                    <div class="customizer-label-sub">Names and core headings</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-headingColor">#6e0035</span>
+                    <div class="color-input-preview" id="preview-headingColor">
+                      <input type="color" data-style-key="headingColor" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FONTS PANEL -->
+            <div id="c-sec-fonts" class="customizer-section-panel">
+              <h3 class="customizer-group-title">Typography Family</h3>
+              <p class="customizer-group-desc">Select the main typeface used across your invitation card.</p>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Font Options</div>
+                <div class="customizer-field">
+                  <label class="fl">Card Font Family</label>
+                  <select class="fs" id="font-family-select" onchange="handleFontFamilyChange(this)">
+                    <option value="Noto Serif Devanagari">Noto Serif Devanagari (Traditional)</option>
+                    <option value="Rozha One">Rozha One (Traditional Bold)</option>
+                    <option value="Yatra One">Yatra One (Handwritten Calligraphy)</option>
+                    <option value="Kurale">Kurale (Soft & Stylish)</option>
+                    <option value="Halant">Halant (Sleek Modern Serif)</option>
+                    <option value="Cinzel">Cinzel (Royal Roman English Style)</option>
+                    <option value="Playfair Display">Playfair Display (Elegant English Serif)</option>
+                    <option value="Great Vibes">Great Vibes (Formal English Script)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- TEXT SIZE PANEL -->
+            <div id="c-sec-sizes" class="customizer-section-panel">
+              <h3 class="customizer-group-title">Text Sizing</h3>
+              <p class="customizer-group-desc">Scale the font sizes of different sections independently.</p>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Sizing Controls</div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Shloka & Mantra Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="shlokaSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-shlokaSize">100%</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Main Heading Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="headingSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-headingSize">100%</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Bride & Groom Names</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="namesSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-namesSize">100%</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Events & Dates Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="eventSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-eventSize">100%</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Footer, Family & Address</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="footerSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-footerSize">100%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ICONS PANEL -->
+            <div id="c-sec-icons" class="customizer-section-panel">
+              <h3 class="customizer-group-title">Icons & Decorations</h3>
+              <p class="customizer-group-desc">Hide, show, or resize core graphics and illustrations.</p>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Ganesh Icon</div>
+                <div class="customizer-field-row">
+                  <span class="customizer-label">Show Ganesh Icon</span>
+                  <label class="tgl-switch">
+                    <input type="checkbox" id="chk-showGanesh" checked data-style-key="showGanesh" onchange="handleCheckboxChange(this)">
+                    <span class="tgl-slider"></span>
+                  </label>
+                </div>
+                <div class="customizer-field">
+                  <span class="customizer-label">Ganesh Icon Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="ganeshSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-ganeshSize">100%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Om / Sun Icon</div>
+                <div class="customizer-field-row">
+                  <span class="customizer-label">Show Om/Sun Icon</span>
+                  <label class="tgl-switch">
+                    <input type="checkbox" id="chk-showOm" checked data-style-key="showOm" onchange="handleCheckboxChange(this)">
+                    <span class="tgl-slider"></span>
+                  </label>
+                </div>
+                <div class="customizer-field">
+                  <span class="customizer-label">Om Icon Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="omSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-omSize">100%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Border Side Chains</div>
+                <div class="customizer-field-row">
+                  <span class="customizer-label">Show Hanging Chains</span>
+                  <label class="tgl-switch">
+                    <input type="checkbox" id="chk-showChains" checked data-style-key="showChains" onchange="handleCheckboxChange(this)">
+                    <span class="tgl-slider"></span>
+                  </label>
+                </div>
+                <div class="customizer-field">
+                  <span class="customizer-label">Chains Icon Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="chainsSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-chainsSize">100%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="customizer-card">
+                <div class="customizer-card-title">Center Couple Box</div>
+                <div class="customizer-field-row">
+                  <span class="customizer-label">Show Couple Illustration</span>
+                  <label class="tgl-switch">
+                    <input type="checkbox" id="chk-showCouple" checked data-style-key="showCouple" onchange="handleCheckboxChange(this)">
+                    <span class="tgl-slider"></span>
+                  </label>
+                </div>
+                <div class="customizer-field">
+                  <span class="customizer-label">Couple Box Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="coupleSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-coupleSize">100%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SPACING PANEL -->
+            <div id="c-sec-spacing" class="customizer-section-panel">
+              <h3 class="customizer-group-title">Layout & Spacing</h3>
+              <p class="customizer-group-desc">Fine-tune padding margins and vertical container gaps.</p>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Margins & Alignment</div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Card Inner Padding (cm)</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="40" max="200" value="100" step="10" data-style-key="cardPadding" oninput="handleSpacingInput(this)">
+                    <span class="range-value" id="val-cardPadding">1.0cm</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Section 1 & 2 Gap (cm)</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="10" max="150" value="30" step="5" data-style-key="sectionGap" oninput="handleSpacingInput(this)">
+                    <span class="range-value" id="val-sectionGap">0.3cm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD STYLE PANEL -->
+            <div id="c-sec-card" class="customizer-section-panel">
+              <h3 class="customizer-group-title">Card Corners</h3>
+              <p class="customizer-group-desc">Alter corner flower borders and symbols.</p>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Corners Configuration</div>
+                
+                <div class="customizer-field-row">
+                  <span class="customizer-label">Show Corner Flowers</span>
+                  <label class="tgl-switch">
+                    <input type="checkbox" id="chk-showCorners" checked data-style-key="showCorners" onchange="handleCheckboxChange(this)">
+                    <span class="tgl-slider"></span>
+                  </label>
+                </div>
+                
+                <div class="customizer-field">
+                  <label class="fl">Corner Symbol Style</label>
+                  <select class="fs" id="corner-symbol-select" onchange="handleCornerSymbolChange(this)">
+                    <option value="✿">✿ Traditional Blossom</option>
+                    <option value="❀">❀ Light Flower</option>
+                    <option value="❃">❃ Swirly Flower</option>
+                    <option value="✤">✤ Geometric Star</option>
+                    <option value="⚜">⚜ Royal Fleur-de-lis</option>
+                    <option value="🌸">🌸 Cherry Blossom (Emoji)</option>
+                    <option value="💮">💮 White Flower (Emoji)</option>
+                  </select>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Corner Icon Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="cornerSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-cornerSize">100%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1313,6 +1914,7 @@ function sendToCard1() {
   
   // Clone state to avoid mutating S directly
   const payload = JSON.parse(JSON.stringify(S));
+  payload.style = mergeStyleDefaults(payload.style);
   
   // Format nimantrak address for card1.html without changing card1.html
   if (payload.nimantrak) {
@@ -1332,8 +1934,9 @@ function sendToCard1() {
 function setField(path, val) {
   const keys = path.split('.');
   let obj = S;
+  if (keys[0] === 'style') ensureCardStyle();
   for (let i = 0; i < keys.length - 1; i++) {
-    if (!obj[keys[i]]) obj[keys[i]] = {};
+    if (typeof obj[keys[i]] !== 'object' || obj[keys[i]] === null) obj[keys[i]] = {};
     obj = obj[keys[i]];
   }
   obj[keys[keys.length - 1]] = val;
@@ -1888,20 +2491,260 @@ $('card1-iframe').addEventListener('load', () => {
 // ══════════════════════════════════════════════════════
 //  TAB SWITCHING
 // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  TAB SWITCHING
+// ══════════════════════════════════════════════════════
 function switchBuilderTab(tab) {
   // Update tab active state
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   const activeBtn = document.getElementById('tab-' + tab);
   if (activeBtn) activeBtn.classList.add('active');
 
-  // Currently only 'content' tab shows the editor; others show a toast
+  const contentCol = $('sections-wrap');
+  const customizeCol = $('customize-wrap');
+  const translitControls = document.querySelector('.editor-controls');
+
   if (tab === 'content') {
-    // Already visible — nothing to hide
+    if (contentCol) contentCol.style.display = 'block';
+    if (translitControls) translitControls.style.display = 'block';
+    if (customizeCol) customizeCol.style.display = 'none';
+    try { localStorage.setItem('mic_builder_active_tab', 'content'); } catch(e) {}
   } else if (tab === 'customize') {
-    toast('Customize panel — coming soon in next update!', 'i');
+    if (contentCol) contentCol.style.display = 'none';
+    if (translitControls) translitControls.style.display = 'none';
+    if (customizeCol) {
+      customizeCol.style.display = 'block';
+      syncCustomizerInputs();
+      try {
+        const savedSection = localStorage.getItem('mic_customizer_section') || 'colors';
+        switchCustomizerSection(savedSection);
+      } catch(e) {}
+    }
+    try { localStorage.setItem('mic_builder_active_tab', 'customize'); } catch(e) {}
   } else if (tab === 'ai') {
     toast('AI Tools — smart content suggestions coming soon!', 'i');
   }
+}
+
+// ══════════════════════════════════════════════════════
+//  CUSTOMIZER LOGIC
+// ══════════════════════════════════════════════════════
+const DEFAULT_STYLE = {
+  cardBg: '#f2aec8',
+  bodyBg: '#c8829a',
+  accentColor: '#8b0040',
+  textColor: '#6e0035',
+  headingColor: '#6e0035',
+  fontFamily: 'Noto Serif Devanagari',
+  shlokaSize: 100,
+  headingSize: 100,
+  namesSize: 100,
+  eventSize: 100,
+  footerSize: 100,
+  showGanesh: true,
+  ganeshSize: 100,
+  showOm: true,
+  omSize: 100,
+  showChains: true,
+  chainsSize: 100,
+  showCouple: true,
+  coupleSize: 100,
+  showCorners: true,
+  cornerSymbol: '✿',
+  cornerSize: 100,
+  cardPadding: 1.0,
+  sectionGap: 0.3
+};
+
+function mergeStyleDefaults(style) {
+  return Object.assign({}, DEFAULT_STYLE, style || {});
+}
+
+function ensureCardStyle() {
+  S.style = mergeStyleDefaults(S.style);
+  return S.style;
+}
+
+const PRESETS = [
+  { name: 'Classic Pink', cardBg: '#f2aec8', bodyBg: '#c8829a', accent: '#8b0040', text: '#6e0035', heading: '#6e0035' },
+  { name: 'Royal Crimson', cardBg: '#fffcf0', bodyBg: '#800000', accent: '#d4af37', text: '#5c000a', heading: '#5c000a' },
+  { name: 'Vibrant Saffron', cardBg: '#fff7eb', bodyBg: '#e05e00', accent: '#b80000', text: '#6b0000', heading: '#6b0000' },
+  { name: 'Peacock & Gold', cardBg: '#f0f8ff', bodyBg: '#093a5c', accent: '#d4af37', text: '#052238', heading: '#052238' },
+  { name: 'Royal Purple', cardBg: '#faf0ff', bodyBg: '#3c0c5c', accent: '#c71585', text: '#28003d', heading: '#28003d' },
+  { name: 'Golden Ivory', cardBg: '#faf6eb', bodyBg: '#2b211a', accent: '#c9784c', text: '#403026', heading: '#403026' }
+];
+
+function renderColorPresets() {
+  const container = $('color-presets-grid');
+  if (!container) return;
+  container.innerHTML = PRESETS.map(p => `
+    <div class="preset-card" 
+         data-card-bg="${p.cardBg}" 
+         data-body-bg="${p.bodyBg}" 
+         data-accent-color="${p.accent}" 
+         data-text-color="${p.text}" 
+         data-heading-color="${p.heading}"
+         onclick="applyColorPreset('${p.cardBg}', '${p.bodyBg}', '${p.accent}', '${p.text}', '${p.heading}', this)">
+      <div class="preset-name">${p.name}</div>
+      <div class="preset-dots">
+        <div class="preset-dot" style="background: ${p.cardBg};"></div>
+        <div class="preset-dot" style="background: ${p.bodyBg};"></div>
+        <div class="preset-dot" style="background: ${p.accent};"></div>
+        <div class="preset-dot" style="background: ${p.text};"></div>
+      </div>
+    </div>
+  `).join('');
+  updatePresetCardsActiveState();
+}
+
+window.applyColorPreset = function(cardBg, bodyBg, accentColor, textColor, headingColor, element) {
+  setField('style.cardBg', cardBg);
+  setField('style.bodyBg', bodyBg);
+  setField('style.accentColor', accentColor);
+  setField('style.textColor', textColor);
+  setField('style.headingColor', headingColor);
+
+  // Sync visual inputs
+  syncCustomizerInputs();
+  
+  if (element) {
+    document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+    element.classList.add('active');
+  }
+  
+  if (typeof toast === 'function') toast('Applied color palette theme!', 's');
+};
+
+window.switchCustomizerSection = function(sectionId) {
+  document.querySelectorAll('.customizer-nav-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.customizer-section-panel').forEach(panel => panel.classList.remove('active'));
+
+  const activeBtn = $('c-nav-' + sectionId);
+  const activePanel = $('c-sec-' + sectionId);
+
+  if (activeBtn) activeBtn.classList.add('active');
+  if (activePanel) activePanel.classList.add('active');
+  try { localStorage.setItem('mic_customizer_section', sectionId); } catch(e) {}
+};
+
+window.handleColorPickerInput = function(el) {
+  const key = el.dataset.styleKey;
+  const val = el.value;
+  setField('style.' + key, val);
+  
+  // Sync the labels
+  const label = $('val-' + key);
+  if (label) label.textContent = val;
+  updatePresetCardsActiveState();
+};
+
+window.handleSliderInput = function(el) {
+  const key = el.dataset.styleKey;
+  const val = parseInt(el.value, 10);
+  setField('style.' + key, val);
+  
+  // Sync label
+  const label = $('val-' + key);
+  if (label) label.textContent = val + '%';
+};
+
+window.handleSpacingInput = function(el) {
+  const key = el.dataset.styleKey;
+  const val = parseFloat((parseInt(el.value, 10) / 100).toFixed(1));
+  setField('style.' + key, val);
+  
+  // Sync label
+  const label = $('val-' + key);
+  if (label) label.textContent = val.toFixed(1) + 'cm';
+};
+
+window.handleCheckboxChange = function(el) {
+  const key = el.dataset.styleKey;
+  const val = el.checked;
+  setField('style.' + key, val);
+};
+
+window.handleFontFamilyChange = function(el) {
+  setField('style.fontFamily', el.value);
+};
+
+window.handleCornerSymbolChange = function(el) {
+  setField('style.cornerSymbol', el.value);
+};
+
+function updatePresetCardsActiveState() {
+  const st = S.style;
+  if (!st) return;
+  document.querySelectorAll('.preset-card').forEach(card => {
+    const matches = card.dataset.cardBg === st.cardBg &&
+                    card.dataset.bodyBg === st.bodyBg &&
+                    card.dataset.accentColor === st.accentColor &&
+                    card.dataset.textColor === st.textColor &&
+                    card.dataset.headingColor === st.headingColor;
+    if (matches) {
+      card.classList.add('active');
+    } else {
+      card.classList.remove('active');
+    }
+  });
+}
+
+function syncCustomizerInputs() {
+  const st = S.style;
+  if (!st) return;
+
+  // Sync color inputs and labels
+  const colors = ['cardBg', 'bodyBg', 'accentColor', 'textColor', 'headingColor'];
+  colors.forEach(key => {
+    const val = st[key];
+    const previewInput = document.querySelector(`.color-input-preview input[data-style-key="${key}"]`);
+    if (previewInput) previewInput.value = val;
+    const valLabel = $('val-' + key);
+    if (valLabel) valLabel.textContent = val;
+  });
+
+  // Sync sliders
+  const sliders = ['shlokaSize', 'headingSize', 'namesSize', 'eventSize', 'footerSize', 'ganeshSize', 'omSize', 'chainsSize', 'coupleSize', 'cornerSize'];
+  sliders.forEach(key => {
+    const val = st[key] !== undefined ? st[key] : 100;
+    const slider = document.querySelector(`.range-slider[data-style-key="${key}"]`);
+    if (slider) slider.value = val;
+    const valLabel = $('val-' + key);
+    if (valLabel) valLabel.textContent = val + '%';
+  });
+
+  // Sync checkboxes
+  const checkboxes = ['showGanesh', 'showOm', 'showChains', 'showCouple', 'showCorners'];
+  checkboxes.forEach(key => {
+    const val = st[key] !== false;
+    const chk = $('chk-' + key);
+    if (chk) chk.checked = val;
+  });
+
+  // Sync selectors
+  const ffSelect = $('font-family-select');
+  if (ffSelect && st.fontFamily) ffSelect.value = st.fontFamily;
+
+  const csSelect = $('corner-symbol-select');
+  if (csSelect && st.cornerSymbol) csSelect.value = st.cornerSymbol;
+
+  // Sync spacing sliders
+  const cardPaddingSlider = document.querySelector(`.range-slider[data-style-key="cardPadding"]`);
+  if (cardPaddingSlider) {
+    const val = st.cardPadding !== undefined ? st.cardPadding : 1.0;
+    cardPaddingSlider.value = val * 100;
+    $('val-cardPadding').textContent = val.toFixed(1) + 'cm';
+  }
+
+  const sectionGapSlider = document.querySelector(`.range-slider[data-style-key="sectionGap"]`);
+  if (sectionGapSlider) {
+    const val = st.sectionGap !== undefined ? st.sectionGap : 0.3;
+    sectionGapSlider.value = val * 100;
+    $('val-sectionGap').textContent = val.toFixed(1) + 'cm';
+  }
+
+  // Update preset cards active state
+  updatePresetCardsActiveState();
 }
 
 
@@ -2075,6 +2918,8 @@ try {
         language: selected.language
       }));
 
+      S.style = mergeStyleDefaults(selected.style);
+
       // Show confirmation toast after a short delay (DOM needs to be ready)
       setTimeout(() => {
         toast('Template loaded: ' + selected.title, 's');
@@ -2106,10 +2951,21 @@ if (!activeTemplate) {
 // Sync title input
 if (S.title) $('doc-title').value = S.title;
 
+// Ensure styling is initialized
+ensureCardStyle();
+
+try {
+  const savedTab = localStorage.getItem('mic_builder_active_tab');
+  if (savedTab === 'customize' || savedTab === 'ai') {
+    switchBuilderTab(savedTab);
+  }
+} catch(e) {}
+
 // ══════════════════════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════════════════════
 renderSections();
+renderColorPresets();
 updateTemplateSize();
 autoFit();
 initTransliterationState();
