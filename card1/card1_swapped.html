@@ -27,7 +27,7 @@ body {
   gap:0.3cm;
 }
 
-/* ── EACH SECTION: 21.5 × 8 cm ── */
+/* ── EACH SECTION: 21.5 × 8.5 cm ── */
 .sec {
   width:21.5cm;
   height:8.5cm;
@@ -62,9 +62,7 @@ body {
   display:flex; flex-direction:column;
   padding:0.25cm 0.75cm 0.18cm 0.75cm;
   gap:0.04cm;
-  
 }
-
 
 .ganesh-icon img{
     width:3.5cm;
@@ -98,14 +96,12 @@ body {
     left: 18.1cm;
 }
 
-
 .top-icon img{
     width:3.4cm;
     height:auto;
     position: relative;
     top: -3.35cm;
     left:-11.2cm;
-    
 }
 
 .top1-icon img{
@@ -114,7 +110,6 @@ body {
     position: relative;
     bottom: -0.2cm;
     right:-3.0cm;
-    
 }
 
 .bottom-icon img{
@@ -123,9 +118,7 @@ body {
     position: relative;
     top: -4.9cm;
     right:-13.6cm;
-    
 }
-
 
 .mid-icon img{
     width:2.5cm;
@@ -133,12 +126,7 @@ body {
     position: relative;
     top: -5.3cm;
     right:-8.0cm;
-    
 }
-
-
-
-
 
 /* Row 1: Ganesh | Mantras | Om-Sun */
 .s1-row1 {
@@ -181,7 +169,6 @@ body {
   min-height:0;
 }
 
-
 .s1-ev { text-align:center; }
 .s1-ev-t { font-size:0.70cm; font-weight:700; color:#6e0035; line-height:1.2; }
 .s1-ev-d { font-size:0.5cm; color:#6e0035; margin-top:0.04cm; }
@@ -194,9 +181,8 @@ body {
 .s1-bal { text-align:center; font-size:0.4cm; color:#6e0035; line-height:1.6; }
 .s1-bal-n { font-weight:700; font-size:0.4cm; }
 
-
 /* ════════════════════════════════════════
-   SECTION 2  — Bottom card
+   SECTION 2  — Bottom card (Swapped Layout)
    ════════════════════════════════════════ */
 .s2-wrap {
   position:relative;
@@ -206,10 +192,7 @@ body {
   padding:.20cm 0.75cm 0.15cm 0.75cm;
 }
 
-
-
-
-/* Row A: snehi-left | vindhya-center | spacer-right */
+/* Row A: snehi | vindhya | gap */
 .s2-rowa {
   display:grid;
   grid-template-columns:2.8cm 1fr 1cm;
@@ -221,7 +204,7 @@ body {
 .s2-vm { font-size:0.40cm; font-weight:700; color:#6e0035; padding-right:4.9cm;}
 .s2-vs { font-size:0.380cm; font-weight:600; color:#6e0035; margin-top:0.2cm; padding-right:8.9cm; width: 19cm;}
 
-/* Row B: Groom name LEFT | Bride name RIGHT — full width (Swapped) */
+/* Row B: Groom name | Bride name (Swapped) */
 .s2-rowb {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -232,8 +215,6 @@ body {
     font-size:0.65cm;
     font-weight:700;
     color:#6e0035;
-    text-align:right; /* Align right since Bride is now on the right side */
-
     position:relative;
     top:0.10cm;
 }
@@ -242,13 +223,12 @@ body {
     font-size:0.65cm;
     font-weight:700;
     color:#6e0035;
-    /* Removed text-align: right so Groom is left-aligned on the left side */
-
+    text-align:right;
     position:relative;
     top:0.10cm;
 }
 
-/* Row C: groom-family | center-block | bride-family */
+/* Row C: groom-family | center | bride-family (Swapped) */
 .s2-rowc {
   display:grid;
   grid-template-columns:1fr 2.8cm 1fr;
@@ -262,11 +242,9 @@ body {
     width:3cm;
     height:auto;
     position: relative;
-    bottom:4.1cm;
-    left: 5.5cm;
-
+    bottom:4.3cm;
+    left: 5.9cm;
 }
-
 
 .s2-fam   { font-size:0.4cm; color:#6e0035; line-height:1.72; position:relative; top:-0.80cm; }
 .s2-fam-r { font-size:0.4cm; color:#6e0035; line-height:1.72; text-align:right; position:relative; top:-0.80cm; }
@@ -278,7 +256,6 @@ body {
     justify-content:flex-start;
     text-align:center;
     gap:0.08cm;
-
     position:relative;
     bottom:-0.3cm;
 }
@@ -296,24 +273,16 @@ body {
     line-height:1.5;
     width:9cm;
     text-align:center;
-    position:relative;
-    left: -0.4cm;
 }
 
 .s2-damp-d{
     font-size:0.37cm;
     color:#6e0035;
     line-height:1.5;
-
     width: 11cm;
     text-align:center;
-
     position:relative;
-    left: -0.4cm;
-    
 }
-
-
 
 /* Row D: footer 3-col */
 .s2-rowd{
@@ -321,14 +290,11 @@ body {
     left:1.5cm;
     right:1.5cm;
     bottom:0.25cm;
-
     display:grid;
     grid-template-columns:1fr 1fr 1fr;
     align-items:end;
-
     padding-top:0.06cm;
 }
-
 
 .fc-l { text-align:left; }
 .fc-c { text-align:center; }
@@ -343,220 +309,43 @@ body {
 </head>
 <body>
 <div class="card">
-
-<!-- ══════════════════════════════
-     SECTION 1
-     ══════════════════════════════ -->
-
-<div class="sec">
-  <div class="fl tl">✿</div>
-  <div class="fl tr">✿</div>
-  <div class="fl bl">✿</div>
-  <div class="fl br">✿</div>
-
-  <div class="s1-wrap">
-
-
-
-    <!-- Row 1: Ganesh | Mantras | Om-Sun -->
-    <div class="s1-row1">
-
-      <!-- Ganesh SVG -->
-      <div class="s1-icon">
-      </div>
-
-      <!-- Mantras -->
-      <div class="s1-mantras">
-        <p>।। श्री गणेशाय नमः ।।</p>
-        <p>वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</p>
-      </div>
-
-      <!-- Om-Sun SVG -->
-      <div class="s1-icon" style="display:flex;justify-content:flex-end;">
-      </div>
-    </div><!-- s1-row1 -->
-
-
-    <div class="swirl">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
-    <!-- मांगलिक -->
-    <div class="s1-heading">।। मांगलिक क्षणिकायें ।।</div>
-    <div class="swirl">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
-
-    <!-- हल्दी -->
-    <div class="s1-haldi">
-      <div class="s1-haldi-t">हल्दी व मेहन्दी</div>
-      <div class="s1-haldi-d">दिनांक - 30 मई 2026, शनिवार</div>
-    </div>
-    
-
-
-
-    
-
-    <!-- Events row -->
-    <div class="s1-events">
-
-      <div class="chain">
-      </div>
-
-      <div class="s1-ev">
-        <div class="s1-ev-t">शुभ विवाह</div>
-        <div class="s1-ev-d">दिनांक - 31 मई 2026, रविवार</div>
-        
-      </div>
-
-      <div class="couple-box">
-      </div>
-
-      <div class="s1-ev">
-        <div class="s1-ev-t">विदाई</div>
-        <div class="s1-ev-d">दिनांक - 01 जून 2026, सोमवार</div>
-        
-      </div>
-
-      <div class="chain">
-      </div>
-      <div class="chainleft">
-          <img src="../builder1/assets/icons/side.png" alt="">
-      </div> 
-
-      <div class="chainright">
-          <img src="../builder1/assets/icons/side.png" alt="">
-      </div> 
-      
-      <div class="s1-icon ganesh-icon">
-          <img src="../builder1/assets/icons/ganesh.png" alt="Ganesh">
-      </div>
-
-      <div class="s1-icon sun-icon">
-        <img src="../builder1/assets/icons/om.png" alt="Om">
-      </div>
-
-      <div class="s1-icon top-icon">
-        <img src="../builder1/assets/icons/top2.png" alt="Top">
-      </div>
-
-      <div class="s1-icon bottom-icon">
-        <img src="../builder1/assets/icons/top2.png" alt="Top">
-      </div>
-
-      <div class="s1-icon mid-icon">
-        <img src="../builder1/assets/icons/mid.png" alt="Top">
-      </div>
-
-      
-      
-      
-
-
-      
-
-    </div><!-- s1-events -->
-
-    <div class="s1-icon top1-icon">
-        <img src="../builder1/assets/icons/top2.png" alt="Top">
-    </div>
-
-
-    
-
-    <!-- बाल आग्रह -->
-    <div class="s1-bal">
-      बाल आग्रह- गाना होगा, बजाना होगा, मिलकर धूम मचाना होगा, मेरी दीदी की शादी है आप सभी को आना होगा -<br>
-      <span class="s1-bal-n">जानकी, जान, अनन्या, अनाया (डोडो)</span>
-    </div>
-
-    
-
-  </div><!-- s1-wrap -->
-</div><!-- sec 1 -->
-
-
-<!-- ══════════════════════════════
-     SECTION 2
-     ══════════════════════════════ -->
-<div class="sec">
-  <div class="fl tl">✿</div>
-  <div class="fl tr">✿</div>
-  <div class="fl bl">✿</div>
-  <div class="fl br">✿</div>
-
-  <div class="s2-wrap">
-
-    <!-- Row A: snehi | vindhya | gap -->
-    <div class="s2-rowa">
-      <div class="s2-snehi">स्नेही स्वजन,</div>
-      <div class="s2-vindhya">
-        <div class="s2-vm">।। श्री विन्ध्यवासिनी देव्यै नमः ।।</div>
-        <div class="s2-vs">आदि शक्ति जगत जननी माँ विन्ध्यवासिनी जी की असीम अनुकम्पा से....</div>
-      </div>
-      <div></div>
-    </div>
-
-    <!-- Row B: Groom name | Bride name (Swapped) -->
-    <div class="s2-rowb">
-      <div class="s2-groom">चि॰ राजेश मौर्य</div>
-      <div class="s2-bride">आयु॰कु॰ नीलम मौर्या</div>
-    </div>
-
-    <!-- Row C: groom-family | center | bride-family (Swapped) -->
-    <div class="s2-rowc">
-
-      <div class="s2-fam">
-        सुपौत्र- स्व0 शिवनाथ मौर्य- श्रीमती प्रेमा देवी<br>
-        सुपुत्र- श्री रामकेशवर मौर्य- श्रीमती मालती देवी<br>
-        ग्राम- झगड़हा पो0- नौगवां<br>
-        जिला- मीरजापुर
-      </div>
-
-      <div class="s2-center">
-        <div class="s2-damp-t">।। दाम्पत्य-सूत्र-बन्धन ।।</div>
-        <div class="s2-damp-d">
-          की मधुर बेला पर पधार कर नवयुगल को अपने<br>
-          स्नेहिल आशीर्वाद की मृदुल ज्योत्सना से अभिसिंचित कर हमें अनुगृहीत करें।
-        </div>
-      </div>
-
-      <div class="s2-fam-r">
-        सुपौत्री- स्व0 श्री बनारसी प्रसाद मौर्य- श्रीमती कलावती देवी<br>
-        सुपुत्री- श्री शमशेर बहादुर मौर्य- श्रीमती चन्द्रकला देवी<br>
-        ग्राम- थरपरिसया पो0- नदौली करौदी<br>
-        लालगंज, जिला- मीरजापुर
-      </div>
-
-      <div class="s2-icon couple-box">
-          <img src="../builder1/assets/icons/weds.png" alt="Weds">
-      </div>
-
-    </div><!-- s2-rowc -->
-
-    <!-- Row D: footer -->
-    <div class="s2-rowd">
-
-      <div class="fc-l">
-        <div class="f-label">दर्शनाभिलाषी -</div>
-        <div class="f-name">पुष्पराज मौर्य, जयप्रकाश मौर्य<br>एवं समस्त मौर्य परिवार ।</div>
-      </div>
-
-      <div class="fc-c">
-        <div class="f-label">- स्वागताकांक्षी -</div>
-        <div class="f-name">शमशेर बहादुर मौर्य<br>अनिल मौर्य</div>
-      </div>
-
-      <div class="fc-r">
-        <div class="f-label">- विनीत -</div>
-        <div class="f-name">फूलचन्द मौर्य</div>
-        <div class="f-addr">ग्राम- थरपरिसया पो0- नदौली करौदी<br>लालगंज, जिला- मीरजापुर</div>
-      </div>
-
-    </div><!-- s2-rowd -->
-
-  </div><!-- s2-wrap -->
-</div><!-- sec 2 -->
-
-</div><!-- card -->
+  <div style="text-align: center; padding: 100px; font-size: 24px; color: #6e0035; font-family: sans-serif; font-weight: bold;">Loading card sections...</div>
+</div>
 
 <script>
+let sectionsLoaded = false;
+let currentCardState = null;
+
+async function loadSections() {
+  try {
+    const [res1, res2] = await Promise.all([
+      fetch('card1_swapped_sec1.html').then(r => r.text()),
+      fetch('card1_swapped_sec2.html').then(r => r.text())
+    ]);
+    
+    const parser = new DOMParser();
+    const doc1 = parser.parseFromString(res1, 'text/html');
+    const doc2 = parser.parseFromString(res2, 'text/html');
+    
+    const sec1 = doc1.querySelector('.sec');
+    const sec2 = doc2.querySelector('.sec');
+    
+    const cardContainer = document.querySelector('.card');
+    cardContainer.innerHTML = '';
+    cardContainer.appendChild(sec1);
+    cardContainer.appendChild(sec2);
+    
+    sectionsLoaded = true;
+    if (currentCardState) {
+      syncCard(currentCardState);
+    }
+  } catch (e) {
+    console.error('Failed to load sections dynamically:', e);
+  }
+}
+
+loadSections();
+
 // ══════════════════════════════════════════════════════
 //  BUILDER ↔ CARD1 LIVE SYNC  (postMessage receiver)
 // ══════════════════════════════════════════════════════
@@ -565,11 +354,14 @@ window.addEventListener('message', function(e) {
   if (!d || d.type !== 'MIC_CARD_UPDATE') return;
   const c = d.card;
   if (!c) return;
-  syncCard(c);
+  
+  currentCardState = c;
+  if (sectionsLoaded) {
+    syncCard(c);
+  }
 });
 
 function syncCard(c) {
-
   // ── SECTION 1: Opening Shloka ────────────────────────
   setTxt('.s1-mantras p:first-child', c.shloka && c.shloka.line1 ? c.shloka.line1 : '।। श्री गणेशाय नमः ।।');
   setTxt('.s1-mantras p:last-child',  c.shloka && c.shloka.line2 ? c.shloka.line2 : 'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥');
@@ -693,6 +485,7 @@ function setTxt(sel, txt) {
   if (el) el.textContent = txt;
 }
 
+// ── Helpers ──────────────────────────────────────────
 function setTxtEl(el, txt) {
   if (el) el.textContent = txt;
 }
