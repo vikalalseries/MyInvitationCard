@@ -361,6 +361,48 @@ window.addEventListener('message', function(e) {
   }
 });
 
+const DEFAULT_CARD_STYLE = {
+  bodyBg: '#c8829a',
+  cardBg: '#f2aec8',
+  accentColor: '#8b0040',
+  textColor: '#6e0035',
+  headingColor: '#6e0035',
+  fontFamily: 'Noto Serif Devanagari',
+  shlokaSize: 100,
+  headingSize: 100,
+  namesSize: 100,
+  eventSize: 100,
+  footerSize: 100,
+  showGanesh: true,
+  ganeshSize: 100,
+  showOm: true,
+  omSize: 100,
+  showChains: true,
+  chainsSize: 100,
+  showCouple: true,
+  coupleSize: 100,
+  showCorners: true,
+  cornerSymbol: '✿',
+  cornerSize: 100,
+  cardPadding: 1.0,
+  sectionGap: 0.3
+};
+
+function resolveCardStyle(style) {
+  return Object.assign({}, DEFAULT_CARD_STYLE, style || {});
+}
+
+function loadCustomFont(fontFamily) {
+  if (!fontFamily || fontFamily === DEFAULT_CARD_STYLE.fontFamily) return;
+  const linkId = 'custom-font-' + String(fontFamily).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  if (document.getElementById(linkId)) return;
+  const link = document.createElement('link');
+  link.id = linkId;
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fontFamily).replace(/%20/g, '+') + ':wght@400;600;700&display=swap';
+  document.head.appendChild(link);
+}
+
 function syncCard(c) {
   // ── SECTION 1: Opening Shloka ────────────────────────
   setTxt('.s1-mantras p:first-child', c.shloka && c.shloka.line1 ? c.shloka.line1 : '।। श्री गणेशाय नमः ।।');
@@ -465,6 +507,170 @@ function syncCard(c) {
       const parts = [n.address, n.post ? 'पो0- ' + n.post : '', n.city].filter(Boolean);
       fcRAddr.innerHTML = parts.join('<br>');
     }
+  }
+  applyCustomStyles(c.style);
+}
+
+function applyCustomStyles(style) {
+  style = resolveCardStyle(style);
+  let cssEl = document.getElementById('custom-card-styles');
+  if (!cssEl) {
+    cssEl = document.createElement('style');
+    cssEl.id = 'custom-card-styles';
+    document.head.appendChild(cssEl);
+  }
+
+  loadCustomFont(style.fontFamily);
+
+  // Calculate scaled sizes
+  const shlokaSizeVal = 0.39 * (style.shlokaSize / 100);
+  const headingSizeVal = 0.5 * (style.headingSize / 100);
+  const namesSizeVal = 0.65 * (style.namesSize / 100);
+  const eventSizeVal = 0.47 * (style.eventSize / 100);
+  const footerSizeVal = 0.4 * (style.footerSize / 100);
+  
+  const ganeshSizeVal = 3.5 * (style.ganeshSize / 100);
+  const omSizeVal = 3.0 * (style.omSize / 100);
+  const coupleSizeVal = 3.0 * (style.coupleSize / 100);
+  const cornerSizeVal = 1.2 * (style.cornerSize / 100);
+  const chainsSizeVal = 1.8 * (style.chainsSize / 100);
+  
+  let cssText = `
+    body {
+      background: ${style.bodyBg || '#c8829a'};
+      font-family: '${style.fontFamily || 'Noto Serif Devanagari'}', serif;
+    }
+    .card {
+      background: ${style.cardBg || '#f2aec8'};
+      padding: ${style.cardPadding !== undefined ? style.cardPadding : 1.0}cm;
+      gap: ${style.sectionGap !== undefined ? style.sectionGap : 0.3}cm;
+    }
+    .sec {
+      border-color: ${style.accentColor || '#8b0040'};
+      box-shadow: inset 0 0 0 0.13cm ${style.cardBg || '#f2aec8'}, inset 0 0 0 0.20cm ${style.accentColor || '#8b0040'};
+    }
+    .fl {
+      color: ${style.accentColor || '#8b0040'};
+      font-size: ${cornerSizeVal}cm;
+      display: ${style.showCorners !== false ? 'block' : 'none'} !important;
+    }
+    .s1-mantras p {
+      color: ${style.textColor || '#6e0035'};
+    }
+    .s1-mantras p:first-child {
+      font-size: ${shlokaSizeVal * 1.02}cm;
+    }
+    .s1-mantras p:last-child {
+      font-size: ${shlokaSizeVal}cm;
+    }
+    .s1-heading {
+      color: ${style.headingColor || '#6e0035'};
+      font-size: ${headingSizeVal}cm;
+    }
+    .swirl {
+      color: ${style.accentColor || '#9b1050'};
+    }
+    .s1-haldi-t {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${eventSizeVal * 1.25}cm;
+    }
+    .s1-haldi-d {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${eventSizeVal * 1.0}cm;
+    }
+    .s1-ev-t {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${eventSizeVal * 1.4}cm;
+    }
+    .s1-ev-d {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${eventSizeVal}cm;
+    }
+    .s1-ev-sw {
+      color: ${style.accentColor || '#9b1050'};
+    }
+    .s1-bal {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${shlokaSizeVal * 1.02}cm;
+    }
+    .s2-snehi {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${shlokaSizeVal * 0.97}cm;
+    }
+    .s2-vm {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${shlokaSizeVal * 1.02}cm;
+    }
+    .s2-vs {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${shlokaSizeVal * 0.97}cm;
+    }
+    .s2-bride, .s2-groom {
+      color: ${style.headingColor || '#6e0035'};
+      font-size: ${namesSizeVal}cm;
+    }
+    .s2-fam, .s2-fam-r {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal}cm;
+    }
+    .s2-damp-t {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 1.05}cm;
+    }
+    .s2-damp-d {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 0.97}cm;
+    }
+    .f-label {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 1.12}cm;
+    }
+    .f-name {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 1.07}cm;
+    }
+    .f-addr {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 0.95}cm;
+    }
+    
+    .ganesh-icon img {
+      width: ${ganeshSizeVal}cm !important;
+      display: ${style.showGanesh !== false ? 'block' : 'none'} !important;
+    }
+    .sun-icon img {
+      width: ${omSizeVal}cm !important;
+      display: ${style.showOm !== false ? 'block' : 'none'} !important;
+    }
+    .couple-box img {
+      width: ${coupleSizeVal}cm !important;
+      display: ${style.showCouple !== false ? 'block' : 'none'} !important;
+    }
+    .chainleft img, .chainright img {
+      width: ${chainsSizeVal}cm !important;
+      display: ${style.showChains !== false ? 'block' : 'none'} !important;
+    }
+  `;
+
+  // Dynamically load Google Font if different
+  if (style.fontFamily && style.fontFamily !== 'Noto Serif Devanagari') {
+    let linkId = 'custom-font-' + style.fontFamily.replace(/\s+/g, '-');
+    if (!document.getElementById(linkId)) {
+      const link = document.createElement('link');
+      link.id = linkId;
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=' + style.fontFamily.replace(/\s+/g, '+') + ':wght@400;700&display=swap';
+      document.head.appendChild(link);
+    }
+  }
+
+  cssEl.textContent = cssText;
+
+  // Handle corners symbols
+  if (style.cornerSymbol) {
+    document.querySelectorAll('.fl').forEach(el => {
+      el.textContent = style.cornerSymbol;
+    });
   }
 }
 
