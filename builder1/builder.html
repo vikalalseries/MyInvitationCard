@@ -978,6 +978,70 @@
     text-align: right;
   }
 
+  .nudge-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .nudge-card {
+    border: 1px solid var(--g200);
+    border-radius: 10px;
+    background: var(--w);
+    padding: 10px;
+  }
+  .nudge-card-title {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--g700);
+    margin-bottom: 8px;
+  }
+  .nudge-pad {
+    display: grid;
+    grid-template-columns: 28px 28px 28px;
+    grid-template-rows: 28px 28px 28px;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .nudge-btn {
+    border: 1px solid var(--g200);
+    background: var(--g50);
+    color: var(--g700);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all var(--t);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .nudge-btn:hover {
+    background: var(--rose-50);
+    border-color: var(--rose-200);
+    color: var(--rose);
+  }
+  .nudge-btn.center {
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  .nudge-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.68rem;
+    color: var(--g500);
+    font-weight: 600;
+  }
+  .nudge-meta code {
+    background: var(--g100);
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+  }
+
   /* Color Input Wrapper */
   .color-picker-wrapper {
     display: flex;
@@ -1537,6 +1601,9 @@
                   </div>
                 </div>
               </div>
+
+              <div id="icon-nudge-controls"></div>
+              <div id="corner-nudge-controls"></div>
             </div>
 
             <!-- SPACING PANEL -->
@@ -2549,6 +2616,34 @@ const DEFAULT_STYLE = {
   chainsSize: 100,
   showCouple: true,
   coupleSize: 100,
+  ganeshOffsetX: 0,
+  ganeshOffsetY: 0,
+  omOffsetX: 0,
+  omOffsetY: 0,
+  chainLeftOffsetX: 0,
+  chainLeftOffsetY: 0,
+  chainRightOffsetX: 0,
+  chainRightOffsetY: 0,
+  topIconOffsetX: 0,
+  topIconOffsetY: 0,
+  top1IconOffsetX: 0,
+  top1IconOffsetY: 0,
+  bottomIconOffsetX: 0,
+  bottomIconOffsetY: 0,
+  midIconOffsetX: 0,
+  midIconOffsetY: 0,
+  couple1OffsetX: 0,
+  couple1OffsetY: 0,
+  couple2OffsetX: 0,
+  couple2OffsetY: 0,
+  cornerTlOffsetX: 0,
+  cornerTlOffsetY: 0,
+  cornerTrOffsetX: 0,
+  cornerTrOffsetY: 0,
+  cornerBlOffsetX: 0,
+  cornerBlOffsetY: 0,
+  cornerBrOffsetX: 0,
+  cornerBrOffsetY: 0,
   showCorners: true,
   cornerSymbol: '✿',
   cornerSize: 100,
@@ -2573,6 +2668,105 @@ const PRESETS = [
   { name: 'Royal Purple', cardBg: '#faf0ff', bodyBg: '#3c0c5c', accent: '#c71585', text: '#28003d', heading: '#28003d' },
   { name: 'Golden Ivory', cardBg: '#faf6eb', bodyBg: '#2b211a', accent: '#c9784c', text: '#403026', heading: '#403026' }
 ];
+
+const ICON_NUDGE_CONFIG = [
+  { key: 'ganesh', title: 'Ganesh Icon' },
+  { key: 'om', title: 'Om / Sun Icon' },
+  { key: 'chainLeft', title: 'Left Chain' },
+  { key: 'chainRight', title: 'Right Chain' },
+  { key: 'topIcon', title: 'Top Icon' },
+  { key: 'top1Icon', title: 'Top-1 Icon' },
+  { key: 'bottomIcon', title: 'Bottom Icon' },
+  { key: 'midIcon', title: 'Mid Icon' },
+  { key: 'couple1', title: 'Couple Box 1' },
+  { key: 'couple2', title: 'Couple Box 2' }
+];
+
+const CORNER_NUDGE_CONFIG = [
+  { key: 'cornerTl', title: 'Top Left Flower' },
+  { key: 'cornerTr', title: 'Top Right Flower' },
+  { key: 'cornerBl', title: 'Bottom Left Flower' },
+  { key: 'cornerBr', title: 'Bottom Right Flower' }
+];
+
+function iconOffsetKeys(key) {
+  return { x: key + 'OffsetX', y: key + 'OffsetY' };
+}
+
+function offsetValueKeys(key) {
+  return { x: key + 'OffsetX', y: key + 'OffsetY' };
+}
+
+function fmtCmOffset(val) {
+  const n = Number(val || 0);
+  return (Math.round(n * 100) / 100).toFixed(2) + 'cm';
+}
+
+function renderIconNudgeControls() {
+  const host = $('icon-nudge-controls');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="customizer-card">
+      <div class="customizer-card-title">Icon Position Nudges</div>
+      <div class="customizer-group-desc" style="margin-bottom:12px;">Use small buttons to move icons slightly up, down, left, or right without affecting content blocks.</div>
+      <div class="nudge-grid">
+        ${ICON_NUDGE_CONFIG.map(icon => `
+          <div class="nudge-card">
+            <div class="nudge-card-title">${icon.title}</div>
+            <div class="nudge-pad">
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustIconOffset('${icon.key}', 0, -0.05)" title="Move up">▲</button>
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustIconOffset('${icon.key}', -0.05, 0)" title="Move left">◀</button>
+              <button class="nudge-btn center" type="button" onclick="resetIconOffset('${icon.key}')" title="Reset">0</button>
+              <button class="nudge-btn" type="button" onclick="adjustIconOffset('${icon.key}', 0.05, 0)" title="Move right">▶</button>
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustIconOffset('${icon.key}', 0, 0.05)" title="Move down">▼</button>
+              <span></span>
+            </div>
+            <div class="nudge-meta">
+              <span>X <code id="nudge-${icon.key}-x">0.00cm</code></span>
+              <span>Y <code id="nudge-${icon.key}-y">0.00cm</code></span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderCornerNudgeControls() {
+  const host = $('corner-nudge-controls');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="customizer-card">
+      <div class="customizer-card-title">Corner Flower Nudges</div>
+      <div class="customizer-group-desc" style="margin-bottom:12px;">Move each corner flower a little without changing the card frame.</div>
+      <div class="nudge-grid">
+        ${CORNER_NUDGE_CONFIG.map(corner => `
+          <div class="nudge-card">
+            <div class="nudge-card-title">${corner.title}</div>
+            <div class="nudge-pad">
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustCornerOffset('${corner.key}', 0, -0.05)" title="Move up">▲</button>
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustCornerOffset('${corner.key}', -0.05, 0)" title="Move left">◀</button>
+              <button class="nudge-btn center" type="button" onclick="resetCornerOffset('${corner.key}')" title="Reset">0</button>
+              <button class="nudge-btn" type="button" onclick="adjustCornerOffset('${corner.key}', 0.05, 0)" title="Move right">▶</button>
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustCornerOffset('${corner.key}', 0, 0.05)" title="Move down">▼</button>
+              <span></span>
+            </div>
+            <div class="nudge-meta">
+              <span>X <code id="nudge-${corner.key}-x">0.00cm</code></span>
+              <span>Y <code id="nudge-${corner.key}-y">0.00cm</code></span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
 
 function renderColorPresets() {
   const container = $('color-presets-grid');
@@ -2672,6 +2866,40 @@ window.handleCornerSymbolChange = function(el) {
   setField('style.cornerSymbol', el.value);
 };
 
+window.adjustIconOffset = function(iconKey, dx, dy) {
+  const st = ensureCardStyle();
+  const keys = iconOffsetKeys(iconKey);
+  const nextX = Math.max(-2, Math.min(2, Number(st[keys.x] || 0) + dx));
+  const nextY = Math.max(-2, Math.min(2, Number(st[keys.y] || 0) + dy));
+  setField('style.' + keys.x, Math.round(nextX * 100) / 100);
+  setField('style.' + keys.y, Math.round(nextY * 100) / 100);
+  syncCustomizerInputs();
+};
+
+window.resetIconOffset = function(iconKey) {
+  const keys = iconOffsetKeys(iconKey);
+  setField('style.' + keys.x, 0);
+  setField('style.' + keys.y, 0);
+  syncCustomizerInputs();
+};
+
+window.adjustCornerOffset = function(cornerKey, dx, dy) {
+  const st = ensureCardStyle();
+  const keys = offsetValueKeys(cornerKey);
+  const nextX = Math.max(-1, Math.min(1, Number(st[keys.x] || 0) + dx));
+  const nextY = Math.max(-1, Math.min(1, Number(st[keys.y] || 0) + dy));
+  setField('style.' + keys.x, Math.round(nextX * 100) / 100);
+  setField('style.' + keys.y, Math.round(nextY * 100) / 100);
+  syncCustomizerInputs();
+};
+
+window.resetCornerOffset = function(cornerKey) {
+  const keys = offsetValueKeys(cornerKey);
+  setField('style.' + keys.x, 0);
+  setField('style.' + keys.y, 0);
+  syncCustomizerInputs();
+};
+
 function updatePresetCardsActiveState() {
   const st = S.style;
   if (!st) return;
@@ -2727,6 +2955,27 @@ function syncCustomizerInputs() {
 
   const csSelect = $('corner-symbol-select');
   if (csSelect && st.cornerSymbol) csSelect.value = st.cornerSymbol;
+
+  // Sync icon nudges
+  ICON_NUDGE_CONFIG.forEach(icon => {
+    const keys = iconOffsetKeys(icon.key);
+    const x = Number(st[keys.x] || 0);
+    const y = Number(st[keys.y] || 0);
+    const xLabel = $('nudge-' + icon.key + '-x');
+    const yLabel = $('nudge-' + icon.key + '-y');
+    if (xLabel) xLabel.textContent = fmtCmOffset(x);
+    if (yLabel) yLabel.textContent = fmtCmOffset(y);
+  });
+
+  CORNER_NUDGE_CONFIG.forEach(corner => {
+    const keys = offsetValueKeys(corner.key);
+    const x = Number(st[keys.x] || 0);
+    const y = Number(st[keys.y] || 0);
+    const xLabel = $('nudge-' + corner.key + '-x');
+    const yLabel = $('nudge-' + corner.key + '-y');
+    if (xLabel) xLabel.textContent = fmtCmOffset(x);
+    if (yLabel) yLabel.textContent = fmtCmOffset(y);
+  });
 
   // Sync spacing sliders
   const cardPaddingSlider = document.querySelector(`.range-slider[data-style-key="cardPadding"]`);
@@ -2966,6 +3215,9 @@ try {
 // ══════════════════════════════════════════════════════
 renderSections();
 renderColorPresets();
+renderIconNudgeControls();
+renderCornerNudgeControls();
+syncCustomizerInputs();
 updateTemplateSize();
 autoFit();
 initTransliterationState();
