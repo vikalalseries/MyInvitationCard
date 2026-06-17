@@ -534,6 +534,16 @@ function applyCustomStyles(style) {
   const coupleSizeVal = 3.0 * (style.coupleSize / 100);
   const cornerSizeVal = 1.2 * (style.cornerSize / 100);
   const chainsSizeVal = 1.8 * (style.chainsSize / 100);
+  const iconShift = (key) => {
+    const x = Number(style[key + 'OffsetX'] || 0);
+    const y = Number(style[key + 'OffsetY'] || 0);
+    return `translate(${x}cm, ${y}cm)`;
+  };
+  const cornerShift = (key) => {
+    const x = Number(style[key + 'OffsetX'] || 0);
+    const y = Number(style[key + 'OffsetY'] || 0);
+    return `translate(${x}cm, ${y}cm)`;
+  };
   
   let cssText = `
     body {
@@ -554,6 +564,10 @@ function applyCustomStyles(style) {
       font-size: ${cornerSizeVal}cm;
       display: ${style.showCorners !== false ? 'block' : 'none'} !important;
     }
+    .tl { transform: ${cornerShift('cornerTl')} !important; }
+    .tr { transform: ${cornerShift('cornerTr')} !important; }
+    .bl { transform: ${cornerShift('cornerBl')} !important; }
+    .br { transform: ${cornerShift('cornerBr')} !important; }
     .s1-mantras p {
       color: ${style.textColor || '#6e0035'};
     }
@@ -637,18 +651,44 @@ function applyCustomStyles(style) {
     .ganesh-icon img {
       width: ${ganeshSizeVal}cm !important;
       display: ${style.showGanesh !== false ? 'block' : 'none'} !important;
+      transform: ${iconShift('ganesh')} !important;
     }
     .sun-icon img {
       width: ${omSizeVal}cm !important;
       display: ${style.showOm !== false ? 'block' : 'none'} !important;
+      transform: ${iconShift('om')} !important;
+    }
+    .chainleft img {
+      width: ${chainsSizeVal}cm !important;
+      display: ${style.showChains !== false ? 'block' : 'none'} !important;
+      transform: ${iconShift('chainLeft')} !important;
+    }
+    .chainright img {
+      width: ${chainsSizeVal}cm !important;
+      display: ${style.showChains !== false ? 'block' : 'none'} !important;
+      transform: ${iconShift('chainRight')} !important;
+    }
+    .top-icon img {
+      transform: ${iconShift('topIcon')} !important;
+    }
+    .top1-icon img {
+      transform: ${iconShift('top1Icon')} !important;
+    }
+    .bottom-icon img {
+      transform: ${iconShift('bottomIcon')} !important;
+    }
+    .mid-icon img {
+      transform: ${iconShift('midIcon')} !important;
+    }
+    .s1-events .couple-box {
+      transform: ${iconShift('couple1')} !important;
+    }
+    .s2-rowc .s2-icon {
+      transform: ${iconShift('couple2')} !important;
     }
     .couple-box img {
       width: ${coupleSizeVal}cm !important;
       display: ${style.showCouple !== false ? 'block' : 'none'} !important;
-    }
-    .chainleft img, .chainright img {
-      width: ${chainsSizeVal}cm !important;
-      display: ${style.showChains !== false ? 'block' : 'none'} !important;
     }
   `;
 
