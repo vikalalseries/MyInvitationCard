@@ -1706,6 +1706,29 @@
                     <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
                   </button>
                   <div class="icon-accordion-body">
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Replace Icon Slot</div>
+                      <div class="customizer-field">
+                        <label class="fl" for="icon-replace-target-select">Target slot</label>
+                        <select class="fs" id="icon-replace-target-select" onchange="setIconReplaceTarget(this.value)">
+                          <option value="ganesh">Ganesh</option>
+                          <option value="om">Om / Sun</option>
+                          <option value="chainLeft">Left Chain</option>
+                          <option value="chainRight">Right Chain</option>
+                          <option value="topIcon">Top Ornament</option>
+                          <option value="top1Icon">Top-1 Ornament</option>
+                          <option value="bottomIcon">Bottom Ornament</option>
+                          <option value="midIcon">Mid Ornament</option>
+                          <option value="couple1">Couple Box 1</option>
+                          <option value="couple2">Couple Box 2</option>
+                        </select>
+                      </div>
+                      <div class="customizer-group-desc" id="icon-replace-current">Pick a slot, then click an icon in the library to replace it.</div>
+                      <div class="customizer-field-row" style="justify-content:flex-start; margin-top:10px;">
+                        <button type="button" class="prop-btn" style="padding:7px 11px;" onclick="clearIconReplacement()">Remove selected slot icon</button>
+                      </div>
+                    </div>
+
                     <div class="icon-library-toolbar">
                       <input
                         type="search"
@@ -2862,7 +2885,8 @@ const DEFAULT_STYLE = {
   cornerSymbol: '✿',
   cornerSize: 100,
   cardPadding: 1.0,
-  sectionGap: 0.3
+  sectionGap: 0.3,
+  iconReplacements: {}
 };
 
 function mergeStyleDefaults(style) {
@@ -2914,6 +2938,96 @@ let ICON_ACCORDION_STATE = {
   core: false,
   advanced: false
 };
+
+let ICON_REPLACE_TARGET = 'ganesh';
+
+const STATIC_ICON_LIBRARY = [
+  {
+    id: 'ganesh-classic-001',
+    name: 'Ganesh Classic',
+    category: 'core',
+    subcategory: 'ganesh',
+    keywords: ['ganesh', 'ganesha', 'lord ganesha', 'hindu', 'wedding', 'invitation'],
+    file: '../builder1/assets/icons/ganesh.png'
+  },
+  {
+    id: 'om-sun-001',
+    name: 'Om Sun',
+    category: 'core',
+    subcategory: 'om',
+    keywords: ['om', 'aum', 'sun', 'spiritual', 'hindu'],
+    file: '../builder1/assets/icons/om.png'
+  },
+  {
+    id: 'border-side-001',
+    name: 'Side Border',
+    category: 'borders',
+    subcategory: 'traditional',
+    keywords: ['border', 'side', 'chain', 'ornament'],
+    file: '../builder1/assets/icons/side.png'
+  },
+  {
+    id: 'border-top-001',
+    name: 'Top Border',
+    category: 'borders',
+    subcategory: 'modern',
+    keywords: ['border', 'top', 'ornament'],
+    file: '../builder1/assets/icons/top.png'
+  },
+  {
+    id: 'border-top-002',
+    name: 'Top Border Alt',
+    category: 'borders',
+    subcategory: 'traditional',
+    keywords: ['border', 'top', 'ornament'],
+    file: '../builder1/assets/icons/top2.png'
+  },
+  {
+    id: 'decor-t1-001',
+    name: 'Decorative T1',
+    category: 'decorative',
+    subcategory: 'ornaments',
+    keywords: ['ornament', 'ribbon', 'decorative'],
+    file: '../builder1/assets/icons/t1.png'
+  },
+  {
+    id: 'decor-t2-001',
+    name: 'Decorative T2',
+    category: 'decorative',
+    subcategory: 'ornaments',
+    keywords: ['ornament', 'ribbon', 'decorative'],
+    file: '../builder1/assets/icons/t2.png'
+  },
+  {
+    id: 'decor-mid-001',
+    name: 'Center Motif',
+    category: 'decorative',
+    subcategory: 'mandala',
+    keywords: ['mid', 'center', 'motif', 'mandala'],
+    file: '../builder1/assets/icons/mid.png'
+  },
+  {
+    id: 'wedding-couple-001',
+    name: 'Wedding Couple',
+    category: 'wedding',
+    subcategory: 'bride-groom',
+    keywords: ['wedding', 'couple', 'bride', 'groom'],
+    file: '../builder1/assets/icons/weds.png'
+  }
+];
+
+const ICON_REPLACE_TARGETS = [
+  { key: 'ganesh', label: 'Ganesh' },
+  { key: 'om', label: 'Om / Sun' },
+  { key: 'chainLeft', label: 'Left Chain' },
+  { key: 'chainRight', label: 'Right Chain' },
+  { key: 'topIcon', label: 'Top Ornament' },
+  { key: 'top1Icon', label: 'Top-1 Ornament' },
+  { key: 'bottomIcon', label: 'Bottom Ornament' },
+  { key: 'midIcon', label: 'Mid Ornament' },
+  { key: 'couple1', label: 'Couple Box 1' },
+  { key: 'couple2', label: 'Couple Box 2' }
+];
 
 function iconOffsetKeys(key) {
   return { x: key + 'OffsetX', y: key + 'OffsetY' };
@@ -3057,11 +3171,21 @@ function renderIconLibrary() {
   });
 
   meta.textContent = `${filtered.length} icon${filtered.length === 1 ? '' : 's'} shown`;
+  const activeTarget = getIconReplaceTarget();
+  const replacements = (S.style && S.style.iconReplacements) || {};
+  const activeReplacement = replacements[activeTarget];
+  const activeReplacementId = activeReplacement && typeof activeReplacement === 'object' ? activeReplacement.id : null;
+  const activeReplacementFile = typeof activeReplacement === 'string'
+    ? activeReplacement
+    : activeReplacement && activeReplacement.file
+      ? activeReplacement.file
+      : null;
   grid.innerHTML = filtered.length ? filtered.map(icon => `
     <button
       type="button"
       class="icon-library-item"
       data-icon-id="${esc(icon.id)}"
+      data-icon-file="${esc(icon.file)}"
       onclick="useLibraryIcon('${esc(icon.id)}')"
       title="${esc(icon.name)}"
     >
@@ -3073,9 +3197,10 @@ function renderIconLibrary() {
     </button>
   `).join('') : '<div class="icon-library-empty">No icons match this search.</div>';
 
-  const activeId = localStorage.getItem('mic_selected_icon_id');
-  if (activeId) {
-    const activeItem = grid.querySelector(`[data-icon-id="${activeId.replace(/"/g, '\\"')}"]`);
+  if (activeReplacementId || activeReplacementFile) {
+    const activeItem = activeReplacementId
+      ? grid.querySelector(`[data-icon-id="${activeReplacementId.replace(/"/g, '\\"')}"]`)
+      : grid.querySelector(`[data-icon-file="${activeReplacementFile.replace(/"/g, '\\"')}"]`);
     if (activeItem) activeItem.classList.add('active');
   }
 }
@@ -3091,6 +3216,40 @@ function saveIconAccordionState() {
   try {
     localStorage.setItem('mic_icon_accordion_state', JSON.stringify(ICON_ACCORDION_STATE));
   } catch (e) {}
+}
+
+function getIconReplaceTarget() {
+  try {
+    const saved = localStorage.getItem('mic_icon_replace_target');
+    if (saved) ICON_REPLACE_TARGET = saved;
+  } catch (e) {}
+  return ICON_REPLACE_TARGET || 'ganesh';
+}
+
+function getIconReplacementLabel(targetKey) {
+  const item = ICON_REPLACE_TARGETS.find(t => t.key === targetKey);
+  return item ? item.label : targetKey;
+}
+
+function getActiveIconReplacement(targetKey) {
+  const style = ensureCardStyle();
+  const replacements = style.iconReplacements || {};
+  return replacements[targetKey] || null;
+}
+
+function getIconReplacementSummary(targetKey) {
+  const value = getActiveIconReplacement(targetKey);
+  if (!value) return 'No custom icon set for this slot.';
+  if (typeof value === 'string') return 'Custom icon applied for this slot.';
+  return value.name ? 'Selected: ' + value.name : 'Custom icon applied for this slot.';
+}
+
+function refreshIconReplacementStatus() {
+  const target = getIconReplaceTarget();
+  const select = $('icon-replace-target-select');
+  if (select && select.value !== target) select.value = target;
+  const host = $('icon-replace-current');
+  if (host) host.textContent = getIconReplacementLabel(target) + ': ' + getIconReplacementSummary(target);
 }
 
 window.toggleIconAccordion = function(key) {
@@ -3113,17 +3272,33 @@ async function loadIconLibrary() {
       ICON_CATEGORIES = Array.isArray(categoriesData.iconCategories) ? categoriesData.iconCategories : [];
     }
     ICON_LIBRARY = Array.isArray(data.icons) ? data.icons : [];
+    if (!ICON_LIBRARY.length) {
+      ICON_LIBRARY = STATIC_ICON_LIBRARY.slice();
+      ICON_CATEGORIES = [
+        { id: 'core', label: 'Core' },
+        { id: 'borders', label: 'Borders' },
+        { id: 'decorative', label: 'Decorative' },
+        { id: 'wedding', label: 'Wedding' }
+      ];
+    }
     renderIconCategoryChips();
     renderIconLibrary();
+    refreshIconReplacementStatus();
     applyIconAccordionState();
     if (meta) meta.textContent = `${ICON_LIBRARY.length} icons available`;
   } catch (err) {
-    ICON_LIBRARY = [];
-    ICON_CATEGORIES = [];
+    ICON_LIBRARY = STATIC_ICON_LIBRARY.slice();
+    ICON_CATEGORIES = [
+      { id: 'core', label: 'Core' },
+      { id: 'borders', label: 'Borders' },
+      { id: 'decorative', label: 'Decorative' },
+      { id: 'wedding', label: 'Wedding' }
+    ];
     renderIconCategoryChips();
-    if (meta) meta.textContent = 'Icon library unavailable';
-    const grid = $('icon-library-grid');
-    if (grid) grid.innerHTML = '<div class="icon-library-empty">Unable to load icon metadata.</div>';
+    renderIconLibrary();
+    refreshIconReplacementStatus();
+    applyIconAccordionState();
+    if (meta) meta.textContent = `${ICON_LIBRARY.length} icons available`;
   }
 }
 
@@ -3138,15 +3313,43 @@ window.setIconLibraryCategory = function(category) {
   renderIconLibrary();
 };
 
+window.setIconReplaceTarget = function(targetKey) {
+  ICON_REPLACE_TARGET = targetKey || 'ganesh';
+  try {
+    localStorage.setItem('mic_icon_replace_target', ICON_REPLACE_TARGET);
+  } catch (e) {}
+  refreshIconReplacementStatus();
+  renderIconLibrary();
+};
+
+window.clearIconReplacement = function() {
+  const target = getIconReplaceTarget();
+  const style = ensureCardStyle();
+  const next = Object.assign({}, style.iconReplacements || {});
+  delete next[target];
+  setField('style.iconReplacements', next);
+  refreshIconReplacementStatus();
+  renderIconLibrary();
+  if (typeof toast === 'function') toast(`Removed icon from ${getIconReplacementLabel(target)}`, 's');
+};
+
 window.useLibraryIcon = function(iconId) {
   const icon = ICON_LIBRARY.find(item => item.id === iconId);
   if (!icon) return;
   try {
-    localStorage.setItem('mic_selected_icon_id', icon.id);
     localStorage.setItem('mic_selected_icon', JSON.stringify(icon));
   } catch (e) {}
+  const target = getIconReplaceTarget();
+  const style = ensureCardStyle();
+  const next = Object.assign({}, style.iconReplacements || {});
+  next[target] = icon;
+  setField('style.iconReplacements', next);
+  try {
+    localStorage.setItem('mic_selected_icon_id', icon.id);
+  } catch (e) {}
+  refreshIconReplacementStatus();
   renderIconLibrary();
-  if (typeof toast === 'function') toast(`Selected ${icon.name}`, 's');
+  if (typeof toast === 'function') toast(`Replaced ${getIconReplacementLabel(target)} with ${icon.name}`, 's');
 };
 
 window.applyColorPreset = function(cardBg, bodyBg, accentColor, textColor, headingColor, element) {
@@ -3306,6 +3509,10 @@ function syncCustomizerInputs() {
     const chk = $('chk-' + key);
     if (chk) chk.checked = val;
   });
+
+  const targetSelect = $('icon-replace-target-select');
+  if (targetSelect) targetSelect.value = getIconReplaceTarget();
+  refreshIconReplacementStatus();
 
   // Sync selectors
   const ffSelect = $('font-family-select');

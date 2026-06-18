@@ -387,7 +387,8 @@ const DEFAULT_CARD_STYLE = {
   cornerSymbol: '✿',
   cornerSize: 100,
   cardPadding: 1.0,
-  sectionGap: 0.3
+  sectionGap: 0.3,
+  iconReplacements: {}
 };
 
 function resolveCardStyle(style) {
@@ -403,6 +404,33 @@ function loadCustomFont(fontFamily) {
   link.rel = 'stylesheet';
   link.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fontFamily).replace(/%20/g, '+') + ':wght@400;600;700&display=swap';
   document.head.appendChild(link);
+}
+
+const ICON_REPLACEMENT_MAP = [
+  { key: 'ganesh', selector: '.ganesh-icon img', defaultSrc: '../builder1/assets/icons/ganesh.png' },
+  { key: 'om', selector: '.sun-icon img', defaultSrc: '../builder1/assets/icons/om.png' },
+  { key: 'chainLeft', selector: '.chainleft img', defaultSrc: '../builder1/assets/icons/side.png' },
+  { key: 'chainRight', selector: '.chainright img', defaultSrc: '../builder1/assets/icons/side.png' },
+  { key: 'topIcon', selector: '.top-icon img', defaultSrc: '../builder1/assets/icons/top.png' },
+  { key: 'top1Icon', selector: '.top1-icon img', defaultSrc: '../builder1/assets/icons/t1.png' },
+  { key: 'bottomIcon', selector: '.bottom-icon img', defaultSrc: '../builder1/assets/icons/top2.png' },
+  { key: 'midIcon', selector: '.mid-icon img', defaultSrc: '../builder1/assets/icons/mid.png' },
+  { key: 'couple1', selector: '.s1-events .couple-box img', defaultSrc: '../builder1/assets/icons/weds.png' },
+  { key: 'couple2', selector: '.s2-rowc .s2-icon img', defaultSrc: '../builder1/assets/icons/weds.png' }
+];
+
+function applyIconReplacements(style) {
+  const replacements = (style && style.iconReplacements) || {};
+  ICON_REPLACEMENT_MAP.forEach(item => {
+    const value = replacements[item.key];
+    const src = typeof value === 'string' ? value : value && value.file ? value.file : item.defaultSrc;
+    document.querySelectorAll(item.selector).forEach(img => {
+      if (!img.dataset.defaultSrc) {
+        img.dataset.defaultSrc = img.getAttribute('src') || item.defaultSrc;
+      }
+      img.src = src || img.dataset.defaultSrc;
+    });
+  });
 }
 
 function syncCard(c) {
@@ -707,6 +735,7 @@ function applyCustomStyles(style) {
   }
 
   cssEl.textContent = cssText;
+  applyIconReplacements(style);
 
   // Handle corners symbols
   if (style.cornerSymbol) {
