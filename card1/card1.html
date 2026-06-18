@@ -388,6 +388,9 @@ const DEFAULT_CARD_STYLE = {
   cornerSize: 100,
   cardPadding: 1.0,
   sectionGap: 0.3,
+  showBorder: true,
+  borderPreset: 'classic',
+  borderColor: '#8b0040',
   iconReplacements: {}
 };
 
@@ -404,6 +407,28 @@ function loadCustomFont(fontFamily) {
   link.rel = 'stylesheet';
   link.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fontFamily).replace(/%20/g, '+') + ':wght@400;600;700&display=swap';
   document.head.appendChild(link);
+}
+
+const BORDER_FRAME_PRESETS = {
+  classic: { width: '0.07cm', borderStyle: 'solid', rings: ['0.13cm', '0.20cm'] },
+  double: { width: '0.08cm', borderStyle: 'double', rings: ['0.12cm', '0.20cm'] },
+  thin: { width: '0.04cm', borderStyle: 'solid', rings: ['0.08cm', '0.14cm'] },
+  dashed: { width: '0.05cm', borderStyle: 'dashed', rings: ['0.11cm', '0.18cm'] },
+  ornate: { width: '0.08cm', borderStyle: 'solid', rings: ['0.11cm', '0.18cm', '0.26cm', '0.34cm'] }
+};
+
+function buildBorderFrameCss(style) {
+  if (style.showBorder === false) {
+    return 'border:none !important; box-shadow:none !important;';
+  }
+  const preset = BORDER_FRAME_PRESETS[style.borderPreset || 'classic'] || BORDER_FRAME_PRESETS.classic;
+  const borderColor = style.borderColor || style.accentColor || '#8b0040';
+  const cardBg = style.cardBg || '#f2aec8';
+  const shadows = preset.rings.map((ring, idx) => {
+    const ringColor = idx % 2 === 0 ? cardBg : borderColor;
+    return `inset 0 0 0 ${ring} ${ringColor}`;
+  }).join(', ');
+  return `border:${preset.width} ${preset.borderStyle} ${borderColor}; box-shadow:${shadows};`;
 }
 
 const ICON_REPLACEMENT_MAP = [
@@ -586,8 +611,7 @@ function applyCustomStyles(style) {
       gap: ${style.sectionGap !== undefined ? style.sectionGap : 0.3}cm;
     }
     .sec {
-      border-color: ${style.accentColor || '#8b0040'};
-      box-shadow: inset 0 0 0 0.13cm ${style.cardBg || '#f2aec8'}, inset 0 0 0 0.20cm ${style.accentColor || '#8b0040'};
+      ${buildBorderFrameCss(style)}
     }
     .fl {
       color: ${style.accentColor || '#8b0040'};

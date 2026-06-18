@@ -1589,7 +1589,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="customizer-field-row">
                   <div>
                     <span class="customizer-label">Main Text</span>
@@ -1871,10 +1871,46 @@
 
             <!-- CARD STYLE PANEL -->
             <div id="c-sec-card" class="customizer-section-panel">
-              <h3 class="customizer-group-title">Card Corners</h3>
-              <p class="customizer-group-desc">Alter corner flower borders and symbols.</p>
+              <h3 class="customizer-group-title">Card Frame</h3>
+              <p class="customizer-group-desc">Control the border frame, corner flowers, and symbols.</p>
               
               <div class="customizer-card">
+                <div class="customizer-card-title">Border Frame</div>
+
+                <div class="customizer-field-row">
+                  <span class="customizer-label">Show Border Frame</span>
+                  <label class="tgl-switch">
+                    <input type="checkbox" id="chk-showBorder" checked data-style-key="showBorder" onchange="handleCheckboxChange(this)">
+                    <span class="tgl-slider"></span>
+                  </label>
+                </div>
+
+                <div class="customizer-field">
+                  <label class="fl">Border Replace Style</label>
+                  <select class="fs" id="border-preset-select" onchange="handleBorderPresetChange(this)">
+                    <option value="classic">Classic Frame</option>
+                    <option value="double">Double Frame</option>
+                    <option value="thin">Thin Frame</option>
+                    <option value="dashed">Dashed Frame</option>
+                    <option value="ornate">Ornate Frame</option>
+                  </select>
+                </div>
+
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Border Color</span>
+                    <div class="customizer-label-sub">Change frame color</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-borderColor">#8b0040</span>
+                    <div class="color-input-preview" id="preview-borderColor">
+                      <input type="color" data-style-key="borderColor" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="customizer-divider" style="margin:16px 0;"></div>
+
                 <div class="customizer-card-title">Corners Configuration</div>
                 
                 <div class="customizer-field-row">
@@ -2886,6 +2922,9 @@ const DEFAULT_STYLE = {
   cornerSize: 100,
   cardPadding: 1.0,
   sectionGap: 0.3,
+  showBorder: true,
+  borderPreset: 'classic',
+  borderColor: '#8b0040',
   iconReplacements: {}
 };
 
@@ -3356,6 +3395,7 @@ window.applyColorPreset = function(cardBg, bodyBg, accentColor, textColor, headi
   setField('style.cardBg', cardBg);
   setField('style.bodyBg', bodyBg);
   setField('style.accentColor', accentColor);
+  setField('style.borderColor', accentColor);
   setField('style.textColor', textColor);
   setField('style.headingColor', headingColor);
 
@@ -3368,6 +3408,10 @@ window.applyColorPreset = function(cardBg, bodyBg, accentColor, textColor, headi
   }
   
   if (typeof toast === 'function') toast('Applied color palette theme!', 's');
+};
+
+window.handleBorderPresetChange = function(el) {
+  setField('style.borderPreset', el.value);
 };
 
 window.switchCustomizerSection = function(sectionId) {
@@ -3483,7 +3527,7 @@ function syncCustomizerInputs() {
   if (!st) return;
 
   // Sync color inputs and labels
-  const colors = ['cardBg', 'bodyBg', 'accentColor', 'textColor', 'headingColor'];
+  const colors = ['cardBg', 'bodyBg', 'accentColor', 'borderColor', 'textColor', 'headingColor'];
   colors.forEach(key => {
     const val = st[key];
     const previewInput = document.querySelector(`.color-input-preview input[data-style-key="${key}"]`);
@@ -3503,12 +3547,15 @@ function syncCustomizerInputs() {
   });
 
   // Sync checkboxes
-  const checkboxes = ['showGanesh', 'showOm', 'showChains', 'showCouple', 'showCorners'];
+  const checkboxes = ['showGanesh', 'showOm', 'showChains', 'showCouple', 'showCorners', 'showBorder'];
   checkboxes.forEach(key => {
     const val = st[key] !== false;
     const chk = $('chk-' + key);
     if (chk) chk.checked = val;
   });
+
+  const borderPresetSelect = $('border-preset-select');
+  if (borderPresetSelect && st.borderPreset) borderPresetSelect.value = st.borderPreset;
 
   const targetSelect = $('icon-replace-target-select');
   if (targetSelect) targetSelect.value = getIconReplaceTarget();
