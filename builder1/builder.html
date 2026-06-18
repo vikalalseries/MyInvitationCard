@@ -1707,20 +1707,20 @@
                   </button>
                   <div class="icon-accordion-body">
                     <div class="customizer-card" style="margin-bottom:12px;">
-                      <div class="customizer-card-title">Replace Icon Slot</div>
+                      <div class="customizer-card-title">Icon Replacement Target</div>
                       <div class="customizer-field">
-                        <label class="fl" for="icon-replace-target-select">Target slot</label>
+                        <label class="fl" for="icon-replace-target-select">Target element</label>
                         <select class="fs" id="icon-replace-target-select" onchange="setIconReplaceTarget(this.value)">
-                          <option value="ganesh">Ganesh</option>
-                          <option value="om">Om / Sun</option>
-                          <option value="chainLeft">Left Chain</option>
-                          <option value="chainRight">Right Chain</option>
-                          <option value="topIcon">Top Ornament</option>
-                          <option value="top1Icon">Top-1 Ornament</option>
-                          <option value="bottomIcon">Bottom Ornament</option>
-                          <option value="midIcon">Mid Ornament</option>
-                          <option value="couple1">Couple Box 1</option>
-                          <option value="couple2">Couple Box 2</option>
+                          <option value="ganesh">Primary Ganesh</option>
+                          <option value="om">Primary Om / Sun</option>
+                          <option value="chainLeft">Left Border Chain</option>
+                          <option value="chainRight">Right Border Chain</option>
+                          <option value="topIcon">Top Frame Accent</option>
+                          <option value="top1Icon">Top Secondary Accent</option>
+                          <option value="bottomIcon">Bottom Frame Accent</option>
+                          <option value="midIcon">Center Motif</option>
+                          <option value="couple1">Couple Emblem - Section 1</option>
+                          <option value="couple2">Couple Emblem - Section 2</option>
                         </select>
                       </div>
                       <div class="customizer-group-desc" id="icon-replace-current">Pick a slot, then click an icon in the library to replace it.</div>
@@ -3056,16 +3056,16 @@ const STATIC_ICON_LIBRARY = [
 ];
 
 const ICON_REPLACE_TARGETS = [
-  { key: 'ganesh', label: 'Ganesh' },
-  { key: 'om', label: 'Om / Sun' },
-  { key: 'chainLeft', label: 'Left Chain' },
-  { key: 'chainRight', label: 'Right Chain' },
-  { key: 'topIcon', label: 'Top Ornament' },
-  { key: 'top1Icon', label: 'Top-1 Ornament' },
-  { key: 'bottomIcon', label: 'Bottom Ornament' },
-  { key: 'midIcon', label: 'Mid Ornament' },
-  { key: 'couple1', label: 'Couple Box 1' },
-  { key: 'couple2', label: 'Couple Box 2' }
+  { key: 'ganesh', label: 'Primary Ganesh' },
+  { key: 'om', label: 'Primary Om / Sun' },
+  { key: 'chainLeft', label: 'Left Border Chain' },
+  { key: 'chainRight', label: 'Right Border Chain' },
+  { key: 'topIcon', label: 'Top Frame Accent' },
+  { key: 'top1Icon', label: 'Top Secondary Accent' },
+  { key: 'bottomIcon', label: 'Bottom Frame Accent' },
+  { key: 'midIcon', label: 'Center Motif' },
+  { key: 'couple1', label: 'Couple Emblem - Section 1' },
+  { key: 'couple2', label: 'Couple Emblem - Section 2' }
 ];
 
 function iconOffsetKeys(key) {
