@@ -1044,6 +1044,68 @@
     font-size: 0.72rem;
     background: var(--g50);
   }
+  .icon-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .icon-accordion-item {
+    border: 1px solid var(--g200);
+    border-radius: 12px;
+    background: var(--g50);
+    overflow: hidden;
+  }
+  .icon-accordion-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    color: var(--g700);
+    background: var(--w);
+    border-bottom: 1px solid var(--g150);
+    cursor: pointer;
+  }
+  .icon-accordion-head:hover {
+    background: var(--rose-50);
+    color: var(--rose);
+  }
+  .icon-accordion-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left;
+  }
+  .icon-accordion-title strong {
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .icon-accordion-title span {
+    font-size: 0.66rem;
+    color: var(--g400);
+    font-weight: 500;
+  }
+  .icon-accordion-chevron {
+    transition: transform var(--t);
+    color: var(--g400);
+    flex-shrink: 0;
+  }
+  .icon-accordion-item.open .icon-accordion-chevron {
+    transform: rotate(180deg);
+    color: var(--rose);
+  }
+  .icon-accordion-body {
+    display: none;
+    padding: 12px;
+  }
+  .icon-accordion-item.open .icon-accordion-body {
+    display: block;
+  }
+  .icon-accordion-item.open .icon-accordion-head {
+    background: var(--rose-50);
+    color: var(--rose);
+  }
 
   /* Sliders and Range */
   .range-container {
@@ -1634,96 +1696,128 @@
               <h3 class="customizer-group-title">Icons & Decorations</h3>
               <p class="customizer-group-desc">Hide, show, or resize core graphics and illustrations.</p>
               
-              <div class="customizer-card">
-                <div class="customizer-card-title">Ganesh Icon</div>
-                <div class="customizer-field-row">
-                  <span class="customizer-label">Show Ganesh Icon</span>
-                  <label class="tgl-switch">
-                    <input type="checkbox" id="chk-showGanesh" checked data-style-key="showGanesh" onchange="handleCheckboxChange(this)">
-                    <span class="tgl-slider"></span>
-                  </label>
-                </div>
-                <div class="customizer-field">
-                  <span class="customizer-label">Ganesh Icon Size</span>
-                  <div class="range-container">
-                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="ganeshSize" oninput="handleSliderInput(this)">
-                    <span class="range-value" id="val-ganeshSize">100%</span>
+              <div class="icon-accordion">
+                <div class="icon-accordion-item" id="icon-box-library">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('library')">
+                    <span class="icon-accordion-title">
+                      <strong>Icon Library</strong>
+                      <span>Search and pick icons</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body">
+                    <div class="icon-library-toolbar">
+                      <input
+                        type="search"
+                        class="fi icon-library-search"
+                        id="icon-library-search"
+                        placeholder="Search icons by name, keyword, or category"
+                        oninput="handleIconLibrarySearch(this)"
+                      >
+                      <div class="icon-category-chips" id="icon-category-chips"></div>
+                    </div>
+                    <div class="icon-library-meta" id="icon-library-meta">Loading icon library...</div>
+                    <div class="icon-library-grid" id="icon-library-grid"></div>
                   </div>
                 </div>
-              </div>
-              
-              <div class="customizer-card">
-                <div class="customizer-card-title">Om / Sun Icon</div>
-                <div class="customizer-field-row">
-                  <span class="customizer-label">Show Om/Sun Icon</span>
-                  <label class="tgl-switch">
-                    <input type="checkbox" id="chk-showOm" checked data-style-key="showOm" onchange="handleCheckboxChange(this)">
-                    <span class="tgl-slider"></span>
-                  </label>
-                </div>
-                <div class="customizer-field">
-                  <span class="customizer-label">Om Icon Size</span>
-                  <div class="range-container">
-                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="omSize" oninput="handleSliderInput(this)">
-                    <span class="range-value" id="val-omSize">100%</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="customizer-card">
-                <div class="customizer-card-title">Border Side Chains</div>
-                <div class="customizer-field-row">
-                  <span class="customizer-label">Show Hanging Chains</span>
-                  <label class="tgl-switch">
-                    <input type="checkbox" id="chk-showChains" checked data-style-key="showChains" onchange="handleCheckboxChange(this)">
-                    <span class="tgl-slider"></span>
-                  </label>
-                </div>
-                <div class="customizer-field">
-                  <span class="customizer-label">Chains Icon Size</span>
-                  <div class="range-container">
-                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="chainsSize" oninput="handleSliderInput(this)">
-                    <span class="range-value" id="val-chainsSize">100%</span>
-                  </div>
-                </div>
-              </div>
 
-              <div class="customizer-card">
-                <div class="customizer-card-title">Center Couple Box</div>
-                <div class="customizer-field-row">
-                  <span class="customizer-label">Show Couple Illustration</span>
-                  <label class="tgl-switch">
-                    <input type="checkbox" id="chk-showCouple" checked data-style-key="showCouple" onchange="handleCheckboxChange(this)">
-                    <span class="tgl-slider"></span>
-                  </label>
+                <div class="icon-accordion-item" id="icon-box-core">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('core')">
+                    <span class="icon-accordion-title">
+                      <strong>Core Icons</strong>
+                      <span>Ganesh, Om, chains, couple</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body">
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Ganesh Icon</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Ganesh Icon</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showGanesh" checked data-style-key="showGanesh" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Ganesh Icon Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="ganeshSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-ganeshSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Om / Sun Icon</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Om/Sun Icon</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showOm" checked data-style-key="showOm" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Om Icon Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="omSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-omSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Border Side Chains</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Hanging Chains</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showChains" checked data-style-key="showChains" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Chains Icon Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="chainsSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-chainsSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="customizer-card">
+                      <div class="customizer-card-title">Center Couple Box</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Couple Illustration</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showCouple" checked data-style-key="showCouple" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Couple Box Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="coupleSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-coupleSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="customizer-field">
-                  <span class="customizer-label">Couple Box Size</span>
-                  <div class="range-container">
-                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="coupleSize" oninput="handleSliderInput(this)">
-                    <span class="range-value" id="val-coupleSize">100%</span>
+
+                <div class="icon-accordion-item" id="icon-box-advanced">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('advanced')">
+                    <span class="icon-accordion-title">
+                      <strong>Position Adjustments</strong>
+                      <span>Nudge icons and corners</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body">
+                    <div id="icon-nudge-controls"></div>
+                    <div id="corner-nudge-controls"></div>
                   </div>
                 </div>
               </div>
-
-              <div class="customizer-card">
-                <div class="customizer-card-title">Icon Library</div>
-                <div class="icon-library-toolbar">
-                  <input
-                    type="search"
-                    class="fi icon-library-search"
-                    id="icon-library-search"
-                    placeholder="Search icons by name, keyword, or category"
-                    oninput="handleIconLibrarySearch(this)"
-                  >
-                  <div class="icon-category-chips" id="icon-category-chips"></div>
-                </div>
-                <div class="icon-library-meta" id="icon-library-meta">Loading icon library...</div>
-                <div class="icon-library-grid" id="icon-library-grid"></div>
-              </div>
-
-              <div id="icon-nudge-controls"></div>
-              <div id="corner-nudge-controls"></div>
             </div>
 
             <!-- SPACING PANEL -->
@@ -2815,6 +2909,11 @@ let ICON_LIBRARY_FILTER = {
   query: '',
   category: 'all'
 };
+let ICON_ACCORDION_STATE = {
+  library: false,
+  core: false,
+  advanced: false
+};
 
 function iconOffsetKeys(key) {
   return { x: key + 'OffsetX', y: key + 'OffsetY' };
@@ -2981,6 +3080,25 @@ function renderIconLibrary() {
   }
 }
 
+function applyIconAccordionState() {
+  Object.keys(ICON_ACCORDION_STATE).forEach(key => {
+    const box = $('icon-box-' + key);
+    if (box) box.classList.toggle('open', !!ICON_ACCORDION_STATE[key]);
+  });
+}
+
+function saveIconAccordionState() {
+  try {
+    localStorage.setItem('mic_icon_accordion_state', JSON.stringify(ICON_ACCORDION_STATE));
+  } catch (e) {}
+}
+
+window.toggleIconAccordion = function(key) {
+  ICON_ACCORDION_STATE[key] = !ICON_ACCORDION_STATE[key];
+  applyIconAccordionState();
+  saveIconAccordionState();
+};
+
 async function loadIconLibrary() {
   const meta = $('icon-library-meta');
   try {
@@ -2997,6 +3115,7 @@ async function loadIconLibrary() {
     ICON_LIBRARY = Array.isArray(data.icons) ? data.icons : [];
     renderIconCategoryChips();
     renderIconLibrary();
+    applyIconAccordionState();
     if (meta) meta.textContent = `${ICON_LIBRARY.length} icons available`;
   } catch (err) {
     ICON_LIBRARY = [];
@@ -3446,6 +3565,14 @@ try {
   const savedTab = localStorage.getItem('mic_builder_active_tab');
   if (savedTab === 'customize' || savedTab === 'ai') {
     switchBuilderTab(savedTab);
+  }
+} catch(e) {}
+
+try {
+  const savedAccordion = localStorage.getItem('mic_icon_accordion_state');
+  if (savedAccordion) {
+    const parsed = JSON.parse(savedAccordion);
+    ICON_ACCORDION_STATE = Object.assign({}, ICON_ACCORDION_STATE, parsed || {});
   }
 } catch(e) {}
 
