@@ -1,0 +1,46 @@
+{
+  "iconCategories": [
+    {
+      "id": "religious",
+      "label": "Religious",
+      "path": "/assets/icons/religious",
+      "subcategories": ["ganesh", "om", "swastik", "kalash", "shubh-labh", "mangal-symbols", "hindu-motifs"]
+    },
+    {
+      "id": "wedding",
+      "label": "Wedding",
+      "path": "/assets/icons/wedding",
+      "subcategories": ["bride-groom", "baraat", "varmala", "mandap", "mehndi", "haldi", "engagement", "reception"]
+    },
+    {
+      "id": "borders",
+      "label": "Borders",
+      "path": "/assets/icons/borders",
+      "subcategories": ["floral", "traditional", "modern", "corner", "frame", "luxury"]
+    },
+    {
+      "id": "floral",
+      "label": "Floral",
+      "path": "/assets/icons/floral",
+      "subcategories": ["rose", "lotus", "marigold", "leaves", "vines", "bouquets"]
+    },
+    {
+      "id": "decorative",
+      "label": "Decorative",
+      "path": "/assets/icons/decorative",
+      "subcategories": ["dividers", "ornaments", "mandala", "patterns", "ribbons", "seals"]
+    },
+    {
+      "id": "festival",
+      "label": "Festival",
+      "path": "/assets/icons/festival",
+      "subcategories": ["diwali", "holi", "rakhi", "navratri", "ganesh-chaturthi"]
+    },
+    {
+      "id": "misc",
+      "label": "Misc",
+      "path": "/assets/icons/misc",
+      "subcategories": []
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "templateCategories": [
+    {
+      "id": "wedding",
+      "label": "Wedding",
+      "path": "/assets/templates/wedding",
+      "subcategories": ["hindu", "muslim", "sikh", "christian", "general"]
+    },
+    {
+      "id": "engagement",
+      "label": "Engagement",
+      "path": "/assets/templates/engagement",
+      "subcategories": []
+    },
+    {
+      "id": "birthday",
+      "label": "Birthday",
+      "path": "/assets/templates/birthday",
+      "subcategories": []
+    },
+    {
+      "id": "housewarming",
+      "label": "Housewarming",
+      "path": "/assets/templates/housewarming",
+      "subcategories": []
+    },
+    {
+      "id": "baby-shower",
+      "label": "Baby Shower",
+      "path": "/assets/templates/baby-shower",
+      "subcategories": []
+    },
+    {
+      "id": "festival",
+      "label": "Festival",
+      "path": "/assets/templates/festival",
+      "subcategories": []
+    }
+  ]
+}

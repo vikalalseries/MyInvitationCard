@@ -1,0 +1,140 @@
+{
+  "icons": [
+    {
+      "id": "ganesh-001",
+      "name": "Ganesh Classic",
+      "category": "religious",
+      "subcategory": "ganesh",
+      "keywords": ["ganesh", "ganpati", "lord ganesha", "wedding", "invitation", "hindu"],
+      "file": "/assets/icons/religious/ganesh/ganesh-classic-001.svg"
+    },
+    {
+      "id": "ganesh-002",
+      "name": "Ganesh Line Art",
+      "category": "religious",
+      "subcategory": "ganesh",
+      "keywords": ["ganesh", "line art", "minimal", "hindu", "invitation"],
+      "file": "/assets/icons/religious/ganesh/ganesh-line-art-002.svg"
+    },
+    {
+      "id": "ganesh-003",
+      "name": "Ganesh Modern",
+      "category": "religious",
+      "subcategory": "ganesh",
+      "keywords": ["ganesh", "modern", "decorative", "hindu", "festival"],
+      "file": "/assets/icons/religious/ganesh/ganesh-modern-003.svg"
+    },
+    {
+      "id": "om-001",
+      "name": "Om Simple",
+      "category": "religious",
+      "subcategory": "om",
+      "keywords": ["om", "aum", "spiritual", "hindu", "wedding"],
+      "file": "/assets/icons/religious/om/om-simple-001.svg"
+    },
+    {
+      "id": "swastik-001",
+      "name": "Swastik",
+      "category": "religious",
+      "subcategory": "swastik",
+      "keywords": ["swastik", "manglik", "hindu", "auspicious", "invitation"],
+      "file": "/assets/icons/religious/swastik/swastik-001.svg"
+    },
+    {
+      "id": "kalash-001",
+      "name": "Kalash Gold",
+      "category": "religious",
+      "subcategory": "kalash",
+      "keywords": ["kalash", "ghat", "gold", "hindu", "auspicious"],
+      "file": "/assets/icons/religious/kalash/kalash-gold-001.svg"
+    },
+    {
+      "id": "kalash-002",
+      "name": "Kalash Traditional",
+      "category": "religious",
+      "subcategory": "kalash",
+      "keywords": ["kalash", "traditional", "hindu", "puja", "invitation"],
+      "file": "/assets/icons/religious/kalash/kalash-traditional-002.svg"
+    },
+    {
+      "id": "bride-groom-001",
+      "name": "Bride Groom Classic",
+      "category": "wedding",
+      "subcategory": "bride-groom",
+      "keywords": ["bride", "groom", "couple", "wedding", "invitation"],
+      "file": "/assets/icons/wedding/bride-groom/bride-groom-classic-001.svg"
+    },
+    {
+      "id": "mandap-001",
+      "name": "Mandap Traditional",
+      "category": "wedding",
+      "subcategory": "mandap",
+      "keywords": ["mandap", "wedding", "stage", "ceremony", "traditional"],
+      "file": "/assets/icons/wedding/mandap/mandap-traditional-001.svg"
+    },
+    {
+      "id": "varmala-001",
+      "name": "Varmala",
+      "category": "wedding",
+      "subcategory": "varmala",
+      "keywords": ["varmala", "garland", "wedding", "couple", "ritual"],
+      "file": "/assets/icons/wedding/varmala/varmala-001.svg"
+    },
+    {
+      "id": "border-floral-001",
+      "name": "Border Floral",
+      "category": "borders",
+      "subcategory": "floral",
+      "keywords": ["border", "floral", "frame", "ornament", "wedding"],
+      "file": "/assets/icons/borders/floral/border-floral-001.svg"
+    },
+    {
+      "id": "border-corner-002",
+      "name": "Border Corner",
+      "category": "borders",
+      "subcategory": "corner",
+      "keywords": ["border", "corner", "frame", "ornament", "luxury"],
+      "file": "/assets/icons/borders/corner/border-corner-002.svg"
+    },
+    {
+      "id": "rose-001",
+      "name": "Rose Stem",
+      "category": "floral",
+      "subcategory": "rose",
+      "keywords": ["rose", "flower", "floral", "decorative", "invitation"],
+      "file": "/assets/icons/floral/rose/rose-001.svg"
+    },
+    {
+      "id": "lotus-001",
+      "name": "Lotus Bloom",
+      "category": "floral",
+      "subcategory": "lotus",
+      "keywords": ["lotus", "flower", "floral", "hindu", "decorative"],
+      "file": "/assets/icons/floral/lotus/lotus-001.svg"
+    },
+    {
+      "id": "divider-001",
+      "name": "Divider Simple",
+      "category": "decorative",
+      "subcategory": "dividers",
+      "keywords": ["divider", "line", "separator", "decorative", "ornament"],
+      "file": "/assets/icons/decorative/dividers/divider-001.svg"
+    },
+    {
+      "id": "mandala-001",
+      "name": "Mandala Classic",
+      "category": "decorative",
+      "subcategory": "mandala",
+      "keywords": ["mandala", "pattern", "decorative", "circle", "ornament"],
+      "file": "/assets/icons/decorative/mandala/mandala-001.svg"
+    },
+    {
+      "id": "diwali-001",
+      "name": "Diya Light",
+      "category": "festival",
+      "subcategory": "diwali",
+      "keywords": ["diwali", "diya", "festival", "light", "celebration"],
+      "file": "/assets/icons/festival/diwali/diya-001.svg"
+    }
+  ]
+}
