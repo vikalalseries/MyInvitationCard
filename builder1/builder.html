@@ -942,6 +942,109 @@
     border: 1px solid rgba(0,0,0,0.1);
   }
 
+  /* Icon Library */
+  .icon-library-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .icon-library-search {
+    width: 100%;
+  }
+  .icon-category-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .icon-category-chip {
+    padding: 6px 10px;
+    border: 1px solid var(--g200);
+    border-radius: 999px;
+    background: var(--w);
+    color: var(--g600);
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all var(--t);
+  }
+  .icon-category-chip:hover {
+    border-color: var(--rose-100);
+    color: var(--rose);
+    background: var(--rose-50);
+  }
+  .icon-category-chip.active {
+    border-color: var(--rose);
+    color: var(--rose);
+    background: var(--rose-50);
+  }
+  .icon-library-meta {
+    font-size: 0.68rem;
+    color: var(--g400);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .icon-library-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .icon-library-item {
+    border: 1px solid var(--g200);
+    border-radius: 10px;
+    background: var(--w);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition: all var(--t);
+    min-height: 132px;
+  }
+  .icon-library-item:hover {
+    border-color: var(--rose-100);
+    background: var(--rose-50);
+  }
+  .icon-library-item.active {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px var(--rose-100);
+  }
+  .icon-library-preview {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    border: 1px solid var(--g150);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 8px;
+  }
+  .icon-library-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .icon-library-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--g700);
+    line-height: 1.3;
+  }
+  .icon-library-tag {
+    font-size: 0.63rem;
+    color: var(--g400);
+    line-height: 1.2;
+  }
+  .icon-library-empty {
+    padding: 14px;
+    border: 1px dashed var(--g200);
+    border-radius: 10px;
+    color: var(--g400);
+    font-size: 0.72rem;
+    background: var(--g50);
+  }
+
   /* Sliders and Range */
   .range-container {
     display: flex;
@@ -1601,6 +1704,22 @@
                     <span class="range-value" id="val-coupleSize">100%</span>
                   </div>
                 </div>
+              </div>
+
+              <div class="customizer-card">
+                <div class="customizer-card-title">Icon Library</div>
+                <div class="icon-library-toolbar">
+                  <input
+                    type="search"
+                    class="fi icon-library-search"
+                    id="icon-library-search"
+                    placeholder="Search icons by name, keyword, or category"
+                    oninput="handleIconLibrarySearch(this)"
+                  >
+                  <div class="icon-category-chips" id="icon-category-chips"></div>
+                </div>
+                <div class="icon-library-meta" id="icon-library-meta">Loading icon library...</div>
+                <div class="icon-library-grid" id="icon-library-grid"></div>
               </div>
 
               <div id="icon-nudge-controls"></div>
@@ -2690,6 +2809,13 @@ const CORNER_NUDGE_CONFIG = [
   { key: 'cornerBr', title: 'Bottom Right Flower' }
 ];
 
+let ICON_LIBRARY = [];
+let ICON_CATEGORIES = [];
+let ICON_LIBRARY_FILTER = {
+  query: '',
+  category: 'all'
+};
+
 function iconOffsetKeys(key) {
   return { x: key + 'OffsetX', y: key + 'OffsetY' };
 }
@@ -2791,6 +2917,118 @@ function renderColorPresets() {
   `).join('');
   updatePresetCardsActiveState();
 }
+
+function renderIconCategoryChips() {
+  const host = $('icon-category-chips');
+  if (!host) return;
+
+  const categories = ICON_CATEGORIES.length ? ICON_CATEGORIES : ICON_LIBRARY.map(icon => ({
+    id: icon.category,
+    label: icon.category.charAt(0).toUpperCase() + icon.category.slice(1)
+  }));
+  host.innerHTML = [
+    `<button type="button" class="icon-category-chip ${ICON_LIBRARY_FILTER.category === 'all' ? 'active' : ''}" onclick="setIconLibraryCategory('all')">All</button>`,
+    ...Array.from(new Map(categories.map(cat => [cat.id, cat])).values()).map(cat => `
+      <button type="button" class="icon-category-chip ${ICON_LIBRARY_FILTER.category === cat.id ? 'active' : ''}" onclick="setIconLibraryCategory('${cat.id}')">${cat.label}</button>
+    `)
+  ].join('');
+}
+
+function matchesIconSearch(icon, query) {
+  if (!query) return true;
+  const haystack = [
+    icon.id,
+    icon.name,
+    icon.category,
+    icon.subcategory,
+    ...(Array.isArray(icon.keywords) ? icon.keywords : [])
+  ].join(' ').toLowerCase();
+  return haystack.includes(query);
+}
+
+function renderIconLibrary() {
+  const grid = $('icon-library-grid');
+  const meta = $('icon-library-meta');
+  if (!grid || !meta) return;
+
+  const query = ICON_LIBRARY_FILTER.query.trim().toLowerCase();
+  const filtered = ICON_LIBRARY.filter(icon => {
+    const categoryOk = ICON_LIBRARY_FILTER.category === 'all' || icon.category === ICON_LIBRARY_FILTER.category;
+    return categoryOk && matchesIconSearch(icon, query);
+  });
+
+  meta.textContent = `${filtered.length} icon${filtered.length === 1 ? '' : 's'} shown`;
+  grid.innerHTML = filtered.length ? filtered.map(icon => `
+    <button
+      type="button"
+      class="icon-library-item"
+      data-icon-id="${esc(icon.id)}"
+      onclick="useLibraryIcon('${esc(icon.id)}')"
+      title="${esc(icon.name)}"
+    >
+      <div class="icon-library-preview">
+        <img src="${esc(icon.file)}" alt="${esc(icon.name)}">
+      </div>
+      <div class="icon-library-name">${esc(icon.name)}</div>
+      <div class="icon-library-tag">${esc(icon.category)} / ${esc(icon.subcategory)}</div>
+    </button>
+  `).join('') : '<div class="icon-library-empty">No icons match this search.</div>';
+
+  const activeId = localStorage.getItem('mic_selected_icon_id');
+  if (activeId) {
+    const activeItem = grid.querySelector(`[data-icon-id="${activeId.replace(/"/g, '\\"')}"]`);
+    if (activeItem) activeItem.classList.add('active');
+  }
+}
+
+async function loadIconLibrary() {
+  const meta = $('icon-library-meta');
+  try {
+    const [iconsRes, categoriesRes] = await Promise.all([
+      fetch('../assets/metadata/icons.json'),
+      fetch('../assets/metadata/categories.json')
+    ]);
+    if (!iconsRes.ok) throw new Error('Failed to load icon metadata');
+    const data = await iconsRes.json();
+    if (categoriesRes.ok) {
+      const categoriesData = await categoriesRes.json();
+      ICON_CATEGORIES = Array.isArray(categoriesData.iconCategories) ? categoriesData.iconCategories : [];
+    }
+    ICON_LIBRARY = Array.isArray(data.icons) ? data.icons : [];
+    renderIconCategoryChips();
+    renderIconLibrary();
+    if (meta) meta.textContent = `${ICON_LIBRARY.length} icons available`;
+  } catch (err) {
+    ICON_LIBRARY = [];
+    ICON_CATEGORIES = [];
+    renderIconCategoryChips();
+    if (meta) meta.textContent = 'Icon library unavailable';
+    const grid = $('icon-library-grid');
+    if (grid) grid.innerHTML = '<div class="icon-library-empty">Unable to load icon metadata.</div>';
+  }
+}
+
+window.handleIconLibrarySearch = function(el) {
+  ICON_LIBRARY_FILTER.query = el.value || '';
+  renderIconLibrary();
+};
+
+window.setIconLibraryCategory = function(category) {
+  ICON_LIBRARY_FILTER.category = category;
+  renderIconCategoryChips();
+  renderIconLibrary();
+};
+
+window.useLibraryIcon = function(iconId) {
+  const icon = ICON_LIBRARY.find(item => item.id === iconId);
+  if (!icon) return;
+  try {
+    localStorage.setItem('mic_selected_icon_id', icon.id);
+    localStorage.setItem('mic_selected_icon', JSON.stringify(icon));
+  } catch (e) {}
+  renderIconLibrary();
+  if (typeof toast === 'function') toast(`Selected ${icon.name}`, 's');
+};
 
 window.applyColorPreset = function(cardBg, bodyBg, accentColor, textColor, headingColor, element) {
   setField('style.cardBg', cardBg);
@@ -3216,6 +3454,7 @@ try {
 // ══════════════════════════════════════════════════════
 renderSections();
 renderColorPresets();
+loadIconLibrary();
 renderIconNudgeControls();
 renderCornerNudgeControls();
 syncCustomizerInputs();
