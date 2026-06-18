@@ -358,8 +358,8 @@
   /* The actual card1 iframe */
   .preview-vp {
     flex:1; overflow:auto;
-    display:flex; align-items:flex-start; justify-content:center;
-    padding:32px 24px 60px;
+    display:flex; align-items:center; justify-content:center;
+    padding:40px 24px;
     position:relative;
   }
   #card1-scaler-wrap {
@@ -369,6 +369,7 @@
     width: 670px; /* default 75% zoom */
     height: 570px;
     transition: width 0.2s, height 0.2s;
+    margin: auto;
   }
   .card1-outer {
     position: absolute;
@@ -939,6 +940,171 @@
     height: 14px;
     border-radius: 50%;
     border: 1px solid rgba(0,0,0,0.1);
+  }
+
+  /* Icon Library */
+  .icon-library-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .icon-library-search {
+    width: 100%;
+  }
+  .icon-category-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .icon-category-chip {
+    padding: 6px 10px;
+    border: 1px solid var(--g200);
+    border-radius: 999px;
+    background: var(--w);
+    color: var(--g600);
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all var(--t);
+  }
+  .icon-category-chip:hover {
+    border-color: var(--rose-100);
+    color: var(--rose);
+    background: var(--rose-50);
+  }
+  .icon-category-chip.active {
+    border-color: var(--rose);
+    color: var(--rose);
+    background: var(--rose-50);
+  }
+  .icon-library-meta {
+    font-size: 0.68rem;
+    color: var(--g400);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .icon-library-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .icon-library-item {
+    border: 1px solid var(--g200);
+    border-radius: 10px;
+    background: var(--w);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition: all var(--t);
+    min-height: 132px;
+  }
+  .icon-library-item:hover {
+    border-color: var(--rose-100);
+    background: var(--rose-50);
+  }
+  .icon-library-item.active {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px var(--rose-100);
+  }
+  .icon-library-preview {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    border: 1px solid var(--g150);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 8px;
+  }
+  .icon-library-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .icon-library-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--g700);
+    line-height: 1.3;
+  }
+  .icon-library-tag {
+    font-size: 0.63rem;
+    color: var(--g400);
+    line-height: 1.2;
+  }
+  .icon-library-empty {
+    padding: 14px;
+    border: 1px dashed var(--g200);
+    border-radius: 10px;
+    color: var(--g400);
+    font-size: 0.72rem;
+    background: var(--g50);
+  }
+  .icon-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .icon-accordion-item {
+    border: 1px solid var(--g200);
+    border-radius: 12px;
+    background: var(--g50);
+    overflow: hidden;
+  }
+  .icon-accordion-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    color: var(--g700);
+    background: var(--w);
+    border-bottom: 1px solid var(--g150);
+    cursor: pointer;
+  }
+  .icon-accordion-head:hover {
+    background: var(--rose-50);
+    color: var(--rose);
+  }
+  .icon-accordion-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left;
+  }
+  .icon-accordion-title strong {
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .icon-accordion-title span {
+    font-size: 0.66rem;
+    color: var(--g400);
+    font-weight: 500;
+  }
+  .icon-accordion-chevron {
+    transition: transform var(--t);
+    color: var(--g400);
+    flex-shrink: 0;
+  }
+  .icon-accordion-item.open .icon-accordion-chevron {
+    transform: rotate(180deg);
+    color: var(--rose);
+  }
+  .icon-accordion-body {
+    display: none;
+    padding: 12px;
+  }
+  .icon-accordion-item.open .icon-accordion-body {
+    display: block;
+  }
+  .icon-accordion-item.open .icon-accordion-head {
+    background: var(--rose-50);
+    color: var(--rose);
   }
 
   /* Sliders and Range */
@@ -1530,80 +1696,128 @@
               <h3 class="customizer-group-title">Icons & Decorations</h3>
               <p class="customizer-group-desc">Hide, show, or resize core graphics and illustrations.</p>
               
-              <div class="customizer-card">
-                <div class="customizer-card-title">Ganesh Icon</div>
-                <div class="customizer-field-row">
-                  <span class="customizer-label">Show Ganesh Icon</span>
-                  <label class="tgl-switch">
-                    <input type="checkbox" id="chk-showGanesh" checked data-style-key="showGanesh" onchange="handleCheckboxChange(this)">
-                    <span class="tgl-slider"></span>
-                  </label>
-                </div>
-                <div class="customizer-field">
-                  <span class="customizer-label">Ganesh Icon Size</span>
-                  <div class="range-container">
-                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="ganeshSize" oninput="handleSliderInput(this)">
-                    <span class="range-value" id="val-ganeshSize">100%</span>
+              <div class="icon-accordion">
+                <div class="icon-accordion-item" id="icon-box-library">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('library')">
+                    <span class="icon-accordion-title">
+                      <strong>Icon Library</strong>
+                      <span>Search and pick icons</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body">
+                    <div class="icon-library-toolbar">
+                      <input
+                        type="search"
+                        class="fi icon-library-search"
+                        id="icon-library-search"
+                        placeholder="Search icons by name, keyword, or category"
+                        oninput="handleIconLibrarySearch(this)"
+                      >
+                      <div class="icon-category-chips" id="icon-category-chips"></div>
+                    </div>
+                    <div class="icon-library-meta" id="icon-library-meta">Loading icon library...</div>
+                    <div class="icon-library-grid" id="icon-library-grid"></div>
                   </div>
                 </div>
-              </div>
-              
-              <div class="customizer-card">
-                <div class="customizer-card-title">Om / Sun Icon</div>
-                <div class="customizer-field-row">
-                  <span class="customizer-label">Show Om/Sun Icon</span>
-                  <label class="tgl-switch">
-                    <input type="checkbox" id="chk-showOm" checked data-style-key="showOm" onchange="handleCheckboxChange(this)">
-                    <span class="tgl-slider"></span>
-                  </label>
-                </div>
-                <div class="customizer-field">
-                  <span class="customizer-label">Om Icon Size</span>
-                  <div class="range-container">
-                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="omSize" oninput="handleSliderInput(this)">
-                    <span class="range-value" id="val-omSize">100%</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="customizer-card">
-                <div class="customizer-card-title">Border Side Chains</div>
-                <div class="customizer-field-row">
-                  <span class="customizer-label">Show Hanging Chains</span>
-                  <label class="tgl-switch">
-                    <input type="checkbox" id="chk-showChains" checked data-style-key="showChains" onchange="handleCheckboxChange(this)">
-                    <span class="tgl-slider"></span>
-                  </label>
-                </div>
-                <div class="customizer-field">
-                  <span class="customizer-label">Chains Icon Size</span>
-                  <div class="range-container">
-                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="chainsSize" oninput="handleSliderInput(this)">
-                    <span class="range-value" id="val-chainsSize">100%</span>
-                  </div>
-                </div>
-              </div>
 
-              <div class="customizer-card">
-                <div class="customizer-card-title">Center Couple Box</div>
-                <div class="customizer-field-row">
-                  <span class="customizer-label">Show Couple Illustration</span>
-                  <label class="tgl-switch">
-                    <input type="checkbox" id="chk-showCouple" checked data-style-key="showCouple" onchange="handleCheckboxChange(this)">
-                    <span class="tgl-slider"></span>
-                  </label>
+                <div class="icon-accordion-item" id="icon-box-core">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('core')">
+                    <span class="icon-accordion-title">
+                      <strong>Core Icons</strong>
+                      <span>Ganesh, Om, chains, couple</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body">
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Ganesh Icon</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Ganesh Icon</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showGanesh" checked data-style-key="showGanesh" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Ganesh Icon Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="ganeshSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-ganeshSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Om / Sun Icon</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Om/Sun Icon</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showOm" checked data-style-key="showOm" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Om Icon Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="omSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-omSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Border Side Chains</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Hanging Chains</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showChains" checked data-style-key="showChains" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Chains Icon Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="chainsSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-chainsSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="customizer-card">
+                      <div class="customizer-card-title">Center Couple Box</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Couple Illustration</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showCouple" checked data-style-key="showCouple" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Couple Box Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="coupleSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-coupleSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="customizer-field">
-                  <span class="customizer-label">Couple Box Size</span>
-                  <div class="range-container">
-                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="coupleSize" oninput="handleSliderInput(this)">
-                    <span class="range-value" id="val-coupleSize">100%</span>
+
+                <div class="icon-accordion-item" id="icon-box-advanced">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('advanced')">
+                    <span class="icon-accordion-title">
+                      <strong>Position Adjustments</strong>
+                      <span>Nudge icons and corners</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body">
+                    <div id="icon-nudge-controls"></div>
+                    <div id="corner-nudge-controls"></div>
                   </div>
                 </div>
               </div>
-
-              <div id="icon-nudge-controls"></div>
-              <div id="corner-nudge-controls"></div>
             </div>
 
             <!-- SPACING PANEL -->
@@ -2689,6 +2903,18 @@ const CORNER_NUDGE_CONFIG = [
   { key: 'cornerBr', title: 'Bottom Right Flower' }
 ];
 
+let ICON_LIBRARY = [];
+let ICON_CATEGORIES = [];
+let ICON_LIBRARY_FILTER = {
+  query: '',
+  category: 'all'
+};
+let ICON_ACCORDION_STATE = {
+  library: false,
+  core: false,
+  advanced: false
+};
+
 function iconOffsetKeys(key) {
   return { x: key + 'OffsetX', y: key + 'OffsetY' };
 }
@@ -2790,6 +3016,138 @@ function renderColorPresets() {
   `).join('');
   updatePresetCardsActiveState();
 }
+
+function renderIconCategoryChips() {
+  const host = $('icon-category-chips');
+  if (!host) return;
+
+  const categories = ICON_CATEGORIES.length ? ICON_CATEGORIES : ICON_LIBRARY.map(icon => ({
+    id: icon.category,
+    label: icon.category.charAt(0).toUpperCase() + icon.category.slice(1)
+  }));
+  host.innerHTML = [
+    `<button type="button" class="icon-category-chip ${ICON_LIBRARY_FILTER.category === 'all' ? 'active' : ''}" onclick="setIconLibraryCategory('all')">All</button>`,
+    ...Array.from(new Map(categories.map(cat => [cat.id, cat])).values()).map(cat => `
+      <button type="button" class="icon-category-chip ${ICON_LIBRARY_FILTER.category === cat.id ? 'active' : ''}" onclick="setIconLibraryCategory('${cat.id}')">${cat.label}</button>
+    `)
+  ].join('');
+}
+
+function matchesIconSearch(icon, query) {
+  if (!query) return true;
+  const haystack = [
+    icon.id,
+    icon.name,
+    icon.category,
+    icon.subcategory,
+    ...(Array.isArray(icon.keywords) ? icon.keywords : [])
+  ].join(' ').toLowerCase();
+  return haystack.includes(query);
+}
+
+function renderIconLibrary() {
+  const grid = $('icon-library-grid');
+  const meta = $('icon-library-meta');
+  if (!grid || !meta) return;
+
+  const query = ICON_LIBRARY_FILTER.query.trim().toLowerCase();
+  const filtered = ICON_LIBRARY.filter(icon => {
+    const categoryOk = ICON_LIBRARY_FILTER.category === 'all' || icon.category === ICON_LIBRARY_FILTER.category;
+    return categoryOk && matchesIconSearch(icon, query);
+  });
+
+  meta.textContent = `${filtered.length} icon${filtered.length === 1 ? '' : 's'} shown`;
+  grid.innerHTML = filtered.length ? filtered.map(icon => `
+    <button
+      type="button"
+      class="icon-library-item"
+      data-icon-id="${esc(icon.id)}"
+      onclick="useLibraryIcon('${esc(icon.id)}')"
+      title="${esc(icon.name)}"
+    >
+      <div class="icon-library-preview">
+        <img src="${esc(icon.file)}" alt="${esc(icon.name)}">
+      </div>
+      <div class="icon-library-name">${esc(icon.name)}</div>
+      <div class="icon-library-tag">${esc(icon.category)} / ${esc(icon.subcategory)}</div>
+    </button>
+  `).join('') : '<div class="icon-library-empty">No icons match this search.</div>';
+
+  const activeId = localStorage.getItem('mic_selected_icon_id');
+  if (activeId) {
+    const activeItem = grid.querySelector(`[data-icon-id="${activeId.replace(/"/g, '\\"')}"]`);
+    if (activeItem) activeItem.classList.add('active');
+  }
+}
+
+function applyIconAccordionState() {
+  Object.keys(ICON_ACCORDION_STATE).forEach(key => {
+    const box = $('icon-box-' + key);
+    if (box) box.classList.toggle('open', !!ICON_ACCORDION_STATE[key]);
+  });
+}
+
+function saveIconAccordionState() {
+  try {
+    localStorage.setItem('mic_icon_accordion_state', JSON.stringify(ICON_ACCORDION_STATE));
+  } catch (e) {}
+}
+
+window.toggleIconAccordion = function(key) {
+  ICON_ACCORDION_STATE[key] = !ICON_ACCORDION_STATE[key];
+  applyIconAccordionState();
+  saveIconAccordionState();
+};
+
+async function loadIconLibrary() {
+  const meta = $('icon-library-meta');
+  try {
+    const [iconsRes, categoriesRes] = await Promise.all([
+      fetch('../assets/metadata/icons.json'),
+      fetch('../assets/metadata/categories.json')
+    ]);
+    if (!iconsRes.ok) throw new Error('Failed to load icon metadata');
+    const data = await iconsRes.json();
+    if (categoriesRes.ok) {
+      const categoriesData = await categoriesRes.json();
+      ICON_CATEGORIES = Array.isArray(categoriesData.iconCategories) ? categoriesData.iconCategories : [];
+    }
+    ICON_LIBRARY = Array.isArray(data.icons) ? data.icons : [];
+    renderIconCategoryChips();
+    renderIconLibrary();
+    applyIconAccordionState();
+    if (meta) meta.textContent = `${ICON_LIBRARY.length} icons available`;
+  } catch (err) {
+    ICON_LIBRARY = [];
+    ICON_CATEGORIES = [];
+    renderIconCategoryChips();
+    if (meta) meta.textContent = 'Icon library unavailable';
+    const grid = $('icon-library-grid');
+    if (grid) grid.innerHTML = '<div class="icon-library-empty">Unable to load icon metadata.</div>';
+  }
+}
+
+window.handleIconLibrarySearch = function(el) {
+  ICON_LIBRARY_FILTER.query = el.value || '';
+  renderIconLibrary();
+};
+
+window.setIconLibraryCategory = function(category) {
+  ICON_LIBRARY_FILTER.category = category;
+  renderIconCategoryChips();
+  renderIconLibrary();
+};
+
+window.useLibraryIcon = function(iconId) {
+  const icon = ICON_LIBRARY.find(item => item.id === iconId);
+  if (!icon) return;
+  try {
+    localStorage.setItem('mic_selected_icon_id', icon.id);
+    localStorage.setItem('mic_selected_icon', JSON.stringify(icon));
+  } catch (e) {}
+  renderIconLibrary();
+  if (typeof toast === 'function') toast(`Selected ${icon.name}`, 's');
+};
 
 window.applyColorPreset = function(cardBg, bodyBg, accentColor, textColor, headingColor, element) {
   setField('style.cardBg', cardBg);
@@ -3210,11 +3568,20 @@ try {
   }
 } catch(e) {}
 
+try {
+  const savedAccordion = localStorage.getItem('mic_icon_accordion_state');
+  if (savedAccordion) {
+    const parsed = JSON.parse(savedAccordion);
+    ICON_ACCORDION_STATE = Object.assign({}, ICON_ACCORDION_STATE, parsed || {});
+  }
+} catch(e) {}
+
 // ══════════════════════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════════════════════
 renderSections();
 renderColorPresets();
+loadIconLibrary();
 renderIconNudgeControls();
 renderCornerNudgeControls();
 syncCustomizerInputs();
