@@ -1719,7 +1719,6 @@
                           <option value="top1Icon">Top Secondary Accent</option>
                           <option value="bottomIcon">Bottom Frame Accent</option>
                           <option value="midIcon">Center Motif</option>
-                          <option value="couple1">Couple Emblem - Section 1</option>
                           <option value="couple2">Couple Emblem - Section 2</option>
                         </select>
                       </div>
@@ -3064,7 +3063,6 @@ const ICON_REPLACE_TARGETS = [
   { key: 'top1Icon', label: 'Top Secondary Accent' },
   { key: 'bottomIcon', label: 'Bottom Frame Accent' },
   { key: 'midIcon', label: 'Center Motif' },
-  { key: 'couple1', label: 'Couple Emblem - Section 1' },
   { key: 'couple2', label: 'Couple Emblem - Section 2' }
 ];
 
@@ -3260,8 +3258,11 @@ function saveIconAccordionState() {
 function getIconReplaceTarget() {
   try {
     const saved = localStorage.getItem('mic_icon_replace_target');
-    if (saved) ICON_REPLACE_TARGET = saved;
+    if (saved) ICON_REPLACE_TARGET = saved === 'couple1' ? 'couple2' : saved;
   } catch (e) {}
+  if (!ICON_REPLACE_TARGETS.some(item => item.key === ICON_REPLACE_TARGET)) {
+    ICON_REPLACE_TARGET = 'ganesh';
+  }
   return ICON_REPLACE_TARGET || 'ganesh';
 }
 
