@@ -1107,6 +1107,93 @@
     color: var(--rose);
   }
 
+  .icon-color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .icon-color-card {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--g200);
+    border-radius: 14px;
+    background: var(--w);
+    padding: 14px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+    transition: transform var(--t), box-shadow var(--t), border-color var(--t);
+  }
+  .icon-color-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 24px rgba(0,0,0,0.08);
+    border-color: rgba(235,77,103,0.24);
+  }
+  .icon-color-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--g800);
+    line-height: 1.3;
+  }
+  .icon-color-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .icon-color-helper {
+    font-size: 0.68rem;
+    color: var(--g400);
+    line-height: 1.4;
+  }
+  .color-input-preview {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    border: 1.5px solid var(--g200);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    background: var(--w);
+    transition: border-color var(--t), box-shadow var(--t), background-color var(--t);
+  }
+  .color-input-preview.active {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 4px rgba(235,77,103,0.12);
+  }
+  .color-input-preview input[type="color"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .icon-color-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .icon-color-header .customizer-card-title {
+    margin-bottom: 4px;
+  }
+  .reset-icon-colors-btn {
+    border: 1px solid var(--g200);
+    background: var(--w);
+    color: var(--g700);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--t);
+  }
+  .reset-icon-colors-btn:hover {
+    background: var(--rose-50);
+    border-color: var(--rose-200);
+    color: var(--rose);
+  }
+
   /* Sliders and Range */
   .range-container {
     display: flex;
@@ -3266,19 +3353,25 @@ function renderIconColorControls() {
   if (!host) return;
   host.innerHTML = `
     <div class="customizer-card">
-      <div class="customizer-card-title">Icon Colors</div>
-      <div class="customizer-group-desc" style="margin-bottom:12px;">Set each icon slot color independently from the palette.</div>
+      <div class="icon-color-header">
+        <div>
+          <div class="customizer-card-title">Icon Colors</div>
+          <div class="customizer-group-desc" style="margin-bottom:0;">Set each icon slot tint independently. Leave a picker unset to keep the default art appearance.</div>
+        </div>
+        <button type="button" class="reset-icon-colors-btn" onclick="resetAllIconColors()">Reset all</button>
+      </div>
       <div class="icon-color-grid">
         ${ICON_COLOR_CONFIG.map(icon => `
           <div class="icon-color-card">
             <div class="icon-color-title">${icon.title}</div>
-            <div class="color-picker-wrapper">
+            <div class="icon-color-meta">
               <span class="color-value-text" id="val-iconColor-${icon.key}">default</span>
-              <div class="color-input-preview" style="margin-left:8px;">
-                <input type="color" data-icon-key="${icon.key}" oninput="handleIconColorPickerInput(this)">
+              <div class="color-input-preview" data-icon-preview="${icon.key}" aria-label="${icon.title} color picker">
+                <input type="color" data-icon-key="${icon.key}" title="Select color for ${icon.title}" aria-label="Select color for ${icon.title}" oninput="handleIconColorPickerInput(this)">
               </div>
             </div>
-            <button type="button" class="prop-btn" style="margin-top:8px; padding:6px 10px;" onclick="resetIconColor('${icon.key}')">Reset</button>
+            <div class="icon-color-helper">Use the swatch to choose a stronger, higher-contrast icon tint.</div>
+            <button type="button" class="reset-icon-colors-btn" onclick="resetIconColor('${icon.key}')">Reset</button>
           </div>
         `).join('')}
       </div>
@@ -3661,6 +3754,11 @@ window.handleIconColorPickerInput = function(el) {
   setField('style.iconColors', next);
   const label = $('val-iconColor-' + key);
   if (label) label.textContent = color;
+  const preview = el.closest('.color-input-preview');
+  if (preview) {
+    preview.style.backgroundColor = color;
+    preview.classList.add('active');
+  }
 };
 
 window.resetIconColor = function(iconKey) {
@@ -3669,9 +3767,27 @@ window.resetIconColor = function(iconKey) {
   delete next[iconKey];
   setField('style.iconColors', next);
   const input = document.querySelector(`input[data-icon-key="${iconKey}"]`);
-  if (input) input.value = style.accentColor || '#8b0040';
+  if (input) {
+    input.value = style.accentColor || '#8b0040';
+    const preview = input.closest('.color-input-preview');
+    if (preview) {
+      preview.style.backgroundColor = 'transparent';
+      preview.classList.remove('active');
+    }
+  }
   const label = $('val-iconColor-' + iconKey);
   if (label) label.textContent = 'default';
+};
+
+window.resetAllIconColors = function() {
+  const style = ensureCardStyle();
+  setField('style.iconColors', {});
+  syncCustomizerInputs();
+  document.querySelectorAll('.color-input-preview').forEach(preview => {
+    preview.style.backgroundColor = 'transparent';
+    preview.classList.remove('active');
+  });
+  if (typeof toast === 'function') toast('Reset all icon color overrides', 's');
 };
 
 window.handleFontFamilyChange = function(el) {
@@ -3781,8 +3897,13 @@ function syncCustomizerInputs() {
   const iconColorKeys = ICON_COLOR_CONFIG.map(item => item.key);
   iconColorKeys.forEach(key => {
     const input = document.querySelector(`input[data-icon-key="${key}"]`);
+    const preview = document.querySelector(`.color-input-preview[data-icon-preview="${key}"]`);
     const color = st.iconColors && st.iconColors[key];
     if (input) input.value = color || (st.accentColor || '#8b0040');
+    if (preview) {
+      preview.style.backgroundColor = color || 'transparent';
+      preview.classList.toggle('active', Boolean(color));
+    }
     const label = $('val-iconColor-' + key);
     if (label) label.textContent = color || 'default';
   });
