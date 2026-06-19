@@ -164,6 +164,15 @@
     transition:all var(--t);
   }
   .dl-btn:hover { background:var(--rose); box-shadow:0 4px 12px rgba(244,63,94,0.22); }
+  .print-btn {
+    display:flex; align-items:center; gap:7px;
+    padding:8px 14px; background:var(--w); color:var(--g700);
+    border:1.5px solid var(--g200); border-radius:8px;
+    font-size:0.86rem; font-weight:650; transition:all var(--t);
+  }
+  .print-btn:hover {
+    background:var(--rose-50); color:var(--rose); border-color:var(--rose-100);
+  }
   .dl-menu {
     position:absolute; top:calc(100% + 8px); right:0;
     background:var(--w); border:1px solid var(--g200);
@@ -1447,16 +1456,8 @@
         <span id="save-txt">Saved</span>
       </div>
 
-      <!-- Editable card title -->
-      <div class="doc-title-wrap">
-        <input class="doc-title-input" id="doc-title" value="विवाह निमंत्रण पत्र" placeholder="Card Title"
-          oninput="S.title=this.value; triggerAutosave();">
-      </div>
-
-
-
-      <!-- Download dropdown -->
-      <div class="dl-wrap" id="dl-wrap">
+      <div class="doc-title-wrap" style="gap:8px;">
+        <div class="dl-wrap" id="dl-wrap">
         <button class="dl-btn" id="dl-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -1478,11 +1479,6 @@
             Download PDF
           </button>
           <div class="dl-sep"></div>
-          <button class="dl-item" id="dl-print">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-            Print Card
-          </button>
-          <div class="dl-sep"></div>
           <button class="dl-item" id="dl-card1-direct">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             Open Card Directly
@@ -1493,6 +1489,13 @@
             Login to Download
           </button>
         </div>
+      </div>
+      <button class="dl-btn print-btn" id="print-page-btn" type="button" title="Print card in a new page">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M6 9V2h12v7" /><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" /><rect x="6" y="14" width="12" height="8" rx="2" />
+        </svg>
+        Print
+      </button>
       </div>
 
       <!-- Profile / Auth Area -->
@@ -2913,14 +2916,18 @@ window.addEventListener('resize', autoFit);
 $('dl-btn').onclick = e => { e.stopPropagation(); $('dl-wrap').classList.toggle('open'); };
 document.addEventListener('click', () => $('dl-wrap').classList.remove('open'));
 
-$('dl-print').onclick = () => {
-  $('dl-wrap').classList.remove('open');
-  const iframe = $('card1-iframe');
-  if (iframe && iframe.contentWindow) {
-    iframe.contentWindow.print();
-  } else {
-    window.print();
-  }
+$('print-page-btn').onclick = () => {
+  const activeId = (() => {
+    let id = 37;
+    try {
+      const activeRaw = localStorage.getItem('mic_active_template');
+      if (activeRaw) id = JSON.parse(activeRaw).id;
+    } catch (e) {}
+    return id;
+  })();
+  const file = activeId === 38 ? '../card1/card1_swapped.html' : '../card1/card1.html';
+  const newWin = window.open(file, '_blank');
+  if (newWin) newWin.focus();
 };
 
 $('dl-card1-direct').onclick = () => {
@@ -4159,8 +4166,9 @@ if (!activeTemplate) {
   } catch(e) { /* ignore */ }
 }
 
-// Sync title input
-if (S.title) $('doc-title').value = S.title;
+// Sync title input if the title field is still present
+const docTitleInput = $('doc-title');
+if (S.title && docTitleInput) docTitleInput.value = S.title;
 
 // Ensure styling is initialized
 ensureCardStyle();
