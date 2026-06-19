@@ -423,7 +423,7 @@ function buildBorderFrameCss(style) {
   }
   const preset = BORDER_FRAME_PRESETS[style.borderPreset || 'classic'] || BORDER_FRAME_PRESETS.classic;
   const borderColor = style.borderColor || style.accentColor || '#8b0040';
-  const cardBg = '#f2aec8';
+  const cardBg = style.cardBg || '#f9f1d0';
   const shadows = preset.rings.map((ring, idx) => {
     const ringColor = idx % 2 === 0 ? cardBg : borderColor;
     return `inset 0 0 0 ${ring} ${ringColor}`;
@@ -606,7 +606,7 @@ function applyCustomStyles(style) {
       font-family: '${style.fontFamily || 'Noto Serif Devanagari'}', serif;
     }
     .card {
-      background: #f2aec8;
+      background: ${style.cardBg || '#f9f1d0'};
       padding: ${style.cardPadding !== undefined ? style.cardPadding : 1.0}cm;
       gap: ${style.sectionGap !== undefined ? style.sectionGap : 0.3}cm;
     }

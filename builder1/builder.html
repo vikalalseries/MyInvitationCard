@@ -1549,21 +1549,22 @@
               </div>
               
               <div class="customizer-card">
-                <div class="customizer-card-title">Custom Colors</div>
-                
-                <div class="customizer-field-row">
-                  <div>
-                    <span class="customizer-label">Card Background (fixed stock)</span>
-                    <div class="customizer-label-sub">Preview only — actual print stock color is fixed</div>
-                  </div>
-                  <div class="color-picker-wrapper">
-                    <span class="color-value-text" id="val-cardBg">#f2aec8</span>
-                    <div class="color-input-preview" id="preview-cardBg">
-                      <input type="color" data-style-key="cardBg" disabled>
-                    </div>
-                  </div>
+                <div class="customizer-card-title">Card Stock</div>
+                <div class="customizer-group-desc">Choose one fixed paper stock color for the printed card.</div>
+                <div class="customizer-field">
+                  <label class="fl">Stock Option</label>
+                  <div class="customizer-label-sub">Cream, Ivory, Peach, or Gold</div>
+                  <select class="fs" id="card-stock-select" onchange="handleCardStockChange(this)">
+                    <option value="#f9f1d0">Cream</option>
+                    <option value="#fff5e1">Ivory</option>
+                    <option value="#f7d5c4">Peach</option>
+                    <option value="#f3d0a5">Gold</option>
+                  </select>
                 </div>
-                
+              </div>
+
+              <div class="customizer-card">
+                <div class="customizer-card-title">Design Customization</div>
                 <div class="customizer-field-row">
                   <div>
                     <span class="customizer-label">Outer Background</span>
@@ -2869,7 +2870,7 @@ function switchBuilderTab(tab) {
 //  CUSTOMIZER LOGIC
 // ══════════════════════════════════════════════════════
 const DEFAULT_STYLE = {
-  cardBg: '#f2aec8',
+  cardBg: '#f9f1d0',
   bodyBg: '#c8829a',
   accentColor: '#8b0040',
   textColor: '#6e0035',
@@ -3150,7 +3151,6 @@ function renderColorPresets() {
   if (!container) return;
   container.innerHTML = PRESETS.map(p => `
     <div class="preset-card" 
-         data-card-bg="${p.cardBg}" 
          data-body-bg="${p.bodyBg}" 
          data-accent-color="${p.accent}" 
          data-text-color="${p.text}" 
@@ -3158,7 +3158,6 @@ function renderColorPresets() {
          onclick="applyColorPreset('${p.cardBg}', '${p.bodyBg}', '${p.accent}', '${p.text}', '${p.heading}', this)">
       <div class="preset-name">${p.name}</div>
       <div class="preset-dots">
-        <div class="preset-dot" style="background: ${p.cardBg};"></div>
         <div class="preset-dot" style="background: ${p.bodyBg};"></div>
         <div class="preset-dot" style="background: ${p.accent};"></div>
         <div class="preset-dot" style="background: ${p.text};"></div>
@@ -3437,6 +3436,10 @@ window.handleColorPickerInput = function(el) {
   updatePresetCardsActiveState();
 };
 
+window.handleCardStockChange = function(el) {
+  setField('style.cardBg', el.value);
+};
+
 window.handleSliderInput = function(el) {
   const key = el.dataset.styleKey;
   const val = parseInt(el.value, 10);
@@ -3563,6 +3566,9 @@ function syncCustomizerInputs() {
   // Sync selectors
   const ffSelect = $('font-family-select');
   if (ffSelect && st.fontFamily) ffSelect.value = st.fontFamily;
+
+  const stockSelect = $('card-stock-select');
+  if (stockSelect && st.cardBg) stockSelect.value = st.cardBg;
 
   const csSelect = $('corner-symbol-select');
   if (csSelect && st.cornerSymbol) csSelect.value = st.cornerSymbol;
