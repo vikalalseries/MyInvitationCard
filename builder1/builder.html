@@ -1542,7 +1542,7 @@
             <!-- COLORS PANEL -->
             <div id="c-sec-colors" class="customizer-section-panel active">
               <h3 class="customizer-group-title">Color Palettes</h3>
-              <p class="customizer-group-desc">Select a curated theme palette or customize colors below.</p>
+              <p class="customizer-group-desc">Select a curated theme palette or customize accent colors below. Card stock color is fixed for print, so card background is preview-only.</p>
               
               <div class="presets-grid" id="color-presets-grid">
                 <!-- Presets populated by JS -->
@@ -1553,13 +1553,13 @@
                 
                 <div class="customizer-field-row">
                   <div>
-                    <span class="customizer-label">Card Background</span>
-                    <div class="customizer-label-sub">Main card color</div>
+                    <span class="customizer-label">Card Background (fixed stock)</span>
+                    <div class="customizer-label-sub">Preview only — actual print stock color is fixed</div>
                   </div>
                   <div class="color-picker-wrapper">
                     <span class="color-value-text" id="val-cardBg">#f2aec8</span>
                     <div class="color-input-preview" id="preview-cardBg">
-                      <input type="color" data-style-key="cardBg" oninput="handleColorPickerInput(this)">
+                      <input type="color" data-style-key="cardBg" disabled>
                     </div>
                   </div>
                 </div>
@@ -3393,7 +3393,6 @@ window.useLibraryIcon = function(iconId) {
 };
 
 window.applyColorPreset = function(cardBg, bodyBg, accentColor, textColor, headingColor, element) {
-  setField('style.cardBg', cardBg);
   setField('style.bodyBg', bodyBg);
   setField('style.accentColor', accentColor);
   setField('style.borderColor', accentColor);
@@ -3510,8 +3509,7 @@ function updatePresetCardsActiveState() {
   const st = S.style;
   if (!st) return;
   document.querySelectorAll('.preset-card').forEach(card => {
-    const matches = card.dataset.cardBg === st.cardBg &&
-                    card.dataset.bodyBg === st.bodyBg &&
+    const matches = card.dataset.bodyBg === st.bodyBg &&
                     card.dataset.accentColor === st.accentColor &&
                     card.dataset.textColor === st.textColor &&
                     card.dataset.headingColor === st.headingColor;
