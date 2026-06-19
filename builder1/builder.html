@@ -1553,12 +1553,13 @@
                 <div class="customizer-group-desc">Choose one fixed paper stock color for the printed card.</div>
                 <div class="customizer-field">
                   <label class="fl">Stock Option</label>
-                  <div class="customizer-label-sub">Cream, Ivory, Peach, or Gold</div>
+                  <div class="customizer-label-sub">Cream, Ivory, Peach, Gold, or Pink</div>
                   <select class="fs" id="card-stock-select" onchange="handleCardStockChange(this)">
                     <option value="#f9f1d0">Cream</option>
                     <option value="#fff5e1">Ivory</option>
                     <option value="#f7d5c4">Peach</option>
                     <option value="#f3d0a5">Gold</option>
+                    <option value="#f2aec8">Pink</option>
                   </select>
                 </div>
               </div>
@@ -1893,6 +1894,9 @@
                     <option value="thin">Thin Frame</option>
                     <option value="dashed">Dashed Frame</option>
                     <option value="ornate">Ornate Frame</option>
+                    <option value="old">Old Frame</option>
+                    <option value="news">News Frame</option>
+                    <option value="new">Modern Frame</option>
                   </select>
                 </div>
 
@@ -2871,7 +2875,7 @@ function switchBuilderTab(tab) {
 // ══════════════════════════════════════════════════════
 const DEFAULT_STYLE = {
   cardBg: '#f9f1d0',
-  bodyBg: '#c8829a',
+  bodyBg: '#f9f1d0',
   accentColor: '#8b0040',
   textColor: '#6e0035',
   headingColor: '#6e0035',
@@ -3438,6 +3442,7 @@ window.handleColorPickerInput = function(el) {
 
 window.handleCardStockChange = function(el) {
   setField('style.cardBg', el.value);
+  setField('style.bodyBg', el.value);
 };
 
 window.handleSliderInput = function(el) {

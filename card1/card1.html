@@ -414,7 +414,10 @@ const BORDER_FRAME_PRESETS = {
   double: { width: '0.08cm', borderStyle: 'double', rings: ['0.12cm', '0.20cm'] },
   thin: { width: '0.04cm', borderStyle: 'solid', rings: ['0.08cm', '0.14cm'] },
   dashed: { width: '0.05cm', borderStyle: 'dashed', rings: ['0.11cm', '0.18cm'] },
-  ornate: { width: '0.08cm', borderStyle: 'solid', rings: ['0.11cm', '0.18cm', '0.26cm', '0.34cm'] }
+  ornate: { width: '0.08cm', borderStyle: 'solid', rings: ['0.11cm', '0.18cm', '0.26cm', '0.34cm'] },
+  old: { width: '0.09cm', borderStyle: 'solid', rings: ['0.12cm', '0.18cm', '0.26cm'] },
+  news: { width: '0.06cm', borderStyle: 'dashed', rings: ['0.10cm', '0.16cm', '0.24cm'] },
+  new: { width: '0.05cm', borderStyle: 'solid', rings: ['0.09cm', '0.15cm', '0.22cm'] }
 };
 
 function buildBorderFrameCss(style) {
@@ -424,9 +427,8 @@ function buildBorderFrameCss(style) {
   const preset = BORDER_FRAME_PRESETS[style.borderPreset || 'classic'] || BORDER_FRAME_PRESETS.classic;
   const borderColor = style.borderColor || style.accentColor || '#8b0040';
   const cardBg = style.cardBg || '#f9f1d0';
-  const shadows = preset.rings.map((ring, idx) => {
-    const ringColor = idx % 2 === 0 ? cardBg : borderColor;
-    return `inset 0 0 0 ${ring} ${ringColor}`;
+  const shadows = preset.rings.map((ring) => {
+    return `inset 0 0 0 ${ring} ${cardBg}`;
   }).join(', ');
   return `border:${preset.width} ${preset.borderStyle} ${borderColor}; box-shadow:${shadows};`;
 }
@@ -612,6 +614,7 @@ function applyCustomStyles(style) {
     }
     .sec {
       ${buildBorderFrameCss(style)}
+      background: ${style.cardBg || '#f9f1d0'};
     }
     .fl {
       color: ${style.accentColor || '#8b0040'};
