@@ -392,6 +392,7 @@ const DEFAULT_CARD_STYLE = {
   curveLevel: 0,
   borderPreset: 'classic',
   borderColor: '#8b0040',
+  iconColors: {},
   iconReplacements: {}
 };
 
@@ -609,6 +610,11 @@ function applyCustomStyles(style) {
     const y = Number(style[key + 'OffsetY'] || 0);
     return `translate(${x}cm, ${y}cm)`;
   };
+  const iconColorStyle = (key) => {
+    const color = style.iconColors && style.iconColors[key];
+    if (!color) return '';
+    return `filter: brightness(0) saturate(100%) drop-shadow(0 0 0 ${color});`;
+  };
   const cornerShift = (key) => {
     const x = Number(style[key + 'OffsetX'] || 0);
     const y = Number(style[key + 'OffsetY'] || 0);
@@ -722,33 +728,41 @@ function applyCustomStyles(style) {
       width: ${ganeshSizeVal}cm !important;
       display: ${style.showGanesh !== false ? 'block' : 'none'} !important;
       transform: ${iconShift('ganesh')} !important;
+      ${iconColorStyle('ganesh')}
     }
     .sun-icon img {
       width: ${omSizeVal}cm !important;
       display: ${style.showOm !== false ? 'block' : 'none'} !important;
       transform: ${iconShift('om')} !important;
+      ${iconColorStyle('om')}
     }
     .chainleft img {
       width: ${chainsSizeVal}cm !important;
       display: ${style.showChains !== false ? 'block' : 'none'} !important;
       transform: ${iconShift('chainLeft')} !important;
+      ${iconColorStyle('chainLeft')}
     }
     .chainright img {
       width: ${chainsSizeVal}cm !important;
       display: ${style.showChains !== false ? 'block' : 'none'} !important;
       transform: ${iconShift('chainRight')} !important;
+      ${iconColorStyle('chainRight')}
     }
     .top-icon img {
       transform: ${iconShift('topIcon')} !important;
+      ${iconColorStyle('topIcon')}
     }
     .top1-icon img {
       transform: ${iconShift('top1Icon')} !important;
+      ${iconColorStyle('top1Icon')}
     }
     .bottom-icon img {
       transform: ${iconShift('bottomIcon')} !important;
+      ${iconColorStyle('bottomIcon')}
     }
     .mid-icon img {
       transform: ${iconShift('midIcon')} !important;
+      ${iconColorStyle('midIcon')}
     }
     .s1-events .couple-box {
       transform: ${iconShift('couple1')} !important;
@@ -759,6 +773,10 @@ function applyCustomStyles(style) {
     .couple-box img {
       width: ${coupleSizeVal}cm !important;
       display: ${style.showCouple !== false ? 'block' : 'none'} !important;
+      ${iconColorStyle('couple1')}
+    }
+    .s2-rowc .s2-icon img {
+      ${iconColorStyle('couple2')}
     }
   `;
 

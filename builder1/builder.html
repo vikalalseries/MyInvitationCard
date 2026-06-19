@@ -1828,6 +1828,17 @@
                   </div>
                 </div>
 
+                <div class="icon-accordion-item" id="icon-box-colors">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('colors')">
+                    <span class="icon-accordion-title">
+                      <strong>Icon Colors</strong>
+                      <span>Independent icon tinting</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body" id="icon-color-controls"></div>
+                </div>
+
                 <div class="icon-accordion-item" id="icon-box-advanced">
                   <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('advanced')">
                     <span class="icon-accordion-title">
@@ -2945,6 +2956,7 @@ const DEFAULT_STYLE = {
   curveLevel: 0,
   borderPreset: 'classic',
   borderColor: '#8b0040',
+  iconColors: {},
   iconReplacements: {}
 };
 
@@ -2958,12 +2970,126 @@ function ensureCardStyle() {
 }
 
 const PRESETS = [
-  { name: 'Classic Pink', cardBg: '#f2aec8', bodyBg: '#c8829a', accent: '#8b0040', text: '#6e0035', heading: '#6e0035' },
-  { name: 'Royal Crimson', cardBg: '#fffcf0', bodyBg: '#800000', accent: '#d4af37', text: '#5c000a', heading: '#5c000a' },
-  { name: 'Vibrant Saffron', cardBg: '#fff7eb', bodyBg: '#e05e00', accent: '#b80000', text: '#6b0000', heading: '#6b0000' },
-  { name: 'Peacock & Gold', cardBg: '#f0f8ff', bodyBg: '#093a5c', accent: '#d4af37', text: '#052238', heading: '#052238' },
-  { name: 'Royal Purple', cardBg: '#faf0ff', bodyBg: '#3c0c5c', accent: '#c71585', text: '#28003d', heading: '#28003d' },
-  { name: 'Golden Ivory', cardBg: '#faf6eb', bodyBg: '#2b211a', accent: '#c9784c', text: '#403026', heading: '#403026' }
+  {
+    name: 'Classic Pink',
+    cardBg: '#f2aec8',
+    bodyBg: '#c8829a',
+    accent: '#8b0040',
+    text: '#6e0035',
+    heading: '#6e0035',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top.png',
+      top1Icon: '../builder1/assets/icons/t1.png',
+      bottomIcon: '../builder1/assets/icons/top2.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Royal Crimson',
+    cardBg: '#fffcf0',
+    bodyBg: '#800000',
+    accent: '#d4af37',
+    text: '#5c000a',
+    heading: '#5c000a',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top2.png',
+      top1Icon: '../builder1/assets/icons/t1.png',
+      bottomIcon: '../builder1/assets/icons/top.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Vibrant Saffron',
+    cardBg: '#fff7eb',
+    bodyBg: '#e05e00',
+    accent: '#b80000',
+    text: '#6b0000',
+    heading: '#6b0000',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top.png',
+      top1Icon: '../builder1/assets/icons/t2.png',
+      bottomIcon: '../builder1/assets/icons/top2.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Peacock & Gold',
+    cardBg: '#f0f8ff',
+    bodyBg: '#093a5c',
+    accent: '#d4af37',
+    text: '#052238',
+    heading: '#052238',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/t1.png',
+      top1Icon: '../builder1/assets/icons/top.png',
+      bottomIcon: '../builder1/assets/icons/t2.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Royal Purple',
+    cardBg: '#faf0ff',
+    bodyBg: '#3c0c5c',
+    accent: '#c71585',
+    text: '#28003d',
+    heading: '#28003d',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top2.png',
+      top1Icon: '../builder1/assets/icons/t2.png',
+      bottomIcon: '../builder1/assets/icons/t1.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Golden Ivory',
+    cardBg: '#faf6eb',
+    bodyBg: '#2b211a',
+    accent: '#c9784c',
+    text: '#403026',
+    heading: '#403026',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top.png',
+      top1Icon: '../builder1/assets/icons/t1.png',
+      bottomIcon: '../builder1/assets/icons/top2.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  }
 ];
 
 const ICON_NUDGE_CONFIG = [
@@ -2978,6 +3104,8 @@ const ICON_NUDGE_CONFIG = [
   { key: 'couple1', title: 'Couple Box 1' },
   { key: 'couple2', title: 'Couple Box 2' }
 ];
+
+const ICON_COLOR_CONFIG = ICON_NUDGE_CONFIG;
 
 const CORNER_NUDGE_CONFIG = [
   { key: 'cornerTl', title: 'Top Left Flower' },
@@ -3133,6 +3261,31 @@ function renderIconNudgeControls() {
   `;
 }
 
+function renderIconColorControls() {
+  const host = $('icon-color-controls');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="customizer-card">
+      <div class="customizer-card-title">Icon Colors</div>
+      <div class="customizer-group-desc" style="margin-bottom:12px;">Set each icon slot color independently from the palette.</div>
+      <div class="icon-color-grid">
+        ${ICON_COLOR_CONFIG.map(icon => `
+          <div class="icon-color-card">
+            <div class="icon-color-title">${icon.title}</div>
+            <div class="color-picker-wrapper">
+              <span class="color-value-text" id="val-iconColor-${icon.key}">default</span>
+              <div class="color-input-preview" style="margin-left:8px;">
+                <input type="color" data-icon-key="${icon.key}" oninput="handleIconColorPickerInput(this)">
+              </div>
+            </div>
+            <button type="button" class="prop-btn" style="margin-top:8px; padding:6px 10px;" onclick="resetIconColor('${icon.key}')">Reset</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function renderCornerNudgeControls() {
   const host = $('corner-nudge-controls');
   if (!host) return;
@@ -3169,18 +3322,19 @@ function renderCornerNudgeControls() {
 function renderColorPresets() {
   const container = $('color-presets-grid');
   if (!container) return;
-  container.innerHTML = PRESETS.map(p => `
+  container.innerHTML = PRESETS.map((p, index) => `
     <div class="preset-card" 
          data-body-bg="${p.bodyBg}" 
          data-accent-color="${p.accent}" 
          data-text-color="${p.text}" 
          data-heading-color="${p.heading}"
-         onclick="applyColorPreset('${p.cardBg}', '${p.bodyBg}', '${p.accent}', '${p.text}', '${p.heading}', this)">
+         onclick="applyColorPreset(${index}, this)">
       <div class="preset-name">${p.name}</div>
       <div class="preset-dots">
         <div class="preset-dot" style="background: ${p.bodyBg};"></div>
         <div class="preset-dot" style="background: ${p.accent};"></div>
         <div class="preset-dot" style="background: ${p.text};"></div>
+        <div class="preset-dot" style="background: ${p.heading};"></div>
       </div>
     </div>
   `).join('');
@@ -3411,12 +3565,15 @@ window.useLibraryIcon = function(iconId) {
   if (typeof toast === 'function') toast(`Replaced ${getIconReplacementLabel(target)} with ${icon.name}`, 's');
 };
 
-window.applyColorPreset = function(cardBg, bodyBg, accentColor, textColor, headingColor, element) {
-  setField('style.bodyBg', bodyBg);
-  setField('style.accentColor', accentColor);
-  setField('style.borderColor', accentColor);
-  setField('style.textColor', textColor);
-  setField('style.headingColor', headingColor);
+window.applyColorPreset = function(presetIndex, element) {
+  const preset = PRESETS[presetIndex];
+  if (!preset) return;
+
+  setField('style.bodyBg', preset.bodyBg);
+  setField('style.accentColor', preset.accent);
+  setField('style.borderColor', preset.accent);
+  setField('style.textColor', preset.text);
+  setField('style.headingColor', preset.heading);
 
   // Sync visual inputs
   syncCustomizerInputs();
@@ -3492,6 +3649,29 @@ window.handleCheckboxChange = function(el) {
   const key = el.dataset.styleKey;
   const val = el.checked;
   setField('style.' + key, val);
+};
+
+window.handleIconColorPickerInput = function(el) {
+  const key = el.dataset.iconKey;
+  if (!key) return;
+  const color = el.value;
+  const style = ensureCardStyle();
+  const next = Object.assign({}, style.iconColors || {});
+  next[key] = color;
+  setField('style.iconColors', next);
+  const label = $('val-iconColor-' + key);
+  if (label) label.textContent = color;
+};
+
+window.resetIconColor = function(iconKey) {
+  const style = ensureCardStyle();
+  const next = Object.assign({}, style.iconColors || {});
+  delete next[iconKey];
+  setField('style.iconColors', next);
+  const input = document.querySelector(`input[data-icon-key="${iconKey}"]`);
+  if (input) input.value = style.accentColor || '#8b0040';
+  const label = $('val-iconColor-' + iconKey);
+  if (label) label.textContent = 'default';
 };
 
 window.handleFontFamilyChange = function(el) {
@@ -3597,6 +3777,15 @@ function syncCustomizerInputs() {
   const targetSelect = $('icon-replace-target-select');
   if (targetSelect) targetSelect.value = getIconReplaceTarget();
   refreshIconReplacementStatus();
+
+  const iconColorKeys = ICON_COLOR_CONFIG.map(item => item.key);
+  iconColorKeys.forEach(key => {
+    const input = document.querySelector(`input[data-icon-key="${key}"]`);
+    const color = st.iconColors && st.iconColors[key];
+    if (input) input.value = color || (st.accentColor || '#8b0040');
+    const label = $('val-iconColor-' + key);
+    if (label) label.textContent = color || 'default';
+  });
 
   // Sync selectors
   const ffSelect = $('font-family-select');
@@ -3876,6 +4065,7 @@ try {
 renderSections();
 renderColorPresets();
 loadIconLibrary();
+renderIconColorControls();
 renderIconNudgeControls();
 renderCornerNudgeControls();
 syncCustomizerInputs();
