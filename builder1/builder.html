@@ -1906,11 +1906,14 @@
                 </div>
 
                 <div class="customizer-field-row">
-                  <span class="customizer-label">Edge Curve</span>
-                  <label class="tgl-switch">
-                    <input type="checkbox" id="chk-curvedEdges" data-style-key="curvedEdges" onchange="handleCheckboxChange(this)">
-                    <span class="tgl-slider"></span>
-                  </label>
+                  <div>
+                    <span class="customizer-label">Edge Curve</span>
+                    <div class="customizer-label-sub">Smooth the border corners in 5 steps</div>
+                  </div>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="0" max="4" step="1" value="0" data-style-key="curveLevel" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-curveLevel">None</span>
+                  </div>
                 </div>
 
                 <div class="customizer-field-row">
@@ -2940,7 +2943,7 @@ const DEFAULT_STYLE = {
   cardPadding: 1.0,
   sectionGap: 0.3,
   showBorder: true,
-  curvedEdges: false,
+  curveLevel: 0,
   borderPreset: 'classic',
   borderColor: '#8b0040',
   iconReplacements: {}
@@ -3466,7 +3469,14 @@ window.handleSliderInput = function(el) {
   
   // Sync label
   const label = $('val-' + key);
-  if (label) label.textContent = val + '%';
+  if (label) {
+    if (key === 'curveLevel') {
+      const labels = ['None', 'Low', 'Medium', 'High', 'Max'];
+      label.textContent = labels[val] || val;
+    } else {
+      label.textContent = val + '%';
+    }
+  }
 };
 
 window.handleSpacingInput = function(el) {
@@ -3558,17 +3568,24 @@ function syncCustomizerInputs() {
   });
 
   // Sync sliders
-  const sliders = ['shlokaSize', 'headingSize', 'namesSize', 'eventSize', 'footerSize', 'ganeshSize', 'omSize', 'chainsSize', 'coupleSize', 'cornerSize'];
+  const sliders = ['shlokaSize', 'headingSize', 'namesSize', 'eventSize', 'footerSize', 'ganeshSize', 'omSize', 'chainsSize', 'coupleSize', 'cornerSize', 'curveLevel'];
   sliders.forEach(key => {
     const val = st[key] !== undefined ? st[key] : 100;
     const slider = document.querySelector(`.range-slider[data-style-key="${key}"]`);
     if (slider) slider.value = val;
     const valLabel = $('val-' + key);
-    if (valLabel) valLabel.textContent = val + '%';
+    if (valLabel) {
+      if (key === 'curveLevel') {
+        const labels = ['None', 'Low', 'Medium', 'High', 'Max'];
+        valLabel.textContent = labels[val] || val;
+      } else {
+        valLabel.textContent = val + '%';
+      }
+    }
   });
 
   // Sync checkboxes
-  const checkboxes = ['showGanesh', 'showOm', 'showChains', 'showCouple', 'showCorners', 'showBorder', 'curvedEdges'];
+  const checkboxes = ['showGanesh', 'showOm', 'showChains', 'showCouple', 'showCorners', 'showBorder'];
   checkboxes.forEach(key => {
     const val = st[key] !== false;
     const chk = $('chk-' + key);

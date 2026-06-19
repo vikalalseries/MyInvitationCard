@@ -389,8 +389,8 @@ const DEFAULT_CARD_STYLE = {
   cardPadding: 1.0,
   sectionGap: 0.3,
   showBorder: true,
+  curveLevel: 0,
   borderPreset: 'classic',
-  curvedEdges: false,
   borderColor: '#8b0040',
   iconReplacements: {}
 };
@@ -431,7 +431,13 @@ function buildBorderFrameCss(style) {
   const shadows = preset.rings.map((ring) => {
     return `inset 0 0 0 ${ring} ${cardBg}`;
   }).join(', ');
-  const radius = style.curvedEdges && preset.borderRadius ? ` border-radius:${preset.borderRadius};` : '';
+  let radius = '';
+  if (style.curveLevel && preset.borderRadius) {
+    const factor = Number(style.curveLevel) / 4;
+    const baseRadius = parseFloat(preset.borderRadius);
+    const radiusValue = (baseRadius * factor).toFixed(3) + 'cm';
+    radius = ` border-radius:${radiusValue};`;
+  }
   return `border:${preset.width} ${preset.borderStyle} ${borderColor}; box-shadow:${shadows};${radius}`;
 }
 
