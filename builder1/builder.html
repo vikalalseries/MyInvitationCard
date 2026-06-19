@@ -1906,6 +1906,14 @@
                 </div>
 
                 <div class="customizer-field-row">
+                  <span class="customizer-label">Edge Curve</span>
+                  <label class="tgl-switch">
+                    <input type="checkbox" id="chk-curvedEdges" data-style-key="curvedEdges" onchange="handleCheckboxChange(this)">
+                    <span class="tgl-slider"></span>
+                  </label>
+                </div>
+
+                <div class="customizer-field-row">
                   <div>
                     <span class="customizer-label">Border Color</span>
                     <div class="customizer-label-sub">Change frame color</div>
@@ -2932,6 +2940,7 @@ const DEFAULT_STYLE = {
   cardPadding: 1.0,
   sectionGap: 0.3,
   showBorder: true,
+  curvedEdges: false,
   borderPreset: 'classic',
   borderColor: '#8b0040',
   iconReplacements: {}
@@ -3559,7 +3568,7 @@ function syncCustomizerInputs() {
   });
 
   // Sync checkboxes
-  const checkboxes = ['showGanesh', 'showOm', 'showChains', 'showCouple', 'showCorners', 'showBorder'];
+  const checkboxes = ['showGanesh', 'showOm', 'showChains', 'showCouple', 'showCorners', 'showBorder', 'curvedEdges'];
   checkboxes.forEach(key => {
     const val = st[key] !== false;
     const chk = $('chk-' + key);

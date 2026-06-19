@@ -390,6 +390,7 @@ const DEFAULT_CARD_STYLE = {
   sectionGap: 0.3,
   showBorder: true,
   borderPreset: 'classic',
+  curvedEdges: false,
   borderColor: '#8b0040',
   iconReplacements: {}
 };
@@ -430,7 +431,7 @@ function buildBorderFrameCss(style) {
   const shadows = preset.rings.map((ring) => {
     return `inset 0 0 0 ${ring} ${cardBg}`;
   }).join(', ');
-  const radius = preset.borderRadius ? ` border-radius:${preset.borderRadius};` : '';
+  const radius = style.curvedEdges && preset.borderRadius ? ` border-radius:${preset.borderRadius};` : '';
   return `border:${preset.width} ${preset.borderStyle} ${borderColor}; box-shadow:${shadows};${radius}`;
 }
 
