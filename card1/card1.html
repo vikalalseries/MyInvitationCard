@@ -410,14 +410,19 @@ function loadCustomFont(fontFamily) {
 }
 
 const BORDER_FRAME_PRESETS = {
-  classic: { width: '0.07cm', borderStyle: 'solid', rings: ['0.13cm', '0.20cm'] },
-  double: { width: '0.08cm', borderStyle: 'double', rings: ['0.12cm', '0.20cm'] },
-  thin: { width: '0.04cm', borderStyle: 'solid', rings: ['0.08cm', '0.14cm'] },
-  dashed: { width: '0.05cm', borderStyle: 'dashed', rings: ['0.11cm', '0.18cm'] },
-  ornate: { width: '0.08cm', borderStyle: 'solid', rings: ['0.11cm', '0.18cm', '0.26cm', '0.34cm'] },
-  old: { width: '0.09cm', borderStyle: 'solid', rings: ['0.12cm', '0.18cm', '0.26cm'] },
-  news: { width: '0.06cm', borderStyle: 'dashed', rings: ['0.10cm', '0.16cm', '0.24cm'] },
-  new: { width: '0.05cm', borderStyle: 'solid', rings: ['0.09cm', '0.15cm', '0.22cm'] }
+  classic: { width: '0.07cm', borderStyle: 'solid', rings: ['0.13cm', '0.22cm'], borderRadius: '0.24cm' },
+  double: { width: '0.10cm', borderStyle: 'double', rings: ['0.14cm', '0.26cm'], borderRadius: '0.20cm' },
+  thin: { width: '0.04cm', borderStyle: 'solid', rings: ['0.09cm', '0.16cm'], borderRadius: '0.18cm' },
+  dashed: { width: '0.08cm', borderStyle: 'dashed', rings: ['0.12cm', '0.20cm'], borderRadius: '0.12cm' },
+  ornate: { width: '0.10cm', borderStyle: 'solid', rings: ['0.12cm', '0.20cm', '0.28cm', '0.36cm', '0.44cm'], borderRadius: '0.28cm' },
+  luxe: { width: '0.12cm', borderStyle: 'double', rings: ['0.14cm', '0.24cm', '0.34cm'], borderRadius: '0.28cm' },
+  modern: { width: '0.06cm', borderStyle: 'solid', rings: ['0.15cm', '0.28cm'], borderRadius: '0.32cm' },
+  minimal: { width: '0.04cm', borderStyle: 'solid', rings: ['0.18cm'], borderRadius: '0.40cm' },
+  'art-deco': { width: '0.06cm', borderStyle: 'solid', rings: ['0.10cm', '0.18cm', '0.26cm', '0.34cm'], borderRadius: '0.16cm' },
+  vintage: { width: '0.10cm', borderStyle: 'solid', rings: ['0.12cm', '0.20cm', '0.28cm', '0.38cm'], borderRadius: '0.36cm' },
+  retro: { width: '0.09cm', borderStyle: 'dotted', rings: ['0.14cm', '0.22cm', '0.30cm'], borderRadius: '0.22cm' },
+  elegant: { width: '0.08cm', borderStyle: 'solid', rings: ['0.11cm', '0.19cm', '0.27cm'], borderRadius: '0.30cm' },
+  bold: { width: '0.14cm', borderStyle: 'solid', rings: ['0.16cm', '0.28cm'], borderRadius: '0.18cm' }
 };
 
 function buildBorderFrameCss(style) {
@@ -430,7 +435,8 @@ function buildBorderFrameCss(style) {
   const shadows = preset.rings.map((ring) => {
     return `inset 0 0 0 ${ring} ${cardBg}`;
   }).join(', ');
-  return `border:${preset.width} ${preset.borderStyle} ${borderColor}; box-shadow:${shadows};`;
+  const radius = preset.borderRadius ? ` border-radius:${preset.borderRadius};` : '';
+  return `border:${preset.width} ${preset.borderStyle} ${borderColor}; box-shadow:${shadows};${radius}`;
 }
 
 const ICON_REPLACEMENT_MAP = [
