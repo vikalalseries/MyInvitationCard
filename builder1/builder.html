@@ -2323,6 +2323,12 @@ const S = {
 
 const STORAGE_KEY = 'mic_card1_builder_v1';
 
+// Deep copy of original default state — never modify this, used for reset
+const ORIGINAL_S = JSON.parse(JSON.stringify(S));
+
+// Global login state flag (set by Firebase onAuthStateChanged)
+window._micIsLoggedIn = false;
+
 // ══════════════════════════════════════════════════════
 //  UTILITIES
 // ══════════════════════════════════════════════════════
@@ -2358,9 +2364,16 @@ function triggerAutosave() {
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(S));
-      if (ss) ss.classList.remove('saving');
-      if (st) st.textContent = 'Saved';
+      // Only persist to localStorage if user is logged in
+      if (window._micIsLoggedIn) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(S));
+        if (ss) ss.classList.remove('saving');
+        if (st) st.textContent = 'Saved';
+      } else {
+        // Still update live preview but don't persist
+        if (ss) ss.classList.remove('saving');
+        if (st) st.textContent = 'Not saved (login required)';
+      }
     } catch(e) { if(st) st.textContent = 'Error'; }
   }, 900);
 }
@@ -4147,24 +4160,12 @@ try {
 } catch(e) { /* ignore */ }
 
 // ══════════════════════════════════════════════════════
-//  RESTORE FROM LOCALSTORAGE (only if no fresh template)
+//  RESTORE FROM LOCALSTORAGE — deferred to onAuthStateChanged
+//  (only restores saved edits when user is confirmed logged in)
 // ══════════════════════════════════════════════════════
-if (!activeTemplate) {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      // Deep merge
-      Object.keys(parsed).forEach(k => {
-        if (typeof parsed[k] === 'object' && parsed[k] !== null && typeof S[k] === 'object') {
-          Object.assign(S[k], parsed[k]);
-        } else if (parsed[k] !== undefined) {
-          S[k] = parsed[k];
-        }
-      });
-    }
-  } catch(e) { /* ignore */ }
-}
+// NOTE: localStorage restore is now handled inside onAuthStateChanged
+// so we only restore saved edits for logged-in users.
+// If no activeTemplate was selected, the default ORIGINAL_S values remain.
 
 // Sync title input if the title field is still present
 const docTitleInput = $('doc-title');
@@ -4343,8 +4344,31 @@ function updateHeaderProfileUI(user) {
 }
 
 onAuthStateChanged(auth, (user) => {
+  window._micIsLoggedIn = !!user;
   updateDownloadAuthUI(!!user);
   updateHeaderProfileUI(user);
+
+  // Restore saved edits from localStorage ONLY if user is logged in
+  if (user && !activeTemplate) {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Deep merge saved state into S
+        Object.keys(parsed).forEach(k => {
+          if (typeof parsed[k] === 'object' && parsed[k] !== null && typeof S[k] === 'object') {
+            Object.assign(S[k], parsed[k]);
+          } else if (parsed[k] !== undefined) {
+            S[k] = parsed[k];
+          }
+        });
+        // Re-render UI with restored state
+        renderSections();
+        syncCustomizerInputs();
+        sendToCard1();
+      }
+    } catch(e) { /* ignore */ }
+  }
 });
 
 // Toggle profile popup dropdown
@@ -4386,8 +4410,23 @@ window.closeLogoutConfirm = function() {
 
 window.executeLogout = async function() {
   try {
+    // Clear saved state from localStorage
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('mic_active_template');
+
+    // Deep restore S to original defaults before reload
+    Object.keys(ORIGINAL_S).forEach(k => {
+      if (typeof ORIGINAL_S[k] === 'object' && ORIGINAL_S[k] !== null) {
+        S[k] = JSON.parse(JSON.stringify(ORIGINAL_S[k]));
+      } else {
+        S[k] = ORIGINAL_S[k];
+      }
+    });
+    Object.keys(S).forEach(k => {
+      if (!(k in ORIGINAL_S)) delete S[k];
+    });
+
+    window._micIsLoggedIn = false;
     await signOut(auth);
     if (typeof toast === 'function') toast('Logged out successfully!', 's');
     setTimeout(() => window.location.reload(), 800);
@@ -4661,33 +4700,23 @@ window.closeResetConfirm = function() {
 };
 
 window.executeResetCard = function() {
-  // Reset builder state to the active template defaults without navigating away.
+  // Reset builder state to the ORIGINAL default template — full reset of text + style.
   try {
     // Clear any saved builder overrides
     localStorage.removeItem(STORAGE_KEY);
 
-    // Determine base template to restore from: runtime `activeTemplate` or stored `mic_active_template`
-    let base = (typeof activeTemplate !== 'undefined' && activeTemplate) ? activeTemplate : null;
-    if (!base) {
-      try { const raw = localStorage.getItem('mic_active_template'); if (raw) base = JSON.parse(raw); } catch(e) { base = null; }
-    }
-
-    if (base && base.style) {
-      // Restore S fields from template defaults
-      S.style = mergeStyleDefaults(base.style);
-      S.title = base.title || '';
-      if (typeof S.content === 'object') {
-        // If template provided content, try to restore it — safe-guarded
-        if (base.content) S.content = Object.assign({}, base.content);
+    // Deep restore ALL fields from ORIGINAL_S (text + style both)
+    Object.keys(ORIGINAL_S).forEach(k => {
+      if (typeof ORIGINAL_S[k] === 'object' && ORIGINAL_S[k] !== null) {
+        S[k] = JSON.parse(JSON.stringify(ORIGINAL_S[k]));
+      } else {
+        S[k] = ORIGINAL_S[k];
       }
-    } else {
-      // Fallback: just ensure style defaults
-      ensureCardStyle();
-    }
-
-    // Remove stored active template marker so next load is fresh (keep it optional)
-    // localStorage.removeItem('mic_active_template'); // keep this commented to avoid losing reference
-
+    });
+    // Remove any extra keys that were added during editing but don't exist in ORIGINAL_S
+    Object.keys(S).forEach(k => {
+      if (!(k in ORIGINAL_S)) delete S[k];
+    });
 
     // Re-sync UI to reflect restored state
     ensureCardStyle();
@@ -4706,13 +4735,11 @@ window.executeResetCard = function() {
       } catch(e) {}
 
       if (iframe) {
-        // If src already points to desired file, simply post message after ensuring it's loaded
         const postUpdate = () => {
           const payload = { type: 'MIC_CARD_UPDATE', card: S };
           try { if (iframe.contentWindow) iframe.contentWindow.postMessage(payload, '*'); } catch(e) {}
         };
 
-        // If src differs, set it and wait for load before posting
         if (iframe.getAttribute('src') !== file) {
           iframe.addEventListener('load', function onLoad() {
             iframe.removeEventListener('load', onLoad);
@@ -4720,7 +4747,6 @@ window.executeResetCard = function() {
           });
           iframe.setAttribute('src', file);
         } else {
-          // Already the template; post update after a tiny timeout to ensure frame ready
           setTimeout(postUpdate, 60);
         }
       }
@@ -4730,7 +4756,6 @@ window.executeResetCard = function() {
     if (typeof toast === 'function') toast('Card reset to template defaults', 's');
   } catch (err) {
     console.error('Reset failed:', err);
-    // Fallback to full reload if something unexpectedly fails
     window.location.reload();
   }
 };
