@@ -4661,9 +4661,78 @@ window.closeResetConfirm = function() {
 };
 
 window.executeResetCard = function() {
-  localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem('mic_active_template');
-  window.location.reload();
+  // Reset builder state to the active template defaults without navigating away.
+  try {
+    // Clear any saved builder overrides
+    localStorage.removeItem(STORAGE_KEY);
+
+    // Determine base template to restore from: runtime `activeTemplate` or stored `mic_active_template`
+    let base = (typeof activeTemplate !== 'undefined' && activeTemplate) ? activeTemplate : null;
+    if (!base) {
+      try { const raw = localStorage.getItem('mic_active_template'); if (raw) base = JSON.parse(raw); } catch(e) { base = null; }
+    }
+
+    if (base && base.style) {
+      // Restore S fields from template defaults
+      S.style = mergeStyleDefaults(base.style);
+      S.title = base.title || '';
+      if (typeof S.content === 'object') {
+        // If template provided content, try to restore it — safe-guarded
+        if (base.content) S.content = Object.assign({}, base.content);
+      }
+    } else {
+      // Fallback: just ensure style defaults
+      ensureCardStyle();
+    }
+
+    // Remove stored active template marker so next load is fresh (keep it optional)
+    // localStorage.removeItem('mic_active_template'); // keep this commented to avoid losing reference
+
+
+    // Re-sync UI to reflect restored state
+    ensureCardStyle();
+    renderSections();
+    syncCustomizerInputs();
+
+    // Load the actual template HTML into the preview iframe (card1.html or swapped variant)
+    const iframe = $('card1-iframe');
+    try {
+      let file = '../card1/card1.html';
+      try {
+        const activeRaw = localStorage.getItem('mic_active_template');
+        let activeId = (activeTemplate && activeTemplate.id) ? activeTemplate.id : null;
+        if (!activeId && activeRaw) activeId = JSON.parse(activeRaw).id;
+        if (activeId === 38) file = '../card1/card1_swapped.html';
+      } catch(e) {}
+
+      if (iframe) {
+        // If src already points to desired file, simply post message after ensuring it's loaded
+        const postUpdate = () => {
+          const payload = { type: 'MIC_CARD_UPDATE', card: S };
+          try { if (iframe.contentWindow) iframe.contentWindow.postMessage(payload, '*'); } catch(e) {}
+        };
+
+        // If src differs, set it and wait for load before posting
+        if (iframe.getAttribute('src') !== file) {
+          iframe.addEventListener('load', function onLoad() {
+            iframe.removeEventListener('load', onLoad);
+            postUpdate();
+          });
+          iframe.setAttribute('src', file);
+        } else {
+          // Already the template; post update after a tiny timeout to ensure frame ready
+          setTimeout(postUpdate, 60);
+        }
+      }
+    } catch(e) { console.error('Preview update failed', e); }
+
+    closeResetConfirm();
+    if (typeof toast === 'function') toast('Card reset to template defaults', 's');
+  } catch (err) {
+    console.error('Reset failed:', err);
+    // Fallback to full reload if something unexpectedly fails
+    window.location.reload();
+  }
 };
 </script>
 </body>
