@@ -205,6 +205,23 @@ body {
   border-radius: 2px 2px 0 0;
 }
 
+.tab-btn.ai-tab {
+  color: #7c3aed;
+}
+
+.tab-btn.ai-tab:hover {
+  background: #faf5ff;
+}
+
+.tab-btn.ai-tab.active {
+  color: #7c3aed;
+  background: #faf5ff;
+}
+
+.tab-btn.ai-tab.active::after {
+  background: #7c3aed;
+}
+
 /* Right aligned items */
 .tb-right {
   display: flex;
@@ -417,37 +434,163 @@ body {
 
 /* ── SIDEBAR (LEFT COLUMN) ── */
 .sidebar {
-  width: 440px;
+  width: 480px;
   background-color: var(--g50);
   border-right: 1px solid var(--g200);
   display: flex;
   flex-direction: column;
   height: 100%;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
-.sidebar-header {
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--g200);
-  display: none; /* Hide since logo and tabs moved to topbar */
+/* UPPER SIDEBAR SUB-TABS (Mantra vs Ceremonies) */
+.sidebar-sub-tabs {
+  display: flex;
+  background: var(--g150);
+  border-radius: 10px;
+  padding: 4px;
+  margin: 16px 20px 8px;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.sub-tab-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 8px;
+  color: var(--g500);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all var(--t);
+  outline: none;
+}
+
+.sub-tab-btn:hover {
+  color: var(--rose);
+}
+
+.sub-tab-btn.active {
+  background: var(--w);
+  color: var(--rose);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 /* Scrollable forms container */
 .forms-container {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 24px 40px;
+  padding: 10px 20px 30px;
 }
 
-.tab-pane {
+.sub-tab-pane {
   display: none;
   flex-direction: column;
   gap: 16px;
 }
 
-.tab-pane.active {
+.sub-tab-pane.active {
   display: flex;
 }
+
+/* ── FLOWCV STYLE CUSTOMIZER (Customize Inner Layout) ── */
+.customizer-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background: var(--w);
+  overflow: hidden;
+}
+
+.customizer-sidebar {
+  width: 85px;
+  background: var(--g50);
+  border-right: 1px solid var(--g200);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 12px 4px;
+  gap: 4px;
+  overflow-y: auto;
+  align-items: center;
+}
+
+.customizer-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 4px;
+  border-radius: 10px;
+  color: var(--g500);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  transition: all var(--t);
+  text-align: center;
+  background: transparent;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.customizer-nav-btn i {
+  font-size: 1.15rem;
+  opacity: 0.8;
+}
+
+.customizer-nav-btn:hover {
+  color: var(--rose);
+  background: var(--rose-50);
+}
+
+.customizer-nav-btn.active {
+  color: var(--rose);
+  background: var(--w);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+}
+
+.customizer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 18px 40px;
+  background: var(--w);
+}
+
+.customizer-section-panel {
+  display: none;
+}
+
+.customizer-section-panel.active {
+  display: flex;
+}
+
+.customizer-group-title {
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: var(--g900);
+  letter-spacing: -0.2px;
+  margin-bottom: 2px;
+}
+
+.customizer-group-desc {
+  font-size: 0.75rem;
+  color: var(--g400);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+/* Accordion in customize page is replaced with clean groups/inputs, but we support both classes */
 
 /* ── ACCORDION SECTIONS (.sc) ── */
 .sc {
@@ -704,6 +847,7 @@ input:checked + .slider:before {
   display: flex;
   gap: 12px;
   background: var(--w);
+  flex-shrink: 0;
 }
 
 .footer-btn {
@@ -719,6 +863,7 @@ input:checked + .slider:before {
   gap: 6px;
   transition: all var(--t);
   border: none;
+  outline: none;
 }
 
 .btn-secondary {

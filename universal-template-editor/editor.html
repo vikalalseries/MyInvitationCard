@@ -14,9 +14,9 @@
 
 <div class="app">
   
-  <!-- ══════════════════════════════════════ TOPBAR NAVBAR -->
+  <!-- ══════════════════════════════════════ TOPBAR NAVBAR (EXACT REPLICA) -->
   <header class="topbar">
-    <!-- Back to Dashboard Home -->
+    <!-- Back to Dashboard Home icon button -->
     <a href="../template-dashboard.html" class="tb-home" title="Back to Dashboard"><i class="fa-solid fa-house"></i></a>
     
     <!-- Site Logo -->
@@ -33,23 +33,35 @@
     
     <div class="tb-sep"></div>
     
-    <!-- Editable Document Title -->
-    <div class="doc-title-wrap">
-      <input type="text" id="doc-title-input" class="doc-title-input" value="Wedding Card 1" title="Click to rename draft">
-    </div>
-    
-    <div class="tb-sep"></div>
-
-    <!-- Navigation Tabs (Center segment) -->
+    <!-- Navigation Tabs in Topbar (Content / Customize / AI Tools) -->
     <nav class="tb-tabs">
-      <button class="tab-btn active" id="btn-content-tab" onclick="switchTab('content-tab')" title="Edit card text details">
-        <span class="tab-ico"><i class="fa-solid fa-pen-to-square"></i></span>Content
+      <button class="tab-btn active" id="tab-content" onclick="switchBuilderTab('content')" title="Edit invitation text content">
+        <span class="tab-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </span>
+        Content
       </button>
-      <button class="tab-btn" id="btn-ceremonies-tab" onclick="switchTab('ceremonies-tab')" title="Configure ceremony programs">
-        <span class="tab-ico"><i class="fa-solid fa-calendar-days"></i></span>Ceremonies
+      
+      <button class="tab-btn" id="tab-customize" onclick="switchBuilderTab('customize')" title="Customize colors, fonts, and spacings">
+        <span class="tab-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M12 2v2M12 20v2"/>
+          </svg>
+        </span>
+        Customize
       </button>
-      <button class="tab-btn" id="btn-styles-tab" onclick="switchTab('styles-tab')" title="Customize background themes & colors">
-        <span class="tab-ico"><i class="fa-solid fa-palette"></i></span>Styles
+      
+      <button class="tab-btn ai-tab" id="tab-ai" onclick="switchBuilderTab('ai')" title="AI Copywriting Tools">
+        <span class="tab-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+        </span>
+        AI Tools
       </button>
     </nav>
 
@@ -63,12 +75,19 @@
       
       <div class="tb-sep"></div>
 
+      <!-- Editable Document Title -->
+      <div class="doc-title-wrap">
+        <input type="text" id="doc-title-input" class="doc-title-input" value="Wedding Card 1" title="Click to rename draft">
+      </div>
+
+      <div class="tb-sep"></div>
+
       <!-- Print Action -->
-      <button class="print-btn" onclick="printCard()" title="Open print preview settings"><i class="fa-solid fa-print"></i>Print</button>
+      <button class="print-btn" onclick="printCard()" title="Open print dialog"><i class="fa-solid fa-print"></i>Print</button>
 
       <!-- Download Button Dropdown -->
       <div class="dl-wrap" id="dl-wrap">
-        <button class="dl-btn" id="dl-btn-toggle" onclick="toggleDownloadMenu(event)" title="Download invitation in high resolution formats">
+        <button class="dl-btn" id="dl-btn-toggle" onclick="toggleDownloadMenu(event)" title="Download invitation">
           <i class="fa-solid fa-download"></i>Download <i class="fa-solid fa-chevron-down dl-chev" style="font-size:10px; margin-left:2px;"></i>
         </button>
         <div class="dl-menu" id="dl-menu" onclick="event.stopPropagation()">
@@ -92,45 +111,110 @@
   <!-- ══════════════════════════════════════ BODY SECTION -->
   <main class="body">
     
-    <!-- Sidebar form controls (Width: 440px) -->
+    <!-- Sidebar form controls (Width: 480px to fit Customize sidebar layout) -->
     <div class="sidebar">
       
-      <!-- Hidden template selector placeholder (for loading templates dynamically in JS) -->
+      <!-- Hidden template selector placeholder -->
       <select id="template-select" style="display:none;" onchange="loadTemplate(this.value)">
         <option value="card1" selected>Traditional Hindu Wedding Card 1</option>
       </select>
 
-      <div class="forms-container">
-        
-        <!-- Content Pane -->
-        <div class="tab-pane active" id="content-tab">
-          <div id="dynamic-content-fields" style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- Rendered dynamically as collapsible accordion panels (.sc) -->
+      <!-- 1. Content View Panel (contains sub-tabs at the top!) -->
+      <div id="content-view" class="sidebar-view-panel" style="display: flex; flex-direction: column; height: 100%;">
+        <!-- UPPER SIDEBAR SUB-TABS (Mantra/Content vs Ceremonies) -->
+        <div class="sidebar-sub-tabs">
+          <button class="sub-tab-btn active" id="sub-tab-text" onclick="switchContentSubTab('text')">
+            <i class="fa-solid fa-font"></i>Card Text
+          </button>
+          <button class="sub-tab-btn" id="sub-tab-ceremonies" onclick="switchContentSubTab('ceremonies')">
+            <i class="fa-solid fa-cake-candles"></i>Ceremonies
+          </button>
+        </div>
+
+        <div class="forms-container">
+          <!-- Text fields panel -->
+          <div id="dynamic-content-fields" class="sub-tab-pane active" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Categories rendered dynamically -->
+          </div>
+          <!-- Ceremonies list panel -->
+          <div id="dynamic-ceremonies-fields" class="sub-tab-pane" style="display: none; flex-direction: column; gap: 16px;">
+            <!-- Ceremonies rendered dynamically -->
           </div>
         </div>
-        
-        <!-- Ceremonies Pane -->
-        <div class="tab-pane" id="ceremonies-tab">
-          <div id="dynamic-ceremonies-fields" style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- Rendered dynamically as collapsible ceremony panels -->
+      </div>
+
+      <!-- 2. Customize View Panel (contains the original sub-sidebar layout!) -->
+      <div id="customize-view" class="sidebar-view-panel" style="display: none; height: 100%; width: 100%;">
+        <div class="customizer-container">
+          <!-- Sub-Sidebar for style categories -->
+          <div class="customizer-sidebar">
+            <button class="customizer-nav-btn active" id="nav-styles-colors" onclick="switchCustomizeSubSection('colors')">
+              <i class="fa-solid fa-palette"></i>
+              <span>Colors</span>
+            </button>
+            <button class="customizer-nav-btn" id="nav-styles-fonts" onclick="switchCustomizeSubSection('fonts')">
+              <i class="fa-solid fa-font"></i>
+              <span>Fonts</span>
+            </button>
+            <button class="customizer-nav-btn" id="nav-styles-sizes" onclick="switchCustomizeSubSection('sizes')">
+              <i class="fa-solid fa-text-height"></i>
+              <span>Sizes</span>
+            </button>
+            <button class="customizer-nav-btn" id="nav-styles-borders" onclick="switchCustomizeSubSection('borders')">
+              <i class="fa-solid fa-border-all"></i>
+              <span>Borders</span>
+            </button>
+          </div>
+          
+          <!-- Styles editor area -->
+          <div class="customizer-content">
+            <!-- Colors subsection -->
+            <div id="c-sec-colors" class="customizer-section-panel active" style="display: flex; flex-direction: column; gap: 16px;">
+              <h3 class="customizer-group-title">Colors & Backgrounds</h3>
+              <p class="customizer-group-desc">Select background backdrop and typography colors for your invitation.</p>
+              <div id="styles-colors-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+            </div>
+            <!-- Fonts subsection -->
+            <div id="c-sec-fonts" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
+              <h3 class="customizer-group-title">Typography Style</h3>
+              <p class="customizer-group-desc">Choose a font family style that applies to the entire invitation card.</p>
+              <div id="styles-fonts-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+            </div>
+            <!-- Sizes subsection -->
+            <div id="c-sec-sizes" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
+              <h3 class="customizer-group-title">Text & Element Scales</h3>
+              <p class="customizer-group-desc">Adjust the scale proportions of texts and graphical items on the card.</p>
+              <div id="styles-sizes-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+            </div>
+            <!-- Borders & Icons subsection -->
+            <div id="c-sec-borders" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
+              <h3 class="customizer-group-title">Borders & Graphics</h3>
+              <p class="customizer-group-desc">Configure spacing levels, decorative borders, and religious ornament elements.</p>
+              <div id="styles-borders-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- 3. AI Tools View Panel -->
+      <div id="ai-view" class="sidebar-view-panel" style="display: none; flex-direction: column; height: 100%; padding: 24px; overflow-y: auto;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--g900); margin-bottom: 8px;">AI Copywriter</h3>
+        <p style="font-size: 0.8rem; color: var(--g500); margin-bottom: 24px; line-height: 1.5;">Generate poetic invitation texts, child request rhymes (Bal Aagrah), or devotional mantras automatically.</p>
         
-        <!-- Styles Pane -->
-        <div class="tab-pane" id="styles-tab">
-          <div id="dynamic-styles-fields" style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- Rendered dynamically as collapsible style controls -->
-          </div>
+        <div style="background:var(--w); border:1px dashed var(--g300); border-radius:12px; padding:24px; text-align:center;">
+          <i class="fa-solid fa-wand-magic-sparkles" style="font-size:2rem; color:var(--rose); margin-bottom:12px; opacity:0.8;"></i>
+          <h4 style="font-size:0.9rem; font-weight:700; color:var(--g900); margin-bottom:6px;">Smart Copy Generator</h4>
+          <p style="font-size:0.75rem; color:var(--g400); margin-bottom:16px;">Create custom regional messages and formal wording variations in real-time.</p>
+          <button class="footer-btn btn-primary" onclick="toast('AI tools features coming soon in premium plans!', 'i')" style="margin: 0 auto; width: auto; padding: 10px 18px;">Try Beta Builder</button>
         </div>
-        
       </div>
       
       <!-- Footer settings -->
       <div class="sidebar-footer">
-        <button class="footer-btn btn-secondary" onclick="resetToDefaults()" title="Restore template text & visual themes to default settings">
+        <button class="footer-btn btn-secondary" onclick="resetToDefaults()" title="Restore defaults">
           <i class="fa-solid fa-rotate-left"></i>Reset Defaults
         </button>
-        <button class="footer-btn btn-primary" onclick="exportData()" title="Save edits data offline in JSON format">
+        <button class="footer-btn btn-primary" onclick="exportData()" title="Export JSON backup">
           <i class="fa-solid fa-file-code"></i>Backup Draft
         </button>
       </div>
@@ -166,7 +250,7 @@
       Login with Email
     </button>
     <div class="lp-create-link">
-      Don't have an account? <span onclick="switchPopupView('lp-view-signup')">Sign up</span>
+      Don't have an account? <span id="lp-signup-btn-show" onclick="switchPopupView('lp-view-signup')">Sign up</span>
     </div>
   </div>
 
@@ -198,7 +282,7 @@
     </div>
   </div>
 
-  <!-- View 4: OTP verification code -->
+  <!-- View 4: OTP Verification -->
   <div id="lp-view-otp" class="lp-view">
     <div class="lp-title">Verify Code</div>
     <p class="lp-otp-text">Enter the 6-digit verification code sent to your email.</p>

@@ -1,4 +1,4 @@
-// ── UNIVERSAL TEMPLATE EDITOR CORE (PREMIUM UX) ──
+// ── UNIVERSAL TEMPLATE EDITOR CORE (PREMIUM UX & NAV ALIGNMENT) ──
 
 let activeTemplateId = 'card1';
 let config = null;
@@ -17,18 +17,6 @@ const FIELD_CATEGORIES = [
   "Family Details",
   "Bal Aagrah"
 ];
-
-// Style categories to group custom design settings
-const STYLE_CATEGORIES = {
-  "Colors & Backgrounds": ["bodyBg", "cardBg", "accentColor", "textColor", "headingColor", "borderColor"],
-  "Typography & Scales": ["fontFamily", "shlokaSize", "headingSize", "namesSize", "eventSize", "footerSize"],
-  "Graphics & Borders": [
-    "showGanesh", "ganeshSize", "showOm", "omSize", 
-    "showChains", "chainsSize", "showCouple", "coupleSize", 
-    "showCorners", "cornerSymbol", "cornerSize", "cardPadding", 
-    "sectionGap", "showBorder", "curveLevel", "borderPreset"
-  ]
-};
 
 // Authentication state
 let userLoggedIn = false;
@@ -389,151 +377,167 @@ function generateCeremoniesForm() {
   });
 }
 
-// Generate Styles Form accordion panels (grouped)
+// Generate Styles Form sub-sections dynamically (divided into Colors, Fonts, Sizes, Borders)
 function generateStylesForm() {
-  const container = document.getElementById('dynamic-styles-fields');
-  container.innerHTML = '';
+  const containerColors = document.getElementById('styles-colors-container');
+  const containerFonts = document.getElementById('styles-fonts-container');
+  const containerSizes = document.getElementById('styles-sizes-container');
+  const containerBorders = document.getElementById('styles-borders-container');
+
+  containerColors.innerHTML = '';
+  containerFonts.innerHTML = '';
+  containerSizes.innerHTML = '';
+  containerBorders.innerHTML = '';
   
   if (!config || !config.styles) return;
   
-  // Group fields into 3 logical design categories
-  Object.keys(STYLE_CATEGORIES).forEach((categoryName, index) => {
-    const ids = STYLE_CATEGORIES[categoryName];
-    const fields = config.styles.filter(s => ids.includes(s.id));
-    if (fields.length === 0) return;
+  config.styles.forEach(s => {
+    // Determine which container to route the field to
+    let targetContainer = containerBorders;
+    if (s.type === 'color' || s.id.endsWith('Color') || s.id.endsWith('Bg')) {
+      targetContainer = containerColors;
+    } else if (s.id === 'fontFamily') {
+      targetContainer = containerFonts;
+    } else if (s.id.endsWith('Size')) {
+      targetContainer = containerSizes;
+    }
+
+    const group = document.createElement('div');
+    group.className = 'form-group';
     
-    const sc = document.createElement('div');
-    sc.className = 'sc';
-    if (index === 0) sc.classList.add('open'); // Open first design panel by default
+    const label = document.createElement('label');
+    label.textContent = s.label || s.id;
+    group.appendChild(label);
     
-    const head = document.createElement('div');
-    head.className = 'sc-head';
-    head.setAttribute('onclick', 'toggleAccordion(this)');
-    
-    const left = document.createElement('div');
-    left.className = 'sc-left';
-    const title = document.createElement('span');
-    title.className = 'sc-title';
-    title.textContent = categoryName;
-    left.appendChild(title);
-    head.appendChild(left);
-    
-    const chev = document.createElement('i');
-    chev.className = 'fa-solid fa-chevron-down sc-chev';
-    head.appendChild(chev);
-    sc.appendChild(head);
-    
-    const body = document.createElement('div');
-    body.className = 'sc-body';
-    
-    const inner = document.createElement('div');
-    inner.className = 'sc-inner';
-    
-    fields.forEach(s => {
-      const group = document.createElement('div');
-      group.className = 'form-group';
+    if (s.type === 'color') {
+      const row = document.createElement('div');
+      row.className = 'color-picker-row';
       
-      const label = document.createElement('label');
-      label.textContent = s.label || s.id;
-      group.appendChild(label);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'color-input-wrapper';
       
-      if (s.type === 'color') {
-        const row = document.createElement('div');
-        row.className = 'color-picker-row';
-        
-        const wrapper = document.createElement('div');
-        wrapper.className = 'color-input-wrapper';
-        
-        const picker = document.createElement('input');
-        picker.type = 'color';
-        picker.className = 'color-picker-raw';
-        picker.value = currentData.styles[s.id];
-        
-        const text = document.createElement('input');
-        text.type = 'text';
-        text.className = 'form-input color-text-input';
-        text.value = currentData.styles[s.id];
-        
-        picker.addEventListener('input', (e) => {
-          const val = e.target.value;
-          text.value = val;
-          currentData.styles[s.id] = val;
-          triggerSaving();
-          sendUpdate();
-        });
-        
-        text.addEventListener('input', (e) => {
-          const val = e.target.value;
-          if (/^#[0-9A-F]{6}$/i.test(val)) {
-            picker.value = val;
-          }
-          currentData.styles[s.id] = val;
-          triggerSaving();
-          sendUpdate();
-        });
-        
-        wrapper.appendChild(picker);
-        row.appendChild(wrapper);
-        row.appendChild(text);
-        group.appendChild(row);
-      } else if (s.type === 'select') {
-        const select = document.createElement('select');
-        select.className = 'dropdown-select';
-        
-        s.options.forEach(opt => {
-          const o = document.createElement('option');
-          o.value = opt;
-          o.textContent = isNaN(opt) ? opt : `${opt}%`;
-          if (String(opt) === String(currentData.styles[s.id])) {
-            o.selected = true;
-          }
-          select.appendChild(o);
-        });
-        
-        select.addEventListener('change', (e) => {
-          currentData.styles[s.id] = e.target.value;
-          triggerSaving();
-          sendUpdate();
-        });
-        
-        group.appendChild(select);
-      } else {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'form-input';
-        input.value = currentData.styles[s.id];
-        input.addEventListener('input', (e) => {
-          currentData.styles[s.id] = e.target.value;
-          triggerSaving();
-          sendUpdate();
-        });
-        group.appendChild(input);
-      }
+      const picker = document.createElement('input');
+      picker.type = 'color';
+      picker.className = 'color-picker-raw';
+      picker.value = currentData.styles[s.id];
       
-      inner.appendChild(group);
-    });
+      const text = document.createElement('input');
+      text.type = 'text';
+      text.className = 'form-input color-text-input';
+      text.value = currentData.styles[s.id];
+      
+      picker.addEventListener('input', (e) => {
+        const val = e.target.value;
+        text.value = val;
+        currentData.styles[s.id] = val;
+        triggerSaving();
+        sendUpdate();
+      });
+      
+      text.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (/^#[0-9A-F]{6}$/i.test(val)) {
+          picker.value = val;
+        }
+        currentData.styles[s.id] = val;
+        triggerSaving();
+        sendUpdate();
+      });
+      
+      wrapper.appendChild(picker);
+      row.appendChild(wrapper);
+      row.appendChild(text);
+      group.appendChild(row);
+    } else if (s.type === 'select') {
+      const select = document.createElement('select');
+      select.className = 'dropdown-select';
+      
+      s.options.forEach(opt => {
+        const o = document.createElement('option');
+        o.value = opt;
+        o.textContent = isNaN(opt) ? opt : `${opt}%`;
+        if (String(opt) === String(currentData.styles[s.id])) {
+          o.selected = true;
+        }
+        select.appendChild(o);
+      });
+      
+      select.addEventListener('change', (e) => {
+        currentData.styles[s.id] = e.target.value;
+        triggerSaving();
+        sendUpdate();
+      });
+      
+      group.appendChild(select);
+    } else {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'form-input';
+      input.value = currentData.styles[s.id];
+      input.addEventListener('input', (e) => {
+        currentData.styles[s.id] = e.target.value;
+        triggerSaving();
+        sendUpdate();
+      });
+      group.appendChild(input);
+    }
     
-    body.appendChild(inner);
-    sc.appendChild(body);
-    container.appendChild(sc);
+    targetContainer.appendChild(group);
   });
 }
 
-// Switch sidebar tabs
-function switchTab(tabId) {
-  // Reset tab button states
+// ── NAV TABS SWITCHER (TOPBAR LEVEL) ──
+function switchBuilderTab(tabId) {
+  // Reset navbar active tab classes
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.remove('active');
   });
   
-  // Set active tab button
-  document.getElementById(`btn-${tabId}`).classList.add('active');
+  // Set active class on active button
+  document.getElementById(`tab-${tabId}`).classList.add('active');
   
-  // Set active tab panel
-  document.querySelectorAll('.tab-pane').forEach(pane => {
-    pane.classList.remove('active');
+  // Toggle sidebar main panel views
+  document.querySelectorAll('.sidebar-view-panel').forEach(panel => {
+    panel.style.display = 'none';
   });
-  document.getElementById(tabId).classList.add('active');
+  document.getElementById(`${tabId}-view`).style.display = 'flex';
+}
+
+// ── NAV SUB-TABS SWITCHER (CONTENT SIDEBAR LEVEL) ──
+function switchContentSubTab(subTabId) {
+  // Reset sub-tab buttons active state
+  document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  document.getElementById(`sub-tab-${subTabId}`).classList.add('active');
+  
+  // Toggle sub-tab panels inside Content tab
+  document.querySelectorAll('.sub-tab-pane').forEach(pane => {
+    pane.style.display = 'none';
+  });
+  
+  if (subTabId === 'text') {
+    document.getElementById('dynamic-content-fields').style.display = 'flex';
+  } else {
+    document.getElementById('dynamic-ceremonies-fields').style.display = 'flex';
+  }
+}
+
+// ── CUSTOMIZER SUB-SIDEBAR SWITCHER (CUSTOMIZE SIDEBAR LEVEL) ──
+function switchCustomizeSubSection(sectionId) {
+  // Reset customizer sub-sidebar nav buttons
+  document.querySelectorAll('.customizer-nav-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  document.getElementById(`nav-styles-${sectionId}`).classList.add('active');
+  
+  // Toggle customization panels
+  document.querySelectorAll('.customizer-section-panel').forEach(panel => {
+    panel.style.display = 'none';
+  });
+  document.getElementById(`c-sec-${sectionId}`).style.display = 'flex';
 }
 
 // Send updates to preview frame
@@ -664,11 +668,9 @@ function handleDownload(format) {
   
   setTimeout(() => {
     if (format === 'pdf') {
-      // Trigger print for PDF since native browser handles high-quality print to PDF
       printCard();
       toast('PDF document compiled!', 's');
     } else {
-      // Simulated image download
       const docName = document.getElementById('doc-title-input').value.toLowerCase().replace(/[^a-z0-9]+/g, '_');
       const dummyContent = JSON.stringify(currentData, null, 2);
       const blob = new Blob([dummyContent], { type: "text/plain" });
