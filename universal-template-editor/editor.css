@@ -231,10 +231,14 @@ body {
 .tb-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-left: auto;
-  padding-left: 80px; /* Clear separation gap between left tabs and right controls */
+  padding-left: 50px; /* Clear separation gap between left tabs and right controls */
   flex-shrink: 0;
+}
+
+.tb-right .tb-sep {
+  margin: 0 4px;
 }
 
 .save-status {
@@ -322,6 +326,7 @@ body {
 
 .dl-wrap {
   position: relative;
+  margin-right: 2px; /* Maintain 8px gap between Download and Print */
 }
 
 .dl-btn {
