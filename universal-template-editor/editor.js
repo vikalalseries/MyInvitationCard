@@ -263,6 +263,13 @@ function generateCeremoniesForm() {
     left.appendChild(title);
     head.appendChild(left);
     
+    // Right side actions container (holds switch and chevron)
+    const right = document.createElement('div');
+    right.className = 'sc-right';
+    right.style.display = 'flex';
+    right.style.alignItems = 'center';
+    right.style.gap = '12px';
+    
     // Switch element (does not trigger toggleAccordion on click)
     const switchDiv = document.createElement('div');
     switchDiv.setAttribute('onclick', 'event.stopPropagation()');
@@ -291,12 +298,13 @@ function generateCeremoniesForm() {
     switchLabel.appendChild(switchInput);
     switchLabel.appendChild(slider);
     switchDiv.appendChild(switchLabel);
-    head.appendChild(switchDiv);
+    right.appendChild(switchDiv);
     
     const chev = document.createElement('i');
     chev.className = 'fa-solid fa-chevron-down sc-chev';
-    chev.style.marginLeft = '12px';
-    head.appendChild(chev);
+    right.appendChild(chev);
+    
+    head.appendChild(right);
     sc.appendChild(head);
     
     const body = document.createElement('div');
