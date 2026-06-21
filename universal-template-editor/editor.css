@@ -334,6 +334,28 @@ body {
   align-items: center;
   gap: 7px;
   padding: 8px 14px;
+  background: var(--w);
+  color: var(--g700);
+  border: 1.5px solid var(--g200);
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 650;
+  transition: all var(--t);
+  cursor: pointer;
+  outline: none;
+}
+
+.dl-btn:hover {
+  background: var(--rose-50);
+  color: var(--rose);
+  border-color: var(--rose-100);
+}
+
+.print-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
   background: #0f172a;
   color: var(--w);
   border-radius: 8px;
@@ -345,7 +367,7 @@ body {
   outline: none;
 }
 
-.dl-btn:hover {
+.print-btn-primary:hover {
   background: var(--rose);
   box-shadow: 0 4px 12px rgba(244, 63, 94, 0.22);
 }
