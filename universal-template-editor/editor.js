@@ -61,6 +61,9 @@ window.addEventListener('DOMContentLoaded', () => {
   if (zIn) zIn.onclick = () => setZoom(currentZoom + 5);
   if (zOut) zOut.onclick = () => setZoom(currentZoom - 5);
   if (zFit) zFit.onclick = autoFit;
+
+  // Initialize transliteration state
+  initTransliterationState();
 });
 
 // Load template configuration
@@ -210,6 +213,7 @@ function generateContentForm() {
           triggerSaving();
           sendUpdate();
         });
+        input.addEventListener('keydown', handleTranslitKeydown);
       } else {
         input = document.createElement('input');
         input.type = 'text';
@@ -220,6 +224,7 @@ function generateContentForm() {
           triggerSaving();
           sendUpdate();
         });
+        input.addEventListener('keydown', handleTranslitKeydown);
       }
       
       group.appendChild(input);
@@ -316,6 +321,7 @@ function generateCeremoniesForm() {
       triggerSaving();
       sendUpdate();
     });
+    nameInput.addEventListener('keydown', handleTranslitKeydown);
     nameGroup.appendChild(nameInput);
     inner.appendChild(nameGroup);
     
@@ -378,6 +384,7 @@ function generateCeremoniesForm() {
         triggerSaving();
         sendUpdate();
       });
+      venueInput.addEventListener('keydown', handleTranslitKeydown);
       venueGroup.appendChild(venueInput);
       inner.appendChild(venueGroup);
     }
@@ -872,3 +879,157 @@ window.executeResetCard = function() {
   closeResetConfirm();
   toast('Template defaults restored!', 's');
 };
+
+// ── INPUT TRANSLITERATION FUNCTIONALITY ──
+function handleTranslitKeydown(e) {
+  const toggle = document.getElementById('translit-toggle');
+  if (toggle && !toggle.checked) return;
+
+  if (e.key === ' ' || e.code === 'Space') {
+    const input = this;
+    const cursorPos = input.selectionStart;
+    const textBeforeCursor = input.value.substring(0, cursorPos);
+    
+    // Match only English alphabet word right before the cursor
+    const match = textBeforeCursor.match(/[a-zA-Z]+$/);
+    if (match) {
+      e.preventDefault(); // Stop space from being inserted
+      const word = match[0];
+      const start = cursorPos - word.length;
+      const end = cursorPos;
+      
+      // Perform transliteration
+      transliterateWord(input, word, start, end);
+    }
+  }
+}
+
+function transliterateWord(input, word, start, end) {
+  const langSelect = document.getElementById('translit-language');
+  const fullCode = langSelect ? langSelect.value : 'hi-t-i0-und';
+  
+  const url = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=${encodeURIComponent(fullCode)}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage`;
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  
+  fetch(url, { signal: controller.signal })
+    .then(res => res.json())
+    .then(data => {
+      clearTimeout(timeoutId);
+      if (data && data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
+        const transliteratedWord = data[1][0][1][0];
+        replaceWordInInput(input, word, transliteratedWord + ' ', start, end);
+      } else {
+        insertSpaceAt(input, end);
+      }
+    })
+    .catch(err => {
+      clearTimeout(timeoutId);
+      console.error('Transliteration error:', err);
+      insertSpaceAt(input, end);
+    });
+}
+
+function insertSpaceAt(input, pos) {
+  const val = input.value;
+  input.value = val.substring(0, pos) + ' ' + val.substring(pos);
+  input.setSelectionRange(pos + 1, pos + 1);
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function replaceWordInInput(input, originalWord, newWord, start, end) {
+  const currentVal = input.value;
+  if (currentVal.substring(start, end) !== originalWord) {
+    return;
+  }
+
+  const before = currentVal.substring(0, start);
+  const after = currentVal.substring(end);
+  const selectionStart = input.selectionStart;
+  const selectionEnd = input.selectionEnd;
+
+  input.value = before + newWord + after;
+
+  const diff = newWord.length - originalWord.length;
+  let newSelStart = selectionStart;
+  let newSelEnd = selectionEnd;
+
+  if (selectionStart >= end) {
+    newSelStart += diff;
+  } else if (selectionStart > start) {
+    newSelStart = start + newWord.length;
+  }
+
+  if (selectionEnd >= end) {
+    newSelEnd += diff;
+  } else if (selectionEnd > start) {
+    newSelEnd = start + newWord.length;
+  }
+
+  input.setSelectionRange(newSelStart, newSelEnd);
+
+  const inputEvent = new Event('input', { bubbles: true });
+  input.dispatchEvent(inputEvent);
+  const changeEvent = new Event('change', { bubbles: true });
+  input.dispatchEvent(changeEvent);
+}
+
+function handleTranslitToggleChange(el) {
+  const indicator = document.getElementById('translit-indicator');
+  const selectorRow = document.getElementById('translit-selector-row');
+  
+  if (indicator) {
+    indicator.style.background = el.checked ? 'var(--success)' : 'var(--g300)';
+  }
+  
+  if (selectorRow) {
+    if (el.checked) {
+      selectorRow.classList.remove('disabled');
+    } else {
+      selectorRow.classList.add('disabled');
+    }
+  }
+  
+  try {
+    localStorage.setItem('mic_translit_enabled', el.checked ? 'true' : 'false');
+  } catch(e) {}
+}
+
+function handleTranslitLanguageChange(el) {
+  const selectedOption = el.options[el.selectedIndex];
+  const helpText = selectedOption.dataset.help || 'Type in English, press Space to write';
+  const helpEl = document.getElementById('translit-help-text');
+  
+  if (helpEl) {
+    helpEl.textContent = helpText;
+  }
+  
+  document.body.setAttribute('data-translit-lang', el.value);
+  
+  try {
+    localStorage.setItem('mic_translit_lang', el.value);
+  } catch(e) {}
+}
+
+function initTransliterationState() {
+  try {
+    const enabled = localStorage.getItem('mic_translit_enabled') !== 'false';
+    const lang = localStorage.getItem('mic_translit_lang') || 'hi-t-i0-und';
+    
+    const toggle = document.getElementById('translit-toggle');
+    const langSelect = document.getElementById('translit-language');
+    
+    if (toggle) {
+      toggle.checked = enabled;
+      handleTranslitToggleChange(toggle);
+    }
+    
+    if (langSelect) {
+      langSelect.value = lang;
+      handleTranslitLanguageChange(langSelect);
+    }
+  } catch(e) {
+    console.error('Failed to init transliteration state:', e);
+  }
+}

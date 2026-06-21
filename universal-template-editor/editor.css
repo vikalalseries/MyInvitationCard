@@ -1365,3 +1365,147 @@ input:checked + .slider:before {
   color: var(--g300);
   cursor: default;
 }
+
+/* ── INPUT TRANSLITERATOR PANEL ── */
+.editor-controls {
+  margin: 0 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--w);
+  border-radius: var(--r-card);
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(0,0,0,0.03);
+  transition: all var(--t);
+  position: relative;
+}
+.editor-controls:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+.translit-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.translit-selector-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--g200);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  background: var(--w);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity var(--t), transform var(--t), visibility var(--t);
+}
+.editor-controls:has(#translit-toggle:checked):hover .translit-selector-row,
+.editor-controls:has(#translit-toggle:checked):focus-within .translit-selector-row {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.translit-selector-row.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.translit-select-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--g500);
+}
+.translit-select {
+  padding: 6px 28px 6px 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--g900);
+  background-color: var(--g50);
+  border: 1.5px solid var(--g200);
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--t);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2368655e' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  width: 100%;
+  max-width: 200px;
+}
+.translit-select:hover {
+  border-color: var(--g300);
+  background-color: var(--w);
+}
+.translit-select:focus {
+  border-color: var(--rose);
+  box-shadow: 0 0 0 3px var(--rose-100);
+  background-color: var(--w);
+}
+
+.tgl-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  flex-shrink: 0;
+}
+.tgl-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.tgl-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--g200);
+  transition: .3s;
+  border-radius: 28px;
+}
+.tgl-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.tgl-switch input:checked + .tgl-slider {
+  background-color: var(--success);
+}
+.tgl-switch input:checked + .tgl-slider:before {
+  transform: translateX(22px);
+}
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Language-specific fonts for transliterated inputs */
+[data-translit-lang="hi-t-i0-und"] .form-input { font-family: 'Noto Serif Devanagari', serif; }
+[data-translit-lang="gu-t-i0-und"] .form-input { font-family: 'Noto Sans Gujarati', sans-serif; }
+[data-translit-lang="mr-t-i0-und"] .form-input { font-family: 'Noto Serif Devanagari', serif; }
+[data-translit-lang="bn-t-i0-und"] .form-input { font-family: 'Noto Sans Bengali', sans-serif; }
+[data-translit-lang="te-t-i0-und"] .form-input { font-family: 'Noto Sans Telugu', sans-serif; }
+[data-translit-lang="ta-t-i0-und"] .form-input { font-family: 'Noto Sans Tamil', sans-serif; }
+[data-translit-lang="kn-t-i0-und"] .form-input { font-family: 'Noto Sans Kannada', sans-serif; }
+[data-translit-lang="pa-t-i0-und"] .form-input { font-family: 'Noto Sans Gurmukhi', sans-serif; }
+[data-translit-lang="ml-t-i0-und"] .form-input { font-family: 'Noto Sans Malayalam', sans-serif; }
+[data-translit-lang="or-t-i0-und"] .form-input { font-family: 'Noto Sans Oriya', sans-serif; }
+[data-translit-lang="ur-t-i0-und"] .form-input { font-family: 'Noto Sans Arabic', 'Inter', sans-serif; }
