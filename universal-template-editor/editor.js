@@ -409,29 +409,42 @@ function generateCeremoniesForm() {
   });
 }
 
-// Generate Styles Form sub-sections dynamically (divided into Colors, Fonts, Sizes, Borders)
+// Generate Styles Form sub-sections dynamically (divided into 6 sections matching builder1)
 function generateStylesForm() {
   const containerColors = document.getElementById('styles-colors-container');
   const containerFonts = document.getElementById('styles-fonts-container');
   const containerSizes = document.getElementById('styles-sizes-container');
-  const containerBorders = document.getElementById('styles-borders-container');
+  const containerIcons = document.getElementById('styles-icons-container');
+  const containerSpacing = document.getElementById('styles-spacing-container');
+  const containerCard = document.getElementById('styles-card-container');
 
-  containerColors.innerHTML = '';
-  containerFonts.innerHTML = '';
-  containerSizes.innerHTML = '';
-  containerBorders.innerHTML = '';
+  if (containerColors) containerColors.innerHTML = '';
+  if (containerFonts) containerFonts.innerHTML = '';
+  if (containerSizes) containerSizes.innerHTML = '';
+  if (containerIcons) containerIcons.innerHTML = '';
+  if (containerSpacing) containerSpacing.innerHTML = '';
+  if (containerCard) containerCard.innerHTML = '';
   
   if (!config || !config.styles) return;
   
   config.styles.forEach(s => {
     // Determine which container to route the field to
-    let targetContainer = containerBorders;
-    if (s.type === 'color' || s.id.endsWith('Color') || s.id.endsWith('Bg')) {
+    let targetContainer = containerCard;
+    
+    const idLower = s.id.toLowerCase();
+    
+    if (s.id === 'bodyBg' || s.id === 'accentColor' || s.id === 'textColor' || s.id === 'headingColor') {
       targetContainer = containerColors;
     } else if (s.id === 'fontFamily') {
       targetContainer = containerFonts;
-    } else if (s.id.endsWith('Size')) {
+    } else if (s.id.endsWith('Size') && !idLower.includes('ganesh') && !idLower.includes('om') && !idLower.includes('chains') && !idLower.includes('couple') && !idLower.includes('corner')) {
       targetContainer = containerSizes;
+    } else if (idLower.includes('ganesh') || idLower.includes('om') || idLower.includes('chains') || idLower.includes('couple') || idLower.includes('corner')) {
+      targetContainer = containerIcons;
+    } else if (s.id === 'cardPadding' || s.id === 'sectionGap') {
+      targetContainer = containerSpacing;
+    } else if (s.id === 'showBorder' || s.id === 'curveLevel' || s.id === 'borderPreset' || s.id === 'borderColor') {
+      targetContainer = containerCard;
     }
 
     const group = document.createElement('div');
@@ -514,7 +527,7 @@ function generateStylesForm() {
       group.appendChild(input);
     }
     
-    targetContainer.appendChild(group);
+    if (targetContainer) targetContainer.appendChild(group);
   });
 }
 
@@ -557,19 +570,22 @@ function switchContentSubTab(subTabId) {
 }
 
 // ── CUSTOMIZER SUB-SIDEBAR SWITCHER (CUSTOMIZE SIDEBAR LEVEL) ──
-function switchCustomizeSubSection(sectionId) {
+function switchCustomizerSection(sectionId) {
   // Reset customizer sub-sidebar nav buttons
   document.querySelectorAll('.customizer-nav-btn').forEach(btn => {
     btn.classList.remove('active');
   });
   
-  document.getElementById(`nav-styles-${sectionId}`).classList.add('active');
+  const activeBtn = document.getElementById(`c-nav-${sectionId}`);
+  if (activeBtn) activeBtn.classList.add('active');
   
   // Toggle customization panels
   document.querySelectorAll('.customizer-section-panel').forEach(panel => {
     panel.style.display = 'none';
   });
-  document.getElementById(`c-sec-${sectionId}`).style.display = 'flex';
+  
+  const activePanel = document.getElementById(`c-sec-${sectionId}`);
+  if (activePanel) activePanel.style.display = 'flex';
 }
 
 // Send updates directly to preview frame

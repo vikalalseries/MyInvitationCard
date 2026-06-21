@@ -180,21 +180,29 @@
         <div class="customizer-container">
           <!-- Sub-Sidebar for style categories -->
           <div class="customizer-sidebar">
-            <button class="customizer-nav-btn active" id="nav-styles-colors" onclick="switchCustomizeSubSection('colors')">
+            <button class="customizer-nav-btn active" id="c-nav-colors" onclick="switchCustomizerSection('colors')">
               <i class="fa-solid fa-palette"></i>
               <span>Colors</span>
             </button>
-            <button class="customizer-nav-btn" id="nav-styles-fonts" onclick="switchCustomizeSubSection('fonts')">
+            <button class="customizer-nav-btn" id="c-nav-fonts" onclick="switchCustomizerSection('fonts')">
               <i class="fa-solid fa-font"></i>
-              <span>Fonts</span>
+              <span>Font</span>
             </button>
-            <button class="customizer-nav-btn" id="nav-styles-sizes" onclick="switchCustomizeSubSection('sizes')">
+            <button class="customizer-nav-btn" id="c-nav-sizes" onclick="switchCustomizerSection('sizes')">
               <i class="fa-solid fa-text-height"></i>
-              <span>Sizes</span>
+              <span>Text Size</span>
             </button>
-            <button class="customizer-nav-btn" id="nav-styles-borders" onclick="switchCustomizeSubSection('borders')">
-              <i class="fa-solid fa-border-all"></i>
-              <span>Borders</span>
+            <button class="customizer-nav-btn" id="c-nav-icons" onclick="switchCustomizerSection('icons')">
+              <i class="fa-solid fa-icons"></i>
+              <span>Icons</span>
+            </button>
+            <button class="customizer-nav-btn" id="c-nav-spacing" onclick="switchCustomizerSection('spacing')">
+              <i class="fa-solid fa-arrows-left-right-to-line"></i>
+              <span>Spacing</span>
+            </button>
+            <button class="customizer-nav-btn" id="c-nav-card" onclick="switchCustomizerSection('card')">
+              <i class="fa-solid fa-id-card"></i>
+              <span>Card Style</span>
             </button>
           </div>
           
@@ -214,15 +222,27 @@
             </div>
             <!-- Sizes subsection -->
             <div id="c-sec-sizes" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
-              <h3 class="customizer-group-title">Text & Element Scales</h3>
-              <p class="customizer-group-desc">Adjust the scale proportions of texts and graphical items on the card.</p>
+              <h3 class="customizer-group-title">Text Sizing</h3>
+              <p class="customizer-group-desc">Scale the font sizes of different sections independently.</p>
               <div id="styles-sizes-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
             </div>
-            <!-- Borders & Icons subsection -->
-            <div id="c-sec-borders" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
-              <h3 class="customizer-group-title">Borders & Graphics</h3>
-              <p class="customizer-group-desc">Configure spacing levels, decorative borders, and religious ornament elements.</p>
-              <div id="styles-borders-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+            <!-- Icons subsection -->
+            <div id="c-sec-icons" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
+              <h3 class="customizer-group-title">Icons & Decorations</h3>
+              <p class="customizer-group-desc">Hide, show, or resize core graphics and illustrations.</p>
+              <div id="styles-icons-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+            </div>
+            <!-- Spacing subsection -->
+            <div id="c-sec-spacing" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
+              <h3 class="customizer-group-title">Spacings</h3>
+              <p class="customizer-group-desc">Adjust the padding margins and spaces between card segments.</p>
+              <div id="styles-spacing-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+            </div>
+            <!-- Card Style subsection -->
+            <div id="c-sec-card" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
+              <h3 class="customizer-group-title">Card Style</h3>
+              <p class="customizer-group-desc">Configure decorative borders, styles, roundness and border preset color details.</p>
+              <div id="styles-card-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
             </div>
           </div>
         </div>
