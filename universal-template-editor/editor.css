@@ -61,7 +61,7 @@ body {
   position: relative;
 }
 
-/* ── TOPBAR NAVBAR ── */
+/* ── TOPBAR NAVBAR (EXACT REPLICA) ── */
 .topbar {
   height: var(--topbar-h);
   background: var(--w);
@@ -432,9 +432,9 @@ body {
   transform: translateY(-1px);
 }
 
-/* ── SIDEBAR (LEFT COLUMN) ── */
+/* ── SIDEBAR (LEFT COLUMN — 40% WIDTH EXACT ALIGNMENT) ── */
 .sidebar {
-  width: 480px;
+  width: 40%;
   background-color: var(--g50);
   border-right: 1px solid var(--g200);
   display: flex;
@@ -843,9 +843,9 @@ input:checked + .slider:before {
   display: none;
 }
 
-/* ── WORKSPACE PREVIEW (RIGHT COLUMN — EXACT REPLICA) ── */
-.workspace {
-  flex: 1;
+/* ── RIGHT COLUMN PREVIEW (60% WIDTH EXACT REPLICA) ── */
+.right-col {
+  width: 60%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -853,6 +853,7 @@ input:checked + .slider:before {
   background-image: radial-gradient(circle, rgba(0,0,0,0.045) 1.2px, transparent 0);
   background-size: 22px 22px;
   position: relative;
+  flex-shrink: 0;
 }
 
 .preview-bar {
@@ -894,7 +895,7 @@ input:checked + .slider:before {
   50% { transform: scale(0.75); opacity: 0.5; }
 }
 
-.preview-bar-right {
+.preview-left-grp {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1014,7 +1015,7 @@ input:checked + .slider:before {
   position: relative;
 }
 
-#card-scaler-wrap {
+#card1-scaler-wrap {
   display: inline-block;
   position: relative;
   flex-shrink: 0;
@@ -1024,7 +1025,7 @@ input:checked + .slider:before {
   margin: auto;
 }
 
-.card-outer {
+.card1-outer {
   position: absolute;
   top: 0;
   left: 0;
@@ -1039,12 +1040,52 @@ input:checked + .slider:before {
   box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12);
 }
 
-#preview-iframe {
+#card1-iframe {
   width: 100%;
   height: 100%;
   border: none;
   display: block;
   background: #f2aec8;
+}
+
+/* ── CONFIRMATION DIALOG BUTTONS ── */
+.reset-confirm-btn {
+  margin: 0;
+  width: 120px;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  height: 42px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--t);
+}
+.reset-confirm-btn:hover {
+  background: var(--rose);
+  color: #fff;
+  border-color: var(--rose);
+  box-shadow: 0 4px 12px rgba(244,63,94,0.22);
+}
+.reset-cancel-btn {
+  margin: 0;
+  width: 120px;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  height: 42px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--t);
+}
+.reset-cancel-btn:hover {
+  background: var(--rose);
+  color: #fff;
+  border-color: var(--rose);
+  box-shadow: 0 4px 12px rgba(244,63,94,0.22);
 }
 
 /* ── TOAST NOTIFICATIONS ── */

@@ -51,8 +51,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Resize listener for auto-fitting live preview
   window.addEventListener('resize', () => {
-    fitToScreen();
+    autoFit();
   });
+
+  // Bind zoom buttons
+  const zIn = document.getElementById('z-in');
+  const zOut = document.getElementById('z-out');
+  const zFit = document.getElementById('z-fit');
+  if (zIn) zIn.onclick = () => setZoom(currentZoom + 5);
+  if (zOut) zOut.onclick = () => setZoom(currentZoom - 5);
+  if (zFit) zFit.onclick = autoFit;
 });
 
 // Load template configuration
@@ -74,14 +82,14 @@ async function loadTemplate(templateId) {
     generateStylesForm();
     
     // Set preview iframe template path directly
-    const previewIframe = document.getElementById('preview-iframe');
+    const previewIframe = document.getElementById('card1-iframe');
     if (previewIframe) {
       previewIframe.src = `templates/${templateId}/template.html`;
       
       // Clear previous load listeners and bind direct update trigger
       previewIframe.onload = () => {
         sendUpdate();
-        fitToScreen();
+        autoFit();
       };
     }
   } catch (error) {
@@ -551,7 +559,7 @@ function switchCustomizeSubSection(sectionId) {
 
 // Send updates directly to preview frame
 function sendUpdate() {
-  const iframe = document.getElementById('preview-iframe');
+  const iframe = document.getElementById('card1-iframe');
   if (iframe && iframe.contentWindow) {
     iframe.contentWindow.postMessage({
       type: 'UPDATE_TEMPLATE_DATA',
@@ -651,7 +659,7 @@ function toggleDownloadMenu(e) {
 
 // ── PRINT ACTION (DIRECT IFRAME STREAM) ──
 function printCard() {
-  const iframe = document.getElementById('preview-iframe');
+  const iframe = document.getElementById('card1-iframe');
   if (iframe && iframe.contentWindow) {
     iframe.contentWindow.focus();
     iframe.contentWindow.print();
@@ -732,15 +740,30 @@ function checkAuthState() {
 
 function handleAuthAction() {
   if (userLoggedIn) {
-    if (confirm("Are you sure you want to sign out?")) {
-      localStorage.removeItem('currentUser');
-      checkAuthState();
-      toast('Signed out successfully!', 's');
-    }
+    showLogoutConfirm();
   } else {
     showLoginPopup();
   }
 }
+
+window.showLogoutConfirm = function() {
+  const popup = document.getElementById('builderUserPopup');
+  if (popup) popup.classList.remove('show');
+  document.getElementById('login-overlay').classList.add('show');
+  document.getElementById('logout-confirm-popup').classList.add('show');
+};
+
+window.closeLogoutConfirm = function() {
+  document.getElementById('login-overlay').classList.remove('show');
+  document.getElementById('logout-confirm-popup').classList.remove('show');
+};
+
+window.executeLogout = function() {
+  localStorage.removeItem('currentUser');
+  checkAuthState();
+  closeLogoutConfirm();
+  toast('Signed out successfully!', 's');
+};
 
 function showLoginPopup() {
   document.getElementById('login-overlay').classList.add('show');
@@ -776,43 +799,76 @@ function simulateLogin(emailVal) {
 }
 
 // ── LIVE PREVIEW SCALING ENGINE (EXACT REPLICA OF BUILDER1) ──
-function updateZoom() {
-  const scalerWrap = document.getElementById('card-scaler-wrap');
-  const outer = document.getElementById('iframe-container');
-  const valueDisplay = document.getElementById('zoom-value');
-  
-  if (scalerWrap && outer) {
-    scalerWrap.style.width = (cardWidth * zoomScale) + 'px';
-    scalerWrap.style.height = (cardHeight * zoomScale) + 'px';
-    outer.style.transform = `scale(${zoomScale})`;
+let currentZoom = 75;
+let templateWidth = 893;
+let templateHeight = 760;
+
+function updateTemplateSize() {
+  const iframe = document.getElementById('card1-iframe');
+  if (iframe && iframe.contentDocument) {
+    const cardEl = iframe.contentDocument.querySelector('.card') || iframe.contentDocument.body.firstElementChild;
+    if (cardEl) {
+      templateWidth = cardEl.offsetWidth || 893;
+      templateHeight = cardEl.offsetHeight || 760;
+    }
   }
-  
-  if (valueDisplay) {
-    valueDisplay.textContent = Math.round(zoomScale * 100) + '%';
+}
+
+function setZoom(z) {
+  z = Math.max(20, Math.min(150, z));
+  currentZoom = z;
+  const outer = document.getElementById('card1-outer');
+  const wrap = document.getElementById('card1-scaler-wrap');
+  const scale = z / 100;
+
+  if (outer) {
+    outer.style.width = templateWidth + 'px';
+    outer.style.height = templateHeight + 'px';
+    outer.style.transform = `scale(${scale})`;
   }
+  if (wrap) {
+    wrap.style.width = (templateWidth * scale) + 'px';
+    wrap.style.height = (templateHeight * scale) + 'px';
+  }
+
+  const lbl = document.getElementById('z-lvl');
+  if (lbl) lbl.textContent = z + '%';
 }
 
-function zoomIn() {
-  zoomScale = Math.min(zoomScale + 0.05, 1.5);
-  updateZoom();
+function autoFit() {
+  const vp = document.getElementById('preview-vp');
+  if (!vp) return;
+  updateTemplateSize();
+  const availableWidth = vp.clientWidth - 48; // 24px padding on left/right
+  const z = Math.floor((availableWidth / templateWidth) * 100);
+  setZoom(Math.max(20, Math.min(z, 120)));
 }
 
-function zoomOut() {
-  zoomScale = Math.max(zoomScale - 0.05, 0.3);
-  updateZoom();
-}
+// Custom reset popup functions
+window.showResetConfirm = function(e) {
+  if (e) e.stopPropagation();
+  const dlWrap = document.getElementById('dl-wrap');
+  if (dlWrap) dlWrap.classList.remove('open');
+  document.getElementById('login-overlay').classList.add('show');
+  document.getElementById('reset-confirm-popup').classList.add('show');
+};
 
-function fitToScreen() {
-  const canvas = document.getElementById('canvas-area');
-  if (!canvas) return;
+window.closeResetConfirm = function() {
+  document.getElementById('login-overlay').classList.remove('show');
+  document.getElementById('reset-confirm-popup').classList.remove('show');
+};
+
+window.executeResetCard = function() {
+  initializeDataState();
   
-  const pad = 80; // Padding inside workspace canvas
-  const canvasW = canvas.clientWidth - pad;
-  const canvasH = canvas.clientHeight - pad;
+  // Re-render
+  generateContentForm();
+  generateCeremoniesForm();
+  generateStylesForm();
   
-  const scaleX = canvasW / cardWidth;
-  const scaleY = canvasH / cardHeight;
-  
-  zoomScale = Math.min(scaleX, scaleY, 1.1); // Cap at 1.1x scale
-  updateZoom();
-}
+  // Trigger UI effects
+  triggerSaving();
+  sendUpdate();
+  closeResetConfirm();
+  toast('Template defaults restored!', 's');
+};

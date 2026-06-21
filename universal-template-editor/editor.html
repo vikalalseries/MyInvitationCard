@@ -211,31 +211,34 @@
       
     </div>
     
-    <!-- ══════════════════════════════════════ LIVE PREVIEW SECTION (EXACT REPLICA) -->
-    <div class="workspace">
-      <!-- Live Preview Bar -->
+    <!-- ─── RIGHT: Live Card1 Preview ─── -->
+    <div class="right-col">
       <div class="preview-bar">
-        <div class="preview-lbl"><span class="live-dot"></span>LIVE PREVIEW</div>
-        
-        <div class="preview-bar-right">
-          <!-- Reset button inside preview bar -->
-          <button class="preview-reset-btn" onclick="resetToDefaults()" title="Reset all changes to default template">RESET</button>
-          
-          <!-- Zoom selector block -->
-          <div class="zoom-bar">
-            <button class="zbtn" onclick="zoomOut()">-</button>
-            <div class="zlvl" id="zoom-value">75%</div>
-            <button class="zbtn" onclick="zoomIn()">+</button>
-            <button class="zbtn zfit" onclick="fitToScreen()">Fit</button>
+        <div class="preview-left-grp">
+          <div class="preview-lbl">
+            <span class="live-dot"></span>
+            Live Preview
           </div>
+          <button class="preview-reset-btn" onclick="showResetConfirm(event)" title="Reset all changes to default template">RESET</button>
+        </div>
+        <div class="zoom-bar">
+          <button class="zbtn" id="z-out" title="Zoom Out">−</button>
+          <span class="zlvl" id="z-lvl">80%</span>
+          <button class="zbtn" id="z-in" title="Zoom In">+</button>
+          <button class="zbtn zfit" id="z-fit" title="Fit to screen">FIT</button>
         </div>
       </div>
 
-      <!-- Viewport area centering card wrapper -->
-      <div class="preview-vp" id="canvas-area">
-        <div id="card-scaler-wrap">
-          <div class="card-outer" id="iframe-container">
-            <iframe id="preview-iframe" src="about:blank"></iframe>
+      <div class="preview-vp" id="preview-vp">
+        <div id="card1-scaler-wrap">
+          <div class="card1-outer" id="card1-outer">
+            <iframe
+              id="card1-iframe"
+              src="about:blank"
+              title="Live Card1 Preview"
+              scrolling="no"
+              sandbox="allow-scripts allow-same-origin"
+            ></iframe>
           </div>
         </div>
       </div>
@@ -312,6 +315,32 @@
     <div class="lp-switch-link">
       <span onclick="switchPopupView('lp-view-signup')">Back</span>
     </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ CUSTOM RESET CONFIRM POPUP -->
+<div class="login-popup" id="reset-confirm-popup" onclick="event.stopPropagation()" style="width: 380px; padding: 32px 24px; border-radius: 24px;">
+  <button class="lp-close" onclick="closeResetConfirm()" title="Close"><i class="fa-solid fa-xmark"></i></button>
+  <div style="margin-top: 10px; margin-bottom: 24px; text-align: center;">
+    <h3 style="font-size: 1.2rem; font-weight: 750; color: #0f172a; line-height: 1.4; margin-bottom: 8px;">Reset Card</h3>
+    <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5; font-weight: 500;">Do you want to reset all text to the original template default?</p>
+  </div>
+  <div style="display: flex; gap: 12px; justify-content: center;">
+    <button class="reset-confirm-btn" onclick="executeResetCard()">Yes</button>
+    <button class="reset-cancel-btn" onclick="closeResetConfirm()">No</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ CUSTOM LOGOUT CONFIRM POPUP -->
+<div class="login-popup" id="logout-confirm-popup" onclick="event.stopPropagation()" style="width: 380px; padding: 32px 24px; border-radius: 24px;">
+  <button class="lp-close" onclick="closeLogoutConfirm()" title="Close"><i class="fa-solid fa-xmark"></i></button>
+  <div style="margin-top: 10px; margin-bottom: 24px; text-align: center;">
+    <h3 style="font-size: 1.2rem; font-weight: 750; color: #0f172a; line-height: 1.4; margin-bottom: 8px;">Log Out</h3>
+    <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5; font-weight: 500;">Are you sure you want to log out of your account?</p>
+  </div>
+  <div style="display: flex; gap: 12px; justify-content: center;">
+    <button class="reset-confirm-btn" onclick="executeLogout()">Yes</button>
+    <button class="reset-cancel-btn" onclick="closeLogoutConfirm()">No</button>
   </div>
 </div>
 
