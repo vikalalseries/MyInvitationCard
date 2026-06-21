@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universal Invitation Card Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="editor.css">
+</head>
+<body>
+
+<div class="editor-container">
+  
+  <!-- Left Side: Sidebar Controls -->
+  <div class="sidebar">
+    
+    <!-- Sidebar Header & Template Selection -->
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+        </div>
+        <div class="brand-name">Antigravity Card Studio</div>
+      </div>
+      
+      <div class="template-selector-container">
+        <div class="field-label">Active Template</div>
+        <select class="dropdown-select" id="template-select" onchange="loadTemplate(this.value)">
+          <option value="card1" selected>Traditional Hindu Wedding Card 1</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Tabs Navigation -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('content-tab')">Content</button>
+      <button class="tab-btn" onclick="switchTab('ceremonies-tab')">Ceremonies</button>
+      <button class="tab-btn" onclick="switchTab('styles-tab')">Styles</button>
+    </div>
+    
+    <!-- Scrollable Control Panels -->
+    <div class="forms-container">
+      
+      <!-- Content Tab Pane -->
+      <div class="tab-pane active" id="content-tab">
+        <div id="dynamic-content-fields" style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Dynamically populated flat text/textarea fields -->
+        </div>
+      </div>
+      
+      <!-- Ceremonies Tab Pane -->
+      <div class="tab-pane" id="ceremonies-tab">
+        <div id="dynamic-ceremonies-fields" style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Dynamically populated event controls -->
+        </div>
+      </div>
+      
+      <!-- Styles Tab Pane -->
+      <div class="tab-pane" id="styles-tab">
+        <div id="dynamic-styles-fields" style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Dynamically populated custom styling variables -->
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Sidebar Footer Actions -->
+    <div class="sidebar-footer">
+      <button class="footer-btn btn-secondary" onclick="resetToDefaults()" title="Reset all fields to their template default values">
+        Reset
+      </button>
+      <button class="footer-btn btn-primary" onclick="exportData()" title="Export configuration to JSON file">
+        Export JSON
+      </button>
+    </div>
+    
+  </div>
+  
+  <!-- Right Side: Live Interactive Workspace -->
+  <div class="workspace">
+    <iframe class="preview-frame" id="preview-iframe" src="preview/preview.html?template=card1"></iframe>
+  </div>
+
+</div>
+
+<script src="editor.js"></script>
+</body>
+</html>

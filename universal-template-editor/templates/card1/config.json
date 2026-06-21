@@ -1,0 +1,441 @@
+{
+  "templateId": "card1",
+  "templateName": "Traditional Hindu Wedding Card 1",
+  "fields": [
+    {
+      "id": "shlokaLine1",
+      "type": "text",
+      "label": "Mantra Header",
+      "default": "।। श्री गणेशाय नमः ।।",
+      "category": "Mantra & Shloka"
+    },
+    {
+      "id": "shlokaLine2",
+      "type": "text",
+      "label": "Shloka Text",
+      "default": "वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥",
+      "category": "Mantra & Shloka"
+    },
+    {
+      "id": "headingText",
+      "type": "text",
+      "label": "Ceremony Section Title",
+      "default": "।। मांगलिक क्षणिकायें ।।",
+      "category": "Invitation Details"
+    },
+    {
+      "id": "balAagrahText",
+      "type": "textarea",
+      "label": "Bal Aagrah Intro Text",
+      "default": "बाल आग्रह- गाना होगा, बजाना होगा, मिलकर धूम मचाना होगा, मेरी दीदी की शादी है आप सभी को आना होगा -",
+      "category": "Bal Aagrah"
+    },
+    {
+      "id": "balAagrahNames",
+      "type": "text",
+      "label": "Children Names",
+      "default": "जानकी, जान, अनन्या, अनाया (डोडो)",
+      "category": "Bal Aagrah"
+    },
+    {
+      "id": "snehiText",
+      "type": "text",
+      "label": "Greeting Salutation",
+      "default": "स्नेही स्वजन,",
+      "category": "Invitation Details"
+    },
+    {
+      "id": "deityMantra",
+      "type": "text",
+      "label": "Family Deity Mantra",
+      "default": "।। श्री विन्ध्यवासिनी देव्यै नमः ।।",
+      "category": "Invitation Details"
+    },
+    {
+      "id": "deitySubtitle",
+      "type": "text",
+      "label": "Family Deity Subtitle",
+      "default": "आदि शक्ति जगत जननी माँ विन्ध्यवासिनी जी की असीम अनुकम्पा से....",
+      "category": "Invitation Details"
+    },
+    {
+      "id": "brideTitle",
+      "type": "text",
+      "label": "Bride Title / Prefix",
+      "default": "आयु॰कु॰",
+      "category": "Bride Details"
+    },
+    {
+      "id": "brideName",
+      "type": "text",
+      "label": "Bride Name",
+      "default": "नीलम मौर्या",
+      "category": "Bride Details"
+    },
+    {
+      "id": "brideGrandparents",
+      "type": "text",
+      "label": "Bride Grandparents Info",
+      "default": "स्व0 श्री बनारसी प्रसाद मौर्य- श्रीमती कलावती देवी",
+      "category": "Bride Details"
+    },
+    {
+      "id": "brideParents",
+      "type": "text",
+      "label": "Bride Parents Info",
+      "default": "श्री शमशेर बहादुर मौर्य- श्रीमती चन्द्रकला देवी",
+      "category": "Bride Details"
+    },
+    {
+      "id": "brideAddress",
+      "type": "text",
+      "label": "Bride Village Address",
+      "default": "ग्राम- थरपरिसया पो0- नदौली करौदी",
+      "category": "Bride Details"
+    },
+    {
+      "id": "brideCity",
+      "type": "text",
+      "label": "Bride City / District",
+      "default": "लालगंज, जिला- मीरजापुर",
+      "category": "Bride Details"
+    },
+    {
+      "id": "groomTitle",
+      "type": "text",
+      "label": "Groom Title / Prefix",
+      "default": "चि॰",
+      "category": "Groom Details"
+    },
+    {
+      "id": "groomName",
+      "type": "text",
+      "label": "Groom Name",
+      "default": "राजेश मौर्य",
+      "category": "Groom Details"
+    },
+    {
+      "id": "groomGrandparents",
+      "type": "text",
+      "label": "Groom Grandparents Info",
+      "default": "स्व0 शिवनाथ मौर्य- श्रीमती प्रेमा देवी",
+      "category": "Groom Details"
+    },
+    {
+      "id": "groomParents",
+      "type": "text",
+      "label": "Groom Parents Info",
+      "default": "श्री रामकेशवर मौर्य- श्रीमती मालती देवी",
+      "category": "Groom Details"
+    },
+    {
+      "id": "groomAddress",
+      "type": "text",
+      "label": "Groom Village Address",
+      "default": "ग्राम- झगड़हा पो0- नौगवां",
+      "category": "Groom Details"
+    },
+    {
+      "id": "groomCity",
+      "type": "text",
+      "label": "Groom City / District",
+      "default": "जिला- मीरजापुर",
+      "category": "Groom Details"
+    },
+    {
+      "id": "dampatyaHeading",
+      "type": "text",
+      "label": "Marriage Bond Title",
+      "default": "।। दाम्पत्य-सूत्र-बन्धन ।।",
+      "category": "Invitation Details"
+    },
+    {
+      "id": "vinitText",
+      "type": "textarea",
+      "label": "Invitation Ending Text",
+      "default": "की मधुर बेला पर पधार कर नवयुगल को अपने\nस्नेहिल आशीर्वाद की मृदुल ज्योत्सना से अभिसिंचित कर हमें अनुगृहीत करें।",
+      "category": "Invitation Details"
+    },
+    {
+      "id": "darshnabhilashiLabel",
+      "type": "text",
+      "label": "Darshnabhilashi Header",
+      "default": "दर्शनाभिलाषी -",
+      "category": "Family Details"
+    },
+    {
+      "id": "darshnabhilashiNames",
+      "type": "textarea",
+      "label": "Darshnabhilashi Names",
+      "default": "पुष्पराज मौर्य, जयप्रकाश मौर्य\nएवं समस्त मौर्य परिवार ।",
+      "category": "Family Details"
+    },
+    {
+      "id": "swagatakankshiLabel",
+      "type": "text",
+      "label": "Swagatakankshi Header",
+      "default": "- स्वागताकांक्षी -",
+      "category": "Family Details"
+    },
+    {
+      "id": "swagatakankshiNames",
+      "type": "textarea",
+      "label": "Swagatakankshi Names",
+      "default": "शमशेर बहादुर मौर्य\nअनिल मौर्य",
+      "category": "Family Details"
+    },
+    {
+      "id": "vinitLabel",
+      "type": "text",
+      "label": "Inviter Header (Vinit)",
+      "default": "- विनीत -",
+      "category": "Family Details"
+    },
+    {
+      "id": "vinitName",
+      "type": "text",
+      "label": "Inviter Name",
+      "default": "फूलचन्द मौर्य",
+      "category": "Family Details"
+    },
+    {
+      "id": "vinitAddress",
+      "type": "textarea",
+      "label": "Inviter Address Info",
+      "default": "ग्राम- थरपरिसया पो0- नदौली करौदी\nलालगंज, जिला- मीरजापुर",
+      "category": "Family Details"
+    }
+  ],
+  "events": [
+    {
+      "id": "haldi",
+      "label": "Haldi & Mehndi Ceremony",
+      "defaultName": "हल्दी व मेहन्दी",
+      "defaultDate": "2026-05-30"
+    },
+    {
+      "id": "vivah",
+      "label": "Wedding (Vivah) Ceremony",
+      "defaultName": "शुभ विवाह",
+      "defaultDate": "2026-05-31"
+    },
+    {
+      "id": "vidai",
+      "label": "Departure (Vidai)",
+      "defaultName": "विदाई",
+      "defaultDate": "2026-06-01"
+    }
+  ],
+  "styles": [
+    {
+      "id": "bodyBg",
+      "type": "color",
+      "label": "Outer Background Color",
+      "default": "#c8829a"
+    },
+    {
+      "id": "cardBg",
+      "type": "color",
+      "label": "Card Base Color",
+      "default": "#f2aec8"
+    },
+    {
+      "id": "accentColor",
+      "type": "color",
+      "label": "Accent Color",
+      "default": "#8b0040"
+    },
+    {
+      "id": "textColor",
+      "type": "color",
+      "label": "Text Color",
+      "default": "#6e0035"
+    },
+    {
+      "id": "headingColor",
+      "type": "color",
+      "label": "Heading Text Color",
+      "default": "#6e0035"
+    },
+    {
+      "id": "fontFamily",
+      "type": "select",
+      "label": "Card Font Family",
+      "default": "Noto Serif Devanagari",
+      "options": [
+        "Noto Serif Devanagari",
+        "Inter",
+        "Roboto",
+        "Outfit",
+        "Lora",
+        "Playfair Display"
+      ]
+    },
+    {
+      "id": "shlokaSize",
+      "type": "select",
+      "label": "Shloka Font Scale (%)",
+      "default": 100,
+      "options": [70, 85, 100, 115, 130]
+    },
+    {
+      "id": "headingSize",
+      "type": "select",
+      "label": "Heading Font Scale (%)",
+      "default": 100,
+      "options": [70, 85, 100, 115, 130]
+    },
+    {
+      "id": "namesSize",
+      "type": "select",
+      "label": "Bride/Groom Scale (%)",
+      "default": 100,
+      "options": [70, 85, 100, 115, 130]
+    },
+    {
+      "id": "eventSize",
+      "type": "select",
+      "label": "Event Font Scale (%)",
+      "default": 100,
+      "options": [70, 85, 100, 115, 130]
+    },
+    {
+      "id": "footerSize",
+      "type": "select",
+      "label": "Footer Text Scale (%)",
+      "default": 100,
+      "options": [70, 85, 100, 115, 130]
+    },
+    {
+      "id": "showGanesh",
+      "type": "select",
+      "label": "Ganesh Icon Visibility",
+      "default": "true",
+      "options": ["true", "false"]
+    },
+    {
+      "id": "ganeshSize",
+      "type": "select",
+      "label": "Ganesh Icon Scale (%)",
+      "default": 100,
+      "options": [50, 75, 100, 125, 150]
+    },
+    {
+      "id": "showOm",
+      "type": "select",
+      "label": "Om Icon Visibility",
+      "default": "true",
+      "options": ["true", "false"]
+    },
+    {
+      "id": "omSize",
+      "type": "select",
+      "label": "Om Icon Scale (%)",
+      "default": 100,
+      "options": [50, 75, 100, 125, 150]
+    },
+    {
+      "id": "showChains",
+      "type": "select",
+      "label": "Side Hanging Chains",
+      "default": "true",
+      "options": ["true", "false"]
+    },
+    {
+      "id": "chainsSize",
+      "type": "select",
+      "label": "Chains Scale (%)",
+      "default": 100,
+      "options": [50, 75, 100, 125, 150]
+    },
+    {
+      "id": "showCouple",
+      "type": "select",
+      "label": "Couple Graphic Visibility",
+      "default": "true",
+      "options": ["true", "false"]
+    },
+    {
+      "id": "coupleSize",
+      "type": "select",
+      "label": "Couple Graphic Scale (%)",
+      "default": 100,
+      "options": [50, 75, 100, 125, 150]
+    },
+    {
+      "id": "showCorners",
+      "type": "select",
+      "label": "Corner Symbol Visibility",
+      "default": "true",
+      "options": ["true", "false"]
+    },
+    {
+      "id": "cornerSymbol",
+      "type": "text",
+      "label": "Corner Symbol Character",
+      "default": "✿"
+    },
+    {
+      "id": "cornerSize",
+      "type": "select",
+      "label": "Corner Symbol Scale (%)",
+      "default": 100,
+      "options": [50, 75, 100, 125, 150]
+    },
+    {
+      "id": "cardPadding",
+      "type": "select",
+      "label": "Card Padding (cm)",
+      "default": 1.0,
+      "options": [0.6, 0.8, 1.0, 1.2, 1.4]
+    },
+    {
+      "id": "sectionGap",
+      "type": "select",
+      "label": "Space Between Pages (cm)",
+      "default": 0.3,
+      "options": [0.1, 0.2, 0.3, 0.4, 0.5]
+    },
+    {
+      "id": "showBorder",
+      "type": "select",
+      "label": "Display Borders",
+      "default": "true",
+      "options": ["true", "false"]
+    },
+    {
+      "id": "curveLevel",
+      "type": "select",
+      "label": "Border Corner Roundness",
+      "default": 0,
+      "options": [0, 1, 2, 3, 4]
+    },
+    {
+      "id": "borderPreset",
+      "type": "select",
+      "label": "Border Decorative Preset",
+      "default": "classic",
+      "options": [
+        "classic",
+        "double",
+        "thin",
+        "dashed",
+        "ornate",
+        "luxe",
+        "modern",
+        "minimal",
+        "art-deco",
+        "vintage",
+        "retro",
+        "elegant",
+        "bold"
+      ]
+    },
+    {
+      "id": "borderColor",
+      "type": "color",
+      "label": "Border Pattern Color",
+      "default": "#8b0040"
+    }
+  ]
+}

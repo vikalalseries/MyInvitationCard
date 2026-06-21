@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>विवाह निमंत्रण</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background:#c8829a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:0;
+  font-family:'Noto Serif Devanagari', serif;
+}
+
+/* ── CARD: 23.5 × 19 cm with 1cm padding ── */
+.card {
+  width:23.5cm;
+  min-height:19cm;
+  background:#f2aec8;
+  padding:1cm;
+  display:flex;
+  flex-direction:column;
+  gap:0.3cm;
+  box-sizing: border-box;
+}
+
+/* ── EACH SECTION: 21.5 × 8.5 cm ── */
+.sec {
+  width:21.5cm;
+  height:8.5cm;
+  position:relative;
+  border:0.07cm solid #8b0040;
+  box-shadow:inset 0 0 0 0.13cm #f2aec8, inset 0 0 0 0.20cm #8b0040;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(255,255,255,0.52) 0%, transparent 28%),
+    radial-gradient(ellipse at 80% 75%, rgba(255,255,255,0.4)  0%, transparent 32%),
+    linear-gradient(140deg,#fce4ef 0%,#f9d5e8 45%,#f6cde1 75%,#fad8eb 100%);
+  box-sizing: border-box;
+}
+.sec::before {
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:radial-gradient(rgba(160,0,60,0.06) 1px, transparent 1px);
+  background-size:5px 5px;
+}
+
+/* 4 corner flowers — exactly one each */
+.fl { position:absolute; color:#8b0040; font-size:1.2cm; line-height:1; z-index:10; }
+.tl { top:0.4cm;  left:0.2cm; }
+.tr { top:0.4cm;  right:0.2cm; }
+.bl { bottom:-0.07cm; left:0.2cm; }
+.br { bottom:-0.07cm; right:0.2cm; }
+
+/* ════════════════════════════════════════
+   SECTION 1  — Top card
+   ════════════════════════════════════════ */
+.s1-wrap {
+  position:relative; z-index:1;
+  width:100%; height:100%;
+}
+
+.s1-mantras {
+  position: absolute;
+  top: 0.1cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12cm;
+  text-align: center;
+  z-index: 5;
+}
+.s1-mantras p { font-size:0.39cm; color:#6e0035; line-height:1.4; }
+.s1-mantras p:first-child { font-size:0.4cm; font-weight:600; }
+
+.swirl {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color:#9b1050;
+  font-size:0.27cm;
+  letter-spacing:0.04cm;
+  width: 12cm;
+  text-align: center;
+  z-index: 5;
+}
+.swirl-top { top: 1.1cm; }
+.swirl-mid { top: 2.0cm; }
+
+.s1-heading {
+  position: absolute;
+  top: 1.45cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8cm;
+  text-align: center;
+  font-size:0.5cm;
+  font-weight:700;
+  color:#6e0035;
+  z-index: 5;
+}
+
+.s1-haldi {
+  position: absolute;
+  top: 2.45cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8cm;
+  text-align: center;
+  z-index: 5;
+}
+.s1-haldi-t { font-size:0.60cm; font-weight:700; color:#6e0035; }
+.s1-haldi-d { font-size:0.47cm; color:#6e0035; margin-top: -0.05cm; }
+
+.vivah-box {
+  position: absolute;
+  top: 4.7cm;
+  left: 3.5cm;
+  text-align: center;
+  z-index: 5;
+}
+.vidai-box {
+  position: absolute;
+  top: 4.7cm;
+  right: 3.5cm;
+  text-align: center;
+  z-index: 5;
+}
+.s1-ev-t { font-size:0.70cm; font-weight:700; color:#6e0035; line-height:1.2; }
+.s1-ev-d { font-size:0.5cm; color:#6e0035; margin-top:0.04cm; }
+
+.couple-box {
+  position: absolute;
+  top: 3.35cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3cm;
+  height: 2.4cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+.couple-box img {
+  width: 3cm;
+  height: auto;
+  display: block;
+}
+
+.s1-bal {
+  position: absolute;
+  bottom: 0.1cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 17cm;
+  text-align: center;
+  font-size:0.4cm;
+  color:#6e0035;
+  line-height: 1.5;
+  z-index: 5;
+}
+.s1-bal-n { font-weight:700; font-size:0.4cm; }
+
+/* Absolute positioned icons */
+.ganesh-icon img {
+  width: 3.5cm;
+  height: auto;
+  position: absolute;
+  top: 0.2cm;
+  left: 1.7cm;
+  display: block;
+  z-index: 6;
+}
+.sun-icon img {
+  width: 3cm;
+  height: auto;
+  position: absolute;
+  top: 0.7cm;
+  right: 1.8cm;
+  display: block;
+  z-index: 6;
+}
+.chainleft img {
+  width: 1.8cm;
+  height: auto;
+  position: absolute;
+  top: 2.5cm;
+  left: 0.2cm;
+  display: block;
+  z-index: 6;
+}
+.chainright img {
+  width: 1.8cm;
+  height: auto;
+  position: absolute;
+  top: 2.5cm;
+  right: 0.2cm;
+  display: block;
+  z-index: 6;
+}
+.top-icon img {
+  width: 3.4cm;
+  height: auto;
+  position: absolute;
+  top: 4.0cm;
+  left: 9.0cm;
+  display: block;
+  z-index: 6;
+}
+.bottom-icon img {
+  width: 3.4cm;
+  height: auto;
+  position: absolute;
+  top: 6.2cm;
+  left: 4.3cm;
+  display: block;
+  z-index: 6;
+}
+.top1-icon img {
+  width: 3.4cm;
+  height: auto;
+  position: absolute;
+  top: 6.2cm;
+  right: 4.3cm;
+  display: block;
+  z-index: 6;
+}
+.mid-icon img {
+  width: 2.5cm;
+  height: auto;
+  position: absolute;
+  top: 4.6cm;
+  right: 9.45cm;
+  display: block;
+  z-index: 6;
+}
+
+/* ════════════════════════════════════════
+   SECTION 2  — Bottom card
+   ════════════════════════════════════════ */
+.s2-wrap {
+  position:relative; z-index:1;
+  width:100%; height:100%;
+}
+
+.s2-snehi {
+  position: absolute;
+  top: 0.8cm;
+  left: 3.8cm;
+  font-size:0.380cm;
+  font-weight:600;
+  color:#6e0035;
+  z-index: 5;
+}
+
+.s2-vindhya {
+  position: absolute;
+  top: 0.25cm;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 14cm;
+  z-index: 5;
+}
+.s2-vm { font-size:0.40cm; font-weight:700; color:#6e0035; }
+.s2-vs { font-size:0.380cm; font-weight:600; color:#6e0035; margin-top:0.30cm; }
+
+.s2-bride {
+  position: absolute;
+  top: 1.8cm;
+  left: 0.8cm;
+  font-size:0.65cm;
+  font-weight:700;
+  color:#6e0035;
+  text-align: left;
+  z-index: 5;
+}
+
+.s2-groom {
+  position: absolute;
+  top: 1.8cm;
+  right: 0.8cm;
+  width: 7.0cm;
+  font-size:0.65cm;
+  font-weight:700;
+  color:#6e0035;
+  text-align: right;
+  z-index: 5;
+}
+
+.s2-fam {
+  position: absolute;
+  top: 2.8cm;
+  left: 0.8cm;
+  font-size:0.4cm;
+  color:#6e0035;
+  line-height:1.65;
+  text-align: left;
+  z-index: 5;
+}
+
+.s2-fam-r {
+  position: absolute;
+  top: 2.8cm;
+  right: 0.8cm;
+  font-size:0.4cm;
+  color:#6e0035;
+  line-height:1.65;
+  text-align: right;
+  z-index: 5;
+}
+
+.s2-icon.couple-box {
+  position: absolute;
+  top: 2.1cm;
+  left: 43%;
+  transform: translateX(-50%);
+  width: 3cm;
+  height: 2.2cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+.s2-icon.couple-box img {
+  width: 3cm;
+  height: auto;
+  display: block;
+}
+
+.s2-damp-t {
+  position: absolute;
+  top: 4.15cm;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size:0.4cm;
+  font-weight:700;
+  color:#6e0035;
+  z-index: 5;
+}
+
+.s2-damp-d {
+  position: absolute;
+  top: 4.85cm;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size:0.37cm;
+  color:#6e0035;
+  line-height:1.45;
+  z-index: 5;
+}
+
+/* Footer columns */
+.fc-l {
+  position: absolute;
+  bottom: 0.05cm;
+  left: 1.6cm;
+  text-align: left;
+  z-index: 5;
+}
+
+.fc-c {
+  position: absolute;
+  bottom: 0.05cm;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 5;
+}
+
+.fc-r {
+  position: absolute;
+  bottom: 0.05cm;
+  right: 1.8cm;
+  text-align: center;
+  z-index: 5;
+}
+
+.f-label { font-size:0.45cm; color:#6e0035; margin-bottom:0.02cm; }
+.f-name  { font-size:0.43cm; font-weight:700; color:#6e0035; line-height:1.5; }
+.f-addr  { font-size:0.38cm; color:#6e0035; line-height:1.5; margin-top:0.02cm; }
+
+@page { size:23.5cm 19cm; margin:0; }
+@media print { body { background:none; padding:0; } }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <!-- ════════════════════════════════════════
+       SECTION 1
+       ════════════════════════════════════════ -->
+  <div class="sec sec1">
+    <div class="fl tl">✿</div>
+    <div class="fl tr">✿</div>
+    <div class="fl bl">✿</div>
+    <div class="fl br">✿</div>
+
+    <div class="s1-wrap">
+      <!-- Mantras -->
+      <div class="s1-mantras">
+        <p data-field="shlokaLine1">।। श्री गणेशाय नमः ।।</p>
+        <p data-field="shlokaLine2">वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</p>
+      </div>
+
+      <div class="swirl swirl-top">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
+      <div class="s1-heading" data-field="headingText">।। मांगलिक क्षणिकायें ।।</div>
+      <div class="swirl swirl-mid">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
+
+      <!-- Haldi Event Container -->
+      <div class="s1-haldi" data-event-container="haldi">
+        <div class="s1-haldi-t" data-field="event.haldi.name">हल्दी व मेहन्दी</div>
+        <div class="s1-haldi-d">दिनांक - <span data-field="event.haldi.date" data-field-format="hindi-date">30 मई 2026, शनिवार</span></div>
+      </div>
+
+      <!-- Vivah Event Container -->
+      <div class="s1-ev vivah-box" data-event-container="vivah">
+        <div class="s1-ev-t" data-field="event.vivah.name">शुभ विवाह</div>
+        <div class="s1-ev-d">दिनांक - <span data-field="event.vivah.date" data-field-format="hindi-date">31 मई 2026, रविवार</span></div>
+      </div>
+
+      <!-- Vidai Event Container -->
+      <div class="s1-ev vidai-box" data-event-container="vidai">
+        <div class="s1-ev-t" data-field="event.vidai.name">विदाई</div>
+        <div class="s1-ev-d">दिनांक - <span data-field="event.vidai.date" data-field-format="hindi-date">01 जून 2026, सोमवार</span></div>
+      </div>
+
+      <!-- Hanging Side Chains -->
+      <div class="chainleft">
+        <img src="../../../builder1/assets/icons/side.png" alt="">
+      </div> 
+      <div class="chainright">
+        <img src="../../../builder1/assets/icons/side.png" alt="">
+      </div> 
+      
+      <!-- Ganesh & Om Icons -->
+      <div class="ganesh-icon">
+        <img src="../../../builder1/assets/icons/ganesh.png" alt="Ganesh">
+      </div>
+      <div class="sun-icon">
+        <img src="../../../builder1/assets/icons/om.png" alt="Om">
+      </div>
+
+      <!-- Hanging Jhumka Bells -->
+      <div class="top-icon">
+        <img src="../../../builder1/assets/icons/top2.png" alt="Top">
+      </div>
+      <div class="bottom-icon">
+        <img src="../../../builder1/assets/icons/top2.png" alt="Top">
+      </div>
+      <div class="top1-icon">
+        <img src="../../../builder1/assets/icons/top2.png" alt="Top">
+      </div>
+      <div class="mid-icon">
+        <img src="../../../builder1/assets/icons/mid.png" alt="Top">
+      </div>
+
+      <!-- Couple Icon -->
+      <div class="couple-box">
+        <img src="../../../builder1/assets/icons/weds.png" alt="Weds">
+      </div>
+
+      <!-- Bal Aagrah -->
+      <div class="s1-bal">
+        <span data-field="balAagrahText">बाल आग्रह- गाना होगा, बजाना होगा, मिलकर धूम मचाना होगा, मेरी दीदी की शादी है आप सभी को आना होगा -</span><br>
+        <span class="s1-bal-n" data-field="balAagrahNames">जानकी, जान, अनन्या, अनाया (डोडो)</span>
+      </div>
+    </div><!-- s1-wrap -->
+  </div><!-- sec 1 -->
+
+  <!-- ════════════════════════════════════════
+       SECTION 2
+       ════════════════════════════════════════ -->
+  <div class="sec sec2">
+    <div class="fl tl">✿</div>
+    <div class="fl tr">✿</div>
+    <div class="fl bl">✿</div>
+    <div class="fl br">✿</div>
+
+    <div class="s2-wrap">
+      <!-- Snehi Salutation -->
+      <div class="s2-snehi" data-field="snehiText">स्नेही स्वजन,</div>
+      
+      <!-- Deity Invocation -->
+      <div class="s2-vindhya">
+        <div class="s2-vm" data-field="deityMantra">।। श्री विन्ध्यवासिनी देव्यै नमः ।।</div>
+        <div class="s2-vs" data-field="deitySubtitle">आदि शक्ति जगत जननी माँ विन्ध्यवासिनी जी की असीम अनुकम्पा से....</div>
+      </div>
+
+      <!-- Bride Details -->
+      <div class="s2-bride">
+        <span data-field="brideTitle">आयु॰कु॰</span> <span data-field="brideName">नीलम मौर्या</span>
+      </div>
+      <div class="s2-fam">
+        सुपौत्री- <span data-field="brideGrandparents">स्व0 श्री बनारसी प्रसाद मौर्य- श्रीमती कलावती देवी</span><br>
+        सुपुत्री- <span data-field="brideParents">श्री शमशेर बहादुर मौर्य- श्रीमती चन्द्रकला देवी</span><br>
+        ग्राम- <span data-field="brideAddress">ग्राम- थरपरिसया पो0- नदौली करौदी</span><br>
+        <span data-field="brideCity">लालगंज, जिला- मीरजापुर</span>
+      </div>
+
+      <!-- Groom Details -->
+      <div class="s2-groom">
+        <span data-field="groomTitle">चि॰</span> <span data-field="groomName">राजेश मौर्य</span>
+      </div>
+      <div class="s2-fam-r">
+        सुपौत्र- <span data-field="groomGrandparents">स्व0 शिवनाथ मौर्य- श्रीमती प्रेमा देवी</span><br>
+        सुपुत्र- <span data-field="groomParents">श्री रामकेशवर मौर्य- श्रीमती मालती देवी</span><br>
+        ग्राम- <span data-field="groomAddress">ग्राम- झगड़हा पो0- नौगवां</span><br>
+        <span data-field="groomCity">जिला- मीरजापुर</span>
+      </div>
+
+      <!-- Couple Icon -->
+      <div class="s2-icon couple-box">
+        <img src="../../../builder1/assets/icons/weds.png" alt="Weds">
+      </div>
+
+      <!-- Dampatya Heading -->
+      <div class="s2-damp-t" data-field="dampatyaHeading">।। दाम्पत्य-सूत्र-बन्धन ।।</div>
+      <div class="s2-damp-d" data-field="vinitText">
+        की मधुर बेला पर पधार कर नवयुगल को अपने<br>
+        स्नेहिल आशीर्वाद की मृदुल ज्योत्सना से अभिसिंचित कर हमें अनुगृहीत करें।
+      </div>
+
+      <!-- Footer - Darshnabhilashi -->
+      <div class="fc-l">
+        <div class="f-label" data-field="darshnabhilashiLabel">दर्शनाभिलाषी -</div>
+        <div class="f-name" data-field="darshnabhilashiNames">पुष्पराज मौर्य, जयप्रकाश मौर्य<br>एवं समस्त मौर्य परिवार ।</div>
+      </div>
+
+      <!-- Footer - Swagatakankshi -->
+      <div class="fc-c">
+        <div class="f-label" data-field="swagatakankshiLabel">- स्वागताकांक्षी -</div>
+        <div class="f-name" data-field="swagatakankshiNames">शमशेर बहादुर मौर्य<br>अनिल मौर्य</div>
+      </div>
+
+      <!-- Footer - Nimantrak -->
+      <div class="fc-r">
+        <div class="f-label" data-field="vinitLabel">- विनीत -</div>
+        <div class="f-name" data-field="vinitName">फूलचन्द मौर्य</div>
+        <div class="f-addr" data-field="vinitAddress">ग्राम- थरपरिसया पो0- नदौली करौदी<br>लालगंज, जिला- मीरजापुर</div>
+      </div>
+    </div><!-- s2-wrap -->
+  </div><!-- sec 2 -->
+</div><!-- card -->
+
+<!-- Dynamic style tag placeholder -->
+<style id="custom-card-styles"></style>
+
+<script>
+// Date formatting helper variables
+const _HI_MONTHS = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+const _HI_DAYS   = ['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+
+function fmtHi(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr + 'T00:00:00');
+    if (isNaN(d.getTime())) return dateStr;
+    return d.getDate() + ' ' + _HI_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + _HI_DAYS[d.getDay()];
+  } catch(e) { return dateStr; }
+}
+
+// Global styles structure
+const DEFAULT_CARD_STYLE = {
+  bodyBg: '#c8829a',
+  cardBg: '#f2aec8',
+  accentColor: '#8b0040',
+  textColor: '#6e0035',
+  headingColor: '#6e0035',
+  fontFamily: 'Noto Serif Devanagari',
+  shlokaSize: 100,
+  headingSize: 100,
+  namesSize: 100,
+  eventSize: 100,
+  footerSize: 100,
+  showGanesh: 'true',
+  ganeshSize: 100,
+  showOm: 'true',
+  omSize: 100,
+  showChains: 'true',
+  chainsSize: 100,
+  showCouple: 'true',
+  coupleSize: 100,
+  showCorners: 'true',
+  cornerSymbol: '✿',
+  cornerSize: 100,
+  cardPadding: 1.0,
+  sectionGap: 0.3,
+  showBorder: 'true',
+  curveLevel: 0,
+  borderPreset: 'classic',
+  borderColor: '#8b0040'
+};
+
+const BORDER_FRAME_PRESETS = {
+  classic: { width: '0.07cm', borderStyle: 'solid', rings: ['0.13cm', '0.22cm'], borderRadius: '0.24cm' },
+  double: { width: '0.10cm', borderStyle: 'double', rings: ['0.14cm', '0.26cm'], borderRadius: '0.20cm' },
+  thin: { width: '0.04cm', borderStyle: 'solid', rings: ['0.09cm', '0.16cm'], borderRadius: '0.18cm' },
+  dashed: { width: '0.08cm', borderStyle: 'dashed', rings: ['0.12cm', '0.20cm'], borderRadius: '0.12cm' },
+  ornate: { width: '0.10cm', borderStyle: 'solid', rings: ['0.12cm', '0.20cm', '0.28cm', '0.36cm', '0.44cm'], borderRadius: '0.28cm' },
+  luxe: { width: '0.12cm', borderStyle: 'double', rings: ['0.14cm', '0.24cm', '0.34cm'], borderRadius: '0.28cm' },
+  modern: { width: '0.06cm', borderStyle: 'solid', rings: ['0.15cm', '0.28cm'], borderRadius: '0.32cm' },
+  minimal: { width: '0.04cm', borderStyle: 'solid', rings: ['0.18cm'], borderRadius: '0.40cm' },
+  'art-deco': { width: '0.06cm', borderStyle: 'solid', rings: ['0.10cm', '0.18cm', '0.26cm', '0.34cm'], borderRadius: '0.16cm' },
+  vintage: { width: '0.10cm', borderStyle: 'solid', rings: ['0.12cm', '0.20cm', '0.28cm', '0.38cm'], borderRadius: '0.36cm' },
+  retro: { width: '0.09cm', borderStyle: 'dotted', rings: ['0.14cm', '0.22cm', '0.30cm'], borderRadius: '0.22cm' },
+  elegant: { width: '0.08cm', borderStyle: 'solid', rings: ['0.11cm', '0.19cm', '0.27cm'], borderRadius: '0.30cm' },
+  bold: { width: '0.14cm', borderStyle: 'solid', rings: ['0.16cm', '0.28cm'], borderRadius: '0.18cm' }
+};
+
+function buildBorderFrameCss(style) {
+  if (style.showBorder === 'false') {
+    return 'border:none !important; box-shadow:none !important;';
+  }
+  const preset = BORDER_FRAME_PRESETS[style.borderPreset || 'classic'] || BORDER_FRAME_PRESETS.classic;
+  const borderColor = style.borderColor || style.accentColor || '#8b0040';
+  const cardBg = style.cardBg || '#f2aec8';
+  const shadows = preset.rings.map((ring) => `inset 0 0 0 ${ring} ${cardBg}`).join(', ');
+  let radius = '';
+  if (style.curveLevel && preset.borderRadius) {
+    const factor = Number(style.curveLevel) / 4;
+    const baseRadius = parseFloat(preset.borderRadius);
+    const radiusValue = (baseRadius * factor).toFixed(3) + 'cm';
+    radius = ` border-radius:${radiusValue};`;
+  }
+  return `border:${preset.width} ${preset.borderStyle} ${borderColor}; box-shadow:${shadows};${radius}`;
+}
+
+function loadCustomFont(fontFamily) {
+  if (!fontFamily || fontFamily === 'Noto Serif Devanagari') return;
+  const linkId = 'custom-font-' + fontFamily.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  if (document.getElementById(linkId)) return;
+  const link = document.createElement('link');
+  link.id = linkId;
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fontFamily).replace(/%20/g, '+') + ':wght@400;600;700&display=swap';
+  document.head.appendChild(link);
+}
+
+// Apply styles to card layout
+function applyCustomStyles(style) {
+  style = Object.assign({}, DEFAULT_CARD_STYLE, style || {});
+  
+  let cssEl = document.getElementById('custom-card-styles');
+  if (!cssEl) {
+    cssEl = document.createElement('style');
+    cssEl.id = 'custom-card-styles';
+    document.head.appendChild(cssEl);
+  }
+
+  loadCustomFont(style.fontFamily);
+
+  // Compute sizing values relative to font scale percentages
+  const shlokaSizeVal = 0.39 * (style.shlokaSize / 100);
+  const headingSizeVal = 0.5 * (style.headingSize / 100);
+  const namesSizeVal = 0.65 * (style.namesSize / 100);
+  const eventSizeVal = 0.47 * (style.eventSize / 100);
+  const footerSizeVal = 0.4 * (style.footerSize / 100);
+  
+  const ganeshSizeVal = 3.5 * (style.ganeshSize / 100);
+  const omSizeVal = 3.0 * (style.omSize / 100);
+  const coupleSizeVal = 3.0 * (style.coupleSize / 100);
+  const cornerSizeVal = 1.2 * (style.cornerSize / 100);
+  const chainsSizeVal = 1.8 * (style.chainsSize / 100);
+
+  let cssText = `
+    body {
+      background: ${style.bodyBg};
+      font-family: '${style.fontFamily}', serif;
+    }
+    .card {
+      background: ${style.cardBg};
+      padding: ${style.cardPadding}cm;
+      gap: ${style.sectionGap}cm;
+    }
+    .sec {
+      ${buildBorderFrameCss(style)}
+      background: ${style.cardBg};
+    }
+    .fl {
+      color: ${style.accentColor};
+      font-size: ${cornerSizeVal}cm;
+      display: ${style.showCorners === 'true' ? 'block' : 'none'} !important;
+    }
+    .s1-mantras p {
+      color: ${style.textColor};
+    }
+    .s1-mantras p:first-child {
+      font-size: ${shlokaSizeVal * 1.02}cm;
+    }
+    .s1-mantras p:last-child {
+      font-size: ${shlokaSizeVal}cm;
+    }
+    .s1-heading {
+      color: ${style.headingColor};
+      font-size: ${headingSizeVal}cm;
+    }
+    .swirl {
+      color: ${style.accentColor};
+    }
+    .s1-haldi-t {
+      color: ${style.textColor};
+      font-size: ${eventSizeVal * 1.25}cm;
+    }
+    .s1-haldi-d {
+      color: ${style.textColor};
+      font-size: ${eventSizeVal * 1.0}cm;
+    }
+    .s1-ev-t {
+      color: ${style.textColor};
+      font-size: ${eventSizeVal * 1.4}cm;
+    }
+    .s1-ev-d {
+      color: ${style.textColor};
+      font-size: ${eventSizeVal}cm;
+    }
+    .s1-bal {
+      color: ${style.textColor};
+      font-size: ${shlokaSizeVal * 1.02}cm;
+    }
+    .s2-snehi {
+      color: ${style.textColor};
+      font-size: ${shlokaSizeVal * 0.97}cm;
+    }
+    .s2-vm {
+      color: ${style.textColor};
+      font-size: ${shlokaSizeVal * 1.02}cm;
+    }
+    .s2-vs {
+      color: ${style.textColor};
+      font-size: ${shlokaSizeVal * 0.97}cm;
+    }
+    .s2-bride, .s2-groom {
+      color: ${style.headingColor};
+      font-size: ${namesSizeVal}cm;
+    }
+    .s2-fam, .s2-fam-r {
+      color: ${style.textColor};
+      font-size: ${footerSizeVal}cm;
+    }
+    .s2-damp-t {
+      color: ${style.textColor};
+      font-size: ${footerSizeVal * 1.05}cm;
+    }
+    .s2-damp-d {
+      color: ${style.textColor};
+      font-size: ${footerSizeVal * 0.97}cm;
+    }
+    .f-label {
+      color: ${style.textColor};
+      font-size: ${footerSizeVal * 1.12}cm;
+    }
+    .f-name {
+      color: ${style.textColor};
+      font-size: ${footerSizeVal * 1.07}cm;
+    }
+    .f-addr {
+      color: ${style.textColor};
+      font-size: ${footerSizeVal * 0.95}cm;
+    }
+    
+    .ganesh-icon img {
+      width: ${ganeshSizeVal}cm !important;
+      display: ${style.showGanesh === 'true' ? 'block' : 'none'} !important;
+    }
+    .sun-icon img {
+      width: ${omSizeVal}cm !important;
+      display: ${style.showOm === 'true' ? 'block' : 'none'} !important;
+    }
+    .chainleft img, .chainright img {
+      width: ${chainsSizeVal}cm !important;
+      display: ${style.showChains === 'true' ? 'block' : 'none'} !important;
+    }
+    .s1-wrap .couple-box img, .s2-wrap .s2-icon img {
+      width: ${coupleSizeVal}cm !important;
+      display: ${style.showCouple === 'true' ? 'block' : 'none'} !important;
+    }
+  `;
+  cssEl.textContent = cssText;
+
+  // Handle corners symbols
+  if (style.cornerSymbol) {
+    document.querySelectorAll('.fl').forEach(el => {
+      el.textContent = style.cornerSymbol;
+    });
+  }
+}
+
+// Synchronization receiver logic
+window.addEventListener('message', function(e) {
+  const d = e.data;
+  if (!d || d.type !== 'UPDATE_TEMPLATE_DATA') return;
+  
+  const payload = d.data;
+  if (!payload) return;
+
+  // 1. Sync Flat Text Fields
+  if (payload.fields) {
+    Object.keys(payload.fields).forEach(key => {
+      const val = payload.fields[key];
+      const elements = document.querySelectorAll(`[data-field="${key}"]`);
+      elements.forEach(el => {
+        if (el.tagName === 'IMG') {
+          el.src = val;
+        } else {
+          // Replace newlines with HTML breaks to preserve paragraphs
+          el.innerHTML = String(val).replace(/\n/g, '<br>');
+        }
+      });
+    });
+  }
+
+  // 2. Sync Event Sections
+  if (payload.events) {
+    Object.keys(payload.events).forEach(eventId => {
+      const eventData = payload.events[eventId];
+      
+      // Toggle visibility of the event container
+      const containers = document.querySelectorAll(`[data-event-container="${eventId}"]`);
+      containers.forEach(container => {
+        if (eventData && eventData.active !== false) {
+          container.style.display = ''; // Restore to default CSS display layout
+        } else {
+          container.style.display = 'none'; // Hide if event is unchecked
+        }
+      });
+
+      if (eventData) {
+        // Update Event Name
+        if (eventData.name !== undefined) {
+          const nameElms = document.querySelectorAll(`[data-field="event.${eventId}.name"]`);
+          nameElms.forEach(el => { el.textContent = eventData.name; });
+        }
+        
+        // Update Event Date
+        if (eventData.date !== undefined) {
+          const dateElms = document.querySelectorAll(`[data-field="event.${eventId}.date"]`);
+          dateElms.forEach(el => {
+            const isHindi = el.getAttribute('data-field-format') === 'hindi-date';
+            el.textContent = isHindi ? fmtHi(eventData.date) : eventData.date;
+          });
+        }
+      }
+    });
+  }
+
+  // 3. Apply Style Options
+  if (payload.styles) {
+    applyCustomStyles(payload.styles);
+  }
+});
+</script>
+
+</body>
+</html>

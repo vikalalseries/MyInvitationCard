@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Preview Canvas</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #18181b; /* Sleek slate dark background */
+  color: #f4f4f5;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Glassmorphic Toolbar */
+.toolbar {
+  height: 52px;
+  background: rgba(24, 24, 27, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(63, 63, 70, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
+}
+
+.toolbar-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-title span {
+  background: rgba(139, 0, 64, 0.2);
+  color: #ff7ebb;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(139, 0, 64, 0.4);
+  font-weight: 600;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zoom-btn {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  color: #e4e4e7;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.zoom-btn:hover {
+  background: #3f3f46;
+  border-color: #52525b;
+  color: #fff;
+}
+
+.zoom-btn:active {
+  transform: scale(0.97);
+}
+
+.zoom-indicator {
+  font-size: 13px;
+  color: #d4d4d8;
+  font-weight: 500;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Canvas Area */
+.canvas-area {
+  flex: 1;
+  position: relative;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* Card Iframe wrapper & transform container */
+.iframe-container {
+  position: relative;
+  width: 888.2px; /* 23.5cm */
+  height: 718.1px; /* 19cm */
+  background: #09090b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.15s ease-out;
+  transform-origin: center center;
+}
+
+iframe {
+  width: 888.2px;
+  height: 718.1px;
+  border: none;
+  background: #fff;
+  display: block;
+}
+
+/* Custom Scrollbar for Workspace Canvas */
+.canvas-area::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.canvas-area::-webkit-scrollbar-track {
+  background: #18181b;
+}
+.canvas-area::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 4px;
+}
+.canvas-area::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+</style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="toolbar-title">
+    Live Preview <span id="template-tag">LOADING...</span>
+  </div>
+  <div class="controls">
+    <button class="zoom-btn" onclick="zoomOut()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
+    <div class="zoom-indicator" id="zoom-value">100%</div>
+    <button class="zoom-btn" onclick="zoomIn()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
+    <button class="zoom-btn" onclick="fitToScreen()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      Fit Screen
+    </button>
+  </div>
+</div>
+
+<!-- Designer Canvas Workspace -->
+<div class="canvas-area" id="canvas-area">
+  <div class="iframe-container" id="iframe-container">
+    <iframe id="preview-iframe" src="about:blank"></iframe>
+  </div>
+</div>
+
+<script>
+let zoomScale = 1.0;
+const cardWidth = 888.2;  // 23.5cm in pixels
+const cardHeight = 718.1; // 19cm in pixels
+const container = document.getElementById('iframe-container');
+const canvas = document.getElementById('canvas-area');
+const iframe = document.getElementById('preview-iframe');
+
+// Load URL parameters to get correct template
+const urlParams = new URLSearchParams(window.location.search);
+const templateId = urlParams.get('template') || 'card1';
+document.getElementById('template-tag').textContent = templateId.toUpperCase();
+
+// Set iframe source
+iframe.src = `../templates/${templateId}/template.html`;
+
+// Listen to template loaded event
+iframe.addEventListener('load', function() {
+  fitToScreen();
+  // Tell parent window preview is ready
+  window.parent.postMessage({ type: 'PREVIEW_READY' }, '*');
+});
+
+// Update CSS Transform scale and text representation
+function updateZoom() {
+  container.style.transform = `scale(${zoomScale})`;
+  document.getElementById('zoom-value').textContent = Math.round(zoomScale * 100) + '%';
+}
+
+function zoomIn() {
+  zoomScale = Math.min(zoomScale + 0.1, 2.0);
+  updateZoom();
+}
+
+function zoomOut() {
+  zoomScale = Math.max(zoomScale - 0.1, 0.3);
+  updateZoom();
+}
+
+function fitToScreen() {
+  const pad = 60; // Padding inside canvas
+  const canvasW = canvas.clientWidth - pad;
+  const canvasH = canvas.clientHeight - pad;
+  
+  const scaleX = canvasW / cardWidth;
+  const scaleY = canvasH / cardHeight;
+  
+  zoomScale = Math.min(scaleX, scaleY, 1.2); // Cap at 1.2x scale to prevent excessive blur
+  updateZoom();
+}
+
+// Auto-adjust scale when browser window resizes
+window.addEventListener('resize', function() {
+  fitToScreen();
+});
+
+// Receive update message from Editor and forward it to Template frame
+window.addEventListener('message', function(e) {
+  const d = e.data;
+  if (!d) return;
+
+  // If the editor is sending data updates
+  if (d.type === 'UPDATE_TEMPLATE_DATA') {
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(d, '*');
+    }
+  }
+});
+</script>
+</body>
+</html>
