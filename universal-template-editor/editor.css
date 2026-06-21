@@ -487,7 +487,7 @@ body {
 .forms-container {
   flex: 1;
   overflow-y: auto;
-  padding: 10px 20px 30px;
+  padding: 10px 20px 40px;
 }
 
 .sub-tab-pane {
@@ -589,8 +589,6 @@ body {
   line-height: 1.4;
   margin-bottom: 12px;
 }
-
-/* Accordion in customize page is replaced with clean groups/inputs, but we support both classes */
 
 /* ── ACCORDION SECTIONS (.sc) ── */
 .sc {
@@ -840,70 +838,213 @@ input:checked + .slider:before {
   pointer-events: none;
 }
 
-/* ── SIDEBAR FOOTER ── */
+/* ── SIDEBAR FOOTER (REMOVED) ── */
 .sidebar-footer {
-  padding: 16px 24px;
-  border-top: 1px solid var(--g200);
-  display: flex;
-  gap: 12px;
-  background: var(--w);
-  flex-shrink: 0;
+  display: none;
 }
 
-.footer-btn {
-  flex: 1;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 650;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all var(--t);
-  border: none;
-  outline: none;
-}
-
-.btn-secondary {
-  background: var(--w);
-  border: 1.5px solid var(--g200);
-  color: var(--g700);
-}
-
-.btn-secondary:hover {
-  background: var(--rose-50);
-  color: var(--rose);
-  border-color: var(--rose-100);
-}
-
-.btn-primary {
-  background: #0f172a;
-  color: var(--w);
-}
-
-.btn-primary:hover {
-  background: var(--rose);
-  box-shadow: 0 4px 12px rgba(244,63,94,0.22);
-}
-
-/* ── WORKSPACE PREVIEW (RIGHT COLUMN) ── */
+/* ── WORKSPACE PREVIEW (RIGHT COLUMN — EXACT REPLICA) ── */
 .workspace {
   flex: 1;
-  background-color: #e2dbd5;
-  background-image: radial-gradient(circle, rgba(0,0,0,0.045) 1.2px, transparent 0);
-  background-size: 22px 22px;
-  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: #e2dbd5;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.045) 1.2px, transparent 0);
+  background-size: 22px 22px;
+  position: relative;
 }
 
-.preview-frame {
+.preview-bar {
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--g200);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.preview-lbl {
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: var(--g500);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulseLive 2s infinite;
+  box-shadow: 0 0 0 2px rgba(16,185,129,0.2);
+}
+
+@keyframes pulseLive {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.75); opacity: 0.5; }
+}
+
+.preview-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview-reset-btn {
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--g200);
+  border-radius: var(--r-sm);
+  background: var(--w);
+  color: var(--g700);
+  font-size: 0.68rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all var(--t);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+}
+
+.preview-reset-btn:hover {
+  background: var(--g50);
+  border-color: var(--g300);
+  color: var(--rose-dark);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.zoom-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--w);
+  border: 1px solid var(--g200);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.zbtn {
+  width: 32px;
+  height: 30px;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--g500);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all var(--t);
+  line-height: 1;
+  border-right: 1px solid var(--g200);
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+.zbtn:last-child {
+  border-right: none;
+}
+
+.zbtn:hover {
+  background: var(--rose-50);
+  color: var(--rose);
+}
+
+.zlvl {
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: var(--g700);
+  min-width: 46px;
+  text-align: center;
+  border-right: 1px solid var(--g200);
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zfit {
+  font-size: 0.68rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  padding: 0 10px;
+  border-radius: 0;
+  width: auto;
+  letter-spacing: 0.8px;
+  color: var(--g500);
+  height: 30px;
+  display: flex;
+  align-items: center;
+  border-right: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.zfit:hover {
+  color: var(--rose);
+  background: var(--rose-50);
+}
+
+/* Preview viewport */
+.preview-vp {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  position: relative;
+}
+
+#card-scaler-wrap {
+  display: inline-block;
+  position: relative;
+  flex-shrink: 0;
+  width: 670px; /* default 75% zoom scale of 893 */
+  height: 570px;
+  transition: width 0.2s, height 0.2s;
+  margin: auto;
+}
+
+.card-outer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 893px;
+  height: 760px;
+  transform-origin: top left;
+  transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
+  display: block;
+  line-height: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12);
+}
+
+#preview-iframe {
   width: 100%;
   height: 100%;
   border: none;
+  display: block;
+  background: #f2aec8;
 }
 
 /* ── TOAST NOTIFICATIONS ── */

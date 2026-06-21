@@ -18,6 +18,11 @@ const FIELD_CATEGORIES = [
   "Bal Aagrah"
 ];
 
+// Zoom scaling variables matching builder1
+let zoomScale = 0.75; // Default 75% zoom
+const cardWidth = 893;
+const cardHeight = 760;
+
 // Authentication state
 let userLoggedIn = false;
 let currentUser = null;
@@ -44,11 +49,9 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dl-wrap').classList.remove('open');
   });
 
-  // Listen for iframe readiness confirmation
-  window.addEventListener('message', (e) => {
-    if (e.data && e.data.type === 'PREVIEW_READY') {
-      sendUpdate();
-    }
+  // Resize listener for auto-fitting live preview
+  window.addEventListener('resize', () => {
+    fitToScreen();
   });
 });
 
@@ -70,10 +73,16 @@ async function loadTemplate(templateId) {
     generateCeremoniesForm();
     generateStylesForm();
     
-    // Set preview iframe template path
+    // Set preview iframe template path directly
     const previewIframe = document.getElementById('preview-iframe');
     if (previewIframe) {
-      previewIframe.src = `preview/preview.html?template=${templateId}`;
+      previewIframe.src = `templates/${templateId}/template.html`;
+      
+      // Clear previous load listeners and bind direct update trigger
+      previewIframe.onload = () => {
+        sendUpdate();
+        fitToScreen();
+      };
     }
   } catch (error) {
     console.error("Failed to load template configuration:", error);
@@ -540,7 +549,7 @@ function switchCustomizeSubSection(sectionId) {
   document.getElementById(`c-sec-${sectionId}`).style.display = 'flex';
 }
 
-// Send updates to preview frame
+// Send updates directly to preview frame
 function sendUpdate() {
   const iframe = document.getElementById('preview-iframe');
   if (iframe && iframe.contentWindow) {
@@ -640,14 +649,10 @@ function toggleDownloadMenu(e) {
   wrap.classList.toggle('open');
 }
 
-// ── PRINT ACTION ──
+// ── PRINT ACTION (DIRECT IFRAME STREAM) ──
 function printCard() {
   const iframe = document.getElementById('preview-iframe');
-  const innerIframe = iframe.contentWindow.document.getElementById('preview-iframe');
-  if (innerIframe && innerIframe.contentWindow) {
-    innerIframe.contentWindow.focus();
-    innerIframe.contentWindow.print();
-  } else if (iframe && iframe.contentWindow) {
+  if (iframe && iframe.contentWindow) {
     iframe.contentWindow.focus();
     iframe.contentWindow.print();
   }
@@ -768,4 +773,46 @@ function simulateLogin(emailVal) {
   hideLoginPopup();
   
   toast(`Welcome back, ${user.name}!`, 's');
+}
+
+// ── LIVE PREVIEW SCALING ENGINE (EXACT REPLICA OF BUILDER1) ──
+function updateZoom() {
+  const scalerWrap = document.getElementById('card-scaler-wrap');
+  const outer = document.getElementById('iframe-container');
+  const valueDisplay = document.getElementById('zoom-value');
+  
+  if (scalerWrap && outer) {
+    scalerWrap.style.width = (cardWidth * zoomScale) + 'px';
+    scalerWrap.style.height = (cardHeight * zoomScale) + 'px';
+    outer.style.transform = `scale(${zoomScale})`;
+  }
+  
+  if (valueDisplay) {
+    valueDisplay.textContent = Math.round(zoomScale * 100) + '%';
+  }
+}
+
+function zoomIn() {
+  zoomScale = Math.min(zoomScale + 0.05, 1.5);
+  updateZoom();
+}
+
+function zoomOut() {
+  zoomScale = Math.max(zoomScale - 0.05, 0.3);
+  updateZoom();
+}
+
+function fitToScreen() {
+  const canvas = document.getElementById('canvas-area');
+  if (!canvas) return;
+  
+  const pad = 80; // Padding inside workspace canvas
+  const canvasW = canvas.clientWidth - pad;
+  const canvasH = canvas.clientHeight - pad;
+  
+  const scaleX = canvasW / cardWidth;
+  const scaleY = canvasH / cardHeight;
+  
+  zoomScale = Math.min(scaleX, scaleY, 1.1); // Cap at 1.1x scale
+  updateZoom();
 }

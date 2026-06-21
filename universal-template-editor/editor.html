@@ -45,7 +45,7 @@
         Content
       </button>
       
-      <button class="tab-btn" id="tab-customize" onclick="switchBuilderTab('customize')" title="Customize colors, fonts, and spacings">
+      <button class="tab-btn" id="tab-customize" onclick="switchBuilderTab('customize')" title="Customize appearance">
         <span class="tab-ico">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
@@ -111,7 +111,7 @@
   <!-- ══════════════════════════════════════ BODY SECTION -->
   <main class="body">
     
-    <!-- Sidebar form controls (Width: 480px to fit Customize sidebar layout) -->
+    <!-- Sidebar form controls (Width: 480px) -->
     <div class="sidebar">
       
       <!-- Hidden template selector placeholder -->
@@ -119,7 +119,7 @@
         <option value="card1" selected>Traditional Hindu Wedding Card 1</option>
       </select>
 
-      <!-- 1. Content View Panel (contains sub-tabs at the top!) -->
+      <!-- 1. Content View Panel -->
       <div id="content-view" class="sidebar-view-panel" style="display: flex; flex-direction: column; height: 100%;">
         <!-- UPPER SIDEBAR SUB-TABS (Mantra/Content vs Ceremonies) -->
         <div class="sidebar-sub-tabs">
@@ -143,7 +143,7 @@
         </div>
       </div>
 
-      <!-- 2. Customize View Panel (contains the original sub-sidebar layout!) -->
+      <!-- 2. Customize View Panel -->
       <div id="customize-view" class="sidebar-view-panel" style="display: none; height: 100%; width: 100%;">
         <div class="customizer-container">
           <!-- Sub-Sidebar for style categories -->
@@ -209,21 +209,36 @@
         </div>
       </div>
       
-      <!-- Footer settings -->
-      <div class="sidebar-footer">
-        <button class="footer-btn btn-secondary" onclick="resetToDefaults()" title="Restore defaults">
-          <i class="fa-solid fa-rotate-left"></i>Reset Defaults
-        </button>
-        <button class="footer-btn btn-primary" onclick="exportData()" title="Export JSON backup">
-          <i class="fa-solid fa-file-code"></i>Backup Draft
-        </button>
-      </div>
-      
     </div>
     
-    <!-- Live Preview Workspace -->
+    <!-- ══════════════════════════════════════ LIVE PREVIEW SECTION (EXACT REPLICA) -->
     <div class="workspace">
-      <iframe class="preview-frame" id="preview-iframe" src="preview/preview.html?template=card1"></iframe>
+      <!-- Live Preview Bar -->
+      <div class="preview-bar">
+        <div class="preview-lbl"><span class="live-dot"></span>LIVE PREVIEW</div>
+        
+        <div class="preview-bar-right">
+          <!-- Reset button inside preview bar -->
+          <button class="preview-reset-btn" onclick="resetToDefaults()" title="Reset all changes to default template">RESET</button>
+          
+          <!-- Zoom selector block -->
+          <div class="zoom-bar">
+            <button class="zbtn" onclick="zoomOut()">-</button>
+            <div class="zlvl" id="zoom-value">75%</div>
+            <button class="zbtn" onclick="zoomIn()">+</button>
+            <button class="zbtn zfit" onclick="fitToScreen()">Fit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Viewport area centering card wrapper -->
+      <div class="preview-vp" id="canvas-area">
+        <div id="card-scaler-wrap">
+          <div class="card-outer" id="iframe-container">
+            <iframe id="preview-iframe" src="about:blank"></iframe>
+          </div>
+        </div>
+      </div>
     </div>
 
   </main>
@@ -233,7 +248,7 @@
 <!-- Toast notifications wrapper -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
-<!-- ══════════════════════════════════════════ AUTH MODAL DIALOGS -->
+<!-- ══════════════════════════════════════════ LP AUTH MODALS -->
 <div class="login-overlay" id="login-overlay" onclick="hideLoginPopup(event)"></div>
 <div class="login-popup" id="login-popup" onclick="event.stopPropagation()">
   <button class="lp-close" onclick="hideLoginPopup(event)" title="Close dialog"><i class="fa-solid fa-xmark"></i></button>
