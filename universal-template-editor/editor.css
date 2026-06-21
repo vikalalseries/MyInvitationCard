@@ -233,6 +233,7 @@ body {
   align-items: center;
   gap: 8px;
   margin-left: auto;
+  padding-left: 80px; /* Clear separation gap between left tabs and right controls */
   flex-shrink: 0;
 }
 
