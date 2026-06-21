@@ -178,7 +178,7 @@
       <!-- 2. Customize View Panel -->
       <div id="customize-view" class="sidebar-view-panel" style="display: none; height: 100%; width: 100%;">
         <div class="customizer-container">
-          <!-- Sub-Sidebar for style categories -->
+          <!-- Left Sub-Sidebar -->
           <div class="customizer-sidebar">
             <button class="customizer-nav-btn active" id="c-nav-colors" onclick="switchCustomizerSection('colors')">
               <i class="fa-solid fa-palette"></i>
@@ -206,44 +206,443 @@
             </button>
           </div>
           
-          <!-- Styles editor area -->
-          <div class="customizer-content">
-            <!-- Colors subsection -->
-            <div id="c-sec-colors" class="customizer-section-panel active" style="display: flex; flex-direction: column; gap: 16px;">
-              <h3 class="customizer-group-title">Colors & Backgrounds</h3>
-              <p class="customizer-group-desc">Select background backdrop and typography colors for your invitation.</p>
-              <div id="styles-colors-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+          <!-- Right scrollable settings -->
+          <div class="customizer-content" id="customizer-content">
+            <!-- COLORS PANEL -->
+            <div id="c-sec-colors" class="customizer-section-panel active">
+              <h3 class="customizer-group-title">Color Palettes</h3>
+              <p class="customizer-group-desc">Select a curated theme palette or customize accent colors below. Card stock color is fixed for print, so card background is preview-only.</p>
+              
+              <div class="presets-grid" id="color-presets-grid">
+                <!-- Presets populated by JS -->
+              </div>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Card Stock</div>
+                <div class="customizer-group-desc">Choose one fixed paper stock color for the printed card.</div>
+                <div class="customizer-field">
+                  <label class="fl">Stock Option</label>
+                  <div class="customizer-label-sub">Cream, Ivory, Peach, Gold, or Pink</div>
+                  <select class="fs" id="card-stock-select" onchange="handleCardStockChange(this)">
+                    <option value="#f9f1d0">Cream</option>
+                    <option value="#fff5e1">Ivory</option>
+                    <option value="#f7d5c4">Peach</option>
+                    <option value="#f3d0a5">Gold</option>
+                    <option value="#f2aec8" selected>Pink</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="customizer-card">
+                <div class="customizer-card-title">Design Customization</div>
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Outer Background</span>
+                    <div class="customizer-label-sub">Page layout backdrop</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-bodyBg">#c8829a</span>
+                    <div class="color-input-preview" id="preview-bodyBg">
+                      <input type="color" data-style-key="bodyBg" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Accent / Borders</span>
+                    <div class="customizer-label-sub">Frames and borders</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-accentColor">#8b0040</span>
+                    <div class="color-input-preview" id="preview-accentColor">
+                      <input type="color" data-style-key="accentColor" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Main Text</span>
+                    <div class="customizer-label-sub">All details, date text</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-textColor">#6e0035</span>
+                    <div class="color-input-preview" id="preview-textColor">
+                      <input type="color" data-style-key="textColor" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Headings</span>
+                    <div class="customizer-label-sub">Names and core headings</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-headingColor">#6e0035</span>
+                    <div class="color-input-preview" id="preview-headingColor">
+                      <input type="color" data-style-key="headingColor" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <!-- Fonts subsection -->
-            <div id="c-sec-fonts" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
-              <h3 class="customizer-group-title">Typography Style</h3>
-              <p class="customizer-group-desc">Choose a font family style that applies to the entire invitation card.</p>
-              <div id="styles-fonts-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+
+            <!-- FONTS PANEL -->
+            <div id="c-sec-fonts" class="customizer-section-panel">
+              <h3 class="customizer-group-title">Typography Family</h3>
+              <p class="customizer-group-desc">Select the main typeface used across your invitation card.</p>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Font Options</div>
+                <div class="customizer-field">
+                  <label class="fl">Card Font Family</label>
+                  <select class="fs" id="font-family-select" onchange="handleFontFamilyChange(this)">
+                    <option value="Noto Serif Devanagari">Noto Serif Devanagari (Traditional)</option>
+                    <option value="Rozha One">Rozha One (Traditional Bold)</option>
+                    <option value="Yatra One">Yatra One (Handwritten Calligraphy)</option>
+                    <option value="Kurale">Kurale (Soft & Stylish)</option>
+                    <option value="Halant">Halant (Sleek Modern Serif)</option>
+                    <option value="Cinzel">Cinzel (Royal Roman English Style)</option>
+                    <option value="Playfair Display">Playfair Display (Elegant English Serif)</option>
+                    <option value="Great Vibes">Great Vibes (Formal English Script)</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            <!-- Sizes subsection -->
-            <div id="c-sec-sizes" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
+
+            <!-- TEXT SIZE PANEL -->
+            <div id="c-sec-sizes" class="customizer-section-panel">
               <h3 class="customizer-group-title">Text Sizing</h3>
               <p class="customizer-group-desc">Scale the font sizes of different sections independently.</p>
-              <div id="styles-sizes-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Sizing Controls</div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Shloka & Mantra Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="shlokaSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-shlokaSize">100%</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Main Heading Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="headingSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-headingSize">100%</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Bride & Groom Names</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="namesSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-namesSize">100%</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Events & Dates Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="eventSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-eventSize">100%</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Footer, Family & Address</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="60" max="150" value="100" data-style-key="footerSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-footerSize">100%</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <!-- Icons subsection -->
-            <div id="c-sec-icons" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
+
+            <!-- ICONS PANEL -->
+            <div id="c-sec-icons" class="customizer-section-panel">
               <h3 class="customizer-group-title">Icons & Decorations</h3>
               <p class="customizer-group-desc">Hide, show, or resize core graphics and illustrations.</p>
-              <div id="styles-icons-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+              
+              <div class="icon-accordion">
+                <div class="icon-accordion-item" id="icon-box-library">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('library')">
+                    <span class="icon-accordion-title">
+                      <strong>Icon Library</strong>
+                      <span>Search and pick icons</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body">
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Icon Replacement Target</div>
+                      <div class="customizer-field">
+                        <label class="fl" for="icon-replace-target-select">Target element</label>
+                        <select class="fs" id="icon-replace-target-select" onchange="setIconReplaceTarget(this.value)">
+                          <option value="ganesh">Primary Ganesh</option>
+                          <option value="om">Primary Om / Sun</option>
+                          <option value="chainLeft">Left Border Chain</option>
+                          <option value="chainRight">Right Border Chain</option>
+                          <option value="topIcon">Top Frame Accent</option>
+                          <option value="top1Icon">Top Secondary Accent</option>
+                          <option value="bottomIcon">Bottom Frame Accent</option>
+                          <option value="midIcon">Center Motif</option>
+                          <option value="couple2">Couple Emblem - Section 2</option>
+                        </select>
+                      </div>
+                      <div class="customizer-group-desc" id="icon-replace-current">Pick a slot, then click an icon in the library to replace it.</div>
+                      <div class="customizer-field-row" style="justify-content:flex-start; margin-top:10px;">
+                        <button type="button" class="prop-btn" style="padding:7px 11px;" onclick="clearIconReplacement()">Remove selected slot icon</button>
+                      </div>
+                    </div>
+
+                    <div class="icon-library-toolbar">
+                      <input
+                        type="search"
+                        class="fi icon-library-search"
+                        id="icon-library-search"
+                        placeholder="Search icons by name, keyword, or category"
+                        oninput="handleIconLibrarySearch(this)"
+                      >
+                      <div class="icon-category-chips" id="icon-category-chips"></div>
+                    </div>
+                    <div class="icon-library-meta" id="icon-library-meta">Loading icon library...</div>
+                    <div class="icon-library-grid" id="icon-library-grid"></div>
+                  </div>
+                </div>
+
+                <div class="icon-accordion-item" id="icon-box-core">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('core')">
+                    <span class="icon-accordion-title">
+                      <strong>Core Icons</strong>
+                      <span>Ganesh, Om, chains, couple</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body">
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Ganesh Icon</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Ganesh Icon</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showGanesh" checked data-style-key="showGanesh" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Ganesh Icon Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="ganeshSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-ganeshSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Om / Sun Icon</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Om/Sun Icon</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showOm" checked data-style-key="showOm" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Om Icon Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="omSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-omSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="customizer-card" style="margin-bottom:12px;">
+                      <div class="customizer-card-title">Border Side Chains</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Hanging Chains</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showChains" checked data-style-key="showChains" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Chains Icon Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="chainsSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-chainsSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="customizer-card">
+                      <div class="customizer-card-title">Center Couple Box</div>
+                      <div class="customizer-field-row">
+                        <span class="customizer-label">Show Couple Illustration</span>
+                        <label class="tgl-switch">
+                          <input type="checkbox" id="chk-showCouple" checked data-style-key="showCouple" onchange="handleCheckboxChange(this)">
+                          <span class="tgl-slider"></span>
+                        </label>
+                      </div>
+                      <div class="customizer-field">
+                        <span class="customizer-label">Couple Box Size</span>
+                        <div class="range-container">
+                          <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="coupleSize" oninput="handleSliderInput(this)">
+                          <span class="range-value" id="val-coupleSize">100%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="icon-accordion-item" id="icon-box-colors">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('colors')">
+                    <span class="icon-accordion-title">
+                      <strong>Icon Colors</strong>
+                      <span>Independent icon tinting</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body" id="icon-color-controls"></div>
+                </div>
+
+                <div class="icon-accordion-item" id="icon-box-advanced">
+                  <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('advanced')">
+                    <span class="icon-accordion-title">
+                      <strong>Position Adjustments</strong>
+                      <span>Nudge icons and corners</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
+                  </button>
+                  <div class="icon-accordion-body">
+                    <div id="icon-nudge-controls"></div>
+                    <div id="corner-nudge-controls"></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <!-- Spacing subsection -->
-            <div id="c-sec-spacing" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
-              <h3 class="customizer-group-title">Spacings</h3>
-              <p class="customizer-group-desc">Adjust the padding margins and spaces between card segments.</p>
-              <div id="styles-spacing-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+
+            <!-- SPACING PANEL -->
+            <div id="c-sec-spacing" class="customizer-section-panel">
+              <h3 class="customizer-group-title">Layout & Spacing</h3>
+              <p class="customizer-group-desc">Fine-tune padding margins and vertical container gaps.</p>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Margins & Alignment</div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Card Inner Padding (cm)</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="40" max="200" value="100" step="10" data-style-key="cardPadding" oninput="handleSpacingInput(this)">
+                    <span class="range-value" id="val-cardPadding">1.0cm</span>
+                  </div>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Section 1 & 2 Gap (cm)</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="10" max="150" value="30" step="5" data-style-key="sectionGap" oninput="handleSpacingInput(this)">
+                    <span class="range-value" id="val-sectionGap">0.3cm</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <!-- Card Style subsection -->
-            <div id="c-sec-card" class="customizer-section-panel" style="display: none; flex-direction: column; gap: 16px;">
-              <h3 class="customizer-group-title">Card Style</h3>
-              <p class="customizer-group-desc">Configure decorative borders, styles, roundness and border preset color details.</p>
-              <div id="styles-card-container" class="customizer-fields-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+
+            <!-- CARD STYLE PANEL -->
+            <div id="c-sec-card" class="customizer-section-panel">
+              <h3 class="customizer-group-title">Card Frame</h3>
+              <p class="customizer-group-desc">Control the border frame, corner flowers, and symbols.</p>
+              
+              <div class="customizer-card">
+                <div class="customizer-card-title">Border Frame</div>
+
+                <div class="customizer-field-row">
+                  <span class="customizer-label">Show Border Frame</span>
+                  <label class="tgl-switch">
+                    <input type="checkbox" id="chk-showBorder" checked data-style-key="showBorder" onchange="handleCheckboxChange(this)">
+                    <span class="tgl-slider"></span>
+                  </label>
+                </div>
+
+                <div class="customizer-field">
+                  <label class="fl">Border Replace Style</label>
+                  <select class="fs" id="border-preset-select" onchange="handleBorderPresetChange(this)">
+                    <option value="classic">Classic Frame</option>
+                    <option value="double">Double Frame</option>
+                    <option value="thin">Thin Frame</option>
+                    <option value="dashed">Dashed Frame</option>
+                    <option value="ornate">Ornate Frame</option>
+                    <option value="luxe">Luxe Frame</option>
+                    <option value="modern">Modern Frame</option>
+                    <option value="minimal">Minimal Frame</option>
+                    <option value="art-deco">Art Deco Frame</option>
+                    <option value="vintage">Vintage Frame</option>
+                    <option value="retro">Retro Frame</option>
+                    <option value="elegant">Elegant Frame</option>
+                    <option value="bold">Bold Frame</option>
+                  </select>
+                </div>
+
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Edge Curve</span>
+                  </div>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="0" max="4" step="1" value="0" data-style-key="curveLevel" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-curveLevel">None</span>
+                  </div>
+                </div>
+
+                <div class="customizer-field-row">
+                  <div>
+                    <span class="customizer-label">Border Color</span>
+                    <div class="customizer-label-sub">Change frame color</div>
+                  </div>
+                  <div class="color-picker-wrapper">
+                    <span class="color-value-text" id="val-borderColor">#8b0040</span>
+                    <div class="color-input-preview" id="preview-borderColor">
+                      <input type="color" data-style-key="borderColor" oninput="handleColorPickerInput(this)">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="customizer-divider" style="margin:16px 0;"></div>
+
+                <div class="customizer-card-title">Corners Configuration</div>
+                
+                <div class="customizer-field-row">
+                  <span class="customizer-label">Show Corner Flowers</span>
+                  <label class="tgl-switch">
+                    <input type="checkbox" id="chk-showCorners" checked data-style-key="showCorners" onchange="handleCheckboxChange(this)">
+                    <span class="tgl-slider"></span>
+                  </label>
+                </div>
+                
+                <div class="customizer-field">
+                  <label class="fl">Corner Symbol Style</label>
+                  <select class="fs" id="corner-symbol-select" onchange="handleCornerSymbolChange(this)">
+                    <option value="✿">✿ Traditional Blossom</option>
+                    <option value="❀">❀ Light Flower</option>
+                    <option value="❃">❃ Swirly Flower</option>
+                    <option value="✤">✤ Geometric Star</option>
+                    <option value="⚜">⚜ Royal Fleur-de-lis</option>
+                    <option value="🌸">🌸 Cherry Blossom (Emoji)</option>
+                    <option value="💮">💮 White Flower (Emoji)</option>
+                  </select>
+                </div>
+                
+                <div class="customizer-field">
+                  <span class="customizer-label">Corner Icon Size</span>
+                  <div class="range-container">
+                    <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="cornerSize" oninput="handleSliderInput(this)">
+                    <span class="range-value" id="val-cornerSize">100%</span>
+                  </div>
+                </div>
+              </div>
             </div>
+            
           </div>
         </div>
       </div>

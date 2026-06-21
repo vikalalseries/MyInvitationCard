@@ -18,6 +18,317 @@ const FIELD_CATEGORIES = [
   "Bal Aagrah"
 ];
 
+const $ = id => document.getElementById(id);
+const esc = s => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+
+const DEFAULT_STYLE = {
+  cardBg: '#f9f1d0',
+  bodyBg: '#c8829a',
+  accentColor: '#8b0040',
+  textColor: '#6e0035',
+  headingColor: '#6e0035',
+  fontFamily: 'Noto Serif Devanagari',
+  shlokaSize: 100,
+  headingSize: 100,
+  namesSize: 100,
+  eventSize: 100,
+  footerSize: 100,
+  showGanesh: true,
+  ganeshSize: 100,
+  ganeshOffsetX: 0,
+  ganeshOffsetY: 0,
+  showOm: true,
+  omSize: 100,
+  omOffsetX: 0,
+  omOffsetY: 0,
+  showChains: true,
+  chainsSize: 100,
+  chainLeftOffsetX: 0,
+  chainLeftOffsetY: 0,
+  chainRightOffsetX: 0,
+  chainRightOffsetY: 0,
+  showCouple: true,
+  coupleSize: 100,
+  couple1OffsetX: 0,
+  couple1OffsetY: 0,
+  couple2OffsetX: 0,
+  couple2OffsetY: 0,
+  topIconOffsetX: 0,
+  topIconOffsetY: 0,
+  top1IconOffsetX: 0,
+  top1IconOffsetY: 0,
+  bottomIconOffsetX: 0,
+  bottomIconOffsetY: 0,
+  midIconOffsetX: 0,
+  midIconOffsetY: 0,
+  cornerTlOffsetX: 0,
+  cornerTlOffsetY: 0,
+  cornerTrOffsetX: 0,
+  cornerTrOffsetY: 0,
+  cornerBlOffsetX: 0,
+  cornerBlOffsetY: 0,
+  cornerBrOffsetX: 0,
+  cornerBrOffsetY: 0,
+  showCorners: true,
+  cornerSymbol: '✿',
+  cornerSize: 100,
+  cardPadding: 1.0,
+  sectionGap: 0.3,
+  showBorder: true,
+  curveLevel: 0,
+  borderPreset: 'classic',
+  borderColor: '#8b0040',
+  iconColors: {},
+  iconReplacements: {}
+};
+
+const PRESETS = [
+  {
+    name: 'Classic Pink',
+    cardBg: '#f2aec8',
+    bodyBg: '#c8829a',
+    accent: '#8b0040',
+    text: '#6e0035',
+    heading: '#6e0035',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top.png',
+      top1Icon: '../builder1/assets/icons/t1.png',
+      bottomIcon: '../builder1/assets/icons/top2.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Royal Crimson',
+    cardBg: '#fffcf0',
+    bodyBg: '#800000',
+    accent: '#d4af37',
+    text: '#5c000a',
+    heading: '#5c000a',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top2.png',
+      top1Icon: '../builder1/assets/icons/t1.png',
+      bottomIcon: '../builder1/assets/icons/top.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Vibrant Saffron',
+    cardBg: '#fff7eb',
+    bodyBg: '#e05e00',
+    accent: '#b80000',
+    text: '#6b0000',
+    heading: '#6b0000',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top.png',
+      top1Icon: '../builder1/assets/icons/t2.png',
+      bottomIcon: '../builder1/assets/icons/top2.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Peacock & Gold',
+    cardBg: '#f0f8ff',
+    bodyBg: '#093a5c',
+    accent: '#d4af37',
+    text: '#052238',
+    heading: '#052238',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/t1.png',
+      top1Icon: '../builder1/assets/icons/top.png',
+      bottomIcon: '../builder1/assets/icons/t2.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Royal Purple',
+    cardBg: '#faf0ff',
+    bodyBg: '#3c0c5c',
+    accent: '#c71585',
+    text: '#28003d',
+    heading: '#28003d',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top2.png',
+      top1Icon: '../builder1/assets/icons/t2.png',
+      bottomIcon: '../builder1/assets/icons/t1.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  },
+  {
+    name: 'Golden Ivory',
+    cardBg: '#faf6eb',
+    bodyBg: '#2b211a',
+    accent: '#c9784c',
+    text: '#403026',
+    heading: '#403026',
+    iconReplacements: {
+      ganesh: '../builder1/assets/icons/ganesh.png',
+      om: '../builder1/assets/icons/om.png',
+      chainLeft: '../builder1/assets/icons/side.png',
+      chainRight: '../builder1/assets/icons/side.png',
+      topIcon: '../builder1/assets/icons/top.png',
+      top1Icon: '../builder1/assets/icons/t1.png',
+      bottomIcon: '../builder1/assets/icons/top2.png',
+      midIcon: '../builder1/assets/icons/mid.png',
+      couple1: '../builder1/assets/icons/weds.png',
+      couple2: '../builder1/assets/icons/weds.png'
+    }
+  }
+];
+
+const ICON_NUDGE_CONFIG = [
+  { key: 'ganesh', title: 'Ganesh Icon' },
+  { key: 'om', title: 'Om / Sun Icon' },
+  { key: 'chainLeft', title: 'Left Chain' },
+  { key: 'chainRight', title: 'Right Chain' },
+  { key: 'topIcon', title: 'Top Icon' },
+  { key: 'top1Icon', title: 'Top-1 Icon' },
+  { key: 'bottomIcon', title: 'Bottom Icon' },
+  { key: 'midIcon', title: 'Mid Icon' },
+  { key: 'couple1', title: 'Couple Box 1' },
+  { key: 'couple2', title: 'Couple Box 2' }
+];
+
+const ICON_COLOR_CONFIG = ICON_NUDGE_CONFIG;
+
+const CORNER_NUDGE_CONFIG = [
+  { key: 'cornerTl', title: 'Top Left Flower' },
+  { key: 'cornerTr', title: 'Top Right Flower' },
+  { key: 'cornerBl', title: 'Bottom Left Flower' },
+  { key: 'cornerBr', title: 'Bottom Right Flower' }
+];
+
+let ICON_LIBRARY = [];
+let ICON_CATEGORIES = [];
+let ICON_LIBRARY_FILTER = {
+  query: '',
+  category: 'all'
+};
+let ICON_ACCORDION_STATE = {
+  library: false,
+  core: false,
+  advanced: false
+};
+
+let ICON_REPLACE_TARGET = 'ganesh';
+
+const STATIC_ICON_LIBRARY = [
+  {
+    id: 'ganesh-classic-001',
+    name: 'Ganesh Classic',
+    category: 'core',
+    subcategory: 'ganesh',
+    keywords: ['ganesh', 'ganesha', 'lord ganesha', 'hindu', 'wedding', 'invitation'],
+    file: '../builder1/assets/icons/ganesh.png'
+  },
+  {
+    id: 'om-sun-001',
+    name: 'Om Sun',
+    category: 'core',
+    subcategory: 'om',
+    keywords: ['om', 'aum', 'sun', 'spiritual', 'hindu'],
+    file: '../builder1/assets/icons/om.png'
+  },
+  {
+    id: 'border-side-001',
+    name: 'Side Border',
+    category: 'borders',
+    subcategory: 'traditional',
+    keywords: ['border', 'side', 'chain', 'ornament'],
+    file: '../builder1/assets/icons/side.png'
+  },
+  {
+    id: 'border-top-001',
+    name: 'Top Border',
+    category: 'borders',
+    subcategory: 'modern',
+    keywords: ['border', 'top', 'ornament'],
+    file: '../builder1/assets/icons/top.png'
+  },
+  {
+    id: 'border-top-002',
+    name: 'Top Border Alt',
+    category: 'borders',
+    subcategory: 'traditional',
+    keywords: ['border', 'top', 'ornament'],
+    file: '../builder1/assets/icons/top2.png'
+  },
+  {
+    id: 'decor-t1-001',
+    name: 'Decorative T1',
+    category: 'decorative',
+    subcategory: 'ornaments',
+    keywords: ['ornament', 'ribbon', 'decorative'],
+    file: '../builder1/assets/icons/t1.png'
+  },
+  {
+    id: 'decor-t2-001',
+    name: 'Decorative T2',
+    category: 'decorative',
+    subcategory: 'ornaments',
+    keywords: ['ornament', 'ribbon', 'decorative'],
+    file: '../builder1/assets/icons/t2.png'
+  },
+  {
+    id: 'decor-mid-001',
+    name: 'Center Motif',
+    category: 'decorative',
+    subcategory: 'mandala',
+    keywords: ['mid', 'center', 'motif', 'mandala'],
+    file: '../builder1/assets/icons/mid.png'
+  },
+  {
+    id: 'wedding-couple-001',
+    name: 'Wedding Couple',
+    category: 'wedding',
+    subcategory: 'bride-groom',
+    keywords: ['wedding', 'couple', 'bride', 'groom'],
+    file: '../builder1/assets/icons/weds.png'
+  }
+];
+
+const ICON_REPLACE_TARGETS = [
+  { key: 'ganesh', label: 'Primary Ganesh' },
+  { key: 'om', label: 'Primary Om / Sun' },
+  { key: 'chainLeft', label: 'Left Border Chain' },
+  { key: 'chainRight', label: 'Right Border Chain' },
+  { key: 'topIcon', label: 'Top Frame Accent' },
+  { key: 'top1Icon', label: 'Top Secondary Accent' },
+  { key: 'bottomIcon', label: 'Bottom Frame Accent' },
+  { key: 'midIcon', label: 'Center Motif' },
+  { key: 'couple2', label: 'Couple Emblem - Section 2' }
+];
+
+
 // Zoom scaling variables matching builder1
 let zoomScale = 0.75; // Default 75% zoom
 const cardWidth = 893;
@@ -61,6 +372,13 @@ window.addEventListener('DOMContentLoaded', () => {
   if (zIn) zIn.onclick = () => setZoom(currentZoom + 5);
   if (zOut) zOut.onclick = () => setZoom(currentZoom - 5);
   if (zFit) zFit.onclick = autoFit;
+
+  // Initialize customizer elements
+  renderColorPresets();
+  loadIconLibrary();
+  renderIconColorControls();
+  renderIconNudgeControls();
+  renderCornerNudgeControls();
 
   // Initialize transliteration state
   initTransliterationState();
@@ -106,7 +424,7 @@ function initializeDataState() {
   currentData = {
     fields: {},
     events: {},
-    styles: {}
+    styles: JSON.parse(JSON.stringify(DEFAULT_STYLE))
   };
   
   if (!config) return;
@@ -126,12 +444,6 @@ function initializeDataState() {
         venue: e.defaultVenue || '',
         active: true
       };
-    });
-  }
-  
-  if (config.styles) {
-    config.styles.forEach(s => {
-      currentData.styles[s.id] = s.default !== undefined ? s.default : '';
     });
   }
 }
@@ -409,126 +721,685 @@ function generateCeremoniesForm() {
   });
 }
 
-// Generate Styles Form sub-sections dynamically (divided into 6 sections matching builder1)
-function generateStylesForm() {
-  const containerColors = document.getElementById('styles-colors-container');
-  const containerFonts = document.getElementById('styles-fonts-container');
-  const containerSizes = document.getElementById('styles-sizes-container');
-  const containerIcons = document.getElementById('styles-icons-container');
-  const containerSpacing = document.getElementById('styles-spacing-container');
-  const containerCard = document.getElementById('styles-card-container');
+// ── CUSTOMIZER PORT FROM BUILDER1 ──
 
-  if (containerColors) containerColors.innerHTML = '';
-  if (containerFonts) containerFonts.innerHTML = '';
-  if (containerSizes) containerSizes.innerHTML = '';
-  if (containerIcons) containerIcons.innerHTML = '';
-  if (containerSpacing) containerSpacing.innerHTML = '';
-  if (containerCard) containerCard.innerHTML = '';
-  
-  if (!config || !config.styles) return;
-  
-  config.styles.forEach(s => {
-    // Determine which container to route the field to
-    let targetContainer = containerCard;
-    
-    const idLower = s.id.toLowerCase();
-    
-    if (s.id === 'bodyBg' || s.id === 'accentColor' || s.id === 'textColor' || s.id === 'headingColor') {
-      targetContainer = containerColors;
-    } else if (s.id === 'fontFamily') {
-      targetContainer = containerFonts;
-    } else if (s.id.endsWith('Size') && !idLower.includes('ganesh') && !idLower.includes('om') && !idLower.includes('chains') && !idLower.includes('couple') && !idLower.includes('corner')) {
-      targetContainer = containerSizes;
-    } else if (idLower.includes('ganesh') || idLower.includes('om') || idLower.includes('chains') || idLower.includes('couple') || idLower.includes('corner')) {
-      targetContainer = containerIcons;
-    } else if (s.id === 'cardPadding' || s.id === 'sectionGap') {
-      targetContainer = containerSpacing;
-    } else if (s.id === 'showBorder' || s.id === 'curveLevel' || s.id === 'borderPreset' || s.id === 'borderColor') {
-      targetContainer = containerCard;
-    }
 
-    const group = document.createElement('div');
-    group.className = 'form-group';
-    
-    const label = document.createElement('label');
-    label.textContent = s.label || s.id;
-    group.appendChild(label);
-    
-    if (s.type === 'color') {
-      const row = document.createElement('div');
-      row.className = 'color-picker-row';
-      
-      const wrapper = document.createElement('div');
-      wrapper.className = 'color-input-wrapper';
-      
-      const picker = document.createElement('input');
-      picker.type = 'color';
-      picker.className = 'color-picker-raw';
-      picker.value = currentData.styles[s.id];
-      
-      const text = document.createElement('input');
-      text.type = 'text';
-      text.className = 'form-input color-text-input';
-      text.value = currentData.styles[s.id];
-      
-      picker.addEventListener('input', (e) => {
-        const val = e.target.value;
-        text.value = val;
-        currentData.styles[s.id] = val;
-        triggerSaving();
-        sendUpdate();
-      });
-      
-      text.addEventListener('input', (e) => {
-        const val = e.target.value;
-        if (/^#[0-9A-F]{6}$/i.test(val)) {
-          picker.value = val;
-        }
-        currentData.styles[s.id] = val;
-        triggerSaving();
-        sendUpdate();
-      });
-      
-      wrapper.appendChild(picker);
-      row.appendChild(wrapper);
-      row.appendChild(text);
-      group.appendChild(row);
-    } else if (s.type === 'select') {
-      const select = document.createElement('select');
-      select.className = 'dropdown-select';
-      
-      s.options.forEach(opt => {
-        const o = document.createElement('option');
-        o.value = opt;
-        o.textContent = isNaN(opt) ? opt : `${opt}%`;
-        if (String(opt) === String(currentData.styles[s.id])) {
-          o.selected = true;
-        }
-        select.appendChild(o);
-      });
-      
-      select.addEventListener('change', (e) => {
-        currentData.styles[s.id] = e.target.value;
-        triggerSaving();
-        sendUpdate();
-      });
-      
-      group.appendChild(select);
-    } else {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'form-input';
-      input.value = currentData.styles[s.id];
-      input.addEventListener('input', (e) => {
-        currentData.styles[s.id] = e.target.value;
-        triggerSaving();
-        sendUpdate();
-      });
-      group.appendChild(input);
-    }
-    
-    if (targetContainer) targetContainer.appendChild(group);
+
+function ensureCardStyle() {
+  if (!currentData.styles) currentData.styles = {};
+  currentData.styles = Object.assign({}, DEFAULT_STYLE, currentData.styles);
+  return currentData.styles;
+}
+
+function setField(path, val) {
+  const keys = path.split('.');
+  let obj = currentData;
+  if (keys[0] === 'styles') ensureCardStyle();
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (typeof obj[keys[i]] !== 'object' || obj[keys[i]] === null) obj[keys[i]] = {};
+    obj = obj[keys[i]];
+  }
+  obj[keys[keys.length - 1]] = val;
+  triggerSaving();
+  sendUpdate();
+}
+
+
+
+function iconOffsetKeys(key) {
+  return { x: key + 'OffsetX', y: key + 'OffsetY' };
+}
+
+function offsetValueKeys(key) {
+  return { x: key + 'OffsetX', y: key + 'OffsetY' };
+}
+
+function fmtCmOffset(val) {
+  const n = Number(val || 0);
+  return (Math.round(n * 100) / 100).toFixed(2) + 'cm';
+}
+
+function renderIconNudgeControls() {
+  const host = $('icon-nudge-controls');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="customizer-card">
+      <div class="customizer-card-title">Icon Position Nudges</div>
+      <div class="customizer-group-desc" style="margin-bottom:12px;">Use small buttons to move icons slightly up, down, left, or right without affecting content blocks.</div>
+      <div class="nudge-grid">
+        ${ICON_NUDGE_CONFIG.map(icon => `
+          <div class="nudge-card">
+            <div class="nudge-card-title">${icon.title}</div>
+            <div class="nudge-pad">
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustIconOffset('${icon.key}', 0, -0.05)" title="Move up">▲</button>
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustIconOffset('${icon.key}', -0.05, 0)" title="Move left">◀</button>
+              <button class="nudge-btn center" type="button" onclick="resetIconOffset('${icon.key}')" title="Reset">0</button>
+              <button class="nudge-btn" type="button" onclick="adjustIconOffset('${icon.key}', 0.05, 0)" title="Move right">▶</button>
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustIconOffset('${icon.key}', 0, 0.05)" title="Move down">▼</button>
+              <span></span>
+            </div>
+            <div class="nudge-meta">
+              <span>X <code id="nudge-${icon.key}-x">0.00cm</code></span>
+              <span>Y <code id="nudge-${icon.key}-y">0.00cm</code></span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderIconColorControls() {
+  const host = $('icon-color-controls');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="customizer-card">
+      <div class="icon-color-header">
+        <div>
+          <div class="customizer-card-title">Icon Colors</div>
+          <div class="customizer-group-desc" style="margin-bottom:0;">Set each icon slot tint independently. Leave a picker unset to keep the default art appearance.</div>
+        </div>
+        <button type="button" class="reset-icon-colors-btn" onclick="resetAllIconColors()">Reset all</button>
+      </div>
+      <div class="icon-color-grid">
+        ${ICON_COLOR_CONFIG.map(icon => `
+          <div class="icon-color-card">
+            <div class="icon-color-title">${icon.title}</div>
+            <div class="icon-color-meta">
+              <span class="color-value-text" id="val-iconColor-${icon.key}">default</span>
+              <div class="color-input-preview" data-icon-preview="${icon.key}" aria-label="${icon.title} color picker">
+                <input type="color" data-icon-key="${icon.key}" title="Select color for ${icon.title}" aria-label="Select color for ${icon.title}" oninput="handleIconColorPickerInput(this)">
+              </div>
+            </div>
+            <div class="icon-color-helper">Use the swatch to choose a stronger, higher-contrast icon tint.</div>
+            <button type="button" class="reset-icon-colors-btn" onclick="resetIconColor('${icon.key}')">Reset</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderCornerNudgeControls() {
+  const host = $('corner-nudge-controls');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="customizer-card">
+      <div class="customizer-card-title">Corner Flower Nudges</div>
+      <div class="customizer-group-desc" style="margin-bottom:12px;">Move each corner flower a little without changing the card frame.</div>
+      <div class="nudge-grid">
+        ${CORNER_NUDGE_CONFIG.map(corner => `
+          <div class="nudge-card">
+            <div class="nudge-card-title">${corner.title}</div>
+            <div class="nudge-pad">
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustCornerOffset('${corner.key}', 0, -0.05)" title="Move up">▲</button>
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustCornerOffset('${corner.key}', -0.05, 0)" title="Move left">◀</button>
+              <button class="nudge-btn center" type="button" onclick="resetCornerOffset('${corner.key}')" title="Reset">0</button>
+              <button class="nudge-btn" type="button" onclick="adjustCornerOffset('${corner.key}', 0.05, 0)" title="Move right">▶</button>
+              <span></span>
+              <button class="nudge-btn" type="button" onclick="adjustCornerOffset('${corner.key}', 0, 0.05)" title="Move down">▼</button>
+              <span></span>
+            </div>
+            <div class="nudge-meta">
+              <span>X <code id="nudge-${corner.key}-x">0.00cm</code></span>
+              <span>Y <code id="nudge-${corner.key}-y">0.00cm</code></span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderColorPresets() {
+  const container = $('color-presets-grid');
+  if (!container) return;
+  container.innerHTML = PRESETS.map((p, index) => `
+    <div class="preset-card" 
+         data-body-bg="${p.bodyBg}" 
+         data-accent-color="${p.accent}" 
+         data-text-color="${p.text}" 
+         data-heading-color="${p.heading}"
+         onclick="applyColorPreset(${index}, this)">
+      <div class="preset-name">${p.name}</div>
+      <div class="preset-dots">
+        <div class="preset-dot" style="background: ${p.bodyBg};"></div>
+        <div class="preset-dot" style="background: ${p.accent};"></div>
+        <div class="preset-dot" style="background: ${p.text};"></div>
+        <div class="preset-dot" style="background: ${p.heading};"></div>
+      </div>
+    </div>
+  `).join('');
+  updatePresetCardsActiveState();
+}
+
+function renderIconCategoryChips() {
+  const host = $('icon-category-chips');
+  if (!host) return;
+
+  const categories = ICON_CATEGORIES.length ? ICON_CATEGORIES : ICON_LIBRARY.map(icon => ({
+    id: icon.category,
+    label: icon.category.charAt(0).toUpperCase() + icon.category.slice(1)
+  }));
+  host.innerHTML = [
+    `<button type="button" class="icon-category-chip ${ICON_LIBRARY_FILTER.category === 'all' ? 'active' : ''}" onclick="setIconLibraryCategory('all')">All</button>`,
+    ...Array.from(new Map(categories.map(cat => [cat.id, cat])).values()).map(cat => `
+      <button type="button" class="icon-category-chip ${ICON_LIBRARY_FILTER.category === cat.id ? 'active' : ''}" onclick="setIconLibraryCategory('${cat.id}')">${cat.label}</button>
+    `)
+  ].join('');
+}
+
+function matchesIconSearch(icon, query) {
+  if (!query) return true;
+  const haystack = [
+    icon.id,
+    icon.name,
+    icon.category,
+    icon.subcategory,
+    ...(Array.isArray(icon.keywords) ? icon.keywords : [])
+  ].join(' ').toLowerCase();
+  return haystack.includes(query);
+}
+
+function renderIconLibrary() {
+  const grid = $('icon-library-grid');
+  const meta = $('icon-library-meta');
+  if (!grid || !meta) return;
+
+  const query = ICON_LIBRARY_FILTER.query.trim().toLowerCase();
+  const filtered = ICON_LIBRARY.filter(icon => {
+    const categoryOk = ICON_LIBRARY_FILTER.category === 'all' || icon.category === ICON_LIBRARY_FILTER.category;
+    return categoryOk && matchesIconSearch(icon, query);
   });
+
+  meta.textContent = `${filtered.length} icon${filtered.length === 1 ? '' : 's'} shown`;
+  const activeTarget = getIconReplaceTarget();
+  const replacements = (currentData.styles && currentData.styles.iconReplacements) || {};
+  const activeReplacement = replacements[activeTarget];
+  const activeReplacementId = activeReplacement && typeof activeReplacement === 'object' ? activeReplacement.id : null;
+  const activeReplacementFile = typeof activeReplacement === 'string'
+    ? activeReplacement
+    : activeReplacement && activeReplacement.file
+      ? activeReplacement.file
+      : null;
+  grid.innerHTML = filtered.length ? filtered.map(icon => `
+    <button
+      type="button"
+      class="icon-library-item"
+      data-icon-id="${esc(icon.id)}"
+      data-icon-file="${esc(icon.file)}"
+      onclick="useLibraryIcon('${esc(icon.id)}')"
+      title="${esc(icon.name)}"
+    >
+      <div class="icon-library-preview">
+        <img src="${esc(icon.file)}" alt="${esc(icon.name)}">
+      </div>
+      <div class="icon-library-name">${esc(icon.name)}</div>
+      <div class="icon-library-tag">${esc(icon.category)} / ${esc(icon.subcategory)}</div>
+    </button>
+  `).join('') : '<div class="icon-library-empty">No icons match this search.</div>';
+
+  if (activeReplacementId || activeReplacementFile) {
+    const activeItem = activeReplacementId
+      ? grid.querySelector(`[data-icon-id="${activeReplacementId.replace(/"/g, '\\"')}"]`)
+      : grid.querySelector(`[data-icon-file="${activeReplacementFile.replace(/"/g, '\\"')}"]`);
+    if (activeItem) activeItem.classList.add('active');
+  }
+}
+
+function applyIconAccordionState() {
+  Object.keys(ICON_ACCORDION_STATE).forEach(key => {
+    const box = $('icon-box-' + key);
+    if (box) {
+      if (ICON_ACCORDION_STATE[key]) {
+        box.classList.add('open');
+      } else {
+        box.classList.remove('open');
+      }
+    }
+  });
+}
+
+function saveIconAccordionState() {
+  try {
+    localStorage.setItem('mic_icon_accordion_state', JSON.stringify(ICON_ACCORDION_STATE));
+  } catch (e) {}
+}
+
+function getIconReplaceTarget() {
+  try {
+    const saved = localStorage.getItem('mic_icon_replace_target');
+    if (saved) ICON_REPLACE_TARGET = saved === 'couple1' ? 'couple2' : saved;
+  } catch (e) {}
+  if (!ICON_REPLACE_TARGETS.some(item => item.key === ICON_REPLACE_TARGET)) {
+    ICON_REPLACE_TARGET = 'ganesh';
+  }
+  return ICON_REPLACE_TARGET || 'ganesh';
+}
+
+function getIconReplacementLabel(targetKey) {
+  const item = ICON_REPLACE_TARGETS.find(t => t.key === targetKey);
+  return item ? item.label : targetKey;
+}
+
+function getActiveIconReplacement(targetKey) {
+  const style = ensureCardStyle();
+  const replacements = style.iconReplacements || {};
+  return replacements[targetKey] || null;
+}
+
+function getIconReplacementSummary(targetKey) {
+  const value = getActiveIconReplacement(targetKey);
+  if (!value) return 'No custom icon set for this slot.';
+  if (typeof value === 'string') return 'Custom icon applied for this slot.';
+  return value.name ? 'Selected: ' + value.name : 'Custom icon applied for this slot.';
+}
+
+function refreshIconReplacementStatus() {
+  const target = getIconReplaceTarget();
+  const select = $('icon-replace-target-select');
+  if (select && select.value !== target) select.value = target;
+  const host = $('icon-replace-current');
+  if (host) host.textContent = getIconReplacementLabel(target) + ': ' + getIconReplacementSummary(target);
+}
+
+window.toggleIconAccordion = function(key) {
+  ICON_ACCORDION_STATE[key] = !ICON_ACCORDION_STATE[key];
+  applyIconAccordionState();
+  saveIconAccordionState();
+};
+
+async function loadIconLibrary() {
+  const meta = $('icon-library-meta');
+  try {
+    const [iconsRes, categoriesRes] = await Promise.all([
+      fetch('../assets/metadata/icons.json'),
+      fetch('../assets/metadata/categories.json')
+    ]);
+    if (!iconsRes.ok) throw new Error('Failed to load icon metadata');
+    const data = await iconsRes.json();
+    if (categoriesRes.ok) {
+      const categoriesData = await categoriesRes.json();
+      ICON_CATEGORIES = Array.isArray(categoriesData.iconCategories) ? categoriesData.iconCategories : [];
+    }
+    ICON_LIBRARY = Array.isArray(data.icons) ? data.icons : [];
+    if (!ICON_LIBRARY.length) {
+      ICON_LIBRARY = STATIC_ICON_LIBRARY.slice();
+      ICON_CATEGORIES = [
+        { id: 'core', label: 'Core' },
+        { id: 'borders', label: 'Borders' },
+        { id: 'decorative', label: 'Decorative' },
+        { id: 'wedding', label: 'Wedding' }
+      ];
+    }
+    renderIconCategoryChips();
+    renderIconLibrary();
+    refreshIconReplacementStatus();
+    applyIconAccordionState();
+    if (meta) meta.textContent = `${ICON_LIBRARY.length} icons available`;
+  } catch (err) {
+    ICON_LIBRARY = STATIC_ICON_LIBRARY.slice();
+    ICON_CATEGORIES = [
+      { id: 'core', label: 'Core' },
+      { id: 'borders', label: 'Borders' },
+      { id: 'decorative', label: 'Decorative' },
+      { id: 'wedding', label: 'Wedding' }
+    ];
+    renderIconCategoryChips();
+    renderIconLibrary();
+    refreshIconReplacementStatus();
+    applyIconAccordionState();
+    if (meta) meta.textContent = `${ICON_LIBRARY.length} icons available`;
+  }
+}
+
+window.handleIconLibrarySearch = function(el) {
+  ICON_LIBRARY_FILTER.query = el.value || '';
+  renderIconLibrary();
+};
+
+window.setIconLibraryCategory = function(category) {
+  ICON_LIBRARY_FILTER.category = category;
+  renderIconCategoryChips();
+  renderIconLibrary();
+};
+
+window.setIconReplaceTarget = function(targetKey) {
+  ICON_REPLACE_TARGET = targetKey || 'ganesh';
+  try {
+    localStorage.setItem('mic_icon_replace_target', ICON_REPLACE_TARGET);
+  } catch (e) {}
+  refreshIconReplacementStatus();
+  renderIconLibrary();
+};
+
+window.clearIconReplacement = function() {
+  const target = getIconReplaceTarget();
+  const style = ensureCardStyle();
+  const next = Object.assign({}, style.iconReplacements || {});
+  delete next[target];
+  setField('styles.iconReplacements', next);
+  refreshIconReplacementStatus();
+  renderIconLibrary();
+  toast(`Removed icon from ${getIconReplacementLabel(target)}`, 's');
+};
+
+window.useLibraryIcon = function(iconId) {
+  const icon = ICON_LIBRARY.find(item => item.id === iconId);
+  if (!icon) return;
+  try {
+    localStorage.setItem('mic_selected_icon', JSON.stringify(icon));
+  } catch (e) {}
+  const target = getIconReplaceTarget();
+  const style = ensureCardStyle();
+  const next = Object.assign({}, style.iconReplacements || {});
+  next[target] = icon;
+  setField('styles.iconReplacements', next);
+  try {
+    localStorage.setItem('mic_selected_icon_id', icon.id);
+  } catch (e) {}
+  refreshIconReplacementStatus();
+  renderIconLibrary();
+  toast(`Replaced ${getIconReplacementLabel(target)} with ${icon.name}`, 's');
+};
+
+window.applyColorPreset = function(presetIndex, element) {
+  const preset = PRESETS[presetIndex];
+  if (!preset) return;
+
+  setField('styles.bodyBg', preset.bodyBg);
+  setField('styles.accentColor', preset.accent);
+  setField('styles.borderColor', preset.accent);
+  setField('styles.textColor', preset.text);
+  setField('styles.headingColor', preset.heading);
+  if (preset.iconReplacements) {
+    setField('styles.iconReplacements', preset.iconReplacements);
+  }
+
+  // Sync visual inputs
+  syncCustomizerInputs();
+  
+  if (element) {
+    document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+    element.classList.add('active');
+  }
+  
+  toast('Applied color palette theme!', 's');
+};
+
+window.handleBorderPresetChange = function(el) {
+  setField('styles.borderPreset', el.value);
+};
+
+window.handleColorPickerInput = function(el) {
+  const key = el.dataset.styleKey;
+  const val = el.value;
+  setField('styles.' + key, val);
+  
+  // Sync the labels
+  const label = $('val-' + key);
+  if (label) label.textContent = val;
+  updatePresetCardsActiveState();
+};
+
+window.handleCardStockChange = function(el) {
+  setField('styles.cardBg', el.value);
+  setField('styles.bodyBg', el.value);
+};
+
+window.handleSliderInput = function(el) {
+  const key = el.dataset.styleKey;
+  const val = parseInt(el.value, 10);
+  setField('styles.' + key, val);
+  
+  // Sync label
+  const label = $('val-' + key);
+  if (label) {
+    if (key === 'curveLevel') {
+      const labels = ['None', 'Low', 'Medium', 'High', 'Max'];
+      label.textContent = labels[val] || val;
+    } else {
+      label.textContent = val + '%';
+    }
+  }
+};
+
+window.handleSpacingInput = function(el) {
+  const key = el.dataset.styleKey;
+  const val = parseFloat((parseInt(el.value, 10) / 100).toFixed(1));
+  setField('styles.' + key, val);
+  
+  // Sync label
+  const label = $('val-' + key);
+  if (label) label.textContent = val.toFixed(1) + 'cm';
+};
+
+window.handleCheckboxChange = function(el) {
+  const key = el.dataset.styleKey;
+  const val = el.checked;
+  setField('styles.' + key, val);
+};
+
+window.handleIconColorPickerInput = function(el) {
+  const key = el.dataset.iconKey;
+  if (!key) return;
+  const color = el.value;
+  const style = ensureCardStyle();
+  const next = Object.assign({}, style.iconColors || {});
+  next[key] = color;
+  setField('styles.iconColors', next);
+  const label = $('val-iconColor-' + key);
+  if (label) label.textContent = color;
+  const preview = el.closest('.color-input-preview');
+  if (preview) {
+    preview.style.backgroundColor = color;
+    preview.classList.add('active');
+  }
+};
+
+window.resetIconColor = function(iconKey) {
+  const style = ensureCardStyle();
+  const next = Object.assign({}, style.iconColors || {});
+  delete next[iconKey];
+  setField('styles.iconColors', next);
+  const input = document.querySelector(`input[data-icon-key="${iconKey}"]`);
+  if (input) {
+    input.value = style.accentColor || '#8b0040';
+    const preview = input.closest('.color-input-preview');
+    if (preview) {
+      preview.style.backgroundColor = 'transparent';
+      preview.classList.remove('active');
+    }
+  }
+  const label = $('val-iconColor-' + iconKey);
+  if (label) label.textContent = 'default';
+};
+
+window.resetAllIconColors = function() {
+  const style = ensureCardStyle();
+  setField('styles.iconColors', {});
+  syncCustomizerInputs();
+  document.querySelectorAll('.color-input-preview').forEach(preview => {
+    preview.style.backgroundColor = 'transparent';
+    preview.classList.remove('active');
+  });
+  toast('Reset all icon color overrides', 's');
+};
+
+window.handleFontFamilyChange = function(el) {
+  setField('styles.fontFamily', el.value);
+};
+
+window.handleCornerSymbolChange = function(el) {
+  setField('styles.cornerSymbol', el.value);
+};
+
+window.adjustIconOffset = function(iconKey, dx, dy) {
+  const st = ensureCardStyle();
+  const keys = iconOffsetKeys(iconKey);
+  const nextX = Math.max(-2, Math.min(2, Number(st[keys.x] || 0) + dx));
+  const nextY = Math.max(-2, Math.min(2, Number(st[keys.y] || 0) + dy));
+  setField('styles.' + keys.x, Math.round(nextX * 100) / 100);
+  setField('styles.' + keys.y, Math.round(nextY * 100) / 100);
+  syncCustomizerInputs();
+};
+
+window.resetIconOffset = function(iconKey) {
+  const keys = iconOffsetKeys(iconKey);
+  setField('styles.' + keys.x, 0);
+  setField('styles.' + keys.y, 0);
+  syncCustomizerInputs();
+};
+
+window.adjustCornerOffset = function(cornerKey, dx, dy) {
+  const st = ensureCardStyle();
+  const keys = offsetValueKeys(cornerKey);
+  const nextX = Math.max(-1, Math.min(1, Number(st[keys.x] || 0) + dx));
+  const nextY = Math.max(-1, Math.min(1, Number(st[keys.y] || 0) + dy));
+  setField('styles.' + keys.x, Math.round(nextX * 100) / 100);
+  setField('styles.' + keys.y, Math.round(nextY * 100) / 100);
+  syncCustomizerInputs();
+};
+
+window.resetCornerOffset = function(cornerKey) {
+  const keys = offsetValueKeys(cornerKey);
+  setField('styles.' + keys.x, 0);
+  setField('styles.' + keys.y, 0);
+  syncCustomizerInputs();
+};
+
+function updatePresetCardsActiveState() {
+  const st = currentData.styles;
+  if (!st) return;
+  document.querySelectorAll('.preset-card').forEach(card => {
+    const matches = card.dataset.bodyBg === st.bodyBg &&
+                    card.dataset.accentColor === st.accentColor &&
+                    card.dataset.textColor === st.textColor &&
+                    card.dataset.headingColor === st.headingColor;
+    if (matches) {
+      card.classList.add('active');
+    } else {
+      card.classList.remove('active');
+    }
+  });
+}
+
+function syncCustomizerInputs() {
+  const st = ensureCardStyle();
+
+  // Sync color inputs and labels
+  const colors = ['cardBg', 'bodyBg', 'accentColor', 'borderColor', 'textColor', 'headingColor'];
+  colors.forEach(key => {
+    const val = st[key];
+    const previewInput = document.querySelector(`.color-input-preview input[data-style-key="${key}"]`);
+    if (previewInput) previewInput.value = val;
+    const valLabel = $('val-' + key);
+    if (valLabel) valLabel.textContent = val;
+  });
+
+  // Sync sliders
+  const sliders = ['shlokaSize', 'headingSize', 'namesSize', 'eventSize', 'footerSize', 'ganeshSize', 'omSize', 'chainsSize', 'coupleSize', 'cornerSize', 'curveLevel'];
+  sliders.forEach(key => {
+    const val = st[key] !== undefined ? st[key] : 100;
+    const slider = document.querySelector(`.range-slider[data-style-key="${key}"]`);
+    if (slider) slider.value = val;
+    const valLabel = $('val-' + key);
+    if (valLabel) {
+      if (key === 'curveLevel') {
+        const labels = ['None', 'Low', 'Medium', 'High', 'Max'];
+        valLabel.textContent = labels[val] || val;
+      } else {
+        valLabel.textContent = val + '%';
+      }
+    }
+  });
+
+  // Sync checkboxes
+  const checkboxes = ['showGanesh', 'showOm', 'showChains', 'showCouple', 'showCorners', 'showBorder'];
+  checkboxes.forEach(key => {
+    const val = st[key] !== false;
+    const chk = $('chk-' + key);
+    if (chk) chk.checked = val;
+  });
+
+  const borderPresetSelect = $('border-preset-select');
+  if (borderPresetSelect && st.borderPreset) borderPresetSelect.value = st.borderPreset;
+
+  const targetSelect = $('icon-replace-target-select');
+  if (targetSelect) targetSelect.value = getIconReplaceTarget();
+  refreshIconReplacementStatus();
+
+  const iconColorKeys = ICON_COLOR_CONFIG.map(item => item.key);
+  iconColorKeys.forEach(key => {
+    const input = document.querySelector(`input[data-icon-key="${key}"]`);
+    const preview = document.querySelector(`.color-input-preview[data-icon-preview="${key}"]`);
+    const color = st.iconColors && st.iconColors[key];
+    if (input) input.value = color || (st.accentColor || '#8b0040');
+    if (preview) {
+      preview.style.backgroundColor = color || 'transparent';
+      preview.classList.toggle('active', Boolean(color));
+    }
+    const label = $('val-iconColor-' + key);
+    if (label) label.textContent = color || 'default';
+  });
+
+  // Sync selectors
+  const ffSelect = $('font-family-select');
+  if (ffSelect && st.fontFamily) ffSelect.value = st.fontFamily;
+
+  const stockSelect = $('card-stock-select');
+  if (stockSelect && st.cardBg) stockSelect.value = st.cardBg;
+
+  const csSelect = $('corner-symbol-select');
+  if (csSelect && st.cornerSymbol) csSelect.value = st.cornerSymbol;
+
+  // Sync icon nudges
+  ICON_NUDGE_CONFIG.forEach(icon => {
+    const keys = iconOffsetKeys(icon.key);
+    const x = Number(st[keys.x] || 0);
+    const y = Number(st[keys.y] || 0);
+    const xLabel = $('nudge-' + icon.key + '-x');
+    const yLabel = $('nudge-' + icon.key + '-y');
+    if (xLabel) xLabel.textContent = fmtCmOffset(x);
+    if (yLabel) yLabel.textContent = fmtCmOffset(y);
+  });
+
+  CORNER_NUDGE_CONFIG.forEach(corner => {
+    const keys = offsetValueKeys(corner.key);
+    const x = Number(st[keys.x] || 0);
+    const y = Number(st[keys.y] || 0);
+    const xLabel = $('nudge-' + corner.key + '-x');
+    const yLabel = $('nudge-' + corner.key + '-y');
+    if (xLabel) xLabel.textContent = fmtCmOffset(x);
+    if (yLabel) yLabel.textContent = fmtCmOffset(y);
+  });
+
+  // Sync spacing sliders
+  const cardPaddingSlider = document.querySelector(`.range-slider[data-style-key="cardPadding"]`);
+  if (cardPaddingSlider) {
+    const val = st.cardPadding !== undefined ? st.cardPadding : 1.0;
+    cardPaddingSlider.value = val * 100;
+    $('val-cardPadding').textContent = val.toFixed(1) + 'cm';
+  }
+
+  const sectionGapSlider = document.querySelector(`.range-slider[data-style-key="sectionGap"]`);
+  if (sectionGapSlider) {
+    const val = st.sectionGap !== undefined ? st.sectionGap : 0.3;
+    sectionGapSlider.value = val * 100;
+    $('val-sectionGap').textContent = val.toFixed(1) + 'cm';
+  }
+
+  // Update preset cards active state
+  updatePresetCardsActiveState();
+}
+
+function generateStylesForm() {
+  syncCustomizerInputs();
 }
 
 // ── NAV TABS SWITCHER (TOPBAR LEVEL) ──
@@ -585,7 +1456,7 @@ function switchCustomizerSection(sectionId) {
   });
   
   const activePanel = document.getElementById(`c-sec-${sectionId}`);
-  if (activePanel) activePanel.style.display = 'flex';
+  if (activePanel) activePanel.style.display = 'block';
 }
 
 // Send updates directly to preview frame

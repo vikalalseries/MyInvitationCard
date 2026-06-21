@@ -566,10 +566,9 @@ function fmtHi(dateStr) {
   } catch(e) { return dateStr; }
 }
 
-// Global styles structure
 const DEFAULT_CARD_STYLE = {
+  cardBg: '#f9f1d0',
   bodyBg: '#c8829a',
-  cardBg: '#f2aec8',
   accentColor: '#8b0040',
   textColor: '#6e0035',
   headingColor: '#6e0035',
@@ -579,23 +578,53 @@ const DEFAULT_CARD_STYLE = {
   namesSize: 100,
   eventSize: 100,
   footerSize: 100,
-  showGanesh: 'true',
+  showGanesh: true,
   ganeshSize: 100,
-  showOm: 'true',
+  ganeshOffsetX: 0,
+  ganeshOffsetY: 0,
+  showOm: true,
   omSize: 100,
-  showChains: 'true',
+  omOffsetX: 0,
+  omOffsetY: 0,
+  showChains: true,
   chainsSize: 100,
-  showCouple: 'true',
+  chainLeftOffsetX: 0,
+  chainLeftOffsetY: 0,
+  chainRightOffsetX: 0,
+  chainRightOffsetY: 0,
+  showCouple: true,
   coupleSize: 100,
-  showCorners: 'true',
+  couple1OffsetX: 0,
+  couple1OffsetY: 0,
+  couple2OffsetX: 0,
+  couple2OffsetY: 0,
+  topIconOffsetX: 0,
+  topIconOffsetY: 0,
+  top1IconOffsetX: 0,
+  top1IconOffsetY: 0,
+  bottomIconOffsetX: 0,
+  bottomIconOffsetY: 0,
+  midIconOffsetX: 0,
+  midIconOffsetY: 0,
+  cornerTlOffsetX: 0,
+  cornerTlOffsetY: 0,
+  cornerTrOffsetX: 0,
+  cornerTrOffsetY: 0,
+  cornerBlOffsetX: 0,
+  cornerBlOffsetY: 0,
+  cornerBrOffsetX: 0,
+  cornerBrOffsetY: 0,
+  showCorners: true,
   cornerSymbol: '✿',
   cornerSize: 100,
   cardPadding: 1.0,
   sectionGap: 0.3,
-  showBorder: 'true',
+  showBorder: true,
   curveLevel: 0,
   borderPreset: 'classic',
-  borderColor: '#8b0040'
+  borderColor: '#8b0040',
+  iconColors: {},
+  iconReplacements: {}
 };
 
 const BORDER_FRAME_PRESETS = {
@@ -615,7 +644,7 @@ const BORDER_FRAME_PRESETS = {
 };
 
 function buildBorderFrameCss(style) {
-  if (style.showBorder === 'false') {
+  if (style.showBorder === false || style.showBorder === 'false') {
     return 'border:none !important; box-shadow:none !important;';
   }
   const preset = BORDER_FRAME_PRESETS[style.borderPreset || 'classic'] || BORDER_FRAME_PRESETS.classic;
@@ -623,7 +652,7 @@ function buildBorderFrameCss(style) {
   const cardBg = style.cardBg || '#f2aec8';
   const shadows = preset.rings.map((ring) => `inset 0 0 0 ${ring} ${cardBg}`).join(', ');
   let radius = '';
-  if (style.curveLevel && preset.borderRadius) {
+  if (style.curveLevel !== undefined && preset.borderRadius) {
     const factor = Number(style.curveLevel) / 4;
     const baseRadius = parseFloat(preset.borderRadius);
     const radiusValue = (baseRadius * factor).toFixed(3) + 'cm';
@@ -643,6 +672,36 @@ function loadCustomFont(fontFamily) {
   document.head.appendChild(link);
 }
 
+const ICON_REPLACEMENT_MAP = [
+  { key: 'ganesh', selector: '.ganesh-icon img', defaultSrc: '../../../builder1/assets/icons/ganesh.png' },
+  { key: 'om', selector: '.sun-icon img', defaultSrc: '../../../builder1/assets/icons/om.png' },
+  { key: 'chainLeft', selector: '.chainleft img', defaultSrc: '../../../builder1/assets/icons/side.png' },
+  { key: 'chainRight', selector: '.chainright img', defaultSrc: '../../../builder1/assets/icons/side.png' },
+  { key: 'topIcon', selector: '.top-icon img', defaultSrc: '../../../builder1/assets/icons/top2.png' },
+  { key: 'top1Icon', selector: '.top1-icon img', defaultSrc: '../../../builder1/assets/icons/top2.png' },
+  { key: 'bottomIcon', selector: '.bottom-icon img', defaultSrc: '../../../builder1/assets/icons/top2.png' },
+  { key: 'midIcon', selector: '.mid-icon img', defaultSrc: '../../../builder1/assets/icons/mid.png' },
+  { key: 'couple1', selector: '.s1-wrap .couple-box img', defaultSrc: '../../../builder1/assets/icons/weds.png' },
+  { key: 'couple2', selector: '.s2-wrap .s2-icon img', defaultSrc: '../../../builder1/assets/icons/weds.png' }
+];
+
+function applyIconReplacements(style) {
+  const replacements = (style && style.iconReplacements) || {};
+  ICON_REPLACEMENT_MAP.forEach(item => {
+    const value = replacements[item.key];
+    let src = typeof value === 'string' ? value : value && value.file ? value.file : item.defaultSrc;
+    if (src && src.startsWith('../builder1/')) {
+      src = '../../../' + src.substring(3);
+    }
+    document.querySelectorAll(item.selector).forEach(img => {
+      if (!img.dataset.defaultSrc) {
+        img.dataset.defaultSrc = img.getAttribute('src') || item.defaultSrc;
+      }
+      img.src = src || img.dataset.defaultSrc;
+    });
+  });
+}
+
 // Apply styles to card layout
 function applyCustomStyles(style) {
   style = Object.assign({}, DEFAULT_CARD_STYLE, style || {});
@@ -655,6 +714,7 @@ function applyCustomStyles(style) {
   }
 
   loadCustomFont(style.fontFamily);
+  applyIconReplacements(style);
 
   // Compute sizing values relative to font scale percentages
   const shlokaSizeVal = 0.39 * (style.shlokaSize / 100);
@@ -668,6 +728,22 @@ function applyCustomStyles(style) {
   const coupleSizeVal = 3.0 * (style.coupleSize / 100);
   const cornerSizeVal = 1.2 * (style.cornerSize / 100);
   const chainsSizeVal = 1.8 * (style.chainsSize / 100);
+
+  const iconShift = (key) => {
+    const x = Number(style[key + 'OffsetX'] || 0);
+    const y = Number(style[key + 'OffsetY'] || 0);
+    return `translate(${x}cm, ${y}cm)`;
+  };
+  const iconColorStyle = (key) => {
+    const color = style.iconColors && style.iconColors[key];
+    if (!color) return '';
+    return `filter: brightness(0) saturate(100%) drop-shadow(0 0 0 ${color});`;
+  };
+  const cornerShift = (key) => {
+    const x = Number(style[key + 'OffsetX'] || 0);
+    const y = Number(style[key + 'OffsetY'] || 0);
+    return `translate(${x}cm, ${y}cm)`;
+  };
 
   let cssText = `
     body {
@@ -686,8 +762,13 @@ function applyCustomStyles(style) {
     .fl {
       color: ${style.accentColor};
       font-size: ${cornerSizeVal}cm;
-      display: ${style.showCorners === 'true' ? 'block' : 'none'} !important;
+      display: ${style.showCorners === true || style.showCorners === 'true' ? 'block' : 'none'} !important;
     }
+    .tl { transform: ${cornerShift('cornerTl')} !important; }
+    .tr { transform: ${cornerShift('cornerTr')} !important; }
+    .bl { transform: ${cornerShift('cornerBl')} !important; }
+    .br { transform: ${cornerShift('cornerBr')} !important; }
+    
     .s1-mantras p {
       color: ${style.textColor};
     }
@@ -767,19 +848,55 @@ function applyCustomStyles(style) {
     
     .ganesh-icon img {
       width: ${ganeshSizeVal}cm !important;
-      display: ${style.showGanesh === 'true' ? 'block' : 'none'} !important;
+      display: ${style.showGanesh === true || style.showGanesh === 'true' ? 'block' : 'none'} !important;
+      transform: ${iconShift('ganesh')} !important;
+      ${iconColorStyle('ganesh')}
     }
     .sun-icon img {
       width: ${omSizeVal}cm !important;
-      display: ${style.showOm === 'true' ? 'block' : 'none'} !important;
+      display: ${style.showOm === true || style.showOm === 'true' ? 'block' : 'none'} !important;
+      transform: ${iconShift('om')} !important;
+      ${iconColorStyle('om')}
     }
-    .chainleft img, .chainright img {
+    .chainleft img {
       width: ${chainsSizeVal}cm !important;
-      display: ${style.showChains === 'true' ? 'block' : 'none'} !important;
+      display: ${style.showChains === true || style.showChains === 'true' ? 'block' : 'none'} !important;
+      transform: ${iconShift('chainLeft')} !important;
+      ${iconColorStyle('chainLeft')}
     }
-    .s1-wrap .couple-box img, .s2-wrap .s2-icon img {
+    .chainright img {
+      width: ${chainsSizeVal}cm !important;
+      display: ${style.showChains === true || style.showChains === 'true' ? 'block' : 'none'} !important;
+      transform: ${iconShift('chainRight')} !important;
+      ${iconColorStyle('chainRight')}
+    }
+    .top-icon img {
+      transform: ${iconShift('topIcon')} !important;
+      ${iconColorStyle('topIcon')}
+    }
+    .top1-icon img {
+      transform: ${iconShift('top1Icon')} !important;
+      ${iconColorStyle('top1Icon')}
+    }
+    .bottom-icon img {
+      transform: ${iconShift('bottomIcon')} !important;
+      ${iconColorStyle('bottomIcon')}
+    }
+    .mid-icon img {
+      transform: ${iconShift('midIcon')} !important;
+      ${iconColorStyle('midIcon')}
+    }
+    .s1-wrap .couple-box img {
       width: ${coupleSizeVal}cm !important;
-      display: ${style.showCouple === 'true' ? 'block' : 'none'} !important;
+      display: ${style.showCouple === true || style.showCouple === 'true' ? 'block' : 'none'} !important;
+      transform: ${iconShift('couple1')} !important;
+      ${iconColorStyle('couple1')}
+    }
+    .s2-wrap .s2-icon img {
+      width: ${coupleSizeVal}cm !important;
+      display: ${style.showCouple === true || style.showCouple === 'true' ? 'block' : 'none'} !important;
+      transform: ${iconShift('couple2')} !important;
+      ${iconColorStyle('couple2')}
     }
   `;
   cssEl.textContent = cssText;
