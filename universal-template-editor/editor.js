@@ -32,7 +32,8 @@ Promise.all([
       const displayName = user.displayName?.trim() || localStorage.getItem("signupFullName")?.trim() || user.email.split('@')[0];
       currentUser = {
         name: displayName,
-        email: user.email
+        email: user.email,
+        photoURL: user.photoURL
       };
       userLoggedIn = true;
     } else {
@@ -40,6 +41,7 @@ Promise.all([
       userLoggedIn = false;
     }
     checkAuthState();
+    updateHeaderProfileUI(user);
   });
 }).catch(err => {
   console.error("Failed to load Firebase modules:", err);
@@ -392,10 +394,34 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Toggle profile popup dropdown
+  const profileBtn = document.getElementById('builderUserMenuBtn');
+  const userPopup = document.getElementById('builderUserPopup');
+  if (profileBtn && userPopup) {
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userPopup.classList.toggle('show');
+    });
+    userPopup.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+
   // Global click listener to close dropdown menu
   document.addEventListener('click', () => {
     document.getElementById('dl-wrap').classList.remove('open');
+    const popup = document.getElementById('builderUserPopup');
+    if (popup) popup.classList.remove('show');
   });
+
+  // Log out action from profile popup dropdown
+  const logoutBtn = document.getElementById('builderLogoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showLogoutConfirm();
+    });
+  }
 
   // Resize listener for auto-fitting live preview
   window.addEventListener('resize', () => {
@@ -1644,9 +1670,6 @@ function handleDownload(format) {
 // ── AUTHENTICATION CONTROL ──
 function checkAuthState() {
   if (userLoggedIn && currentUser) {
-    // Update Auth Action Button UI
-    document.getElementById('auth-action-text').textContent = currentUser.name || 'Logout';
-    
     // Enable Download options
     document.getElementById('dl-pdf').classList.remove('disabled');
     document.getElementById('dl-png').classList.remove('disabled');
@@ -1656,9 +1679,6 @@ function checkAuthState() {
     document.getElementById('dl-login-gate-btn').style.display = 'none';
     document.getElementById('dl-menu-sep').style.display = 'none';
   } else {
-    // Update Auth Action Button UI
-    document.getElementById('auth-action-text').textContent = 'Login';
-    
     // Disable Download options
     document.getElementById('dl-pdf').classList.add('disabled');
     document.getElementById('dl-png').classList.add('disabled');
@@ -1668,6 +1688,57 @@ function checkAuthState() {
     document.getElementById('dl-login-gate-btn').style.display = 'flex';
     document.getElementById('dl-menu-sep').style.display = 'block';
   }
+}
+
+// ── Update profile avatar & button in header ──
+function updateHeaderProfileUI(user) {
+  const avatarBtn = document.getElementById('builderUserMenuBtn');
+  const loginBtn = document.getElementById('builderHeaderLoginBtn');
+  const avatarSpan = document.getElementById('builderAvatar');
+  const popupAvatar = document.getElementById('builderPopupAvatar');
+  const popupName = document.getElementById('builderPopupUserName');
+  const popupEmail = document.getElementById('builderPopupUserEmail');
+
+  if (user) {
+    if (avatarBtn) avatarBtn.style.display = 'flex';
+    if (loginBtn) loginBtn.style.display = 'none';
+
+    const displayName = user.displayName || localStorage.getItem('signupFullName') || user.email?.split('@')[0] || 'User';
+    if (popupName) popupName.textContent = displayName;
+    if (popupEmail) popupEmail.textContent = user.email || 'No email';
+
+    if (user.photoURL) {
+      const imgHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      if (avatarSpan) avatarSpan.innerHTML = imgHTML;
+      if (popupAvatar) popupAvatar.innerHTML = imgHTML;
+    } else {
+      const initial = displayName.charAt(0).toUpperCase();
+      const bgColor = getAvatarBgColor(displayName);
+      const avatarHTML = `<div class="avatar-initial" style="background-color: ${bgColor}">${initial}</div>`;
+      if (avatarSpan) avatarSpan.innerHTML = avatarHTML;
+      if (popupAvatar) popupAvatar.innerHTML = avatarHTML;
+    }
+  } else {
+    if (avatarBtn) avatarBtn.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'flex';
+    const userPopup = document.getElementById('builderUserPopup');
+    if (userPopup) userPopup.classList.remove('show');
+  }
+}
+
+// Consistent hashing function for random matching background color
+function getAvatarBgColor(name) {
+  const colors = [
+    '#f43f5e', '#ec4899', '#d946ef', '#a855f7', '#8b5cf6',
+    '#6366f1', '#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6',
+    '#10b981', '#22c55e', '#84cc16', '#eab308', '#f97316'
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
 }
 
 window.handleAuthAction = function() {

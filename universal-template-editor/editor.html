@@ -101,10 +101,54 @@
       
       <div class="tb-sep"></div>
 
-      <!-- Authentication Action Button -->
-      <button class="print-btn" id="auth-action-btn" onclick="handleAuthAction()" style="border-color:var(--g300); font-weight:700;">
-        <i class="fa-solid fa-user"></i>&nbsp;<span id="auth-action-text">Login</span>
-      </button>
+      <!-- Profile / Auth Area -->
+      <div class="user-profile-wrap" id="user-profile-wrap">
+        <!-- If logged in, shows this avatar button -->
+        <button class="nav-avatar-btn" id="builderUserMenuBtn" style="display: none;">
+          <span class="nav-avatar" id="builderAvatar">
+            <i class="fa-solid fa-user"></i>
+          </span>
+        </button>
+        
+        <!-- If logged out, shows this login button instead -->
+        <button class="btn-login-header" id="builderHeaderLoginBtn" onclick="showLoginPopup(event)">
+          Login
+        </button>
+
+        <!-- Profile Popup Menu (same as index page) -->
+        <div class="nav-user-popup" id="builderUserPopup">
+          <div class="popup-user-header">
+            <div class="popup-avatar" id="builderPopupAvatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="popup-user-meta">
+              <div id="builderPopupUserName">My Account</div>
+              <div id="builderPopupUserEmail">user@email.com</div>
+            </div>
+          </div>
+          <button class="popup-menu-btn" onclick="toast('Profile page coming soon!', 'i')">
+            <i class="fa-regular fa-user"></i>
+            My Profile
+          </button>
+          <button class="popup-menu-btn" onclick="toast('Feedback submitted!', 's')">
+            <i class="fa-regular fa-message"></i>
+            <span>Feedback</span>
+          </button>
+          <button class="popup-menu-btn" onclick="toast('Help Center coming soon!', 'i')">
+            <i class="fa-regular fa-circle-question"></i>
+            <span>Help Center</span>
+          </button>
+          <button class="popup-menu-btn" id="builderLogoutBtn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            Log Out
+          </button>
+          <div class="popup-divider"></div>
+          <button class="popup-upgrade-btn" onclick="window.location.href='../pricing.html'">
+            <i class="fa-solid fa-crown"></i>
+            Upgrade to Premium
+          </button>
+        </div>
+      </div>
     </div>
   </header>
   
