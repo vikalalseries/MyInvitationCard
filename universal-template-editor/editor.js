@@ -468,6 +468,13 @@ async function loadTemplate(templateId) {
         if (vlsData && vlsData.data) {
           currentData = vlsData.data;
           
+          // Ensure all events are active
+          if (currentData.events) {
+            Object.keys(currentData.events).forEach(key => {
+              currentData.events[key].active = true;
+            });
+          }
+          
           // Ensure styles exist
           if (!currentData.styles) {
             currentData.styles = JSON.parse(JSON.stringify(DEFAULT_STYLE));
@@ -681,7 +688,7 @@ function generateCeremoniesForm() {
     sc.id = `event-card-${e.id}`;
     if (index === 0) sc.classList.add('open'); // Open first ceremony by default
     
-    // Custom header for event cards incorporating active state switch
+    // Custom header for event cards
     const head = document.createElement('div');
     head.className = 'sc-head';
     head.setAttribute('onclick', 'toggleAccordion(this)');
@@ -694,48 +701,9 @@ function generateCeremoniesForm() {
     left.appendChild(title);
     head.appendChild(left);
     
-    // Right side actions container (holds switch and chevron)
-    const right = document.createElement('div');
-    right.className = 'sc-right';
-    right.style.display = 'flex';
-    right.style.alignItems = 'center';
-    right.style.gap = '12px';
-    
-    // Switch element (does not trigger toggleAccordion on click)
-    const switchDiv = document.createElement('div');
-    switchDiv.setAttribute('onclick', 'event.stopPropagation()');
-    
-    const switchLabel = document.createElement('label');
-    switchLabel.className = 'switch';
-    
-    const switchInput = document.createElement('input');
-    switchInput.type = 'checkbox';
-    switchInput.checked = currentData.events[e.id].active;
-    switchInput.addEventListener('change', (evt) => {
-      const active = evt.target.checked;
-      currentData.events[e.id].active = active;
-      if (active) {
-        sc.classList.remove('inactive');
-      } else {
-        sc.classList.add('inactive');
-      }
-      triggerSaving();
-      sendUpdate();
-    });
-    
-    const slider = document.createElement('span');
-    slider.className = 'slider';
-    
-    switchLabel.appendChild(switchInput);
-    switchLabel.appendChild(slider);
-    switchDiv.appendChild(switchLabel);
-    right.appendChild(switchDiv);
-    
     const chev = document.createElement('i');
     chev.className = 'fa-solid fa-chevron-down sc-chev';
-    right.appendChild(chev);
-    
-    head.appendChild(right);
+    head.appendChild(chev);
     sc.appendChild(head);
     
     const body = document.createElement('div');
@@ -833,10 +801,8 @@ function generateCeremoniesForm() {
     body.appendChild(inner);
     sc.appendChild(body);
     
-    // Set initial active/inactive classes
-    if (!currentData.events[e.id].active) {
-      sc.classList.add('inactive');
-    }
+    // Set initial active status
+    currentData.events[e.id].active = true;
     
     container.appendChild(sc);
   });
