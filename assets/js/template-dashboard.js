@@ -304,7 +304,7 @@ function handleImportJSON(event) {
         JSON.stringify(jsonData)
       );
 
-      window.location.href = "builder.html";
+      window.location.href = "universal-template-editor/editor.html";
     } catch {
       alert("Invalid JSON file.");
     }

@@ -1,12 +1,49 @@
 // ── UNIVERSAL TEMPLATE EDITOR CORE (PREMIUM UX & NAV ALIGNMENT) ──
 
-let activeTemplateId = 'card1';
+// Parse templateId from URL parameter on load
+const urlParams = new URLSearchParams(window.location.search);
+let templateParam = urlParams.get('templateId') || urlParams.get('template') || 'card1';
+if (templateParam === '1' || templateParam === '37' || templateParam === '38') {
+  templateParam = 'card1';
+}
+let activeTemplateId = templateParam;
+
 let config = null;
 let currentData = {
   fields: {},
   events: {},
   styles: {}
 };
+
+// ── Firebase Modules ──
+let firebaseAuth = null;
+let firebaseConfig = null;
+
+Promise.all([
+  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+  import("../assets/js/firebase-config.js")
+]).then(([authMod, configMod]) => {
+  firebaseAuth = authMod;
+  firebaseConfig = configMod;
+
+  // Initialize Firebase Auth state listener
+  firebaseAuth.onAuthStateChanged(firebaseConfig.auth, (user) => {
+    if (user) {
+      const displayName = user.displayName?.trim() || localStorage.getItem("signupFullName")?.trim() || user.email.split('@')[0];
+      currentUser = {
+        name: displayName,
+        email: user.email
+      };
+      userLoggedIn = true;
+    } else {
+      currentUser = null;
+      userLoggedIn = false;
+    }
+    checkAuthState();
+  });
+}).catch(err => {
+  console.error("Failed to load Firebase modules:", err);
+});
 
 // Map of categories to group flat fields together
 const FIELD_CATEGORIES = [
@@ -1606,11 +1643,7 @@ function handleDownload(format) {
 
 // ── AUTHENTICATION CONTROL ──
 function checkAuthState() {
-  const storedUser = localStorage.getItem('currentUser');
-  if (storedUser) {
-    currentUser = JSON.parse(storedUser);
-    userLoggedIn = true;
-    
+  if (userLoggedIn && currentUser) {
     // Update Auth Action Button UI
     document.getElementById('auth-action-text').textContent = currentUser.name || 'Logout';
     
@@ -1623,9 +1656,6 @@ function checkAuthState() {
     document.getElementById('dl-login-gate-btn').style.display = 'none';
     document.getElementById('dl-menu-sep').style.display = 'none';
   } else {
-    currentUser = null;
-    userLoggedIn = false;
-    
     // Update Auth Action Button UI
     document.getElementById('auth-action-text').textContent = 'Login';
     
@@ -1640,13 +1670,13 @@ function checkAuthState() {
   }
 }
 
-function handleAuthAction() {
+window.handleAuthAction = function() {
   if (userLoggedIn) {
     showLogoutConfirm();
   } else {
     showLoginPopup();
   }
-}
+};
 
 window.showLogoutConfirm = function() {
   const popup = document.getElementById('builderUserPopup');
@@ -1660,45 +1690,229 @@ window.closeLogoutConfirm = function() {
   document.getElementById('logout-confirm-popup').classList.remove('show');
 };
 
-window.executeLogout = function() {
-  localStorage.removeItem('currentUser');
-  checkAuthState();
-  closeLogoutConfirm();
-  toast('Signed out successfully!', 's');
+window.executeLogout = async function() {
+  if (!firebaseAuth || !firebaseConfig) {
+    toast("Auth system is loading. Please try again.", "e");
+    return;
+  }
+  try {
+    await firebaseAuth.signOut(firebaseConfig.auth);
+    localStorage.removeItem('mic_active_template');
+    
+    checkAuthState();
+    closeLogoutConfirm();
+    toast('Signed out successfully!', 's');
+  } catch (error) {
+    console.error("Logout error:", error);
+    toast("Sign out failed.", "e");
+  }
 };
 
-function showLoginPopup() {
+window.showLoginPopup = function() {
   document.getElementById('login-overlay').classList.add('show');
   document.getElementById('login-popup').classList.add('show');
   switchPopupView('lp-view-welcome');
-}
+};
 
-function hideLoginPopup(e) {
+window.hideLoginPopup = function(e) {
   if (e) e.stopPropagation();
   document.getElementById('login-overlay').classList.remove('show');
   document.getElementById('login-popup').classList.remove('show');
-}
+};
 
-function switchPopupView(viewId) {
+window.switchPopupView = function(viewId) {
   document.querySelectorAll('.lp-view').forEach(view => {
     view.classList.remove('active');
   });
   document.getElementById(viewId).classList.add('active');
-}
+};
 
-function simulateLogin(emailVal) {
-  const username = emailVal.includes('@') ? emailVal.split('@')[0] : emailVal;
-  const user = {
-    email: emailVal.includes('@') ? emailVal : `${username}@example.com`,
-    name: username.charAt(0).toUpperCase() + username.slice(1)
-  };
+// Real Firebase Auth Handlers
+window.handleGoogleLogin = async function() {
+  if (!firebaseAuth || !firebaseConfig) {
+    toast("Auth system is loading. Please try again.", "e");
+    return;
+  }
+  try {
+    const result = await firebaseAuth.signInWithPopup(firebaseConfig.auth, firebaseConfig.googleProvider);
+    toast(`Welcome back, ${result.user.displayName || 'User'}!`, 's');
+    hideLoginPopup();
+  } catch (error) {
+    console.error("Google sign in failed:", error);
+    toast("Google login failed. Please try again.", "e");
+  }
+};
+
+window.handleEmailLogin = async function(e) {
+  if (e) e.preventDefault();
+  if (!firebaseAuth || !firebaseConfig) {
+    toast("Auth system is loading. Please try again.", "e");
+    return;
+  }
+  const email = document.getElementById('lp-login-email').value.trim();
+  const password = document.getElementById('lp-login-password').value;
   
-  localStorage.setItem('currentUser', JSON.stringify(user));
-  checkAuthState();
-  hideLoginPopup();
+  if (!email || !password) {
+    toast("Please enter your email and password.", "e");
+    return;
+  }
   
-  toast(`Welcome back, ${user.name}!`, 's');
-}
+  try {
+    const result = await firebaseAuth.signInWithEmailAndPassword(firebaseConfig.auth, email, password);
+    toast(`Welcome back, ${result.user.displayName || result.user.email.split('@')[0]}!`, 's');
+    hideLoginPopup();
+  } catch (error) {
+    console.error("Email sign in failed:", error);
+    toast("Incorrect email or password.", "e");
+  }
+};
+
+let pendingSignupName = "";
+let pendingSignupEmail = "";
+let pendingSignupPassword = "";
+
+window.handleEmailSignup = async function(e) {
+  if (e) e.preventDefault();
+  
+  const fullName = document.getElementById('lp-signup-name').value.trim();
+  const email = document.getElementById('lp-signup-email').value.trim();
+  const password = document.getElementById('lp-signup-password').value;
+  const confirm = document.getElementById('lp-signup-confirm').value;
+  
+  if (!fullName || !email || !password || !confirm) {
+    toast("Please fill all fields.", "e");
+    return;
+  }
+  
+  if (password !== confirm) {
+    toast("Passwords do not match.", "e");
+    return;
+  }
+  
+  try {
+    const response = await fetch("https://myinvitationcard-backend.onrender.com/send-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fullName,
+        email,
+        password
+      })
+    });
+    
+    const data = await response.json();
+    if (!data.success) {
+      toast(data.message || "Unable to send verification code.", "e");
+      return;
+    }
+    
+    pendingSignupName = fullName;
+    pendingSignupEmail = email;
+    pendingSignupPassword = password;
+    
+    toast("Verification code sent to your email.", "s");
+    switchPopupView('lp-view-otp');
+  } catch (err) {
+    console.error("Signup failed:", err);
+    toast("Failed to register. Please try again.", "e");
+  }
+};
+
+window.handleVerifyOtp = async function(e) {
+  if (e) e.preventDefault();
+  if (!firebaseAuth || !firebaseConfig) {
+    toast("Auth system is loading. Please try again.", "e");
+    return;
+  }
+  
+  const otpInput = document.getElementById('lp-otp-code');
+  const otp = otpInput ? otpInput.value.trim() : "";
+  
+  if (!otp) {
+    toast("Enter verification code.", "e");
+    return;
+  }
+  
+  try {
+    const response = await fetch("https://myinvitationcard-backend.onrender.com/verify-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: pendingSignupEmail,
+        otp
+      })
+    });
+    
+    const data = await response.json();
+    if (!data.success) {
+      toast(data.message || "OTP verification failed.", "e");
+      return;
+    }
+    
+    // Sign in to Firebase Auth using credentials
+    await firebaseAuth.signInWithEmailAndPassword(
+      firebaseConfig.auth,
+      pendingSignupEmail,
+      pendingSignupPassword
+    );
+    
+    // Save displayName to localStorage (used by auth state listener or UI)
+    localStorage.setItem("signupFullName", pendingSignupName);
+    
+    // Reset inputs
+    if (document.getElementById('lp-signup-name')) document.getElementById('lp-signup-name').value = "";
+    if (document.getElementById('lp-signup-email')) document.getElementById('lp-signup-email').value = "";
+    if (document.getElementById('lp-signup-password')) document.getElementById('lp-signup-password').value = "";
+    if (document.getElementById('lp-signup-confirm')) document.getElementById('lp-signup-confirm').value = "";
+    if (otpInput) otpInput.value = "";
+    
+    pendingSignupName = "";
+    pendingSignupEmail = "";
+    pendingSignupPassword = "";
+    
+    toast("Welcome to MyInvitationCard!", "s");
+    hideLoginPopup();
+  } catch (err) {
+    console.error("OTP verification error:", err);
+    toast("Verification failed. Please try again.", "e");
+  }
+};
+
+window.handleResendOtp = async function() {
+  if (!pendingSignupEmail) {
+    toast("No email address found for resending.", "e");
+    return;
+  }
+  
+  try {
+    const response = await fetch("https://myinvitationcard-backend.onrender.com/send-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fullName: pendingSignupName,
+        email: pendingSignupEmail,
+        password: pendingSignupPassword
+      })
+    });
+    
+    const data = await response.json();
+    if (!data.success) {
+      toast(data.message || "Failed to resend OTP.", "e");
+      return;
+    }
+    
+    toast("New verification code sent.", "s");
+  } catch (err) {
+    console.error("Resend OTP failed:", err);
+    toast("Failed to resend OTP.", "e");
+  }
+};
 
 // ── LIVE PREVIEW SCALING ENGINE (EXACT REPLICA OF BUILDER1) ──
 let currentZoom = 75;
