@@ -500,10 +500,10 @@ body {
         <span data-field="brideTitle">आयु॰कु॰</span> <span data-field="brideName">नीलम मौर्या</span>
       </div>
       <div class="s2-fam">
-        सुपौत्री- <span data-field="brideGrandparents">स्व0 श्री बनारसी प्रसाद मौर्य- श्रीमती कलावती देवी</span><br>
-        सुपुत्री- <span data-field="brideParents">श्री शमशेर बहादुर मौर्य- श्रीमती चन्द्रकला देवी</span><br>
-        ग्राम- <span data-field="brideAddress">ग्राम- थरपरिसया पो0- नदौली करौदी</span><br>
-        <span data-field="brideCity">लालगंज, जिला- मीरजापुर</span>
+        <div data-prefix-wrapper="brideGrandparents">सुपौत्री- <span data-field="brideGrandparents">स्व0 श्री बनारसी प्रसाद मौर्य- श्रीमती कलावती देवी</span></div>
+        <div data-prefix-wrapper="brideParents">सुपुत्री- <span data-field="brideParents">श्री शमशेर बहादुर मौर्य- श्रीमती चन्द्रकला देवी</span></div>
+        <div data-prefix-wrapper="brideAddress">ग्राम- <span data-field="brideAddress">ग्राम- थरपरिसया पो0- नदौली करौदी</span></div>
+        <div data-prefix-wrapper="brideCity"><span data-field="brideCity">लालगंज, जिला- मीरजापुर</span></div>
       </div>
 
       <!-- Groom Details -->
@@ -511,10 +511,10 @@ body {
         <span data-field="groomTitle">चि॰</span> <span data-field="groomName">राजेश मौर्य</span>
       </div>
       <div class="s2-fam-r">
-        सुपौत्र- <span data-field="groomGrandparents">स्व0 शिवनाथ मौर्य- श्रीमती प्रेमा देवी</span><br>
-        सुपुत्र- <span data-field="groomParents">श्री रामकेशवर मौर्य- श्रीमती मालती देवी</span><br>
-        ग्राम- <span data-field="groomAddress">ग्राम- झगड़हा पो0- नौगवां</span><br>
-        <span data-field="groomCity">जिला- मीरजापुर</span>
+        <div data-prefix-wrapper="groomGrandparents">सुपौत्र- <span data-field="groomGrandparents">स्व0 शिवनाथ मौर्य- श्रीमती प्रेमा देवी</span></div>
+        <div data-prefix-wrapper="groomParents">सुपुत्र- <span data-field="groomParents">श्री रामकेशवर मौर्य- श्रीमती मालती देवी</span></div>
+        <div data-prefix-wrapper="groomAddress">ग्राम- <span data-field="groomAddress">ग्राम- झगड़हा पो0- नौगवां</span></div>
+        <div data-prefix-wrapper="groomCity"><span data-field="groomCity">जिला- मीरजापुर</span></div>
       </div>
 
       <!-- Couple Icon -->
@@ -972,12 +972,21 @@ window.addEventListener('message', function(e) {
     });
   }
 
-  // 3. Apply Style Options
-  if (payload.styles) {
-    applyCustomStyles(payload.styles);
+  // 4. Sync Prefix Wrappers (Bride/Groom details)
+  if (payload.fields) {
+    const wrappers = document.querySelectorAll('[data-prefix-wrapper]');
+    wrappers.forEach(wrap => {
+      const fieldName = wrap.getAttribute('data-prefix-wrapper');
+      const val = payload.fields[fieldName];
+      if (!val || val.trim() === '') {
+        wrap.style.display = 'none';
+      } else {
+        wrap.style.display = ''; // Restore default layout
+      }
+    });
   }
 
-  // 4. Adjust Layout dynamically (hiding empty sections, shifting elements)
+  // 5. Adjust Layout dynamically (hiding empty sections, shifting elements)
   adjustDynamicLayout(payload);
 });
 
