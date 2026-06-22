@@ -1326,6 +1326,7 @@ window.resetAllIconColors = function() {
 
 window.handleFontFamilyChange = function(el) {
   setField('styles.fontFamily', el.value);
+  el.style.fontFamily = el.value;
 };
 
 window.handleCornerSymbolChange = function(el) {
@@ -1443,7 +1444,10 @@ function syncCustomizerInputs() {
 
   // Sync selectors
   const ffSelect = $('font-family-select');
-  if (ffSelect && st.fontFamily) ffSelect.value = st.fontFamily;
+  if (ffSelect && st.fontFamily) {
+    ffSelect.value = st.fontFamily;
+    ffSelect.style.fontFamily = st.fontFamily;
+  }
 
   const stockSelect = $('card-stock-select');
   if (stockSelect && st.cardBg) stockSelect.value = st.cardBg;

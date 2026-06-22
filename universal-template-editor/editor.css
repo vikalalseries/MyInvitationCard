@@ -1671,10 +1671,14 @@ input:checked + .slider:before {
 .customizer-field-row:last-child {
   border-bottom: none;
 }
+.fl,
 .customizer-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--g700);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--g500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
 }
 .customizer-label-sub {
   font-size: 0.68rem;
@@ -2033,9 +2037,11 @@ input:checked + .slider:before {
   padding: 10px;
 }
 .nudge-card-title {
-  font-size: 0.74rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--g700);
+  color: var(--g500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
 .nudge-pad {
