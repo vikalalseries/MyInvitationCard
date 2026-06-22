@@ -468,10 +468,12 @@ async function loadTemplate(templateId) {
         if (vlsData && vlsData.data) {
           currentData = vlsData.data;
           
-          // Ensure all events are active
+          // Ensure all events are active and null values are preserved/set
           if (currentData.events) {
             Object.keys(currentData.events).forEach(key => {
               currentData.events[key].active = true;
+              if (currentData.events[key].name === undefined) currentData.events[key].name = null;
+              if (currentData.events[key].date === undefined) currentData.events[key].date = null;
             });
           }
           
@@ -529,17 +531,18 @@ function initializeDataState() {
   
   if (config.fields) {
     config.fields.forEach(f => {
-      currentData.fields[f.id] = f.default || '';
+      // Set to null to indicate it is not customized yet (shows default in preview, placeholder in editor)
+      currentData.fields[f.id] = null;
     });
   }
   
   if (config.events) {
     config.events.forEach(e => {
       currentData.events[e.id] = {
-        name: e.defaultName || '',
-        date: e.defaultDate || '',
-        time: e.defaultTime || '',
-        venue: e.defaultVenue || '',
+        name: null,
+        date: null,
+        time: '',
+        venue: '',
         active: true
       };
     });
@@ -563,7 +566,8 @@ function autoGrowTextarea(element) {
 function updateAccordionEmptyState(sc, fields) {
   const allEmpty = fields.every(field => {
     const val = currentData.fields[field.id];
-    return !val || val.trim() === '';
+    // A field is considered empty/hidden only if it is explicitly set to an empty string
+    return val !== null && val !== undefined && val.trim() === '';
   });
   
   const title = sc.querySelector('.sc-title');
@@ -649,7 +653,8 @@ function generateContentForm() {
       
       const input = document.createElement('textarea');
       input.className = 'form-input form-textarea';
-      input.value = currentData.fields[field.id] || '';
+      input.value = (currentData.fields[field.id] === null || currentData.fields[field.id] === undefined) ? '' : currentData.fields[field.id];
+      input.placeholder = field.default || '';
       input.addEventListener('input', (e) => {
         currentData.fields[field.id] = e.target.value;
         triggerSaving();
@@ -721,7 +726,8 @@ function generateCeremoniesForm() {
     
     const nameInput = document.createElement('textarea');
     nameInput.className = 'form-input form-textarea';
-    nameInput.value = currentData.events[e.id].name || '';
+    nameInput.value = (currentData.events[e.id].name === null || currentData.events[e.id].name === undefined) ? '' : currentData.events[e.id].name;
+    nameInput.placeholder = e.defaultName || '';
     nameInput.addEventListener('input', (evt) => {
       currentData.events[e.id].name = evt.target.value;
       triggerSaving();
@@ -744,7 +750,7 @@ function generateCeremoniesForm() {
       const dateInput = document.createElement('input');
       dateInput.type = 'date';
       dateInput.className = 'form-input';
-      dateInput.value = currentData.events[e.id].date;
+      dateInput.value = (currentData.events[e.id].date === null || currentData.events[e.id].date === undefined) ? '' : currentData.events[e.id].date;
       dateInput.addEventListener('change', (evt) => {
         currentData.events[e.id].date = evt.target.value;
         triggerSaving();
@@ -1550,9 +1556,38 @@ function switchCustomizerSection(sectionId) {
 function sendUpdate() {
   const iframe = document.getElementById('card1-iframe');
   if (iframe && iframe.contentWindow) {
+    const resolvedData = {
+      fields: {},
+      events: {},
+      styles: currentData.styles
+    };
+    
+    if (config) {
+      if (config.fields) {
+        config.fields.forEach(f => {
+          const val = currentData.fields[f.id];
+          resolvedData.fields[f.id] = (val === null || val === undefined) ? (f.default || '') : val;
+        });
+      }
+      if (config.events) {
+        config.events.forEach(e => {
+          const currentEv = currentData.events[e.id] || {};
+          const nameVal = currentEv.name;
+          const dateVal = currentEv.date;
+          resolvedData.events[e.id] = {
+            name: (nameVal === null || nameVal === undefined) ? (e.defaultName || '') : nameVal,
+            date: (dateVal === null || dateVal === undefined) ? (e.defaultDate || '') : dateVal,
+            time: currentEv.time || '',
+            venue: currentEv.venue || '',
+            active: currentEv.active !== false
+          };
+        });
+      }
+    }
+    
     iframe.contentWindow.postMessage({
       type: 'UPDATE_TEMPLATE_DATA',
-      data: currentData
+      data: resolvedData
     }, '*');
   }
 }
