@@ -500,10 +500,10 @@ body {
         <span data-field="brideTitle">आयु॰कु॰</span> <span data-field="brideName">नीलम मौर्या</span>
       </div>
       <div class="s2-fam">
-        <div data-prefix-wrapper="brideGrandparents">सुपौत्री- <span data-field="brideGrandparents">स्व0 श्री बनारसी प्रसाद मौर्य- श्रीमती कलावती देवी</span></div>
-        <div data-prefix-wrapper="brideParents">सुपुत्री- <span data-field="brideParents">श्री शमशेर बहादुर मौर्य- श्रीमती चन्द्रकला देवी</span></div>
-        <div data-prefix-wrapper="brideAddress">ग्राम- <span data-field="brideAddress">ग्राम- थरपरिसया पो0- नदौली करौदी</span></div>
-        <div data-prefix-wrapper="brideCity"><span data-field="brideCity">लालगंज, जिला- मीरजापुर</span></div>
+        <span data-prefix-wrapper="brideGrandparents">सुपौत्री- <span data-field="brideGrandparents">स्व0 श्री बनारसी प्रसाद मौर्य- श्रीमती कलावती देवी</span><br></span>
+        <span data-prefix-wrapper="brideParents">सुपुत्री- <span data-field="brideParents">श्री शमशेर बहादुर मौर्य- श्रीमती चन्द्रकला देवी</span><br></span>
+        <span data-prefix-wrapper="brideAddress">ग्राम- <span data-field="brideAddress">ग्राम- थरपरिसया पो0- नदौली करौदी</span><br></span>
+        <span data-prefix-wrapper="brideCity"><span data-field="brideCity">लालगंज, जिला- मीरजापुर</span></span>
       </div>
 
       <!-- Groom Details -->
@@ -511,10 +511,10 @@ body {
         <span data-field="groomTitle">चि॰</span> <span data-field="groomName">राजेश मौर्य</span>
       </div>
       <div class="s2-fam-r">
-        <div data-prefix-wrapper="groomGrandparents">सुपौत्र- <span data-field="groomGrandparents">स्व0 शिवनाथ मौर्य- श्रीमती प्रेमा देवी</span></div>
-        <div data-prefix-wrapper="groomParents">सुपुत्र- <span data-field="groomParents">श्री रामकेशवर मौर्य- श्रीमती मालती देवी</span></div>
-        <div data-prefix-wrapper="groomAddress">ग्राम- <span data-field="groomAddress">ग्राम- झगड़हा पो0- नौगवां</span></div>
-        <div data-prefix-wrapper="groomCity"><span data-field="groomCity">जिला- मीरजापुर</span></div>
+        <span data-prefix-wrapper="groomGrandparents">सुपौत्र- <span data-field="groomGrandparents">स्व0 शिवनाथ मौर्य- श्रीमती प्रेमा देवी</span><br></span>
+        <span data-prefix-wrapper="groomParents">सुपुत्र- <span data-field="groomParents">श्री रामकेशवर मौर्य- श्रीमती मालती देवी</span><br></span>
+        <span data-prefix-wrapper="groomAddress">ग्राम- <span data-field="groomAddress">ग्राम- झगड़हा पो0- नौगवां</span><br></span>
+        <span data-prefix-wrapper="groomCity"><span data-field="groomCity">जिला- मीरजापुर</span></span>
       </div>
 
       <!-- Couple Icon -->
@@ -1012,25 +1012,28 @@ function adjustDynamicLayout(payload) {
   if (heading) heading.style.display = isHeadingEmpty ? 'none' : 'block';
   if (swirlMid) swirlMid.style.display = (isMantraEmpty && isHeadingEmpty) ? 'none' : 'block';
 
-  // Calculate Section 1 tops dynamically
-  let s1Top = 0.15; // Starting top margin in cm
-
-  if (!isMantraEmpty) {
-    if (mantras) mantras.style.top = s1Top + 'cm';
-    s1Top += 0.95; // height + spacing
-    
-    if (swirlTop) swirlTop.style.top = s1Top + 'cm';
-    s1Top += 0.35;
+  // Calculate Section 1 shifts dynamically to preserve exact original top values when visible
+  let shiftS1 = 0;
+  if (isMantraEmpty) {
+    shiftS1 += 1.0;
+  }
+  if (isHeadingEmpty) {
+    shiftS1 += 1.0;
   }
 
-  if (!isHeadingEmpty) {
-    if (heading) heading.style.top = s1Top + 'cm';
-    s1Top += 0.55;
-    
-    if (swirlMid) {
-      swirlMid.style.top = s1Top + 'cm';
-      s1Top += 0.45;
-    }
+  // Set top values using original CSS baselines offset by shift
+  if (mantras) mantras.style.top = '0.1cm';
+  if (swirlTop) swirlTop.style.top = '1.1cm';
+  
+  if (heading) {
+    heading.style.top = (1.45 - (isMantraEmpty ? 1.05 : 0)) + 'cm';
+  }
+  if (swirlMid) {
+    swirlMid.style.top = (2.0 - (isMantraEmpty ? 1.05 : 0)) + 'cm';
+  }
+
+  if (haldi) {
+    haldi.style.top = (2.45 - shiftS1) + 'cm';
   }
 
   // Events layout
@@ -1038,24 +1041,19 @@ function adjustDynamicLayout(payload) {
   const isVivahActive = payload.events && payload.events.vivah && payload.events.vivah.active !== false;
   const isVidaiActive = payload.events && payload.events.vidai && payload.events.vidai.active !== false;
 
-  if (isHaldiActive) {
-    if (haldi) {
-      haldi.style.top = s1Top + 'cm';
-      s1Top += 1.85;
-    }
-  }
+  const eventsTop = 4.7 - shiftS1 - (isHaldiActive ? 0 : 2.25);
 
   if (isVivahActive || isVidaiActive) {
     if (isVivahActive && !isVidaiActive) {
       if (vivah) {
-        vivah.style.top = s1Top + 'cm';
+        vivah.style.top = eventsTop + 'cm';
         vivah.style.left = '50%';
         vivah.style.transform = 'translateX(-50%)';
         vivah.style.right = 'auto';
       }
     } else if (isVidaiActive && !isVivahActive) {
       if (vidai) {
-        vidai.style.top = s1Top + 'cm';
+        vidai.style.top = eventsTop + 'cm';
         vidai.style.left = '50%';
         vidai.style.transform = 'translateX(-50%)';
         vidai.style.right = 'auto';
@@ -1063,17 +1061,16 @@ function adjustDynamicLayout(payload) {
     } else {
       // Both active
       if (vivah) {
-        vivah.style.top = s1Top + 'cm';
+        vivah.style.top = eventsTop + 'cm';
         vivah.style.left = '3.5cm';
         vivah.style.transform = 'none';
       }
       if (vidai) {
-        vidai.style.top = s1Top + 'cm';
+        vidai.style.top = eventsTop + 'cm';
         vidai.style.right = '3.5cm';
         vidai.style.transform = 'none';
       }
     }
-    s1Top += 2.0;
   }
 
   // Bal Aagrah
@@ -1126,47 +1123,32 @@ function adjustDynamicLayout(payload) {
   if (fcR) fcR.style.display = isFcREmpty ? 'none' : 'block';
 
   // Calculate dynamic vertical positions for Section 2
-  let s2Top = 0.25;
-
-  if (!isDeityEmpty) {
-    if (deity) deity.style.top = s2Top + 'cm';
-    s2Top += 1.25; // deity height + gap
+  let shiftS2 = 0;
+  if (isDeityEmpty) {
+    shiftS2 += 1.0;
   }
 
-  // Snehi position
-  if (!isSnehiEmpty) {
-    if (snehi) {
-      snehi.style.top = (isDeityEmpty ? 0.2 : 0.8) + 'cm';
-    }
+  if (deity) deity.style.top = '0.25cm';
+  if (snehi) {
+    snehi.style.top = (isDeityEmpty ? '0.2cm' : '0.8cm');
   }
 
-  // Couple Details (Bride, Groom, Couple Icon)
-  if (!isBrideEmpty || !isGroomEmpty) {
-    let coupleTop = s2Top;
-    if (isDeityEmpty) coupleTop = 0.8; // shift up if deity invocation is missing
-    
-    if (brideName) brideName.style.top = coupleTop + 'cm';
-    if (groomName) groomName.style.top = coupleTop + 'cm';
-    if (coupleIcon) coupleIcon.style.top = (coupleTop + 0.3) + 'cm';
+  const coupleTop = 1.8 - shiftS2;
+  const famTop = 2.8 - shiftS2;
 
-    let famTop = coupleTop + 0.8; // gap between name and family details
-    if (brideFam) brideFam.style.top = famTop + 'cm';
-    if (groomFam) groomFam.style.top = famTop + 'cm';
+  if (brideName) brideName.style.top = coupleTop + 'cm';
+  if (groomName) groomName.style.top = coupleTop + 'cm';
+  if (coupleIcon) coupleIcon.style.top = (coupleTop + 0.3) + 'cm';
+  if (brideFam) brideFam.style.top = famTop + 'cm';
+  if (groomFam) groomFam.style.top = famTop + 'cm';
 
-    // Estimate max family text height (usually around 1.6cm)
-    s2Top = famTop + 1.8;
+  let shiftDamp = shiftS2;
+  if (isBrideEmpty && isGroomEmpty) {
+    shiftDamp += 2.35;
   }
 
-  // Dampatya details
-  if (!isDampatyaEmpty) {
-    let dampTop = s2Top;
-    if (isBrideEmpty && isGroomEmpty) {
-      dampTop = isDeityEmpty ? 0.8 : 2.0;
-    }
-    
-    if (dampT) dampT.style.top = dampTop + 'cm';
-    if (dampD) dampD.style.top = (dampTop + 0.65) + 'cm';
-  }
+  if (dampT) dampT.style.top = (4.15 - shiftDamp) + 'cm';
+  if (dampD) dampD.style.top = (4.85 - shiftDamp) + 'cm';
 }
 </script>
 
