@@ -22,7 +22,7 @@ body {
 .card {
   width:23.5cm;
   min-height:19cm;
-  background:#f2aec8;
+  background:#f9f1d0;
   padding:1cm;
   display:flex;
   flex-direction:column;
@@ -36,12 +36,9 @@ body {
   height:8.5cm;
   position:relative;
   border:0.07cm solid #8b0040;
-  box-shadow:inset 0 0 0 0.13cm #f2aec8, inset 0 0 0 0.20cm #8b0040;
+  box-shadow:inset 0 0 0 0.13cm #f9f1d0, inset 0 0 0 0.20cm #8b0040;
   overflow:hidden;
-  background:
-    radial-gradient(ellipse at 15% 20%, rgba(255,255,255,0.52) 0%, transparent 28%),
-    radial-gradient(ellipse at 80% 75%, rgba(255,255,255,0.4)  0%, transparent 32%),
-    linear-gradient(140deg,#fce4ef 0%,#f9d5e8 45%,#f6cde1 75%,#fad8eb 100%);
+  background: #f9f1d0;
   box-sizing: border-box;
 }
 .sec::before {
@@ -651,7 +648,7 @@ function buildBorderFrameCss(style) {
   }
   const preset = BORDER_FRAME_PRESETS[style.borderPreset || 'classic'] || BORDER_FRAME_PRESETS.classic;
   const borderColor = style.borderColor || style.accentColor || '#8b0040';
-  const cardBg = style.cardBg || '#f2aec8';
+  const cardBg = style.cardBg || '#f9f1d0';
   const shadows = preset.rings.map((ring) => `inset 0 0 0 ${ring} ${cardBg}`).join(', ');
   let radius = '';
   if (style.curveLevel !== undefined && preset.borderRadius) {
@@ -1150,6 +1147,9 @@ function adjustDynamicLayout(payload) {
   if (dampT) dampT.style.top = (4.15 - shiftDamp) + 'cm';
   if (dampD) dampD.style.top = (4.85 - shiftDamp) + 'cm';
 }
+
+// Apply default styles on page load so the template looks correct immediately
+applyCustomStyles(DEFAULT_CARD_STYLE);
 </script>
 
 </body>

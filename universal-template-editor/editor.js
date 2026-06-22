@@ -460,6 +460,34 @@ async function loadTemplate(templateId) {
     // Initialize data state from config defaults
     initializeDataState();
     
+    // Check if there is imported VLS data in localStorage
+    const savedVlsStr = localStorage.getItem("savedVlsData");
+    if (savedVlsStr) {
+      try {
+        const vlsData = JSON.parse(savedVlsStr);
+        if (vlsData && vlsData.data) {
+          currentData = vlsData.data;
+          
+          // Ensure styles exist
+          if (!currentData.styles) {
+            currentData.styles = JSON.parse(JSON.stringify(DEFAULT_STYLE));
+          }
+          
+          // Restore document title
+          if (vlsData.documentTitle) {
+            const titleInput = document.getElementById('doc-title-input');
+            if (titleInput) titleInput.value = vlsData.documentTitle;
+          }
+          
+          toast('Project loaded from .vls file successfully!', 's');
+        }
+      } catch (err) {
+        console.error("Error parsing savedVlsData from localStorage:", err);
+      } finally {
+        localStorage.removeItem("savedVlsData");
+      }
+    }
+    
     // Generate Editor forms dynamically
     generateContentForm();
     generateCeremoniesForm();
@@ -1661,41 +1689,145 @@ function printCard() {
   }
 }
 
-// ── DOWNLOAD TRIGGER ──
+// ── DOWNLOAD PROGRESS OVERLAY ──
+function showDownloadProgress(title, subtitle) {
+  const overlay = document.getElementById('dl-progress-overlay');
+  document.getElementById('dl-progress-title').textContent = title || 'Generating...';
+  document.getElementById('dl-progress-subtitle').textContent = subtitle || 'Please wait while we capture your card';
+  overlay.classList.add('active');
+}
+
+function hideDownloadProgress() {
+  const overlay = document.getElementById('dl-progress-overlay');
+  overlay.classList.remove('active');
+}
+
+// ── CAPTURE CARD FROM IFRAME AS CANVAS ──
+async function captureCardCanvas() {
+  const iframe = document.getElementById('card1-iframe');
+  if (!iframe || !iframe.contentDocument) {
+    throw new Error('Preview iframe not available');
+  }
+
+  const cardEl = iframe.contentDocument.querySelector('.card');
+  if (!cardEl) {
+    throw new Error('Card element not found in preview');
+  }
+
+  // Use html2canvas to capture the card at 2x resolution for high quality
+  const canvas = await html2canvas(cardEl, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: null,
+    logging: false,
+    width: cardEl.scrollWidth,
+    height: cardEl.scrollHeight
+  });
+
+  return canvas;
+}
+
+// ── DOWNLOAD TRIGGER (REAL IMAGE/PDF CAPTURE) ──
 function handleDownload(format) {
   document.getElementById('dl-wrap').classList.remove('open');
   
-  // Access control check
+  // Access control check for export formats
   if (!userLoggedIn) {
     showLoginPopup();
-    toast('Access denied. Please log in to download premium formats.', 'e');
+    toast('Please log in to download your card.', 'e');
     return;
   }
   
-  toast(`Generating ${format.toUpperCase()}...`, 'i');
+  const docName = document.getElementById('doc-title-input').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_') || 'invitation_card';
   
-  setTimeout(() => {
-    if (format === 'pdf') {
-      printCard();
-      toast('PDF document compiled!', 's');
-    } else {
-      const docName = document.getElementById('doc-title-input').value.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-      const dummyContent = JSON.stringify(currentData, null, 2);
-      const blob = new Blob([dummyContent], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
+  showDownloadProgress(
+    `Generating ${format.toUpperCase()}...`,
+    'Capturing your card at high resolution'
+  );
+  
+  // Small delay to let the overlay render
+  setTimeout(async () => {
+    try {
+      const canvas = await captureCardCanvas();
       
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${docName}_card.${format}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      toast(`${format.toUpperCase()} file saved!`, 's');
+      if (format === 'pdf') {
+        // Card dimensions: 23.5cm × 19cm
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'cm',
+          format: [19, 23.5]
+        });
+        
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        pdf.addImage(imgData, 'JPEG', 0, 0, 23.5, 19);
+        pdf.save(`${docName}.pdf`);
+        
+        toast('PDF downloaded successfully!', 's');
+      } else if (format === 'png') {
+        const dataUrl = canvas.toDataURL('image/png');
+        triggerBlobDownload(dataUrl, `${docName}.png`);
+        toast('PNG downloaded successfully!', 's');
+      } else if (format === 'jpg') {
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        triggerBlobDownload(dataUrl, `${docName}.jpg`);
+        toast('JPG downloaded successfully!', 's');
+      }
+    } catch (err) {
+      console.error('Download capture error:', err);
+      toast('Download failed. Please try again.', 'e');
+    } finally {
+      hideDownloadProgress();
     }
-  }, 1500);
+  }, 300);
 }
+
+// Helper: trigger download from a dataURL
+function triggerBlobDownload(dataUrl, filename) {
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// ── VLS FILE FORMAT (Save / Load Project) ──
+
+// Save current editing state as a .vls file (free for all users)
+function handleDownloadVLS() {
+  document.getElementById('dl-wrap').classList.remove('open');
+  
+  const docTitle = document.getElementById('doc-title-input').value.trim() || 'Wedding Card';
+  const docName = docTitle.toLowerCase().replace(/[^a-z0-9]+/g, '_') || 'invitation_card';
+  
+  const vlsData = {
+    format: 'VLS',
+    version: '1.0',
+    generator: 'MyInvitationCard',
+    templateId: activeTemplateId,
+    documentTitle: docTitle,
+    createdAt: new Date().toISOString(),
+    data: JSON.parse(JSON.stringify(currentData))
+  };
+  
+  const jsonString = JSON.stringify(vlsData, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/vls+json' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${docName}.vls`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  
+  toast('Project saved as .vls file!', 's');
+}
+
+
 
 // ── AUTHENTICATION CONTROL ──
 function checkAuthState() {

@@ -237,7 +237,7 @@
       "id": "cardBg",
       "type": "color",
       "label": "Card Base Color",
-      "default": "#f2aec8"
+      "default": "#f9f1d0"
     },
     {
       "id": "accentColor",

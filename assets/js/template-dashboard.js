@@ -287,26 +287,50 @@ function switchEvent(eventName) {
   renderTemplates();
 }
 
-/* IMPORT JSON */
+/* IMPORT VLS */
 function handleImportJSON(event) {
   if (!requireAuth()) return;
 
   const file = event.target.files[0];
+  if (!file) return;
+
+  // Validate extension
+  if (!file.name.toLowerCase().endsWith('.vls')) {
+    alert("Invalid file type. Only .vls files are accepted.");
+    event.target.value = '';
+    return;
+  }
 
   const reader = new FileReader();
 
   reader.onload = function (e) {
     try {
-      const jsonData = JSON.parse(e.target.result);
+      const vlsData = JSON.parse(e.target.result);
+
+      // Validate VLS format
+      if (!vlsData || vlsData.format !== 'VLS') {
+        alert("Invalid .vls file. This file is not a valid MyInvitationCard project.");
+        return;
+      }
+
+      // Validate data structure
+      if (!vlsData.data || !vlsData.data.fields || !vlsData.data.events) {
+        alert("Corrupted .vls file. Missing required data sections.");
+        return;
+      }
 
       localStorage.setItem(
-        "savedCardDesign",
-        JSON.stringify(jsonData)
+        "savedVlsData",
+        JSON.stringify(vlsData)
       );
 
-      window.location.href = "universal-template-editor/editor.html";
-    } catch {
-      alert("Invalid JSON file.");
+      const templateId = vlsData.templateId || "card1";
+      window.location.href = `universal-template-editor/editor.html?templateId=${templateId}`;
+    } catch (err) {
+      console.error(err);
+      alert("Failed to read .vls file. The file may be corrupted.");
+    } finally {
+      event.target.value = '';
     }
   };
 

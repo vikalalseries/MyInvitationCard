@@ -9,6 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&family=Noto+Sans+Gujarati:wght@400;700&family=Noto+Sans+Bengali:wght@400;700&family=Noto+Sans+Telugu:wght@400;700&family=Noto+Sans+Tamil:wght@400;700&family=Noto+Sans+Kannada:wght@400;700&family=Noto+Sans+Gurmukhi:wght@400;700&family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Sans+Oriya:wght@400;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 <link rel="stylesheet" href="editor.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -88,9 +90,13 @@
           <i class="fa-solid fa-download"></i>Download <i class="fa-solid fa-chevron-down dl-chev" style="font-size:10px; margin-left:2px;"></i>
         </button>
         <div class="dl-menu" id="dl-menu" onclick="event.stopPropagation()">
-          <button class="dl-item" id="dl-pdf" onclick="handleDownload('pdf')"><i class="fa-regular fa-file-pdf" style="color:var(--rose);"></i>Download PDF</button>
-          <button class="dl-item" id="dl-png" onclick="handleDownload('png')"><i class="fa-regular fa-image"></i>Download PNG</button>
-          <button class="dl-item" id="dl-jpg" onclick="handleDownload('jpg')"><i class="fa-regular fa-image"></i>Download JPG</button>
+          <div class="dl-section-label">Export Card</div>
+          <button class="dl-item" id="dl-pdf" onclick="handleDownload('pdf')"><i class="fa-regular fa-file-pdf" style="color:#e11d48;"></i>Download PDF</button>
+          <button class="dl-item" id="dl-png" onclick="handleDownload('png')"><i class="fa-regular fa-image" style="color:#8b5cf6;"></i>Download PNG</button>
+          <button class="dl-item" id="dl-jpg" onclick="handleDownload('jpg')"><i class="fa-regular fa-image" style="color:#0ea5e9;"></i>Download JPG</button>
+          <button class="dl-item dl-item-vls" id="dl-vls" onclick="handleDownloadVLS()">
+            <span class="vls-icon">VLS</span>Download VLS
+          </button>
           <div class="dl-sep" id="dl-menu-sep"></div>
           <button class="dl-login-btn" id="dl-login-gate-btn" onclick="showLoginPopup()">Login to Download</button>
         </div>
@@ -268,11 +274,11 @@
                   <label class="fl">Stock Option</label>
                   <div class="customizer-label-sub">Cream, Ivory, Peach, Gold, or Pink</div>
                   <select class="fs" id="card-stock-select" onchange="handleCardStockChange(this)">
-                    <option value="#f9f1d0">Cream</option>
+                    <option value="#f9f1d0" selected>Cream</option>
                     <option value="#fff5e1">Ivory</option>
                     <option value="#f7d5c4">Peach</option>
                     <option value="#f3d0a5">Gold</option>
-                    <option value="#f2aec8" selected>Pink</option>
+                    <option value="#f2aec8">Pink</option>
                   </select>
                 </div>
               </div>
@@ -742,6 +748,17 @@
   </main>
 
 </div>
+
+<!-- Download Progress Overlay -->
+<div class="dl-progress-overlay" id="dl-progress-overlay">
+  <div class="dl-progress-card">
+    <div class="dl-progress-spinner"></div>
+    <div class="dl-progress-title" id="dl-progress-title">Generating...</div>
+    <div class="dl-progress-subtitle" id="dl-progress-subtitle">Please wait while we capture your card</div>
+  </div>
+</div>
+
+
 
 <!-- Toast notifications wrapper -->
 <div class="toast-wrap" id="toast-wrap"></div>
