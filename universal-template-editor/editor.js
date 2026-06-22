@@ -245,25 +245,25 @@ const PRESETS = [
 ];
 
 const ICON_NUDGE_CONFIG = [
-  { key: 'ganesh', title: 'Ganesh Icon' },
-  { key: 'om', title: 'Om / Sun Icon' },
-  { key: 'chainLeft', title: 'Left Hanging Chain' },
-  { key: 'chainRight', title: 'Right Hanging Chain' },
-  { key: 'topIcon', title: 'Hanging Jhumka (Center-Left)' },
-  { key: 'midIcon', title: 'Hanging Jhumka (Center-Right)' },
-  { key: 'bottomIcon', title: 'Hanging Jhumka (Left Side)' },
-  { key: 'top1Icon', title: 'Hanging Jhumka (Right Side)' },
-  { key: 'couple1', title: 'Weds/Couple Icon (Top Section)' },
-  { key: 'couple2', title: 'Weds/Couple Icon (Bottom Section)' }
+  { key: 'ganesh', title: 'Ganesha Motif' },
+  { key: 'om', title: 'Om / Sun Motif' },
+  { key: 'chainLeft', title: 'Left Hanging Ornament' },
+  { key: 'chainRight', title: 'Right Hanging Ornament' },
+  { key: 'topIcon', title: 'Hanging Accent (Center-Left)' },
+  { key: 'midIcon', title: 'Hanging Accent (Center-Right)' },
+  { key: 'bottomIcon', title: 'Hanging Accent (Left)' },
+  { key: 'top1Icon', title: 'Hanging Accent (Right)' },
+  { key: 'couple1', title: 'Weds Motif (Top)' },
+  { key: 'couple2', title: 'Weds Motif (Bottom)' }
 ];
 
 const ICON_COLOR_CONFIG = ICON_NUDGE_CONFIG;
 
 const CORNER_NUDGE_CONFIG = [
-  { key: 'cornerTl', title: 'Top Left Flower' },
-  { key: 'cornerTr', title: 'Top Right Flower' },
-  { key: 'cornerBl', title: 'Bottom Left Flower' },
-  { key: 'cornerBr', title: 'Bottom Right Flower' }
+  { key: 'cornerTl', title: 'Top Left Corner Accent' },
+  { key: 'cornerTr', title: 'Top Right Corner Accent' },
+  { key: 'cornerBl', title: 'Bottom Left Corner Accent' },
+  { key: 'cornerBr', title: 'Bottom Right Corner Accent' }
 ];
 
 let ICON_LIBRARY = [];
@@ -721,7 +721,7 @@ function generateCeremoniesForm() {
     const nameGroup = document.createElement('div');
     nameGroup.className = 'form-group';
     const nameLabel = document.createElement('label');
-    nameLabel.textContent = "Ceremony Program Name";
+    nameLabel.textContent = "Ceremony Title";
     nameGroup.appendChild(nameLabel);
     
     const nameInput = document.createElement('textarea');
