@@ -347,7 +347,7 @@
               <div class="customizer-card">
                 <div class="customizer-card-title">Font Options</div>
                 <div class="customizer-field">
-                  <label class="fl">Card Font Family</label>
+                  <label class="fl">Typography Style</label>
                   <select class="fs" id="font-family-select" onchange="handleFontFamilyChange(this)">
                     <option value="Noto Serif Devanagari">Noto Serif Devanagari (Traditional)</option>
                     <option value="Rozha One">Rozha One (Traditional Bold)</option>
@@ -467,23 +467,23 @@
                 <div class="icon-accordion-item" id="icon-box-core">
                   <button type="button" class="icon-accordion-head" onclick="toggleIconAccordion('core')">
                     <span class="icon-accordion-title">
-                      <strong>Core Icons</strong>
-                      <span>Ganesh, Om, chains, couple</span>
+                      <strong>Decorative Motifs & Ornaments</strong>
+                      <span>Ganesha, Om, side ornaments, couple crest</span>
                     </span>
                     <i class="fa-solid fa-chevron-down icon-accordion-chevron"></i>
                   </button>
                   <div class="icon-accordion-body">
                     <div class="customizer-card" style="margin-bottom:12px;">
-                      <div class="customizer-card-title">Ganesh Icon</div>
+                      <div class="customizer-card-title">Ganesha Motif</div>
                       <div class="customizer-field-row">
-                        <span class="customizer-label">Show Ganesh Icon</span>
+                        <span class="customizer-label">Show Ganesha Motif</span>
                         <label class="tgl-switch">
                           <input type="checkbox" id="chk-showGanesh" checked data-style-key="showGanesh" onchange="handleCheckboxChange(this)">
                           <span class="tgl-slider"></span>
                         </label>
                       </div>
                       <div class="customizer-field">
-                        <span class="customizer-label">Ganesh Icon Size</span>
+                        <span class="customizer-label">Ganesha Motif Size</span>
                         <div class="range-container">
                           <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="ganeshSize" oninput="handleSliderInput(this)">
                           <span class="range-value" id="val-ganeshSize">100%</span>
@@ -492,16 +492,16 @@
                     </div>
 
                     <div class="customizer-card" style="margin-bottom:12px;">
-                      <div class="customizer-card-title">Om / Sun Icon</div>
+                      <div class="customizer-card-title">Om / Sun Motif</div>
                       <div class="customizer-field-row">
-                        <span class="customizer-label">Show Om/Sun Icon</span>
+                        <span class="customizer-label">Show Om/Sun Motif</span>
                         <label class="tgl-switch">
                           <input type="checkbox" id="chk-showOm" checked data-style-key="showOm" onchange="handleCheckboxChange(this)">
                           <span class="tgl-slider"></span>
                         </label>
                       </div>
                       <div class="customizer-field">
-                        <span class="customizer-label">Om Icon Size</span>
+                        <span class="customizer-label">Om / Sun Motif Size</span>
                         <div class="range-container">
                           <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="omSize" oninput="handleSliderInput(this)">
                           <span class="range-value" id="val-omSize">100%</span>
@@ -510,16 +510,16 @@
                     </div>
 
                     <div class="customizer-card" style="margin-bottom:12px;">
-                      <div class="customizer-card-title">Border Side Chains</div>
+                      <div class="customizer-card-title">Side Hanging Ornaments</div>
                       <div class="customizer-field-row">
-                        <span class="customizer-label">Show Hanging Chains</span>
+                        <span class="customizer-label">Show Hanging Side Ornaments</span>
                         <label class="tgl-switch">
                           <input type="checkbox" id="chk-showChains" checked data-style-key="showChains" onchange="handleCheckboxChange(this)">
                           <span class="tgl-slider"></span>
                         </label>
                       </div>
                       <div class="customizer-field">
-                        <span class="customizer-label">Chains Icon Size</span>
+                        <span class="customizer-label">Side Ornaments Size</span>
                         <div class="range-container">
                           <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="chainsSize" oninput="handleSliderInput(this)">
                           <span class="range-value" id="val-chainsSize">100%</span>
@@ -528,16 +528,16 @@
                     </div>
 
                     <div class="customizer-card">
-                      <div class="customizer-card-title">Center Couple Box</div>
+                      <div class="customizer-card-title">Wedding Crest</div>
                       <div class="customizer-field-row">
-                        <span class="customizer-label">Show Couple Illustration</span>
+                        <span class="customizer-label">Show Wedding Crest</span>
                         <label class="tgl-switch">
                           <input type="checkbox" id="chk-showCouple" checked data-style-key="showCouple" onchange="handleCheckboxChange(this)">
                           <span class="tgl-slider"></span>
                         </label>
                       </div>
                       <div class="customizer-field">
-                        <span class="customizer-label">Couple Box Size</span>
+                        <span class="customizer-label">Wedding Crest Size</span>
                         <div class="range-container">
                           <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="coupleSize" oninput="handleSliderInput(this)">
                           <span class="range-value" id="val-coupleSize">100%</span>
@@ -603,7 +603,7 @@
             <!-- CARD STYLE PANEL -->
             <div id="c-sec-card" class="customizer-section-panel">
               <h3 class="customizer-group-title">Card Frame</h3>
-              <p class="customizer-group-desc">Control the border frame, corner flowers, and symbols.</p>
+              <p class="customizer-group-desc">Control the border frame and corner ornaments.</p>
               
               <div class="customizer-card">
                 <div class="customizer-card-title">Border Frame</div>
@@ -617,7 +617,7 @@
                 </div>
 
                 <div class="customizer-field">
-                  <label class="fl">Border Replace Style</label>
+                  <label class="fl">Border Preset Style</label>
                   <select class="fs" id="border-preset-select" onchange="handleBorderPresetChange(this)">
                     <option value="classic">Classic Frame</option>
                     <option value="double">Double Frame</option>
@@ -660,10 +660,10 @@
 
                 <div class="customizer-divider" style="margin:16px 0;"></div>
 
-                <div class="customizer-card-title">Corners Configuration</div>
+                <div class="customizer-card-title">Corner Ornaments</div>
                 
                 <div class="customizer-field-row">
-                  <span class="customizer-label">Show Corner Flowers</span>
+                  <span class="customizer-label">Show Corner Accents</span>
                   <label class="tgl-switch">
                     <input type="checkbox" id="chk-showCorners" checked data-style-key="showCorners" onchange="handleCheckboxChange(this)">
                     <span class="tgl-slider"></span>
@@ -671,7 +671,7 @@
                 </div>
                 
                 <div class="customizer-field">
-                  <label class="fl">Corner Symbol Style</label>
+                  <label class="fl">Corner Accent Ornament</label>
                   <select class="fs" id="corner-symbol-select" onchange="handleCornerSymbolChange(this)">
                     <option value="✿">✿ Traditional Blossom</option>
                     <option value="❀">❀ Light Flower</option>
@@ -684,7 +684,7 @@
                 </div>
                 
                 <div class="customizer-field">
-                  <span class="customizer-label">Corner Icon Size</span>
+                  <span class="customizer-label">Corner Accent Size</span>
                   <div class="range-container">
                     <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="cornerSize" oninput="handleSliderInput(this)">
                     <span class="range-value" id="val-cornerSize">100%</span>

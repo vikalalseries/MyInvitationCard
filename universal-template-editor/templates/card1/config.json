@@ -260,7 +260,7 @@
     {
       "id": "fontFamily",
       "type": "select",
-      "label": "Card Font Family",
+      "label": "Typography Style",
       "default": "Noto Serif Devanagari",
       "options": [
         "Noto Serif Devanagari",
@@ -274,77 +274,77 @@
     {
       "id": "shlokaSize",
       "type": "select",
-      "label": "Shloka Font Scale (%)",
+      "label": "Mantra/Shloka Font Size",
       "default": 100,
       "options": [70, 85, 100, 115, 130]
     },
     {
       "id": "headingSize",
       "type": "select",
-      "label": "Heading Font Scale (%)",
+      "label": "Heading Font Size",
       "default": 100,
       "options": [70, 85, 100, 115, 130]
     },
     {
       "id": "namesSize",
       "type": "select",
-      "label": "Bride/Groom Scale (%)",
+      "label": "Bride & Groom Names Size",
       "default": 100,
       "options": [70, 85, 100, 115, 130]
     },
     {
       "id": "eventSize",
       "type": "select",
-      "label": "Event Font Scale (%)",
+      "label": "Event Details Font Size",
       "default": 100,
       "options": [70, 85, 100, 115, 130]
     },
     {
       "id": "footerSize",
       "type": "select",
-      "label": "Footer Text Scale (%)",
+      "label": "Footer Text Font Size",
       "default": 100,
       "options": [70, 85, 100, 115, 130]
     },
     {
       "id": "showGanesh",
       "type": "select",
-      "label": "Ganesh Icon Visibility",
+      "label": "Ganesha Motif Visibility",
       "default": "true",
       "options": ["true", "false"]
     },
     {
       "id": "ganeshSize",
       "type": "select",
-      "label": "Ganesh Icon Scale (%)",
+      "label": "Ganesha Motif Size",
       "default": 100,
       "options": [50, 75, 100, 125, 150]
     },
     {
       "id": "showOm",
       "type": "select",
-      "label": "Om Icon Visibility",
+      "label": "Om Motif Visibility",
       "default": "true",
       "options": ["true", "false"]
     },
     {
       "id": "omSize",
       "type": "select",
-      "label": "Om Icon Scale (%)",
+      "label": "Om Motif Size",
       "default": 100,
       "options": [50, 75, 100, 125, 150]
     },
     {
       "id": "showChains",
       "type": "select",
-      "label": "Side Hanging Chains",
+      "label": "Hanging Side Ornaments",
       "default": "true",
       "options": ["true", "false"]
     },
     {
       "id": "chainsSize",
       "type": "select",
-      "label": "Chains Scale (%)",
+      "label": "Side Ornaments Size",
       "default": 100,
       "options": [50, 75, 100, 125, 150]
     },
@@ -358,27 +358,27 @@
     {
       "id": "coupleSize",
       "type": "select",
-      "label": "Couple Graphic Scale (%)",
+      "label": "Couple Graphic Size",
       "default": 100,
       "options": [50, 75, 100, 125, 150]
     },
     {
       "id": "showCorners",
       "type": "select",
-      "label": "Corner Symbol Visibility",
+      "label": "Corner Ornament Visibility",
       "default": "true",
       "options": ["true", "false"]
     },
     {
       "id": "cornerSymbol",
       "type": "text",
-      "label": "Corner Symbol Character",
+      "label": "Corner Accent Icon",
       "default": "✿"
     },
     {
       "id": "cornerSize",
       "type": "select",
-      "label": "Corner Symbol Scale (%)",
+      "label": "Corner Accent Size",
       "default": 100,
       "options": [50, 75, 100, 125, 150]
     },
@@ -392,14 +392,14 @@
     {
       "id": "sectionGap",
       "type": "select",
-      "label": "Space Between Pages (cm)",
+      "label": "Section Layout Spacing",
       "default": 0.3,
       "options": [0.1, 0.2, 0.3, 0.4, 0.5]
     },
     {
       "id": "showBorder",
       "type": "select",
-      "label": "Display Borders",
+      "label": "Border Frame Visibility",
       "default": "true",
       "options": ["true", "false"]
     },
@@ -434,7 +434,7 @@
     {
       "id": "borderColor",
       "type": "color",
-      "label": "Border Pattern Color",
+      "label": "Border Accent Color",
       "default": "#8b0040"
     }
   ]
