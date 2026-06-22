@@ -517,6 +517,40 @@ function toggleAccordion(head) {
   sc.classList.toggle('open');
 }
 
+// Auto-grow textarea to content height
+function autoGrowTextarea(element) {
+  if (!element) return;
+  element.style.height = 'auto';
+  element.style.height = element.scrollHeight + 'px';
+}
+
+// Update empty-disabled state of the parent accordion card
+function updateAccordionEmptyState(sc, fields) {
+  const allEmpty = fields.every(field => {
+    const val = currentData.fields[field.id];
+    return !val || val.trim() === '';
+  });
+  
+  const title = sc.querySelector('.sc-title');
+  if (allEmpty) {
+    sc.classList.add('empty-disabled');
+    if (title && !title.querySelector('.hidden-badge')) {
+      const badge = document.createElement('span');
+      badge.className = 'hidden-badge';
+      badge.textContent = ' (Hidden)';
+      badge.style.fontSize = '0.75rem';
+      badge.style.color = 'var(--g400)';
+      badge.style.fontWeight = '500';
+      badge.style.marginLeft = '6px';
+      title.appendChild(badge);
+    }
+  } else {
+    sc.classList.remove('empty-disabled');
+    const badge = title ? title.querySelector('.hidden-badge') : null;
+    if (badge) badge.remove();
+  }
+}
+
 // Generate Content Form accordion panels
 function generateContentForm() {
   const container = document.getElementById('dynamic-content-fields');
@@ -578,33 +612,27 @@ function generateContentForm() {
       label.textContent = field.label;
       group.appendChild(label);
       
-      let input;
-      if (field.type === 'textarea') {
-        input = document.createElement('textarea');
-        input.className = 'form-input form-textarea';
-        input.value = currentData.fields[field.id];
-        input.addEventListener('input', (e) => {
-          currentData.fields[field.id] = e.target.value;
-          triggerSaving();
-          sendUpdate();
-        });
-        input.addEventListener('keydown', handleTranslitKeydown);
-      } else {
-        input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'form-input';
-        input.value = currentData.fields[field.id];
-        input.addEventListener('input', (e) => {
-          currentData.fields[field.id] = e.target.value;
-          triggerSaving();
-          sendUpdate();
-        });
-        input.addEventListener('keydown', handleTranslitKeydown);
-      }
+      const input = document.createElement('textarea');
+      input.className = 'form-input form-textarea';
+      input.value = currentData.fields[field.id] || '';
+      input.addEventListener('input', (e) => {
+        currentData.fields[field.id] = e.target.value;
+        triggerSaving();
+        sendUpdate();
+        updateAccordionEmptyState(sc, fields);
+        autoGrowTextarea(e.target);
+      });
+      input.addEventListener('keydown', handleTranslitKeydown);
       
       group.appendChild(input);
       inner.appendChild(group);
+      
+      // Auto-grow on render
+      setTimeout(() => autoGrowTextarea(input), 0);
     });
+    
+    // Set initial empty state class
+    updateAccordionEmptyState(sc, fields);
     
     body.appendChild(inner);
     sc.appendChild(body);
@@ -621,7 +649,7 @@ function generateCeremoniesForm() {
   
   config.events.forEach((e, index) => {
     const sc = document.createElement('div');
-    sc.className = 'sc event-card';
+    sc.className = 'sc';
     sc.id = `event-card-${e.id}`;
     if (index === 0) sc.classList.add('open'); // Open first ceremony by default
     
@@ -695,18 +723,19 @@ function generateCeremoniesForm() {
     nameLabel.textContent = "Ceremony Program Name";
     nameGroup.appendChild(nameLabel);
     
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.className = 'form-input';
-    nameInput.value = currentData.events[e.id].name;
+    const nameInput = document.createElement('textarea');
+    nameInput.className = 'form-input form-textarea';
+    nameInput.value = currentData.events[e.id].name || '';
     nameInput.addEventListener('input', (evt) => {
       currentData.events[e.id].name = evt.target.value;
       triggerSaving();
       sendUpdate();
+      autoGrowTextarea(evt.target);
     });
     nameInput.addEventListener('keydown', handleTranslitKeydown);
     nameGroup.appendChild(nameInput);
     inner.appendChild(nameGroup);
+    setTimeout(() => autoGrowTextarea(nameInput), 0);
     
     // 2. Date input
     if (e.defaultDate !== undefined) {
@@ -758,18 +787,19 @@ function generateCeremoniesForm() {
       venueLabel.textContent = "Venue Details";
       venueGroup.appendChild(venueLabel);
       
-      const venueInput = document.createElement('input');
-      venueInput.type = 'text';
-      venueInput.className = 'form-input';
-      venueInput.value = currentData.events[e.id].venue;
+      const venueInput = document.createElement('textarea');
+      venueInput.className = 'form-input form-textarea';
+      venueInput.value = currentData.events[e.id].venue || '';
       venueInput.addEventListener('input', (evt) => {
         currentData.events[e.id].venue = evt.target.value;
         triggerSaving();
         sendUpdate();
+        autoGrowTextarea(evt.target);
       });
       venueInput.addEventListener('keydown', handleTranslitKeydown);
       venueGroup.appendChild(venueInput);
       inner.appendChild(venueGroup);
+      setTimeout(() => autoGrowTextarea(venueInput), 0);
     }
     
     body.appendChild(inner);

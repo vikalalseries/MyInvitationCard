@@ -976,7 +976,189 @@ window.addEventListener('message', function(e) {
   if (payload.styles) {
     applyCustomStyles(payload.styles);
   }
+
+  // 4. Adjust Layout dynamically (hiding empty sections, shifting elements)
+  adjustDynamicLayout(payload);
 });
+
+function adjustDynamicLayout(payload) {
+  if (!payload || !payload.fields) return;
+
+  // ════════════════════ SECTION 1 LAYOUT ADJUSTMENT
+  const isMantraEmpty = !payload.fields.shlokaLine1 && !payload.fields.shlokaLine2;
+  const isHeadingEmpty = !payload.fields.headingText;
+  
+  const mantras = document.querySelector('.s1-mantras');
+  const swirlTop = document.querySelector('.swirl-top');
+  const heading = document.querySelector('.s1-heading');
+  const swirlMid = document.querySelector('.swirl-mid');
+  const haldi = document.querySelector('[data-event-container="haldi"]');
+  const vivah = document.querySelector('[data-event-container="vivah"]');
+  const vidai = document.querySelector('[data-event-container="vidai"]');
+  const bal = document.querySelector('.s1-bal');
+
+  // Show/hide based on empty states
+  if (mantras) mantras.style.display = isMantraEmpty ? 'none' : 'block';
+  if (swirlTop) swirlTop.style.display = isMantraEmpty ? 'none' : 'block';
+  if (heading) heading.style.display = isHeadingEmpty ? 'none' : 'block';
+  if (swirlMid) swirlMid.style.display = (isMantraEmpty && isHeadingEmpty) ? 'none' : 'block';
+
+  // Calculate Section 1 tops dynamically
+  let s1Top = 0.15; // Starting top margin in cm
+
+  if (!isMantraEmpty) {
+    if (mantras) mantras.style.top = s1Top + 'cm';
+    s1Top += 0.95; // height + spacing
+    
+    if (swirlTop) swirlTop.style.top = s1Top + 'cm';
+    s1Top += 0.35;
+  }
+
+  if (!isHeadingEmpty) {
+    if (heading) heading.style.top = s1Top + 'cm';
+    s1Top += 0.55;
+    
+    if (swirlMid) {
+      swirlMid.style.top = s1Top + 'cm';
+      s1Top += 0.45;
+    }
+  }
+
+  // Events layout
+  const isHaldiActive = payload.events && payload.events.haldi && payload.events.haldi.active !== false;
+  const isVivahActive = payload.events && payload.events.vivah && payload.events.vivah.active !== false;
+  const isVidaiActive = payload.events && payload.events.vidai && payload.events.vidai.active !== false;
+
+  if (isHaldiActive) {
+    if (haldi) {
+      haldi.style.top = s1Top + 'cm';
+      s1Top += 1.85;
+    }
+  }
+
+  if (isVivahActive || isVidaiActive) {
+    if (isVivahActive && !isVidaiActive) {
+      if (vivah) {
+        vivah.style.top = s1Top + 'cm';
+        vivah.style.left = '50%';
+        vivah.style.transform = 'translateX(-50%)';
+        vivah.style.right = 'auto';
+      }
+    } else if (isVidaiActive && !isVivahActive) {
+      if (vidai) {
+        vidai.style.top = s1Top + 'cm';
+        vidai.style.left = '50%';
+        vidai.style.transform = 'translateX(-50%)';
+        vidai.style.right = 'auto';
+      }
+    } else {
+      // Both active
+      if (vivah) {
+        vivah.style.top = s1Top + 'cm';
+        vivah.style.left = '3.5cm';
+        vivah.style.transform = 'none';
+      }
+      if (vidai) {
+        vidai.style.top = s1Top + 'cm';
+        vidai.style.right = '3.5cm';
+        vidai.style.transform = 'none';
+      }
+    }
+    s1Top += 2.0;
+  }
+
+  // Bal Aagrah
+  const isBalEmpty = !payload.fields.balAagrahText && !payload.fields.balAagrahNames;
+  if (bal) {
+    bal.style.display = isBalEmpty ? 'none' : 'block';
+  }
+
+  // ════════════════════ SECTION 2 LAYOUT ADJUSTMENT
+  const isDeityEmpty = !payload.fields.deityMantra && !payload.fields.deitySubtitle;
+  const isSnehiEmpty = !payload.fields.snehiText;
+  const isBrideEmpty = !payload.fields.brideName && !payload.fields.brideGrandparents && !payload.fields.brideParents && !payload.fields.brideAddress && !payload.fields.brideCity;
+  const isGroomEmpty = !payload.fields.groomName && !payload.fields.groomGrandparents && !payload.fields.groomParents && !payload.fields.groomAddress && !payload.fields.groomCity;
+  const isDampatyaEmpty = !payload.fields.dampatyaHeading && !payload.fields.vinitText;
+
+  const deity = document.querySelector('.s2-vindhya');
+  const snehi = document.querySelector('.s2-snehi');
+  const brideName = document.querySelector('.s2-bride');
+  const brideFam = document.querySelector('.s2-fam');
+  const groomName = document.querySelector('.s2-groom');
+  const groomFam = document.querySelector('.s2-fam-r');
+  const coupleIcon = document.querySelector('.s2-icon.couple-box');
+  const dampT = document.querySelector('.s2-damp-t');
+  const dampD = document.querySelector('.s2-damp-d');
+
+  // Toggle displays
+  if (deity) deity.style.display = isDeityEmpty ? 'none' : 'block';
+  if (snehi) snehi.style.display = isSnehiEmpty ? 'none' : 'block';
+  
+  if (brideName) brideName.style.display = isBrideEmpty ? 'none' : 'block';
+  if (brideFam) brideFam.style.display = isBrideEmpty ? 'none' : 'block';
+  if (groomName) groomName.style.display = isGroomEmpty ? 'none' : 'block';
+  if (groomFam) groomFam.style.display = isGroomEmpty ? 'none' : 'block';
+  if (coupleIcon) coupleIcon.style.display = (isBrideEmpty && isGroomEmpty) ? 'none' : 'flex';
+  
+  if (dampT) dampT.style.display = isDampatyaEmpty ? 'none' : 'block';
+  if (dampD) dampD.style.display = isDampatyaEmpty ? 'none' : 'block';
+
+  // Toggle footers
+  const isFcLEmpty = !payload.fields.darshnabhilashiLabel && !payload.fields.darshnabhilashiNames;
+  const isFcCEmpty = !payload.fields.swagatakankshiLabel && !payload.fields.swagatakankshiNames;
+  const isFcREmpty = !payload.fields.vinitLabel && !payload.fields.vinitName && !payload.fields.vinitAddress;
+
+  const fcL = document.querySelector('.fc-l');
+  const fcC = document.querySelector('.fc-c');
+  const fcR = document.querySelector('.fc-r');
+
+  if (fcL) fcL.style.display = isFcLEmpty ? 'none' : 'block';
+  if (fcC) fcC.style.display = isFcCEmpty ? 'none' : 'block';
+  if (fcR) fcR.style.display = isFcREmpty ? 'none' : 'block';
+
+  // Calculate dynamic vertical positions for Section 2
+  let s2Top = 0.25;
+
+  if (!isDeityEmpty) {
+    if (deity) deity.style.top = s2Top + 'cm';
+    s2Top += 1.25; // deity height + gap
+  }
+
+  // Snehi position
+  if (!isSnehiEmpty) {
+    if (snehi) {
+      snehi.style.top = (isDeityEmpty ? 0.2 : 0.8) + 'cm';
+    }
+  }
+
+  // Couple Details (Bride, Groom, Couple Icon)
+  if (!isBrideEmpty || !isGroomEmpty) {
+    let coupleTop = s2Top;
+    if (isDeityEmpty) coupleTop = 0.8; // shift up if deity invocation is missing
+    
+    if (brideName) brideName.style.top = coupleTop + 'cm';
+    if (groomName) groomName.style.top = coupleTop + 'cm';
+    if (coupleIcon) coupleIcon.style.top = (coupleTop + 0.3) + 'cm';
+
+    let famTop = coupleTop + 0.8; // gap between name and family details
+    if (brideFam) brideFam.style.top = famTop + 'cm';
+    if (groomFam) groomFam.style.top = famTop + 'cm';
+
+    // Estimate max family text height (usually around 1.6cm)
+    s2Top = famTop + 1.8;
+  }
+
+  // Dampatya details
+  if (!isDampatyaEmpty) {
+    let dampTop = s2Top;
+    if (isBrideEmpty && isGroomEmpty) {
+      dampTop = isDeityEmpty ? 0.8 : 2.0;
+    }
+    
+    if (dampT) dampT.style.top = dampTop + 'cm';
+    if (dampD) dampD.style.top = (dampTop + 0.65) + 'cm';
+  }
+}
 </script>
 
 </body>
