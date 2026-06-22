@@ -247,14 +247,14 @@ const PRESETS = [
 const ICON_NUDGE_CONFIG = [
   { key: 'ganesh', title: 'Ganesh Icon' },
   { key: 'om', title: 'Om / Sun Icon' },
-  { key: 'chainLeft', title: 'Left Chain' },
-  { key: 'chainRight', title: 'Right Chain' },
-  { key: 'topIcon', title: 'Top Icon' },
-  { key: 'top1Icon', title: 'Top-1 Icon' },
-  { key: 'bottomIcon', title: 'Bottom Icon' },
-  { key: 'midIcon', title: 'Mid Icon' },
-  { key: 'couple1', title: 'Couple Box 1' },
-  { key: 'couple2', title: 'Couple Box 2' }
+  { key: 'chainLeft', title: 'Left Hanging Chain' },
+  { key: 'chainRight', title: 'Right Hanging Chain' },
+  { key: 'topIcon', title: 'Hanging Jhumka (Center-Left)' },
+  { key: 'midIcon', title: 'Hanging Jhumka (Center-Right)' },
+  { key: 'bottomIcon', title: 'Hanging Jhumka (Left Side)' },
+  { key: 'top1Icon', title: 'Hanging Jhumka (Right Side)' },
+  { key: 'couple1', title: 'Weds/Couple Icon (Top Section)' },
+  { key: 'couple2', title: 'Weds/Couple Icon (Bottom Section)' }
 ];
 
 const ICON_COLOR_CONFIG = ICON_NUDGE_CONFIG;
