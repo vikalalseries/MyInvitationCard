@@ -984,7 +984,9 @@ function recalculatePricing() {
   
   // Itemized calculations
   let volumeDiscount = basePriceRate - basePrice;
-  let grandTotal = unitPrice * quantity;
+  let subtotal = unitPrice * quantity;
+  let gstTax = subtotal * 0.18;
+  let grandTotal = subtotal + gstTax;
   
   // Update UI Elements
   const basePriceEl = document.getElementById('base-price-val');
@@ -1003,6 +1005,9 @@ function recalculatePricing() {
       envelopeAddonEl.style.color = '#e11d48'; // Highlight discount color
     }
   }
+  
+  const printGstEl = document.getElementById('print-gst-val');
+  if (printGstEl) printGstEl.textContent = `+₹${gstTax.toFixed(2)}`;
   
   const discountRow = document.getElementById('discount-breakdown-row');
   const discountAddonEl = document.getElementById('discount-addon-val');

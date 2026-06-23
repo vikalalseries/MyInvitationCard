@@ -238,11 +238,11 @@ function updateShippingMethod(el) {
 function recalculateBill() {
   const qty = orderConfig.quantity;
   
-  // 1. Base unit card price tier
-  let basePrice = 20.00;
-  if (qty >= 500) basePrice = 10.00;
-  else if (qty >= 300) basePrice = 13.00;
-  else if (qty >= 150) basePrice = 16.00;
+  // 1. Base unit card price tier (aligned with print.js)
+  let basePriceRate = 10.00;
+  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
+  if (discountPercent < 0) discountPercent = 0;
+  let basePrice = basePriceRate * (1 - discountPercent / 100);
   
   const cardsTotal = qty * basePrice;
   
