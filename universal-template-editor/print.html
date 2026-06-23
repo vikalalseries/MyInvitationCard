@@ -25,6 +25,8 @@
         <path d="M60 42 C60 37,54 33,49 33 C42 33,39 40,39 45 C39 54,49 61,60 69 C71 61,81 54,81 45 C81 40,78 33,71 33 C66 33,60 37,60 42Z" fill="#ef4444" opacity="0.9"/>
         <path d="M18 42 L18 78 Q18 84 24 84 L96 84 Q102 84 102 78 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M18 42 L60 14 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+        <path d="M102 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
       </svg>
       <span class="tb-logo-name">MyInvitationCard</span>
     </a>
@@ -48,7 +50,58 @@
 
       <!-- Editable Document Title -->
       <div class="doc-title-wrap">
-        <span id="doc-title-display" class="doc-title-text">Wedding Card</span>
+        <input type="text" id="doc-title-input" class="doc-title-input" value="Wedding Card 1" title="Click to rename draft">
+      </div>
+
+      <div class="tb-sep"></div>
+
+      <!-- Profile / Auth Area -->
+      <div class="user-profile-wrap" id="user-profile-wrap">
+        <!-- If logged in, shows this avatar button -->
+        <button class="nav-avatar-btn" id="builderUserMenuBtn" style="display: none;">
+          <span class="nav-avatar" id="builderAvatar">
+            <i class="fa-solid fa-user"></i>
+          </span>
+        </button>
+        
+        <!-- If logged out, shows this login button instead -->
+        <button class="btn-login-header" id="builderHeaderLoginBtn" onclick="toast('Please login in editor page first.', 'i')">
+          Login
+        </button>
+
+        <!-- Profile Popup Menu (same as index page) -->
+        <div class="nav-user-popup" id="builderUserPopup">
+          <div class="popup-user-header">
+            <div class="popup-avatar" id="builderPopupAvatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="popup-user-meta">
+              <div id="builderPopupUserName">My Account</div>
+              <div id="builderPopupUserEmail">user@email.com</div>
+            </div>
+          </div>
+          <button class="popup-menu-btn" onclick="toast('Profile page coming soon!', 'i')">
+            <i class="fa-regular fa-user"></i>
+            My Profile
+          </button>
+          <button class="popup-menu-btn" onclick="toast('Feedback submitted!', 's')">
+            <i class="fa-regular fa-message"></i>
+            <span>Feedback</span>
+          </button>
+          <button class="popup-menu-btn" onclick="toast('Help Center coming soon!', 'i')">
+            <i class="fa-regular fa-circle-question"></i>
+            <span>Help Center</span>
+          </button>
+          <button class="popup-menu-btn" id="builderLogoutBtn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            Log Out
+          </button>
+          <div class="popup-divider"></div>
+          <button class="popup-upgrade-btn" onclick="window.location.href='../pricing.html'">
+            <i class="fa-solid fa-crown"></i>
+            Upgrade to Premium
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -379,6 +432,19 @@
     </div>
     
   </main>
+</div>
+
+<!-- ══════════════════════════════════════════ CUSTOM LOGOUT CONFIRM POPUP -->
+<div class="login-popup" id="logout-confirm-popup" onclick="event.stopPropagation()" style="width: 380px; padding: 32px 24px; border-radius: 24px; display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000; background:white; box-shadow: 0 16px 48px rgba(0,0,0,0.2); border:1px solid #e2e8f0;">
+  <button class="lp-close" onclick="closeLogoutConfirm()" title="Close" style="position:absolute; right:16px; top:16px; border:none; background:transparent; font-size:1.2rem; cursor:pointer; color:#94a3b8;"><i class="fa-solid fa-xmark"></i></button>
+  <div style="margin-top: 10px; margin-bottom: 24px; text-align: center;">
+    <h3 style="font-size: 1.2rem; font-weight: 750; color: #0f172a; line-height: 1.4; margin-bottom: 8px; font-family:var(--font);">Log Out</h3>
+    <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5; font-weight: 500; font-family:var(--font);">Are you sure you want to log out of your account?</p>
+  </div>
+  <div style="display: flex; gap: 12px; justify-content: center;">
+    <button class="reset-confirm-btn" onclick="executeLogout()" style="background:#e11d48; color:white; border:none; padding:10px 24px; border-radius:10px; font-weight:600; cursor:pointer; font-family:var(--font);">Yes</button>
+    <button class="reset-cancel-btn" onclick="closeLogoutConfirm()" style="background:#f1f5f9; color:#475569; border:none; padding:10px 24px; border-radius:10px; font-weight:600; cursor:pointer; font-family:var(--font);">No</button>
+  </div>
 </div>
 
 <!-- Toast Notifications -->

@@ -42,7 +42,16 @@ window.addEventListener('DOMContentLoaded', () => {
   loadSavedPrintConfig();
 
   // 3. Initialize UI Inputs
-  document.getElementById('doc-title-display').textContent = documentTitle;
+  const titleInput = document.getElementById('doc-title-input');
+  if (titleInput) {
+    titleInput.value = documentTitle;
+    titleInput.addEventListener('change', (e) => {
+      documentTitle = e.target.value.trim() || 'Wedding Card';
+      triggerSaving();
+      toast('Draft renamed to: ' + documentTitle, 's');
+      saveDraft();
+    });
+  }
   document.getElementById('quantity-input').value = quantity;
   
   // Set checked radio button options
@@ -845,4 +854,139 @@ function toast(msg, type = 's') {
     t.style.transition = 'all 0.3s ease';
     setTimeout(() => t.remove(), 300);
   }, 4000);
+}
+
+// ── Firebase Modules Loader for Navbar Sync ──
+let firebaseAuth = null;
+let firebaseConfig = null;
+let currentUser = null;
+let userLoggedIn = false;
+
+Promise.all([
+  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+  import("../assets/js/firebase-config.js")
+]).then(([authMod, configMod]) => {
+  firebaseAuth = authMod;
+  firebaseConfig = configMod;
+
+  firebaseAuth.onAuthStateChanged(firebaseConfig.auth, (user) => {
+    if (user) {
+      const displayName = user.displayName?.trim() || localStorage.getItem("signupFullName")?.trim() || user.email.split('@')[0];
+      currentUser = {
+        name: displayName,
+        email: user.email,
+        photoURL: user.photoURL
+      };
+      userLoggedIn = true;
+    } else {
+      currentUser = null;
+      userLoggedIn = false;
+    }
+    updateHeaderProfileUI(user);
+  });
+}).catch(err => {
+  console.error("Failed to load Firebase modules in navbar:", err);
+});
+
+// Update profile avatar & button in header
+function updateHeaderProfileUI(user) {
+  const avatarBtn = document.getElementById('builderUserMenuBtn');
+  const loginBtn = document.getElementById('builderHeaderLoginBtn');
+  const avatarSpan = document.getElementById('builderAvatar');
+  const popupAvatar = document.getElementById('builderPopupAvatar');
+  const popupName = document.getElementById('builderPopupUserName');
+  const popupEmail = document.getElementById('builderPopupUserEmail');
+
+  if (user) {
+    if (avatarBtn) avatarBtn.style.display = 'flex';
+    if (loginBtn) loginBtn.style.display = 'none';
+
+    const displayName = user.displayName || localStorage.getItem('signupFullName') || user.email?.split('@')[0] || 'User';
+    if (popupName) popupName.textContent = displayName;
+    if (popupEmail) popupEmail.textContent = user.email || 'No email';
+
+    if (user.photoURL) {
+      const imgHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      if (avatarSpan) avatarSpan.innerHTML = imgHTML;
+      if (popupAvatar) popupAvatar.innerHTML = imgHTML;
+    } else {
+      const initial = displayName.charAt(0).toUpperCase();
+      const bgColor = getAvatarBgColor(displayName);
+      const avatarHTML = `<div class="avatar-initial" style="background-color: ${bgColor}">${initial}</div>`;
+      if (avatarSpan) avatarSpan.innerHTML = avatarHTML;
+      if (popupAvatar) popupAvatar.innerHTML = avatarHTML;
+    }
+  } else {
+    if (avatarBtn) avatarBtn.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'flex';
+    const userPopup = document.getElementById('builderUserPopup');
+    if (userPopup) userPopup.classList.remove('show');
+  }
+}
+
+function getAvatarBgColor(name) {
+  const colors = ['#f43f5e', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#0ea5e9', '#ec4899', '#14b8a6'];
+  let sum = 0;
+  for (let i = 0; i < name.length; i++) {
+    sum += name.charCodeAt(i);
+  }
+  return colors[sum % colors.length];
+}
+
+// Bind avatar click toggle
+window.addEventListener('DOMContentLoaded', () => {
+  const profileBtn = document.getElementById('builderUserMenuBtn');
+  const userPopup = document.getElementById('builderUserPopup');
+  if (profileBtn && userPopup) {
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userPopup.classList.toggle('show');
+    });
+    userPopup.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+  
+  // Close popup on click outside
+  document.addEventListener('click', () => {
+    const popup = document.getElementById('builderUserPopup');
+    if (popup) popup.classList.remove('show');
+  });
+
+  // Logout actions
+  const logoutBtn = document.getElementById('builderLogoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showLogoutConfirm();
+    });
+  }
+});
+
+// Logout Popups
+function showLogoutConfirm() {
+  const popup = document.getElementById('logout-confirm-popup');
+  if (popup) popup.style.display = 'block';
+}
+
+function closeLogoutConfirm() {
+  const popup = document.getElementById('logout-confirm-popup');
+  if (popup) popup.style.display = 'none';
+}
+
+function executeLogout() {
+  closeLogoutConfirm();
+  if (firebaseAuth && firebaseConfig) {
+    firebaseAuth.signOut(firebaseConfig.auth).then(() => {
+      toast("Logged out successfully", "s");
+      setTimeout(() => {
+        window.location.href = '../template-dashboard.html';
+      }, 1000);
+    }).catch(err => {
+      console.error("Signout error:", err);
+      toast("Error logging out", "e");
+    });
+  } else {
+    toast("Auth connection error", "e");
+  }
 }
