@@ -242,7 +242,7 @@ body {
 }
 
 .showcase-header {
-  padding: 16px 24px;
+  padding: 8px 24px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -263,9 +263,9 @@ body {
 .preview-tab-btn {
   background: transparent;
   border: none;
-  padding: 8px 20px;
+  padding: 6px 14px;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--g500);
   cursor: pointer;
@@ -592,10 +592,10 @@ body {
 
 /* Preview Bottom Toolbar */
 .viewport-toolbar {
-  height: 64px;
+  height: 46px;
   background: var(--w);
   border-top: 1px solid var(--g200);
-  padding: 0 24px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   z-index: 10;
@@ -618,9 +618,9 @@ body {
   background: var(--g50);
   border: 1px solid var(--g200);
   color: var(--g700);
-  padding: 7px 14px;
+  padding: 4px 10px;
   border-radius: var(--r-sm);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -647,23 +647,23 @@ body {
 }
 
 .slider-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--g500);
   text-transform: uppercase;
 }
 
 .slider-control input[type="range"] {
-  width: 120px;
+  width: 90px;
   accent-color: var(--rose-dark);
   cursor: pointer;
 }
 
 .slider-val {
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--g900);
-  min-width: 35px;
+  min-width: 30px;
 }
 
 .zoom-controls {
@@ -677,15 +677,15 @@ body {
 .zoom-btn {
   background: transparent;
   border: none;
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--g700);
   cursor: pointer;
   transition: all var(--t);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
 .zoom-btn:hover {
@@ -1440,15 +1440,15 @@ body {
 .sub-toggle-btn {
   background: transparent;
   border: none;
-  padding: 8px 18px;
+  padding: 5px 12px;
   border-radius: 16px;
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--g500);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   transition: all var(--t);
 }
 
