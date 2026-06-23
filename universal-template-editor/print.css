@@ -778,21 +778,22 @@ body {
 }
 
 .qty-btn {
-  background: var(--g50);
+  background: var(--w);
   border: 1px solid var(--g200);
   color: var(--g700);
   font-size: 0.8rem;
   font-weight: 600;
   height: 42px;
   padding: 0 12px;
-  border-radius: var(--r-sm);
+  border-radius: 8px;
   cursor: pointer;
   transition: all var(--t);
   flex: 1;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 
 .qty-btn:hover {
-  background: var(--g100);
+  background: var(--g50);
   color: var(--g900);
   border-color: var(--g300);
 }
@@ -804,17 +805,18 @@ body {
   font-size: 1.05rem;
   font-weight: 700;
   border: 1px solid var(--g200);
-  border-radius: var(--r-sm);
-  background: var(--g50);
+  border-radius: 8px;
+  background: var(--w);
   color: var(--g900);
   outline: none;
   transition: all var(--t);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 
 .qty-input:focus {
-  border-color: var(--rose);
+  border-color: var(--gold-dark);
   background: var(--w);
-  box-shadow: 0 0 0 3px var(--rose-100);
+  box-shadow: 0 0 0 3px var(--gold-100);
 }
 
 .qty-input::-webkit-outer-spin-button,
@@ -833,20 +835,22 @@ body {
 
 /* Price Banner Card */
 .price-banner {
-  background: linear-gradient(135deg, var(--rose-dark), #9d174d);
-  padding: 20px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  padding: 22px;
   border-radius: var(--r-card);
   color: var(--w);
-  margin-top: 16px;
-  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.15);
+  margin-top: 18px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .price-header {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.8;
+  letter-spacing: 0.06em;
+  color: var(--g300);
+  opacity: 0.9;
 }
 
 .price-value-row {
@@ -859,30 +863,34 @@ body {
 .price-value-row .currency {
   font-size: 1.3rem;
   font-weight: 600;
+  color: var(--gold-100);
 }
 
 .price-value-row .price-amount {
   font-size: 2.2rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  color: var(--w);
 }
 
 .price-value-row .price-label {
   font-size: 0.85rem;
-  opacity: 0.85;
+  color: var(--g300);
   margin-left: 2px;
 }
 
 .volume-discount-notice {
   font-size: 0.75rem;
   font-weight: 500;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
   padding: 6px 12px;
   border-radius: 20px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 10px;
+  margin-top: 12px;
+  border: 1px solid rgba(251, 191, 36, 0.1);
 }
 
 /* Radio Option Cards Grid */
@@ -895,20 +903,22 @@ body {
 .option-card {
   border: 1px solid var(--g200);
   border-radius: var(--r-md);
-  padding: 14px 16px;
+  padding: 16px 20px;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 14px;
   cursor: pointer;
   transition: all var(--t);
   position: relative;
-  background: var(--g50);
+  background: var(--w);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
 .option-card:hover {
   border-color: var(--g300);
-  background: var(--w);
+  background: var(--g50);
   transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
 }
 
 .option-card input[type="radio"] {
@@ -928,19 +938,20 @@ body {
 }
 
 .option-card.checked {
-  border-color: var(--rose-dark);
-  background: var(--rose-50);
+  border-color: var(--gold-dark);
+  background: var(--gold-50);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.05);
 }
 
 .option-card.checked .opt-indicator {
-  border-color: var(--rose-dark);
+  border-color: var(--gold-dark);
 }
 
 .option-card.checked .opt-indicator::after {
   content: '';
   width: 10px;
   height: 10px;
-  background: var(--rose-dark);
+  background: var(--gold-dark);
   border-radius: 50%;
   position: absolute;
   left: 50%;
@@ -963,18 +974,18 @@ body {
 .opt-desc {
   font-size: 0.78rem;
   color: var(--g500);
-  line-height: 1.4;
-  margin-top: 3px;
+  line-height: 1.5;
+  margin-top: 4px;
 }
 
 .opt-addon {
   align-self: flex-start;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  color: var(--rose-dark);
+  color: var(--gold-dark);
   margin-top: 6px;
   padding: 2px 8px;
-  background: rgba(244, 63, 94, 0.08);
+  background: rgba(217, 119, 6, 0.08);
   border-radius: 12px;
 }
 
