@@ -277,13 +277,17 @@
         <div class="form-group card-quantity-group">
           <div class="label-row">
             <label class="field-label">Quantity to Print</label>
-            <span class="min-badge">Min. 100 Cards</span>
+            <span class="min-badge">Min. 50 Cards</span>
           </div>
           
           <div class="quantity-chips">
-            <button type="button" class="qty-chip active" id="chip-100" onclick="setQuantityPreset(100)">
-              <span class="qty-chip-val">100</span>
+            <button type="button" class="qty-chip active" id="chip-50" onclick="setQuantityPreset(50)">
+              <span class="qty-chip-val">50</span>
               <span class="qty-chip-label">Cards (Std)</span>
+            </button>
+            <button type="button" class="qty-chip" id="chip-100" onclick="setQuantityPreset(100)">
+              <span class="qty-chip-val">100</span>
+              <span class="qty-chip-label">10% Off</span>
             </button>
             <button type="button" class="qty-chip" id="chip-150" onclick="setQuantityPreset(150)">
               <span class="qty-chip-val">150</span>
@@ -291,10 +295,6 @@
             </button>
             <button type="button" class="qty-chip" id="chip-300" onclick="setQuantityPreset(300)">
               <span class="qty-chip-val">300</span>
-              <span class="qty-chip-label">35% Off</span>
-            </button>
-            <button type="button" class="qty-chip" id="chip-500" onclick="setQuantityPreset(500)">
-              <span class="qty-chip-val">500</span>
               <span class="qty-chip-label">50% Off</span>
             </button>
           </div>
@@ -303,7 +303,7 @@
             <span class="custom-qty-label">Custom Quantity:</span>
             <div class="quantity-input-wrap">
               <button type="button" class="qty-btn" onclick="adjustQuantity(-10)" title="Decrease by 10"><i class="fa-solid fa-minus"></i></button>
-              <input type="number" id="quantity-input" class="qty-input" value="100" min="100" step="10" onchange="validateAndSetQuantity(this.value)">
+              <input type="number" id="quantity-input" class="qty-input" value="50" min="50" step="10" onchange="validateAndSetQuantity(this.value)">
               <button type="button" class="qty-btn" onclick="adjustQuantity(10)" title="Increase by 10"><i class="fa-solid fa-plus"></i></button>
             </div>
           </div>

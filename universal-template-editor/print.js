@@ -9,7 +9,7 @@ let currentData = { fields: {}, events: {}, styles: {} };
 let config = null; // Template configuration definition
 
 // Print Options
-let quantity = 100;
+let quantity = 50;
 let paperStock = 'matte';
 let envelopeOption = 'standard';
 let unitPrice = 15.00;
@@ -133,7 +133,7 @@ function loadSavedPrintConfig() {
     try {
       const config = JSON.parse(savedConfigStr);
       if (config) {
-        quantity = config.quantity || 100;
+        quantity = config.quantity || 50;
         paperStock = config.paperStock || 'matte';
         envelopeOption = config.envelopeOption || 'standard';
       }
@@ -880,8 +880,8 @@ function updateFlatCardTransforms() {
 function adjustQuantity(val) {
   const input = document.getElementById('quantity-input');
   let newQty = parseInt(input.value) + val;
-  if (isNaN(newQty)) newQty = 100;
-  if (newQty < 100) newQty = 100;
+  if (isNaN(newQty)) newQty = 50;
+  if (newQty < 50) newQty = 50;
   
   input.value = newQty;
   validateAndSetQuantity(newQty);
@@ -891,10 +891,10 @@ function validateAndSetQuantity(val) {
   const feedback = document.getElementById('qty-validation-feedback');
   let qtyVal = parseInt(val);
   
-  if (isNaN(qtyVal) || qtyVal < 100) {
-    qtyVal = 100;
-    document.getElementById('quantity-input').value = 100;
-    feedback.textContent = "Minimum printing limit is 100 cards. Quantity set to 100.";
+  if (isNaN(qtyVal) || qtyVal < 50) {
+    qtyVal = 50;
+    document.getElementById('quantity-input').value = 50;
+    feedback.textContent = "Minimum printing limit is 50 cards. Quantity set to 50.";
     feedback.style.display = "block";
   } else {
     feedback.style.display = "none";
@@ -952,22 +952,16 @@ function updateEnvelopeSelection(el) {
 
 // Pricing calculation logic
 function recalculatePricing() {
-  // 1. Base card price tier brackets based on quantity
-  let basePrice = 20.00;
-  let tierLabel = 'Standard Tier';
+  // 1. Base card price tier brackets based on quantity (min 50, base ₹10.00)
+  let basePriceRate = 10.00;
+  let discountPercent = Math.min(80, Math.floor(quantity / 50 - 1) * 10);
+  if (discountPercent < 0) discountPercent = 0;
   
-  if (quantity >= 500) {
-    basePrice = 10.00; // 50% discount
-    tierLabel = 'Royal Tier (50% Off)';
-  } else if (quantity >= 300) {
-    basePrice = 13.00; // 35% discount
-    tierLabel = 'Gold Tier (35% Off)';
-  } else if (quantity >= 150) {
-    basePrice = 16.00; // 20% discount
-    tierLabel = 'Silver Tier (20% Off)';
-  } else {
-    basePrice = 20.00; // standard base price
-    tierLabel = 'Standard Tier';
+  let basePrice = basePriceRate * (1 - discountPercent / 100);
+  
+  let tierLabel = 'Standard Tier';
+  if (discountPercent > 0) {
+    tierLabel = `${discountPercent}% Off Volume Tier`;
   }
   
   // 2. Paper upgrades add-on
@@ -989,12 +983,12 @@ function recalculatePricing() {
   unitPrice = basePrice + paperAddon + envelopeAddon;
   
   // Itemized calculations
-  let volumeDiscount = 20.00 - basePrice;
+  let volumeDiscount = basePriceRate - basePrice;
   let grandTotal = unitPrice * quantity;
   
   // Update UI Elements
   const basePriceEl = document.getElementById('base-price-val');
-  if (basePriceEl) basePriceEl.textContent = '₹20.00';
+  if (basePriceEl) basePriceEl.textContent = `₹${basePriceRate.toFixed(2)}`;
   
   const paperAddonEl = document.getElementById('paper-addon-val');
   if (paperAddonEl) paperAddonEl.textContent = `+₹${paperAddon.toFixed(2)}`;
@@ -1006,7 +1000,7 @@ function recalculatePricing() {
       envelopeAddonEl.style.color = '';
     } else {
       envelopeAddonEl.textContent = `-₹${Math.abs(envelopeAddon).toFixed(2)}`;
-      envelopeAddonEl.style.color = '#fbbf24'; // Highlight discount color
+      envelopeAddonEl.style.color = '#e11d48'; // Highlight discount color
     }
   }
   
@@ -1037,17 +1031,11 @@ function recalculatePricing() {
   // Update discount notice banner
   const discountBanner = document.getElementById('discount-banner');
   if (discountBanner) {
-    if (quantity >= 500) {
-      discountBanner.innerHTML = '<i class="fa-solid fa-crown"></i> Royal Tier: 50% off base card stock applied!';
+    if (discountPercent > 0) {
+      discountBanner.innerHTML = `<i class="fa-solid fa-tag"></i> Tier Applied: ${discountPercent}% volume discount applied!`;
       discountBanner.style.background = 'rgba(255, 255, 255, 0.08)';
-    } else if (quantity >= 300) {
-      discountBanner.innerHTML = '<i class="fa-solid fa-tag"></i> Gold Tier: 35% off base card stock applied!';
-      discountBanner.style.background = 'rgba(255, 255, 255, 0.06)';
-    } else if (quantity >= 150) {
-      discountBanner.innerHTML = '<i class="fa-solid fa-tag"></i> Silver Tier: 20% off base card stock applied!';
-      discountBanner.style.background = 'rgba(255, 255, 255, 0.06)';
     } else {
-      discountBanner.innerHTML = '<i class="fa-solid fa-circle-info"></i> Order 150+ cards to unlock discount tiers!';
+      discountBanner.innerHTML = '<i class="fa-solid fa-circle-info"></i> Order 100+ cards to unlock discount tiers!';
       discountBanner.style.background = 'rgba(255, 255, 255, 0.04)';
     }
   }

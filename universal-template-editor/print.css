@@ -900,13 +900,13 @@ body {
 
 /* Price Banner Card */
 .price-banner {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: var(--rose-50);
   padding: 14px 16px;
   border-radius: var(--r-card);
-  color: var(--w);
+  color: var(--g900);
   margin-top: 12px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.02);
+  border: 1px solid var(--rose-100);
 }
 
 .price-header-row {
@@ -921,7 +921,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--g300);
+  color: var(--rose-dark);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -930,9 +930,9 @@ body {
 .tier-badge {
   font-size: 0.65rem;
   font-weight: 750;
-  background: rgba(244, 63, 94, 0.15);
-  color: var(--rose-100);
-  border: 1px solid rgba(244, 63, 94, 0.2);
+  background: var(--rose-100);
+  color: var(--rose-dark);
+  border: 1px solid var(--rose-200);
   padding: 2px 8px;
   border-radius: 12px;
   letter-spacing: 0.02em;
@@ -950,30 +950,30 @@ body {
   justify-content: space-between;
   align-items: center;
   font-size: 0.76rem;
-  color: var(--g300);
+  color: var(--g700);
 }
 
 .breakdown-label {
-  font-weight: 400;
+  font-weight: 500;
   opacity: 0.85;
 }
 
 .breakdown-value {
-  font-weight: 500;
-  color: var(--w);
+  font-weight: 600;
+  color: var(--g900);
 }
 
 .discount-row {
-  color: #fbbf24;
+  color: var(--rose-dark);
 }
 .discount-row .breakdown-value {
-  color: #fbbf24;
-  font-weight: 600;
+  color: var(--rose-dark);
+  font-weight: 700;
 }
 
 .breakdown-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--rose-100);
   margin: 6px 0;
 }
 
@@ -982,41 +982,41 @@ body {
 }
 
 .total-unit-row .breakdown-label {
-  font-weight: 500;
-  color: var(--g200);
+  font-weight: 600;
+  color: var(--g900);
 }
 
 .total-unit-row .price-amount {
   font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--w);
+  font-weight: 800;
+  color: var(--rose-dark);
 }
 
 .total-unit-row .per-card {
   font-size: 0.65rem;
-  opacity: 0.7;
-  font-weight: 400;
-  color: var(--g300);
+  opacity: 0.8;
+  font-weight: 500;
+  color: var(--g500);
 }
 
 .grand-total-row {
   margin-top: 4px;
   padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--w);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--rose-100);
 }
 
 .grand-total-row .breakdown-label {
   font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--rose-100);
+  font-weight: 700;
+  color: var(--g900);
 }
 
 .grand-total-row .breakdown-value-grand {
   font-size: 1.3rem;
   font-weight: 800;
-  color: var(--w);
+  color: var(--rose-dark);
   letter-spacing: -0.01em;
   display: flex;
   align-items: baseline;
@@ -1025,15 +1025,15 @@ body {
 
 .grand-total-row .currency {
   font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--rose-100);
+  font-weight: 700;
+  color: var(--rose-dark);
 }
 
 .volume-discount-notice {
   font-size: 0.72rem;
   font-weight: 500;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--g300);
+  background: var(--w);
+  color: var(--g500);
   padding: 4px 10px;
   border-radius: 12px;
   display: flex;
@@ -1041,7 +1041,7 @@ body {
   justify-content: center;
   gap: 5px;
   margin-top: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--rose-100);
 }
 
 /* Radio Option Cards Grid */
