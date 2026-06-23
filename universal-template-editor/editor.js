@@ -1694,6 +1694,21 @@ function printCard() {
   }
 }
 
+// ── REDIRECT TO PROFESSIONAL PRINT CUSTOMIZATION ──
+function goToPrintPage() {
+  const docName = document.getElementById('doc-title-input')?.value.trim() || 'wedding-card';
+  const projectData = {
+    format: 'VLS',
+    version: '1.0',
+    templateId: activeTemplateId || 'card1',
+    documentTitle: docName,
+    data: JSON.parse(JSON.stringify(currentData))
+  };
+  localStorage.setItem("mic_print_project_data", JSON.stringify(projectData));
+  localStorage.setItem("savedVlsData", JSON.stringify(projectData));
+  window.location.href = `print.html?templateId=${activeTemplateId || 'card1'}`;
+}
+
 // ── DOWNLOAD PROGRESS OVERLAY ──
 function showDownloadProgress(title, subtitle) {
   const overlay = document.getElementById('dl-progress-overlay');
