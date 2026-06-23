@@ -94,23 +94,48 @@ body {
 .tb-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-left: 16px;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all var(--t);
+  flex-shrink: 0;
   text-decoration: none;
+  margin-left: 16px;
   color: inherit;
 }
 
+.tb-logo:hover {
+  background: var(--rose-50);
+}
+
 .tb-logo-svg {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.tb-logo-svg path:first-of-type {
+  transform-origin: center;
+  transition: transform 0.28s ease, filter 0.28s ease;
+}
+
+.tb-logo:hover .tb-logo-svg path:first-of-type {
+  transform: translateY(6px) scale(0.85);
+  filter: drop-shadow(0 2px 4px rgba(229, 62, 62, 0.4));
 }
 
 .tb-logo-name {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 1.25rem;
-  letter-spacing: -0.02em;
+  font-size: 1.05rem;
+  font-weight: 750;
   color: var(--g900);
+  letter-spacing: -0.4px;
+  white-space: nowrap;
+  transition: all var(--t);
+  font-family: var(--font);
+}
+
+.tb-logo:hover .tb-logo-name {
+  color: var(--rose);
 }
 
 .tb-sep {
