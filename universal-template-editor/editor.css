@@ -2334,3 +2334,44 @@ input:checked + .slider:before {
 .popup-upgrade-btn i {
   color: #eab308;
 }
+
+/* ── CUSTOM SCROLLBARS ── */
+.forms-container::-webkit-scrollbar,
+.customizer-sidebar::-webkit-scrollbar,
+.customizer-content::-webkit-scrollbar,
+.preview-vp::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.forms-container::-webkit-scrollbar-track,
+.customizer-sidebar::-webkit-scrollbar-track,
+.customizer-content::-webkit-scrollbar-track,
+.preview-vp::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.forms-container::-webkit-scrollbar-thumb,
+.customizer-sidebar::-webkit-scrollbar-thumb,
+.customizer-content::-webkit-scrollbar-thumb,
+.preview-vp::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  transition: background var(--t);
+}
+
+.forms-container::-webkit-scrollbar-thumb:hover,
+.customizer-sidebar::-webkit-scrollbar-thumb:hover,
+.customizer-content::-webkit-scrollbar-thumb:hover,
+.preview-vp::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox scrollbar sizing */
+.forms-container,
+.customizer-sidebar,
+.customizer-content,
+.preview-vp {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
