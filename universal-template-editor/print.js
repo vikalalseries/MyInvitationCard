@@ -165,7 +165,7 @@ function initializeIframes() {
   const iframeIds = [
     'iframe-sec1', 'iframe-sec2', 'iframe-cover',
     'iframe-layer-cover', 'iframe-layer-sec1', 'iframe-layer-sec2',
-    'iframe-flat-sec1', 'iframe-flat-sec2'
+    'iframe-flat-full'
   ];
   
   iframeIds.forEach(id => {
@@ -249,7 +249,6 @@ function applyIframeIsolation(iframeId) {
   
   switch(iframeId) {
     case 'iframe-sec1':
-    case 'iframe-flat-sec1':
     case 'iframe-layer-sec1':
     case 'zoom-sec1':
       cssText = `
@@ -260,13 +259,20 @@ function applyIframeIsolation(iframeId) {
       break;
       
     case 'iframe-sec2':
-    case 'iframe-flat-sec2':
     case 'iframe-layer-sec2':
     case 'zoom-sec2':
       cssText = `
         ${baseLayoutCSS}
         .sec1 { display: none !important; }
         .sec2 { width: 21.5cm !important; height: 8.5cm !important; border: none !important; box-shadow: none !important; top: 0 !important; left: 0 !important; margin: 0 !important; position: absolute !important; }
+      `;
+      break;
+      
+    case 'iframe-flat-full':
+      cssText = `
+        body { background: transparent !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; width: 100vw !important; height: 100vh !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+        .card { width: 23.5cm !important; height: 19cm !important; min-height: 19cm !important; background: #f9f1d0 !important; padding: 1cm !important; display: flex !important; flex-direction: column !important; gap: 0.3cm !important; box-sizing: border-box !important; border: none !important; box-shadow: none !important; }
+        .sec { display: block !important; position: relative !important; }
       `;
       break;
       
@@ -835,15 +841,26 @@ function zoomPreview(val) {
     update3DCardTransforms();
   } else if (activeViewMode === 'layers') {
     updateLayersTransforms();
+  } else if (activeViewMode === 'flat') {
+    updateFlatCardTransforms();
   }
 }
 
 function resetZoom() {
-  currentZoom = activeViewMode === '3d' ? 0.9 : 1.0;
+  currentZoom = activeViewMode === '3d' ? 0.9 : (activeViewMode === 'flat' ? 0.8 : 1.0);
   if (activeViewMode === '3d') {
     update3DCardTransforms();
   } else if (activeViewMode === 'layers') {
     updateLayersTransforms();
+  } else if (activeViewMode === 'flat') {
+    updateFlatCardTransforms();
+  }
+}
+
+function updateFlatCardTransforms() {
+  const card = document.querySelector('.flat-full-frame');
+  if (card) {
+    card.style.transform = `scale(${currentZoom})`;
   }
 }
 

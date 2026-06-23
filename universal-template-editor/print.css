@@ -558,32 +558,25 @@ body {
 .flat-card-layout {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  align-items: center;
+  justify-content: center;
   max-width: 100%;
 }
 
-.flat-sec-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.flat-sec-wrapper h3 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--g500);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
 .flat-frame-box {
-  width: 21.5cm;
-  height: 8.5cm;
-  border-radius: 4px;
-  box-shadow: var(--card-shadow);
+  border-radius: 8px;
+  box-shadow: var(--card-shadow-hover);
   border: 1px solid var(--g200);
   overflow: hidden;
   background: #f9f1d0;
+  transition: transform var(--t);
+  transform-origin: center center;
+}
+
+.flat-full-frame {
+  width: 23.5cm;
+  height: 19cm;
+  transform: scale(0.8);
 }
 
 /* Preview Bottom Toolbar */
