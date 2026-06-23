@@ -57,6 +57,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
   document.getElementById('quantity-input').value = quantity;
+  syncQuantityChips(quantity);
   
   // Set checked radio button options
   setRadioChecked('paper-stock', paperStock);
@@ -900,7 +901,27 @@ function validateAndSetQuantity(val) {
   }
   
   quantity = qtyVal;
+  syncQuantityChips(qtyVal);
   recalculatePricing();
+  triggerSaving();
+}
+
+function setQuantityPreset(qtyVal) {
+  const input = document.getElementById('quantity-input');
+  if (input) {
+    input.value = qtyVal;
+  }
+  validateAndSetQuantity(qtyVal);
+}
+
+function syncQuantityChips(qty) {
+  document.querySelectorAll('.qty-chip').forEach(chip => {
+    chip.classList.remove('active');
+  });
+  const matchingChip = document.getElementById(`chip-${qty}`);
+  if (matchingChip) {
+    matchingChip.classList.add('active');
+  }
 }
 
 function updatePaperSelection(el) {
@@ -933,15 +954,20 @@ function updateEnvelopeSelection(el) {
 function recalculatePricing() {
   // 1. Base card price tier brackets based on quantity
   let basePrice = 20.00;
+  let tierLabel = 'Standard Tier';
   
   if (quantity >= 500) {
     basePrice = 10.00; // 50% discount
+    tierLabel = 'Royal Tier (50% Off)';
   } else if (quantity >= 300) {
     basePrice = 13.00; // 35% discount
+    tierLabel = 'Gold Tier (35% Off)';
   } else if (quantity >= 150) {
     basePrice = 16.00; // 20% discount
+    tierLabel = 'Silver Tier (20% Off)';
   } else {
     basePrice = 20.00; // standard base price
+    tierLabel = 'Standard Tier';
   }
   
   // 2. Paper upgrades add-on
@@ -962,23 +988,68 @@ function recalculatePricing() {
   // Total calculated price per unit
   unitPrice = basePrice + paperAddon + envelopeAddon;
   
+  // Itemized calculations
+  let volumeDiscount = 20.00 - basePrice;
+  let grandTotal = unitPrice * quantity;
+  
+  // Update UI Elements
+  const basePriceEl = document.getElementById('base-price-val');
+  if (basePriceEl) basePriceEl.textContent = '₹20.00';
+  
+  const paperAddonEl = document.getElementById('paper-addon-val');
+  if (paperAddonEl) paperAddonEl.textContent = `+₹${paperAddon.toFixed(2)}`;
+  
+  const envelopeAddonEl = document.getElementById('envelope-addon-val');
+  if (envelopeAddonEl) {
+    if (envelopeAddon >= 0) {
+      envelopeAddonEl.textContent = `+₹${envelopeAddon.toFixed(2)}`;
+      envelopeAddonEl.style.color = '';
+    } else {
+      envelopeAddonEl.textContent = `-₹${Math.abs(envelopeAddon).toFixed(2)}`;
+      envelopeAddonEl.style.color = '#fbbf24'; // Highlight discount color
+    }
+  }
+  
+  const discountRow = document.getElementById('discount-breakdown-row');
+  const discountAddonEl = document.getElementById('discount-addon-val');
+  if (discountRow && discountAddonEl) {
+    if (volumeDiscount > 0) {
+      discountAddonEl.textContent = `-₹${volumeDiscount.toFixed(2)}`;
+      discountRow.style.display = 'flex';
+    } else {
+      discountRow.style.display = 'none';
+    }
+  }
+  
+  const tierBadge = document.getElementById('discount-badge-label');
+  if (tierBadge) tierBadge.textContent = tierLabel;
+  
   // Update unit price on UI
-  document.getElementById('unit-price-val').textContent = unitPrice.toFixed(2);
+  const unitPriceEl = document.getElementById('unit-price-val');
+  if (unitPriceEl) unitPriceEl.textContent = unitPrice.toFixed(2);
+  
+  // Update Grand Total on UI
+  const totalPriceEl = document.getElementById('total-price-val');
+  if (totalPriceEl) {
+    totalPriceEl.textContent = grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
   
   // Update discount notice banner
   const discountBanner = document.getElementById('discount-banner');
-  if (quantity >= 500) {
-    discountBanner.innerHTML = '<i class="fa-solid fa-crown"></i> Royal Tier: 50% off base card stock applied!';
-    discountBanner.style.background = 'rgba(255, 255, 255, 0.18)';
-  } else if (quantity >= 300) {
-    discountBanner.innerHTML = '<i class="fa-solid fa-tag"></i> Gold Tier: 35% off base card stock applied!';
-    discountBanner.style.background = 'rgba(255, 255, 255, 0.15)';
-  } else if (quantity >= 150) {
-    discountBanner.innerHTML = '<i class="fa-solid fa-tag"></i> Silver Tier: 20% off base card stock applied!';
-    discountBanner.style.background = 'rgba(255, 255, 255, 0.12)';
-  } else {
-    discountBanner.innerHTML = '<i class="fa-solid fa-circle-info"></i> Order 150+ cards to unlock discount tiers!';
-    discountBanner.style.background = 'rgba(255, 255, 255, 0.1)';
+  if (discountBanner) {
+    if (quantity >= 500) {
+      discountBanner.innerHTML = '<i class="fa-solid fa-crown"></i> Royal Tier: 50% off base card stock applied!';
+      discountBanner.style.background = 'rgba(255, 255, 255, 0.08)';
+    } else if (quantity >= 300) {
+      discountBanner.innerHTML = '<i class="fa-solid fa-tag"></i> Gold Tier: 35% off base card stock applied!';
+      discountBanner.style.background = 'rgba(255, 255, 255, 0.06)';
+    } else if (quantity >= 150) {
+      discountBanner.innerHTML = '<i class="fa-solid fa-tag"></i> Silver Tier: 20% off base card stock applied!';
+      discountBanner.style.background = 'rgba(255, 255, 255, 0.06)';
+    } else {
+      discountBanner.innerHTML = '<i class="fa-solid fa-circle-info"></i> Order 150+ cards to unlock discount tiers!';
+      discountBanner.style.background = 'rgba(255, 255, 255, 0.04)';
+    }
   }
 }
 

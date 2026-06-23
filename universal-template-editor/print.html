@@ -276,32 +276,80 @@
         <!-- Quantity Selector -->
         <div class="form-group card-quantity-group">
           <div class="label-row">
-            <label for="quantity-input" class="field-label">Quantity to Print</label>
+            <label class="field-label">Quantity to Print</label>
             <span class="min-badge">Min. 100 Cards</span>
           </div>
           
-          <div class="quantity-input-wrap">
-            <button type="button" class="qty-btn" onclick="adjustQuantity(-50)" title="Decrease by 50">-50</button>
-            <button type="button" class="qty-btn" onclick="adjustQuantity(-10)" title="Decrease by 10">-10</button>
-            
-            <input type="number" id="quantity-input" class="qty-input" value="100" min="100" step="10" onchange="validateAndSetQuantity(this.value)">
-            
-            <button type="button" class="qty-btn" onclick="adjustQuantity(10)" title="Increase by 10">+10</button>
-            <button type="button" class="qty-btn" onclick="adjustQuantity(50)" title="Increase by 50">+50</button>
+          <div class="quantity-chips">
+            <button type="button" class="qty-chip active" id="chip-100" onclick="setQuantityPreset(100)">
+              <span class="qty-chip-val">100</span>
+              <span class="qty-chip-label">Cards (Std)</span>
+            </button>
+            <button type="button" class="qty-chip" id="chip-150" onclick="setQuantityPreset(150)">
+              <span class="qty-chip-val">150</span>
+              <span class="qty-chip-label">20% Off</span>
+            </button>
+            <button type="button" class="qty-chip" id="chip-300" onclick="setQuantityPreset(300)">
+              <span class="qty-chip-val">300</span>
+              <span class="qty-chip-label">35% Off</span>
+            </button>
+            <button type="button" class="qty-chip" id="chip-500" onclick="setQuantityPreset(500)">
+              <span class="qty-chip-val">500</span>
+              <span class="qty-chip-label">50% Off</span>
+            </button>
+          </div>
+
+          <div class="custom-quantity-row">
+            <span class="custom-qty-label">Custom Quantity:</span>
+            <div class="quantity-input-wrap">
+              <button type="button" class="qty-btn" onclick="adjustQuantity(-10)" title="Decrease by 10"><i class="fa-solid fa-minus"></i></button>
+              <input type="number" id="quantity-input" class="qty-input" value="100" min="100" step="10" onchange="validateAndSetQuantity(this.value)">
+              <button type="button" class="qty-btn" onclick="adjustQuantity(10)" title="Increase by 10"><i class="fa-solid fa-plus"></i></button>
+            </div>
           </div>
           <div class="quantity-feedback" id="qty-validation-feedback"></div>
         </div>
         
         <!-- Card Price Display -->
         <div class="price-banner">
-          <div class="price-header">Estimated Price per Card</div>
-          <div class="price-value-row">
-            <span class="currency">₹</span>
-            <span class="price-amount" id="unit-price-val">15.00</span>
-            <span class="price-label">/ card</span>
+          <div class="price-header-row">
+            <span class="price-banner-title"><i class="fa-solid fa-receipt"></i> Pricing Details</span>
+            <span class="tier-badge" id="discount-badge-label">Standard Tier</span>
           </div>
+          
+          <div class="price-breakdown">
+            <div class="breakdown-row">
+              <span class="breakdown-label">Base Card Stock</span>
+              <span class="breakdown-value" id="base-price-val">₹20.00</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label">Paper Finish Premium</span>
+              <span class="breakdown-value" id="paper-addon-val">+₹0.00</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label">Envelope Option</span>
+              <span class="breakdown-value" id="envelope-addon-val">+₹0.00</span>
+            </div>
+            <div class="breakdown-row discount-row" id="discount-breakdown-row" style="display: none;">
+              <span class="breakdown-label">Volume Discount</span>
+              <span class="breakdown-value" id="discount-addon-val">-₹0.00</span>
+            </div>
+            
+            <div class="breakdown-divider"></div>
+            
+            <div class="breakdown-row total-unit-row">
+              <span class="breakdown-label">Price per Card</span>
+              <span class="breakdown-value"><span class="currency">₹</span><span class="price-amount" id="unit-price-val">20.00</span> <span class="per-card">/ card</span></span>
+            </div>
+            
+            <div class="breakdown-row grand-total-row">
+              <span class="breakdown-label">Estimated Grand Total</span>
+              <span class="breakdown-value-grand"><span class="currency">₹</span><span class="grand-price-amount" id="total-price-val">2,000.00</span></span>
+            </div>
+          </div>
+          
           <div class="volume-discount-notice" id="discount-banner">
-            <i class="fa-solid fa-tag"></i> Order 150+ cards to get discount!
+            <i class="fa-solid fa-circle-info"></i> Order 150+ cards to unlock discount tiers!
           </div>
         </div>
         
@@ -314,42 +362,46 @@
           <div class="option-grid">
             <label class="option-card checked">
               <input type="radio" name="paper-stock" value="matte" checked onchange="updatePaperSelection(this)">
-              <span class="opt-indicator"></span>
+              <span class="opt-swatch swatch-matte"></span>
               <span class="opt-content">
                 <span class="opt-title">Matte Cardboard</span>
                 <span class="opt-desc">Smooth anti-glare finish, premium heavy card stock.</span>
                 <span class="opt-addon">Included</span>
               </span>
+              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="paper-stock" value="glossy" onchange="updatePaperSelection(this)">
-              <span class="opt-indicator"></span>
+              <span class="opt-swatch swatch-glossy"></span>
               <span class="opt-content">
                 <span class="opt-title">Premium Glossy</span>
                 <span class="opt-desc">Vibrant colors with a high-shine glossy protective coat.</span>
                 <span class="opt-addon">+₹2.00 / card</span>
               </span>
+              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="paper-stock" value="linen" onchange="updatePaperSelection(this)">
-              <span class="opt-indicator"></span>
+              <span class="opt-swatch swatch-linen"></span>
               <span class="opt-content">
                 <span class="opt-title">Elegant Textured Linen</span>
                 <span class="opt-desc">Luxurious linen weave texture, artistic matte feel.</span>
                 <span class="opt-addon">+₹5.00 / card</span>
               </span>
+              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="paper-stock" value="metallic" onchange="updatePaperSelection(this)">
-              <span class="opt-indicator"></span>
+              <span class="opt-swatch swatch-metallic"></span>
               <span class="opt-content">
                 <span class="opt-title">Royal Metallic Gold Foil</span>
                 <span class="opt-desc">Gold shimmer cardstock with embossed gold lettering accents.</span>
                 <span class="opt-addon">+₹8.00 / card</span>
               </span>
+              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
           </div>
         </div>
@@ -363,32 +415,35 @@
           <div class="option-grid">
             <label class="option-card checked">
               <input type="radio" name="envelope" value="standard" checked onchange="updateEnvelopeSelection(this)">
-              <span class="opt-indicator"></span>
+              <span class="opt-swatch swatch-crimson"></span>
               <span class="opt-content">
                 <span class="opt-title">Crimson Red Envelope</span>
                 <span class="opt-desc">Standard wedding envelope with floral border design.</span>
                 <span class="opt-addon">Included</span>
               </span>
+              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="envelope" value="velvet" onchange="updateEnvelopeSelection(this)">
-              <span class="opt-indicator"></span>
+              <span class="opt-swatch swatch-velvet"></span>
               <span class="opt-content">
                 <span class="opt-title">Premium Velvet Silk</span>
                 <span class="opt-desc">Handmade velvet paper envelope with gold stamp seals.</span>
                 <span class="opt-addon">+₹5.00 / card</span>
               </span>
+              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="envelope" value="none" onchange="updateEnvelopeSelection(this)">
-              <span class="opt-indicator"></span>
+              <span class="opt-swatch swatch-none"></span>
               <span class="opt-content">
                 <span class="opt-title">No Envelopes</span>
                 <span class="opt-desc">Ship cards only. Recommended if you have custom envelopes.</span>
                 <span class="opt-addon">-₹2.00 / card</span>
               </span>
+              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
           </div>
         </div>
@@ -397,28 +452,40 @@
         <div class="form-group layers-toggle-panel" id="layers-toggle-panel" style="display: none;">
           <div class="divider"></div>
           <label class="field-label">Active Layers Visibility</label>
-          <p class="field-desc">Toggle checkboxes below to filter individual print layers in the exploded view.</p>
+          <p class="field-desc">Toggle layer eye icons below to show/hide individual print layers in the exploded view.</p>
           <div class="layer-checkbox-list">
-            <label class="layer-chk-item">
-              <input type="checkbox" id="chk-layer-text" checked onchange="toggleLayer('text', this.checked)">
-              <span class="chk-custom text-chk"><i class="fa-solid fa-check"></i></span>
+            <div class="layer-chk-item">
+              <input type="checkbox" id="chk-layer-text" checked onchange="toggleLayer('text', this.checked)" style="display:none;">
+              <label for="chk-layer-text" class="layer-eye-btn text-layer">
+                <i class="fa-solid fa-eye eye-visible"></i>
+                <i class="fa-solid fa-eye-slash eye-hidden"></i>
+              </label>
               <span class="chk-label">Layer 4: Personalized Text</span>
-            </label>
-            <label class="layer-chk-item">
-              <input type="checkbox" id="chk-layer-art" checked onchange="toggleLayer('art', this.checked)">
-              <span class="chk-custom art-chk"><i class="fa-solid fa-check"></i></span>
+            </div>
+            <div class="layer-chk-item">
+              <input type="checkbox" id="chk-layer-art" checked onchange="toggleLayer('art', this.checked)" style="display:none;">
+              <label for="chk-layer-art" class="layer-eye-btn art-layer">
+                <i class="fa-solid fa-eye eye-visible"></i>
+                <i class="fa-solid fa-eye-slash eye-hidden"></i>
+              </label>
               <span class="chk-label">Layer 3: Graphic Art & Icons</span>
-            </label>
-            <label class="layer-chk-item">
-              <input type="checkbox" id="chk-layer-borders" checked onchange="toggleLayer('borders', this.checked)">
-              <span class="chk-custom border-chk"><i class="fa-solid fa-check"></i></span>
+            </div>
+            <div class="layer-chk-item">
+              <input type="checkbox" id="chk-layer-borders" checked onchange="toggleLayer('borders', this.checked)" style="display:none;">
+              <label for="chk-layer-borders" class="layer-eye-btn border-layer">
+                <i class="fa-solid fa-eye eye-visible"></i>
+                <i class="fa-solid fa-eye-slash eye-hidden"></i>
+              </label>
               <span class="chk-label">Layer 2: Borders & Frames</span>
-            </label>
-            <label class="layer-chk-item">
-              <input type="checkbox" id="chk-layer-background" checked onchange="toggleLayer('background', this.checked)">
-              <span class="chk-custom bg-chk"><i class="fa-solid fa-check"></i></span>
+            </div>
+            <div class="layer-chk-item">
+              <input type="checkbox" id="chk-layer-background" checked onchange="toggleLayer('background', this.checked)" style="display:none;">
+              <label for="chk-layer-background" class="layer-eye-btn bg-layer">
+                <i class="fa-solid fa-eye eye-visible"></i>
+                <i class="fa-solid fa-eye-slash eye-hidden"></i>
+              </label>
               <span class="chk-label">Layer 1: Cardstock Background</span>
-            </label>
+            </div>
           </div>
         </div>
         
