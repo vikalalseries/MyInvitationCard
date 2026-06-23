@@ -113,13 +113,13 @@
     <div class="showcase-panel">
       <div class="showcase-header">
         <div class="preview-tabs">
-          <button class="preview-tab-btn active" id="tab-3d" onclick="switchPreviewMode('3d')">
+          <button class="preview-tab-btn" id="tab-3d" onclick="switchPreviewMode('3d')">
             <i class="fa-solid fa-rotate"></i> 360° 3D Card
           </button>
           <button class="preview-tab-btn" id="tab-layers" onclick="switchPreviewMode('layers')">
             <i class="fa-solid fa-layer-group"></i> 3D Layers
           </button>
-          <button class="preview-tab-btn" id="tab-flat" onclick="switchPreviewMode('flat')">
+          <button class="preview-tab-btn active" id="tab-flat" onclick="switchPreviewMode('flat')">
             <i class="fa-solid fa-rectangle-ad"></i> 2D Foldout View
           </button>
         </div>
@@ -129,7 +129,7 @@
       <div class="viewport-container" id="viewport-container">
         
         <!-- 1. 3D Card Preview -->
-        <div id="view-3d" class="viewport-view active">
+        <div id="view-3d" class="viewport-view">
           <div class="scene-3d" id="scene-3d">
             <div class="card-3d" id="card-3d">
               <!-- Hinge card top fold -->
@@ -195,7 +195,7 @@
         </div>
         
         <!-- 3. 2D Flat View -->
-        <div id="view-flat" class="viewport-view">
+        <div id="view-flat" class="viewport-view active">
           <div class="flat-scroll-container">
             <div class="flat-card-layout">
               <div class="flat-sec-wrapper">
@@ -219,7 +219,7 @@
       <!-- Preview Bottom Toolbar -->
       <div class="viewport-toolbar">
         <!-- 3D Controls -->
-        <div class="tool-group" id="controls-3d">
+        <div class="tool-group" id="controls-3d" style="display: none;">
           <button class="tool-btn" id="btn-auto-rotate" onclick="toggleAutoRotate()" title="Toggle Auto-Rotation">
             <i class="fa-solid fa-play"></i> Auto Rotate
           </button>

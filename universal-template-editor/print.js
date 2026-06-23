@@ -6,6 +6,7 @@
 let templateId = 'card1';
 let documentTitle = 'Wedding Card';
 let currentData = { fields: {}, events: {}, styles: {} };
+let config = null; // Template configuration definition
 
 // Print Options
 let quantity = 100;
@@ -18,14 +19,14 @@ let rotX = 20;
 let rotY = -10;
 let isDragging = false;
 let startX, startY;
-let isAutoRotating = true;
+let isAutoRotating = false; // Disabled by default for 2D flat view
 let animationFrameId = null;
 
 // Zoom State
 let currentZoom = 1.0;
 
 // Active View Mode ('3d', 'layers', 'flat')
-let activeViewMode = '3d';
+let activeViewMode = 'flat'; // 2D flat view by default
 
 // Exploder State
 let depthMultiplier = 60; // default 60px between planes
@@ -34,9 +35,12 @@ let exploderRotZ = -40;
 let isDraggingLayers = false;
 
 // ── INITIALIZATION ──
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   // 1. Load project data from localStorage
   loadProjectData();
+  
+  // Load template config first to resolve fallbacks
+  await loadTemplateConfig();
   
   // 2. Load print settings if saved previously
   loadSavedPrintConfig();
@@ -66,13 +70,25 @@ window.addEventListener('DOMContentLoaded', () => {
   setupLayers3DRotation();
   
   // 6. Start auto-rotation loop
-  if (isAutoRotating) {
+  if (isAutoRotating && activeViewMode === '3d') {
     startAutoRotateLoop();
   }
   
   // 7. Calculate initial pricing
   recalculatePricing();
 });
+
+// Load template config
+async function loadTemplateConfig() {
+  try {
+    const response = await fetch(`templates/${templateId}/config.json`);
+    if (response.ok) {
+      config = await response.json();
+    }
+  } catch (err) {
+    console.error("Failed to load template config:", err);
+  }
+}
 
 // Load project data
 function loadProjectData() {
@@ -170,10 +186,38 @@ function initializeIframes() {
 function syncIframeData(iframe) {
   if (iframe && iframe.contentWindow) {
     const resolvedData = {
-      fields: currentData.fields || {},
-      events: currentData.events || {},
+      fields: {},
+      events: {},
       styles: currentData.styles || {}
     };
+    
+    // Resolve fields and events with config defaults if they are null
+    if (config) {
+      if (config.fields) {
+        config.fields.forEach(f => {
+          const val = (currentData.fields && currentData.fields[f.id]);
+          resolvedData.fields[f.id] = (val === null || val === undefined) ? (f.default || '') : val;
+        });
+      }
+      if (config.events) {
+        config.events.forEach(e => {
+          const currentEv = (currentData.events && currentData.events[e.id]) || {};
+          const nameVal = currentEv.name;
+          const dateVal = currentEv.date;
+          resolvedData.events[e.id] = {
+            name: (nameVal === null || nameVal === undefined) ? (e.defaultName || '') : nameVal,
+            date: (dateVal === null || dateVal === undefined) ? (e.defaultDate || '') : dateVal,
+            time: currentEv.time || '',
+            venue: currentEv.venue || '',
+            active: currentEv.active !== false
+          };
+        });
+      }
+    } else {
+      // Fallback
+      resolvedData.fields = currentData.fields || {};
+      resolvedData.events = currentData.events || {};
+    }
     
     iframe.contentWindow.postMessage({
       type: 'UPDATE_TEMPLATE_DATA',

@@ -13,6 +13,8 @@ let orderConfig = {
   data: { fields: {}, events: {}, styles: {} }
 };
 
+let config = null; // Config state for resolving template defaults
+
 // Checkout state
 let shippingSpeed = 'standard';
 let activePaymentMethod = 'upi';
@@ -23,9 +25,12 @@ let standardDeliveryDate = '';
 let expressDeliveryDate = '';
 
 // ── INITIALIZATION ──
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   // 1. Retrieve order configuration from localStorage
   loadOrderConfig();
+  
+  // Load template config first to resolve defaults
+  await loadTemplateConfig();
   
   // 2. Initialize UI summary items
   initializeSummaryUI();
@@ -42,6 +47,18 @@ window.addEventListener('DOMContentLoaded', () => {
   // 6. Autofill address fields for convenience
   autofillAddress();
 });
+
+// Load template config
+async function loadTemplateConfig() {
+  try {
+    const response = await fetch(`templates/${orderConfig.templateId}/config.json`);
+    if (response.ok) {
+      config = await response.json();
+    }
+  } catch (err) {
+    console.error("Failed to load template config:", err);
+  }
+}
 
 // Load configuration
 function loadOrderConfig() {
@@ -90,13 +107,8 @@ function initializeSummaryUI() {
   if (iframe) {
     iframe.src = `templates/${orderConfig.templateId}/template.html`;
     iframe.onload = () => {
-      // Sync customized texts
-      if (iframe.contentWindow) {
-        iframe.contentWindow.postMessage({
-          type: 'UPDATE_TEMPLATE_DATA',
-          data: orderConfig.data
-        }, '*');
-      }
+      // Sync customized texts resolving defaults
+      syncCheckoutIframeData(iframe);
       
       // Inject CSS to crop only Section 1 as preview thumb
       const doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -109,6 +121,48 @@ function initializeSummaryUI() {
       `;
       doc.head.appendChild(style);
     };
+  }
+}
+
+// Send resolved data to checkout preview iframe
+function syncCheckoutIframeData(iframe) {
+  if (iframe && iframe.contentWindow) {
+    const resolvedData = {
+      fields: {},
+      events: {},
+      styles: orderConfig.data.styles || {}
+    };
+    
+    if (config) {
+      if (config.fields) {
+        config.fields.forEach(f => {
+          const val = (orderConfig.data.fields && orderConfig.data.fields[f.id]);
+          resolvedData.fields[f.id] = (val === null || val === undefined) ? (f.default || '') : val;
+        });
+      }
+      if (config.events) {
+        config.events.forEach(e => {
+          const currentEv = (orderConfig.data.events && orderConfig.data.events[e.id]) || {};
+          const nameVal = currentEv.name;
+          const dateVal = currentEv.date;
+          resolvedData.events[e.id] = {
+            name: (nameVal === null || nameVal === undefined) ? (e.defaultName || '') : nameVal,
+            date: (dateVal === null || dateVal === undefined) ? (e.defaultDate || '') : dateVal,
+            time: currentEv.time || '',
+            venue: currentEv.venue || '',
+            active: currentEv.active !== false
+          };
+        });
+      }
+    } else {
+      resolvedData.fields = orderConfig.data.fields || {};
+      resolvedData.events = orderConfig.data.events || {};
+    }
+    
+    iframe.contentWindow.postMessage({
+      type: 'UPDATE_TEMPLATE_DATA',
+      data: resolvedData
+    }, '*');
   }
 }
 
