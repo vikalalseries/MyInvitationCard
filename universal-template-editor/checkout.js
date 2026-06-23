@@ -550,20 +550,12 @@ function showProcessingPaymentModal() {
 }
 
 function showSuccessModal() {
-  const successModal = document.getElementById('modal-success');
-  if (!successModal) return;
-  
   // Generate random order ID
   const randNum = Math.floor(10000 + Math.random() * 90000);
   const orderId = `MIC-${randNum}-2026`;
-  document.getElementById('receipt-order-id').textContent = orderId;
   
   // Set delivery estimate
   const finalEst = shippingSpeed === 'standard' ? standardDeliveryDate : expressDeliveryDate;
-  document.getElementById('receipt-delivery-date').textContent = finalEst;
-  
-  // Set quantity
-  document.getElementById('receipt-qty').textContent = `${orderConfig.quantity} Cards`;
   
   // Set payment mode label
   let payModeText = '';
@@ -575,24 +567,73 @@ function showSuccessModal() {
   } else {
     payModeText = 'Net Banking';
   }
-  document.getElementById('receipt-payment-mode').textContent = payModeText;
   
-  // Set amount paid
-  const grandTotalText = document.getElementById('bill-grand-total').textContent;
-  document.getElementById('receipt-amount-paid').textContent = grandTotalText;
+  // Recompute bill variables for storing
+  const qty = orderConfig.quantity;
   
-  // Set shipping address meta
-  const fullName = document.getElementById('full-name').value.trim();
-  const address1 = document.getElementById('address-line1').value.trim();
-  const city = document.getElementById('city-input').value.trim();
-  const pincode = document.getElementById('pincode-input').value.trim();
+  let basePriceRate = 10.00;
+  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
+  if (discountPercent < 0) discountPercent = 0;
+  let basePrice = basePriceRate * (1 - discountPercent / 100);
+  const cardsTotal = qty * basePrice;
   
-  document.getElementById('receipt-address-name').textContent = fullName;
-  document.getElementById('receipt-address-text').textContent = `${address1}, ${city} - ${pincode}`;
+  let paperUnitCost = 0.00;
+  switch (orderConfig.paperStock) {
+    case 'glossy': paperUnitCost = 2.00; break;
+    case 'linen': paperUnitCost = 5.00; break;
+    case 'metallic': paperUnitCost = 8.00; break;
+  }
+  const paperTotal = qty * paperUnitCost;
   
-  // Display success modal
-  successModal.classList.add('active');
-  toast("Order completed successfully!", "s");
+  let envelopeUnitCost = 0.00;
+  switch (orderConfig.envelopeOption) {
+    case 'velvet': envelopeUnitCost = 5.00; break;
+    case 'none': envelopeUnitCost = -2.00; break;
+  }
+  const envelopeTotal = qty * envelopeUnitCost;
+  const subtotal = cardsTotal + paperTotal + envelopeTotal;
+  
+  let shippingCost = shippingSpeed === 'standard' ? 0.00 : 350.00;
+  const taxBase = subtotal + shippingCost;
+  const gstTax = taxBase * 0.18;
+  const grandTotal = subtotal + shippingCost + gstTax;
+  
+  const orderDetails = {
+    orderId,
+    templateId: orderConfig.templateId,
+    documentTitle: orderConfig.documentTitle,
+    quantity: qty,
+    paperStock: orderConfig.paperStock,
+    envelopeOption: orderConfig.envelopeOption,
+    basePrice,
+    cardsTotal,
+    paperTotal,
+    envelopeTotal,
+    subtotal,
+    shippingCost,
+    gstTax,
+    grandTotal,
+    deliveryDate: finalEst,
+    paymentMode: payModeText,
+    data: orderConfig.data,
+    shippingAddress: {
+      fullName: document.getElementById('full-name').value.trim(),
+      phone: document.getElementById('phone-num').value.trim(),
+      emergencyPhone: document.getElementById('emergency-phone-num').value.trim(),
+      address: document.getElementById('address-line1').value.trim(),
+      city: document.getElementById('city-input').value.trim(),
+      state: document.getElementById('state-input').value.trim(),
+      pincode: document.getElementById('pincode-input').value.trim()
+    }
+  };
+  
+  localStorage.setItem("mic_last_order_details", JSON.stringify(orderDetails));
+  
+  // Clear current order config since it is checked out
+  localStorage.removeItem("mic_current_order_config");
+  
+  // Redirect to success page
+  window.location.href = "order-success.html";
 }
 
 // Receipt print trigger

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed — MyInvitationCard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" href="order-success.css">
+</head>
+<body>
+
+<div class="app">
+  <!-- TOPBAR NAVBAR -->
+  <header class="topbar">
+    <a href="../template-dashboard.html" class="tb-logo" title="MyInvitationCard">
+      <svg class="tb-logo-svg" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60 42 C60 37,54 33,49 33 C42 33,39 40,39 45 C39 54,49 61,60 69 C71 61,81 54,81 45 C81 40,78 33,71 33 C66 33,60 37,60 42Z" fill="#ef4444" opacity="0.9"/>
+        <path d="M18 42 L18 78 Q18 84 24 84 L96 84 Q102 84 102 78 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 42 L60 14 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+        <path d="M102 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <span class="tb-logo-name">MyInvitationCard</span>
+    </a>
+    <div class="tb-sep"></div>
+    <div class="page-title-header">Order Success</div>
+  </header>
+
+  <!-- MAIN SCROLLABLE CONTAINER -->
+  <main class="body-scroll">
+    <div class="success-container">
+      
+      <!-- 1. Success Hero Card -->
+      <section class="success-hero">
+        <div class="hero-circle">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <h1>Order Placed Successfully!</h1>
+        <p class="hero-subtext">Thank you for printing with us. Your wedding invitation cards are being prepared for professional printing.</p>
+        
+        <div class="order-id-badge">
+          Order ID: <span id="summary-order-id">MIC-XXXXX-2026</span>
+        </div>
+        
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="printInvoice()"><i class="fa-solid fa-file-invoice"></i> Print Invoice</button>
+          <a href="../template-dashboard.html" class="btn-secondary-link"><i class="fa-solid fa-house"></i> Go to Dashboard</a>
+        </div>
+      </section>
+
+      <!-- 2. Flipkart/Amazon Style Delivery Progress Tracker -->
+      <section class="section-card tracking-section">
+        <h3 class="section-title"><i class="fa-solid fa-truck-fast"></i> Delivery Progress</h3>
+        
+        <div class="tracker-wrapper">
+          <div class="tracker-line-bg">
+            <div class="tracker-line-progress" style="width: 15%;"></div>
+          </div>
+          
+          <div class="tracker-steps">
+            <div class="tracker-step active">
+              <div class="step-node">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <div class="step-label">Order Confirmed</div>
+              <div class="step-date" id="track-confirm-date">Today</div>
+            </div>
+            
+            <div class="tracker-step">
+              <div class="step-node">
+                <i class="fa-solid fa-print"></i>
+              </div>
+              <div class="step-label">Cards Printed</div>
+              <div class="step-date">Pending</div>
+            </div>
+            
+            <div class="tracker-step">
+              <div class="step-node">
+                <i class="fa-solid fa-truck"></i>
+              </div>
+              <div class="step-label">Shipped</div>
+              <div class="step-date">Pending</div>
+            </div>
+            
+            <div class="tracker-step">
+              <div class="step-node">
+                <i class="fa-solid fa-house-chimney-user"></i>
+              </div>
+              <div class="step-label">Delivered</div>
+              <div class="step-date" id="track-delivery-date">Estimated</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Three-column Grid Details -->
+      <div class="details-grid">
+        
+        <!-- Column 1: Order Summary -->
+        <div class="detail-column-card">
+          <h3><i class="fa-solid fa-box"></i> Order Summary</h3>
+          <div class="review-body">
+            <div class="thumbnail-wrapper">
+              <iframe id="iframe-checkout-preview" src=""></iframe>
+            </div>
+            <div class="review-meta">
+              <h4 id="summary-doc-title">Wedding Card</h4>
+              <p>Quantity: <span id="summary-qty">100</span> cards</p>
+              <p>Paper finish: <span id="summary-paper">Matte</span></p>
+              <p>Envelopes: <span id="summary-envelope">Crimson Red</span></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Column 2: Shipping details -->
+        <div class="detail-column-card">
+          <h3><i class="fa-solid fa-location-dot"></i> Shipping Details</h3>
+          <div class="address-details">
+            <h4 id="summary-shipping-name">Name</h4>
+            <p id="summary-shipping-address">Address Line 1</p>
+            <p class="summary-contact-row"><i class="fa-solid fa-phone"></i> Mobile: <span id="summary-shipping-phone">Phone</span></p>
+            <p class="summary-contact-row" id="summary-emergency-row" style="display:none;"><i class="fa-solid fa-phone-slash"></i> Emergency No: <span id="summary-shipping-emergency">Phone</span></p>
+            
+            <div class="est-delivery-badge">
+              <i class="fa-regular fa-clock"></i> Est. Delivery: <span id="summary-est-delivery">Date</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Column 3: Payment details -->
+        <div class="detail-column-card">
+          <h3><i class="fa-solid fa-credit-card"></i> Payment & Invoice</h3>
+          <div class="invoice-summary">
+            <div class="invoice-row">
+              <span>Subtotal</span>
+              <span id="invoice-subtotal">₹0.00</span>
+            </div>
+            <div class="invoice-row">
+              <span>Shipping & Handling</span>
+              <span id="invoice-shipping">FREE</span>
+            </div>
+            <div class="invoice-row">
+              <span>GST Tax (18%)</span>
+              <span id="invoice-tax">₹0.00</span>
+            </div>
+            <div class="invoice-divider"></div>
+            <div class="invoice-row total-row">
+              <span>Grand Total</span>
+              <span id="invoice-total">₹0.00</span>
+            </div>
+            <div class="payment-method-badge">
+              Paid via: <span id="invoice-pay-mode">UPI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Interactive Star Rating and Reviews feedback -->
+      <section class="section-card feedback-section">
+        <h3 class="section-title"><i class="fa-solid fa-star-half-stroke"></i> Share Your Experience</h3>
+        <p class="feedback-desc">We hope you liked customizing your invitation card! Rate your printing setup experience below.</p>
+        
+        <form id="feedback-form" onsubmit="submitFeedback(event)">
+          <div class="star-rating-selector">
+            <button type="button" class="star-btn" data-value="1"><i class="fa-regular fa-star"></i></button>
+            <button type="button" class="star-btn" data-value="2"><i class="fa-regular fa-star"></i></button>
+            <button type="button" class="star-btn" data-value="3"><i class="fa-regular fa-star"></i></button>
+            <button type="button" class="star-btn" data-value="4"><i class="fa-regular fa-star"></i></button>
+            <button type="button" class="star-btn" data-value="5"><i class="fa-regular fa-star"></i></button>
+          </div>
+          
+          <div class="form-group-text">
+            <label for="feedback-comment">Tell us more (optional)</label>
+            <textarea id="feedback-comment" rows="3" placeholder="What did you like or how can we improve?"></textarea>
+          </div>
+          
+          <button type="submit" id="btn-submit-feedback" class="btn-submit-feedback" disabled>
+            Submit Feedback
+          </button>
+        </form>
+        
+        <div class="feedback-success-msg" id="feedback-success-msg" style="display:none;">
+          <i class="fa-solid fa-circle-check"></i> Thank you! Your rating has been recorded successfully.
+        </div>
+      </section>
+      
+    </div>
+  </main>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="order-success.js"></script>
+</body>
+</html>
