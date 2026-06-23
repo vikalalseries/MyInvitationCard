@@ -718,9 +718,10 @@ body {
 }
 
 .config-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-family: var(--font);
+  font-size: 1.15rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
   color: var(--g900);
   margin-bottom: 6px;
 }
