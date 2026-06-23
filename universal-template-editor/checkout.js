@@ -533,6 +533,33 @@ function showProcessingPaymentModal() {
   modal.classList.add('active');
   progress.style.width = '0%';
   
+  // Determine if payment should fail based on input criteria (for simulation)
+  let shouldFail = false;
+  
+  const fullNameEl = document.getElementById('full-name');
+  if (fullNameEl && fullNameEl.value.trim().toLowerCase().includes('fail')) {
+    shouldFail = true;
+  }
+  
+  if (activePaymentMethod === 'upi') {
+    const upiIdEl = document.getElementById('upi-id-input');
+    if (upiIdEl && upiIdEl.value.trim().toLowerCase().includes('fail')) {
+      shouldFail = true;
+    }
+  } else if (activePaymentMethod === 'card') {
+    const cNumEl = document.getElementById('card-number');
+    const cCvvEl = document.getElementById('card-cvv');
+    if (cNumEl) {
+      const cNum = cNumEl.value.replace(/\s/g, '');
+      if (cNum === '4111111111111112' || cNum === '0000000000000000') {
+        shouldFail = true;
+      }
+    }
+    if (cCvvEl && cCvvEl.value.trim() === '999') {
+      shouldFail = true;
+    }
+  }
+  
   let percent = 0;
   const interval = setInterval(() => {
     percent += 4;
@@ -541,12 +568,89 @@ function showProcessingPaymentModal() {
     if (percent >= 100) {
       clearInterval(interval);
       setTimeout(() => {
-        // Close loader and open success screen
         modal.classList.remove('active');
-        showSuccessModal();
+        if (shouldFail) {
+          showFailureSimulation();
+        } else {
+          showSuccessModal();
+        }
       }, 300);
     }
   }, 100);
+}
+
+function showFailureSimulation() {
+  // Generate random failure reference
+  const randNum = Math.floor(10000 + Math.random() * 90000);
+  const failureRef = `TXN-REF-${randNum}-2026`;
+  
+  // Recompute bill variables for storing
+  const qty = orderConfig.quantity;
+  
+  let basePriceRate = 10.00;
+  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
+  if (discountPercent < 0) discountPercent = 0;
+  let basePrice = basePriceRate * (1 - discountPercent / 100);
+  const cardsTotal = qty * basePrice;
+  
+  let paperUnitCost = 0.00;
+  switch (orderConfig.paperStock) {
+    case 'glossy': paperUnitCost = 2.00; break;
+    case 'linen': paperUnitCost = 5.00; break;
+    case 'metallic': paperUnitCost = 8.00; break;
+  }
+  const paperTotal = qty * paperUnitCost;
+  
+  let envelopeUnitCost = 0.00;
+  switch (orderConfig.envelopeOption) {
+    case 'glossy': case 'pink': case 'crimson': case 'gold': envelopeUnitCost = 3.00; break;
+    case 'velvet': envelopeUnitCost = 5.00; break;
+    case 'none': envelopeUnitCost = -2.00; break;
+  }
+  const envelopeTotal = qty * envelopeUnitCost;
+  const subtotal = cardsTotal + paperTotal + envelopeTotal;
+  
+  let shippingCost = shippingSpeed === 'standard' ? 0.00 : 350.00;
+  const taxBase = subtotal + shippingCost;
+  const gstTax = taxBase * 0.18;
+  const grandTotal = subtotal + shippingCost + gstTax;
+  
+  // Determine failure reason
+  let reason = "The transaction was declined by the bank due to insufficient funds or incorrect credentials.";
+  if (activePaymentMethod === 'upi') {
+    reason = "The UPI transaction timed out. Please ensure you open your UPI app and authorize the payment request within the time limit.";
+  } else if (activePaymentMethod === 'card') {
+    const cvvEl = document.getElementById('card-cvv');
+    const cvv = cvvEl ? cvvEl.value.trim() : '';
+    if (cvv === '999') {
+      reason = "Authentication failed. The CVV/CVC number entered is invalid.";
+    } else {
+      reason = "The card payment was declined by the issuing bank. Please check your card status, limits, or contact your bank.";
+    }
+  }
+  
+  let payModeText = '';
+  if (activePaymentMethod === 'upi') {
+    const upiAppName = selectedUpiBrand === 'gpay' ? 'Google Pay' : selectedUpiBrand === 'phonepe' ? 'PhonePe' : 'Paytm';
+    payModeText = `UPI (${upiAppName})`;
+  } else if (activePaymentMethod === 'card') {
+    payModeText = 'Credit/Debit Card';
+  } else {
+    payModeText = 'Net Banking';
+  }
+  
+  const failedDetails = {
+    orderId: `MIC-${randNum}-2026`,
+    txnId: failureRef,
+    amount: grandTotal,
+    reason: reason,
+    paymentMode: payModeText
+  };
+  
+  localStorage.setItem("mic_failed_order_details", JSON.stringify(failedDetails));
+  
+  // Redirect to payment failed page
+  window.location.href = "payment-failed.html";
 }
 
 function showSuccessModal() {

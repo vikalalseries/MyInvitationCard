@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Unsuccessful — MyInvitationCard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" href="payment-failed.css">
+</head>
+<body>
+
+<div class="app">
+  <!-- TOPBAR NAVBAR -->
+  <header class="topbar">
+    <a href="../template-dashboard.html" class="tb-logo" title="MyInvitationCard">
+      <svg class="tb-logo-svg" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60 42 C60 37,54 33,49 33 C42 33,39 40,39 45 C39 54,49 61,60 69 C71 61,81 54,81 45 C81 40,78 33,71 33 C66 33,60 37,60 42Z" fill="#ef4444" opacity="0.9"/>
+        <path d="M18 42 L18 78 Q18 84 24 84 L96 84 Q102 84 102 78 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 42 L60 14 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+        <path d="M102 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <span class="tb-logo-name">MyInvitationCard</span>
+    </a>
+    <div class="tb-sep"></div>
+    <div class="page-title-header">Payment Status</div>
+  </header>
+
+  <!-- MAIN SCROLLABLE CONTAINER -->
+  <main class="body-scroll">
+    <div class="failed-container">
+      
+      <!-- 1. Failure Hero Card -->
+      <section class="failed-hero">
+        <div class="hero-circle animate-pulse">
+          <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+        <h1>Payment Unsuccessful</h1>
+        <p class="hero-subtext">We were unable to complete your transaction. Rest assured, if any money has been deducted, it will be refunded automatically within 3-5 business days.</p>
+        
+        <div class="failed-summary-box">
+          <div class="summary-item">
+            <span class="summary-label">Order Reference</span>
+            <span class="summary-val" id="failed-order-id">MIC-XXXXX-2026</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Total Amount</span>
+            <span class="summary-val" id="failed-amount">₹0.00</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Payment Mode</span>
+            <span class="summary-val" id="failed-pay-mode">UPI</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Transaction ID</span>
+            <span class="summary-val" id="failed-transaction-id">TXN-REF-XXXXX</span>
+          </div>
+        </div>
+        
+        <div class="hero-actions">
+          <a href="checkout.html" class="btn-primary"><i class="fa-solid fa-rotate-left"></i> Retry Payment</a>
+          <a href="../template-dashboard.html" class="btn-secondary-link"><i class="fa-solid fa-house"></i> Go to Dashboard</a>
+        </div>
+      </section>
+
+      <!-- 2. Diagnostics Section -->
+      <section class="section-card diagnostics-section">
+        <h3 class="section-title"><i class="fa-solid fa-magnifying-glass-chart"></i> Diagnostic Information</h3>
+        
+        <div class="diagnostic-box">
+          <h4 class="diagnostic-heading"><i class="fa-solid fa-triangle-exclamation"></i> Error Description</h4>
+          <p id="failed-reason" class="diagnostic-text">Your card was declined by the bank due to incorrect CVV/CVC or card limits.</p>
+        </div>
+        
+        <div class="troubleshoot-tips">
+          <h4>How to resolve this?</h4>
+          <ul>
+            <li>
+              <div class="tip-icon"><i class="fa-regular fa-id-card"></i></div>
+              <div class="tip-content">
+                <strong>Verify Payment Credentials</strong>
+                <span>Please double check that the card number, expiration date, CVV, or UPI ID you entered is completely correct.</span>
+              </div>
+            </li>
+            <li>
+              <div class="tip-icon"><i class="fa-solid fa-gears"></i></div>
+              <div class="tip-content">
+                <strong>Check E-Commerce Limits</strong>
+                <span>Ensure that online/e-commerce transaction settings are active on your card through your banking application.</span>
+              </div>
+            </li>
+            <li>
+              <div class="tip-icon"><i class="fa-solid fa-wifi"></i></div>
+              <div class="tip-content">
+                <strong>Network Latency or Timeout</strong>
+                <span>A temporary drop in your bank's server connections can cause authorization timeouts. Wait a few moments and try again.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3. Contact Support Block -->
+      <section class="section-card support-section">
+        <div class="support-content">
+          <div class="support-info">
+            <h3>Need Assistance?</h3>
+            <p>If you keep encountering payment issues or see a charge on your bank statement, please get in touch with our operations team immediately.</p>
+          </div>
+          <div class="support-channels">
+            <a href="mailto:support@myinvitationcard.in" class="channel-btn"><i class="fa-regular fa-envelope"></i> Email Support</a>
+            <a href="tel:+919876543210" class="channel-btn"><i class="fa-solid fa-phone"></i> Call Support</a>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+  </main>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="payment-failed.js"></script>
+</body>
+</html>
