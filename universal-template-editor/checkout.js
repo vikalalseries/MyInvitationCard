@@ -43,9 +43,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   // 5. Run initial billing calculation
   recalculateBill();
-  
-  // 6. Autofill address fields for convenience
-  autofillAddress();
 });
 
 // Load template config
@@ -331,13 +328,20 @@ function selectUpiBrand(brand) {
   document.querySelectorAll('.upi-brand-tile').forEach(tile => {
     tile.classList.remove('active');
   });
-  event.target.closest('.upi-brand-tile')?.classList.add('active');
   
-  // Autofill placeholder sample ID
+  const activeTile = window.event ? window.event.target.closest('.upi-brand-tile') : null;
+  if (activeTile) {
+    activeTile.classList.add('active');
+  }
+  
+  // Update placeholder based on selected brand, keeping input blank
   const upiInput = document.getElementById('upi-id-input');
-  if (brand === 'gpay') upiInput.value = 'amit@okaxis';
-  else if (brand === 'phonepe') upiInput.value = '9876543210@ybl';
-  else if (brand === 'paytm') upiInput.value = '9876543210@paytm';
+  if (upiInput) {
+    upiInput.value = ''; // Keep it blank as requested
+    if (brand === 'gpay') upiInput.placeholder = 'e.g. username@okaxis';
+    else if (brand === 'phonepe') upiInput.placeholder = 'e.g. 9876543210@ybl';
+    else if (brand === 'paytm') upiInput.placeholder = 'e.g. 9876543210@paytm';
+  }
 }
 
 // Format Credit Card input fields
@@ -684,4 +688,111 @@ function executeLogout() {
   } else {
     toast("Auth connection error", "e");
   }
+}
+
+// ── GEOLOCATION & GOOGLE MAPS AUTO-TRACE LOCATION ──
+let mapInstance = null;
+let markerInstance = null;
+
+function initMap(lat, lon) {
+  if (typeof L === 'undefined') {
+    console.error("Leaflet library is not loaded yet.");
+    return;
+  }
+  
+  if (!mapInstance) {
+    mapInstance = L.map('map-container').setView([lat, lon], 15);
+    
+    // Load official Google Maps roadmap tiles
+    L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a>'
+    }).addTo(mapInstance);
+    
+    markerInstance = L.marker([lat, lon]).addTo(mapInstance);
+  } else {
+    mapInstance.setView([lat, lon], 15);
+    markerInstance.setLatLng([lat, lon]);
+    
+    // Invalidate size to handle dynamic rendering height changes in container
+    setTimeout(() => {
+      mapInstance.invalidateSize();
+    }, 100);
+  }
+}
+
+function traceLocation() {
+  const btn = document.querySelector('.btn-trace-location');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Tracing Location...';
+  btn.disabled = true;
+
+  if (!navigator.geolocation) {
+    toast("Geolocation is not supported by your browser.", "e");
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      
+      // Render or update the map container
+      const mapContainer = document.getElementById('map-container');
+      if (mapContainer) {
+        mapContainer.style.display = 'block';
+        initMap(lat, lon);
+      }
+
+      try {
+        // Reverse-geocode coordinates using free Nominatim API
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`);
+        if (response.ok) {
+          const data = await response.json();
+          const address = data.address || {};
+          
+          // Parse street address line
+          const street = address.road || address.suburb || address.neighbourhood || '';
+          const houseNumber = address.house_number || '';
+          const line1 = (houseNumber ? houseNumber + ', ' : '') + street;
+          
+          document.getElementById('address-line1').value = line1 || address.amenity || address.shop || 'Traced Location';
+          document.getElementById('city-input').value = address.city || address.town || address.village || address.county || '';
+          document.getElementById('state-input').value = address.state || '';
+          
+          const pincodeVal = address.postcode || '';
+          if (pincodeVal) {
+            // Clean up zip codes to standard 6 digit format for metro/delivery estimates
+            const cleanedPincode = pincodeVal.replace(/\s+/g, '').substring(0, 6);
+            document.getElementById('pincode-input').value = cleanedPincode;
+            calculateDeliveryEstimate(cleanedPincode);
+          }
+          
+          toast("Location traced and address fields populated!", "s");
+        } else {
+          toast("Failed to trace address details. Please input manually.", "w");
+        }
+      } catch (err) {
+        console.error("Geocoding fetch error:", err);
+        toast("Unable to connect to location services.", "w");
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    },
+    (error) => {
+      console.error("Geolocation callback error:", error);
+      let errMsg = "Unable to retrieve location coordinates.";
+      if (error.code === error.PERMISSION_DENIED) {
+        errMsg = "Location access denied. Please allow site location permissions.";
+      }
+      toast(errMsg, "e");
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
 }

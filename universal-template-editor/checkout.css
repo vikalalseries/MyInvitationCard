@@ -1213,3 +1213,53 @@ input[type="password"]:focus,
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
 }
+
+/* ── TRACE LOCATION STYLING ── */
+.trace-location-container {
+  margin-bottom: 20px;
+}
+
+.btn-trace-location {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  background: var(--rose-50);
+  border: 1.5px solid var(--rose-200);
+  border-radius: var(--r-sm);
+  color: var(--rose);
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all var(--t);
+  outline: none;
+}
+
+.btn-trace-location:hover {
+  background: var(--rose-100);
+  border-color: var(--rose-300);
+  transform: translateY(-1px);
+}
+
+.btn-trace-location:active {
+  transform: translateY(0);
+}
+
+.btn-trace-location:disabled {
+  background: var(--g100);
+  border-color: var(--g200);
+  color: var(--g400);
+  cursor: not-allowed;
+}
+
+#map-container {
+  width: 100%;
+  height: 220px;
+  margin-top: 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--g200);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
