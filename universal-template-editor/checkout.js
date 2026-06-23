@@ -470,7 +470,7 @@ function triggerCheckoutPayment() {
   }
   
   if (phone.length < 10) {
-    toast("Please enter a valid 10-digit phone number", "e");
+    toast("Please enter a valid 10-digit mobile number", "e");
     return;
   }
   
