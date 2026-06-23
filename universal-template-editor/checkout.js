@@ -791,17 +791,26 @@ function traceLocation() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         initMapPicker(position.coords.latitude, position.coords.longitude);
+        setTimeout(() => {
+          if (mapPickerInstance) mapPickerInstance.invalidateSize();
+        }, 150);
       },
       (error) => {
         console.warn("Geolocation coordinate acquisition failed:", error);
         // Default center: India (Madhya Pradesh area)
         initMapPicker(22.973, 78.656, 5);
+        setTimeout(() => {
+          if (mapPickerInstance) mapPickerInstance.invalidateSize();
+        }, 150);
         toast("Could not access GPS. Please drag map to pin your address.", "w");
       },
       { enableHighAccuracy: true, timeout: 6000 }
     );
   } else {
     initMapPicker(22.973, 78.656, 5);
+    setTimeout(() => {
+      if (mapPickerInstance) mapPickerInstance.invalidateSize();
+    }, 150);
     toast("Geolocation not supported. Please drag map to pin your address.", "w");
   }
 }
@@ -827,11 +836,10 @@ function initMapPicker(lat, lon, zoom = 15) {
       zoomControl: true
     }).setView([lat, lon], zoom);
 
-    // Google Maps Vector tiles
-    L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-      maxZoom: 20,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a>'
+    // Standard OpenStreetMap tiles (reliable and requires no API key)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(mapPickerInstance);
 
     // Bind dragging events (like Swiggy/Zomato map picker)
@@ -845,6 +853,9 @@ function initMapPicker(lat, lon, zoom = 15) {
     });
   } else {
     mapPickerInstance.setView([lat, lon], zoom);
+    setTimeout(() => {
+      mapPickerInstance.invalidateSize();
+    }, 100);
   }
 
   // Trigger initial geocode lookup for starting coordinates
