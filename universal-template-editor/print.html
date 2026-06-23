@@ -113,14 +113,14 @@
     <div class="showcase-panel">
       <div class="showcase-header">
         <div class="preview-tabs">
+          <button class="preview-tab-btn active" id="tab-flat" onclick="switchPreviewMode('flat')">
+            <i class="fa-solid fa-rectangle-ad"></i> 2D Foldout View
+          </button>
           <button class="preview-tab-btn" id="tab-3d" onclick="switchPreviewMode('3d')">
             <i class="fa-solid fa-rotate"></i> 360° 3D Card
           </button>
           <button class="preview-tab-btn" id="tab-layers" onclick="switchPreviewMode('layers')">
-            <i class="fa-solid fa-layer-group"></i> 3D Layers
-          </button>
-          <button class="preview-tab-btn active" id="tab-flat" onclick="switchPreviewMode('flat')">
-            <i class="fa-solid fa-rectangle-ad"></i> 2D Foldout View
+            <i class="fa-solid fa-layer-group"></i> Pages (Canva View)
           </button>
         </div>
       </div>
@@ -163,33 +163,51 @@
           </div>
         </div>
         
-        <!-- 2. 3D Layer Exploder -->
+        <!-- 2. Pages Canva View / Layered Spread -->
         <div id="view-layers" class="viewport-view">
           <div class="layer-control-warning">
-            <i class="fa-solid fa-circle-info"></i> Exploding layers shows how base cardstock, border decorations, graphic art, and text content stack together.
+            <i class="fa-solid fa-circle-info"></i> Click any page card below to open it in full screen zoom inspector.
           </div>
-          <div class="scene-layers" id="scene-layers">
-            <div class="layer-exploder-stack" id="exploder-stack">
-              <!-- Layer 4: Text Content (Top) -->
-              <div class="layer-plane text-layer" id="layer-text">
-                <iframe id="iframe-layer-text" class="preview-iframe" src=""></iframe>
-                <span class="layer-label">Layer 4: Text Content</span>
+          
+          <div class="pages-mode-container" id="pages-mode-container">
+            <div class="pages-viewport-wrapper mode-spread" id="pages-viewport">
+              
+              <!-- Page 1: Front Cover -->
+              <div class="page-card card-cover" onclick="openZoomInspector('cover')">
+                <div class="page-card-header">
+                  <span class="p-num">Page 1</span>
+                  <span class="p-name">Front Cover</span>
+                  <span class="zoom-badge"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</span>
+                </div>
+                <div class="page-card-body">
+                  <iframe id="iframe-layer-cover" class="preview-iframe" src=""></iframe>
+                </div>
               </div>
-              <!-- Layer 3: Graphic Art (Middle-Top) -->
-              <div class="layer-plane art-layer" id="layer-art">
-                <iframe id="iframe-layer-art" class="preview-iframe" src=""></iframe>
-                <span class="layer-label">Layer 3: Graphic Art & Icons</span>
+              
+              <!-- Page 2: Inside Section 1 -->
+              <div class="page-card card-sec1" onclick="openZoomInspector('sec1')">
+                <div class="page-card-header">
+                  <span class="p-num">Page 2</span>
+                  <span class="p-name">Event Details</span>
+                  <span class="zoom-badge"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</span>
+                </div>
+                <div class="page-card-body">
+                  <iframe id="iframe-layer-sec1" class="preview-iframe" src=""></iframe>
+                </div>
               </div>
-              <!-- Layer 2: Borders (Middle-Bottom) -->
-              <div class="layer-plane borders-layer" id="layer-borders">
-                <iframe id="iframe-layer-borders" class="preview-iframe" src=""></iframe>
-                <span class="layer-label">Layer 2: Frames & Borders</span>
+              
+              <!-- Page 3: Inside Section 2 -->
+              <div class="page-card card-sec2" onclick="openZoomInspector('sec2')">
+                <div class="page-card-header">
+                  <span class="p-num">Page 3</span>
+                  <span class="p-name">Invitation Text</span>
+                  <span class="zoom-badge"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</span>
+                </div>
+                <div class="page-card-body">
+                  <iframe id="iframe-layer-sec2" class="preview-iframe" src=""></iframe>
+                </div>
               </div>
-              <!-- Layer 1: Background Paper (Base) -->
-              <div class="layer-plane background-layer" id="layer-background">
-                <iframe id="iframe-layer-background" class="preview-iframe" src=""></iframe>
-                <span class="layer-label">Layer 1: Premium Cardstock</span>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -235,17 +253,16 @@
           </div>
         </div>
         
-        <!-- Layer Controls -->
+        <!-- Page Layout View Toggles -->
         <div class="tool-group" id="controls-layers" style="display: none;">
-          <div class="slider-control">
-            <span class="slider-label">Explosion Depth</span>
-            <input type="range" id="depth-slider" min="10" max="150" value="60" oninput="adjustExplosionDepth(this.value)">
-            <span class="slider-val" id="depth-val">60px</span>
+          <div class="sub-toggle-group">
+            <button class="sub-toggle-btn active" id="btn-toggle-spread" onclick="switchPagesViewMode('spread')">
+              <i class="fa-solid fa-clone"></i> Layered Stack
+            </button>
+            <button class="sub-toggle-btn" id="btn-toggle-grid" onclick="switchPagesViewMode('grid')">
+              <i class="fa-solid fa-grip"></i> Canva Grid View
+            </button>
           </div>
-          <div class="toolbar-divider"></div>
-          <button class="tool-btn" onclick="resetLayersView()" title="Reset Exploder Orientation">
-            <i class="fa-solid fa-arrows-rotate"></i> Reset
-          </button>
         </div>
         
         <!-- Zoom Controls -->
@@ -444,6 +461,19 @@
   <div style="display: flex; gap: 12px; justify-content: center;">
     <button class="reset-confirm-btn" onclick="executeLogout()" style="background:#e11d48; color:white; border:none; padding:10px 24px; border-radius:10px; font-weight:600; cursor:pointer; font-family:var(--font);">Yes</button>
     <button class="reset-cancel-btn" onclick="closeLogoutConfirm()" style="background:#f1f5f9; color:#475569; border:none; padding:10px 24px; border-radius:10px; font-weight:600; cursor:pointer; font-family:var(--font);">No</button>
+  </div>
+</div>
+
+<!-- Fullscreen Zoom Inspector Modal -->
+<div class="modal-overlay" id="modal-zoom-inspector" onclick="closeZoomInspector()">
+  <div class="zoom-inspector-card" onclick="event.stopPropagation()">
+    <button class="zoom-close-btn" onclick="closeZoomInspector()" title="Close Inspector"><i class="fa-solid fa-xmark"></i></button>
+    <div class="zoom-card-header">
+      <h2 id="zoom-page-title">Page Preview</h2>
+    </div>
+    <div class="zoom-card-body">
+      <iframe id="iframe-zoom-preview" class="preview-iframe" src=""></iframe>
+    </div>
   </div>
 </div>
 

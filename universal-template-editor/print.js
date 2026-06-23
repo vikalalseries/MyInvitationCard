@@ -164,7 +164,7 @@ function initializeIframes() {
   // A list of all iframes on this page
   const iframeIds = [
     'iframe-sec1', 'iframe-sec2', 'iframe-cover',
-    'iframe-layer-text', 'iframe-layer-art', 'iframe-layer-borders', 'iframe-layer-background',
+    'iframe-layer-cover', 'iframe-layer-sec1', 'iframe-layer-sec2',
     'iframe-flat-sec1', 'iframe-flat-sec2'
   ];
   
@@ -228,7 +228,11 @@ function syncIframeData(iframe) {
 
 // Apply isolated layer styles inside individual iframes
 function applyIframeIsolation(iframeId) {
-  const iframe = document.getElementById(iframeId);
+  let actualId = iframeId;
+  if (iframeId.startsWith('zoom-')) {
+    actualId = 'iframe-zoom-preview';
+  }
+  const iframe = document.getElementById(actualId);
   if (!iframe) return;
   
   const doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -246,6 +250,8 @@ function applyIframeIsolation(iframeId) {
   switch(iframeId) {
     case 'iframe-sec1':
     case 'iframe-flat-sec1':
+    case 'iframe-layer-sec1':
+    case 'zoom-sec1':
       cssText = `
         ${baseLayoutCSS}
         .sec2 { display: none !important; }
@@ -255,6 +261,8 @@ function applyIframeIsolation(iframeId) {
       
     case 'iframe-sec2':
     case 'iframe-flat-sec2':
+    case 'iframe-layer-sec2':
+    case 'zoom-sec2':
       cssText = `
         ${baseLayoutCSS}
         .sec1 { display: none !important; }
@@ -263,35 +271,40 @@ function applyIframeIsolation(iframeId) {
       break;
       
     case 'iframe-cover':
+    case 'iframe-layer-cover':
+    case 'zoom-cover':
       // Build a beautiful custom cover page that matches card theme inside top fold back
       cssText = `
         ${baseLayoutCSS}
         .sec1, .sec2 { display: none !important; }
         
         .card {
-          background: #f9f1d0 !important;
-          border: 0.07cm solid #8b0040 !important;
-          box-shadow: inset 0 0 0 0.13cm #f9f1d0, inset 0 0 0 0.20cm #8b0040 !important;
+          background: linear-gradient(135deg, #ea580c 0%, #d97706 40%, #9a3412 100%) !important;
+          border: 0.08cm solid #fbbf24 !important;
+          box-shadow: inset 0 0 0 0.12cm #ea580c, inset 0 0 0 0.20cm #fbbf24, 0 10px 35px rgba(0,0,0,0.2) !important;
           display: flex !important;
           flex-direction: column !important;
           align-items: center !important;
           justify-content: center !important;
           position: relative !important;
           box-sizing: border-box !important;
+          overflow: hidden !important;
         }
         
         /* Ornamental corners */
         .cover-ornament {
           position: absolute;
-          color: #8b0040;
-          font-size: 1.2cm;
+          color: #fbbf24;
+          font-size: 1.1cm;
           line-height: 1;
           z-index: 10;
+          opacity: 0.95;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
-        .c-tl { top: 0.4cm; left: 0.2cm; }
-        .c-tr { top: 0.4cm; right: 0.2cm; }
-        .c-bl { bottom: -0.07cm; left: 0.2cm; }
-        .c-br { bottom: -0.07cm; right: 0.2cm; }
+        .c-tl { top: 0.3cm; left: 0.3cm; }
+        .c-tr { top: 0.3cm; right: 0.3cm; }
+        .c-bl { bottom: 0.2cm; left: 0.3cm; }
+        .c-br { bottom: 0.2cm; right: 0.3cm; }
         
         .cover-content {
           text-align: center;
@@ -299,34 +312,85 @@ function applyIframeIsolation(iframeId) {
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
+          width: 90%;
+          height: 90%;
+        }
+        
+        /* Medallion style for Ganesha */
+        .cover-medallion {
+          width: 2.3cm;
+          height: 2.3cm;
+          border-radius: 50%;
+          border: 0.06cm solid #fbbf24;
+          background: radial-gradient(circle, #fffbeb 50%, #fef3c7 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 0.25cm;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.15), 0 0 12px rgba(251, 191, 36, 0.4);
         }
         
         .cover-ganesh {
-          width: 1.8cm;
-          height: auto;
-          margin-bottom: 0.3cm;
+          width: 1.5cm;
+          height: 1.5cm;
+          object-fit: contain;
         }
         
         .cover-title {
           font-size: 0.65cm;
           font-weight: 700;
-          color: #6e0035;
-          margin-bottom: 0.2cm;
-          letter-spacing: 0.05cm;
+          color: #fffbeb;
+          margin-bottom: 0.1cm;
+          letter-spacing: 0.06cm;
+          font-family: 'Playfair Display', 'Noto Serif Devanagari', serif;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+        }
+        
+        /* Name Banner */
+        .cover-banner {
+          background: rgba(255, 255, 255, 0.08);
+          border-top: 1px solid rgba(251, 191, 36, 0.3);
+          border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+          width: 100%;
+          padding: 0.15cm 0;
+          margin: 0.2cm 0;
+          backdrop-filter: blur(4px);
         }
         
         .cover-names {
-          font-size: 0.58cm;
-          font-weight: 600;
-          color: #8b0040;
-          margin-bottom: 0.4cm;
+          font-size: 0.65cm;
+          font-weight: 700;
+          color: #fbbf24;
+          letter-spacing: 0.02cm;
+          font-family: 'Playfair Display', 'Noto Serif Devanagari', serif;
+          text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        /* Couple illustration area */
+        .cover-couple-wrap {
+          margin-top: 0.15cm;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 1.4cm;
+        }
+        
+        .cover-couple {
+          height: 1.4cm;
+          width: auto;
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+          opacity: 0.95;
         }
         
         .cover-footer {
-          font-size: 0.35cm;
-          color: #6e0035;
+          font-size: 0.36cm;
+          color: #fffbeb;
           letter-spacing: 0.04cm;
-          opacity: 0.85;
+          opacity: 0.9;
+          margin-top: 0.25cm;
+          font-family: 'Inter', 'Noto Serif Devanagari', sans-serif;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
       `;
       
@@ -339,6 +403,11 @@ function applyIframeIsolation(iframeId) {
           const gEl = doc.querySelector('.ganesh-icon img');
           if (gEl) ganeshSrc = gEl.src;
           
+          // Extract couple weds illustration src
+          let coupleSrc = "../../../builder1/assets/icons/weds.png";
+          const cEl = doc.querySelector('.couple-box img');
+          if (cEl) coupleSrc = cEl.src;
+          
           // Extract bride/groom names
           let bName = "नीलम";
           let gName = "अमित";
@@ -347,16 +416,29 @@ function applyIframeIsolation(iframeId) {
           const grEl = doc.querySelector('[data-field="groomName"]');
           if (grEl) gName = grEl.textContent.trim().split(" ")[0];
           
+          // Determine language and connect names
+          let isHindi = /[\u0900-\u097F]/.test(bName);
+          let nameText = isHindi ? `${bName} संग ${gName}` : `${bName.toUpperCase()} WEDS ${gName.toUpperCase()}`;
+          let titleText = isHindi ? `|| निमन्त्रण पत्र ||` : `|| INVITATION ||`;
+          let footerText = isHindi ? `श्रीमती एवं श्री मौर्य परिवार` : `Family & Friends Welcome You`;
+          
           cardContainer.innerHTML = `
             <div class="cover-ornament c-tl">✿</div>
             <div class="cover-ornament c-tr">✿</div>
             <div class="cover-ornament c-bl">✿</div>
             <div class="cover-ornament c-br">✿</div>
             <div class="cover-content">
-              <img class="cover-ganesh" src="${ganeshSrc}" alt="Ganesh">
-              <div class="cover-title">|| निमन्त्रण पत्र ||</div>
-              <div class="cover-names">${bName} संग ${gName}</div>
-              <div class="cover-footer">श्रीमती एवं श्री मौर्य परिवार</div>
+              <div class="cover-medallion">
+                <img class="cover-ganesh" src="${ganeshSrc}" alt="Ganesh">
+              </div>
+              <div class="cover-title">${titleText}</div>
+              <div class="cover-banner">
+                <div class="cover-names">${nameText}</div>
+              </div>
+              <div class="cover-couple-wrap">
+                <img class="cover-couple" src="${coupleSrc}" alt="Wedding Couple">
+              </div>
+              <div class="cover-footer">${footerText}</div>
             </div>
           `;
         }
@@ -453,6 +535,70 @@ function switchPreviewMode(mode) {
 function goBackToEditor() {
   window.location.href = `editor.html?templateId=${templateId}`;
 }
+
+// Switch between Layered Spread and Canva Grid view modes
+function switchPagesViewMode(mode) {
+  const viewport = document.getElementById('pages-viewport');
+  const btnSpread = document.getElementById('btn-toggle-spread');
+  const btnGrid = document.getElementById('btn-toggle-grid');
+  
+  if (!viewport) return;
+  
+  // Toggle active sub-tab buttons
+  if (mode === 'grid') {
+    viewport.classList.remove('mode-spread');
+    viewport.classList.add('mode-grid');
+    if (btnSpread) btnSpread.classList.remove('active');
+    if (btnGrid) btnGrid.classList.add('active');
+  } else {
+    viewport.classList.remove('mode-grid');
+    viewport.classList.add('mode-spread');
+    if (btnGrid) btnGrid.classList.remove('active');
+    if (btnSpread) btnSpread.classList.add('active');
+  }
+}
+
+// Open zoom inspector modal
+function openZoomInspector(page) {
+  const modal = document.getElementById('modal-zoom-inspector');
+  const iframe = document.getElementById('iframe-zoom-preview');
+  const title = document.getElementById('zoom-page-title');
+  if (!modal || !iframe || !title) return;
+  
+  let pageTitle = "Page Preview";
+  if (page === 'cover') pageTitle = "Page 1: Front Cover";
+  if (page === 'sec1') pageTitle = "Page 2: Event Details";
+  if (page === 'sec2') pageTitle = "Page 3: Invitation Text";
+  title.textContent = pageTitle;
+  
+  modal.classList.add('active');
+  
+  const templatePath = `templates/${templateId}/template.html`;
+  iframe.src = templatePath;
+  iframe.onload = () => {
+    syncIframeData(iframe);
+    applyIframeIsolation('zoom-' + page);
+  };
+}
+
+// Close zoom inspector modal
+function closeZoomInspector() {
+  const modal = document.getElementById('modal-zoom-inspector');
+  const iframe = document.getElementById('iframe-zoom-preview');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+  if (iframe) {
+    iframe.src = 'about:blank'; // Clear to free resource memory
+  }
+}
+
+// Close modal on ESC key press
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeZoomInspector();
+  }
+});
 
 // ── 3D DRAG ROTATION (360° MOCKUP) ──
 function setup3DRotation() {

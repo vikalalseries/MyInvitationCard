@@ -231,7 +231,8 @@ body {
 
 /* Left Column: Preview area */
 .showcase-panel {
-  flex: 1;
+  flex: 0 0 60%;
+  width: 60%;
   background: var(--g100);
   display: flex;
   flex-direction: column;
@@ -694,7 +695,8 @@ body {
 
 /* Right Column: Config Panel */
 .config-panel {
-  width: 480px;
+  flex: 0 0 40%;
+  width: 40%;
   background: var(--w);
   display: flex;
   flex-direction: column;
@@ -1419,4 +1421,296 @@ body {
 }
 .popup-upgrade-btn i {
   color: #eab308;
+}
+
+/* ── CANVA PAGES VIEW & LAYERED SPREAD & ZOOM MODAL ── */
+
+.sub-toggle-group {
+  display: flex;
+  background: var(--g100);
+  padding: 4px;
+  border-radius: 20px;
+  border: 1px solid var(--g150);
+}
+
+.sub-toggle-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--g500);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--t);
+}
+
+.sub-toggle-btn:hover {
+  color: var(--g900);
+}
+
+.sub-toggle-btn.active {
+  background: var(--w);
+  color: var(--rose-dark);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.pages-mode-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.pages-viewport-wrapper {
+  transition: all var(--t);
+}
+
+/* 1. Canva Grid Mode */
+.pages-viewport-wrapper.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+  width: 100%;
+  max-width: 1100px;
+  padding: 20px;
+}
+
+.pages-viewport-wrapper.mode-grid .page-card {
+  width: 100%;
+  aspect-ratio: 2.53;
+  height: auto;
+}
+
+.pages-viewport-wrapper.mode-grid .page-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--rose-100);
+}
+
+/* 2. Layered Spread Mode */
+.pages-viewport-wrapper.mode-spread {
+  position: relative;
+  width: 600px;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pages-viewport-wrapper.mode-spread .page-card {
+  position: absolute;
+  width: 420px;
+  height: 166px; /* 420 / 2.53 aspect ratio */
+  transform-origin: center center;
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), z-index 0s linear, box-shadow 0.4s ease, border-color 0.3s ease;
+}
+
+.pages-viewport-wrapper.mode-spread .card-cover {
+  transform: translate(45px, 55px) rotate(2deg);
+  z-index: 3;
+}
+
+.pages-viewport-wrapper.mode-spread .card-sec1 {
+  transform: translate(-55px, 15px) rotate(-8deg);
+  z-index: 2;
+}
+
+.pages-viewport-wrapper.mode-spread .card-sec2 {
+  transform: translate(0px, -35px) rotate(0deg);
+  z-index: 1;
+}
+
+/* Hover elevation in Spread mode */
+.pages-viewport-wrapper.mode-spread .page-card:hover {
+  transform: scale(1.08) translate(0px, 0px) rotate(0deg) !important;
+  z-index: 10 !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.22), 0 0 0 1px var(--rose-100);
+  border-color: var(--rose-dark);
+}
+
+/* Common Page Card Styling */
+.page-card {
+  background: var(--w);
+  border-radius: var(--r-md);
+  border: 1px solid var(--g200);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.page-card-header {
+  padding: 8px 12px;
+  background: var(--g50);
+  border-bottom: 1px solid var(--g150);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: background var(--t);
+}
+
+.page-card:hover .page-card-header {
+  background: var(--g100);
+}
+
+.p-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--g400);
+}
+
+.p-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--g700);
+}
+
+.zoom-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--rose-dark);
+  background: var(--rose-50);
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all var(--t);
+}
+
+.page-card:hover .zoom-badge {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.page-card-body {
+  flex: 1;
+  background: #f9f1d0;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-card-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  pointer-events: none;
+}
+
+/* 3. Fullscreen Zoom Inspector Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.zoom-inspector-card {
+  background: var(--w);
+  width: 100%;
+  max-width: 860px;
+  border-radius: var(--r-card);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transform: scale(0.92);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-overlay.active .zoom-inspector-card {
+  transform: scale(1);
+}
+
+.zoom-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: var(--g50);
+  border: 1px solid var(--g200);
+  color: var(--g500);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all var(--t);
+  z-index: 12;
+}
+
+.zoom-close-btn:hover {
+  background: var(--rose-50);
+  border-color: var(--rose-100);
+  color: var(--rose-dark);
+  transform: rotate(90deg);
+}
+
+.zoom-card-header {
+  padding: 16px 20px;
+  background: var(--w);
+  border-bottom: 1px solid var(--g150);
+  user-select: none;
+}
+
+.zoom-card-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--g900);
+}
+
+.zoom-card-body {
+  width: 100%;
+  aspect-ratio: 2.53;
+  background: #f9f1d0;
+  position: relative;
+}
+
+.zoom-card-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Adjustments for smaller screen stack sizes */
+@media (max-width: 768px) {
+  .pages-viewport-wrapper.mode-spread {
+    transform: scale(0.85);
+  }
+}
+@media (max-width: 500px) {
+  .pages-viewport-wrapper.mode-spread {
+    transform: scale(0.68);
+  }
+  .pages-viewport-wrapper.mode-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 10px;
+  }
 }

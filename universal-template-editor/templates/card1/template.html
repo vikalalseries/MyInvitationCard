@@ -983,6 +983,11 @@ window.addEventListener('message', function(e) {
     });
   }
 
+  // 3. Sync Styles (fonts, sizes, colors)
+  if (payload.styles) {
+    applyCustomStyles(payload.styles);
+  }
+
   // 5. Adjust Layout dynamically (hiding empty sections, shifting elements)
   adjustDynamicLayout(payload);
 });
