@@ -119,43 +119,43 @@
           <button type="button" class="btn-trace-location" onclick="traceLocation()">
             <i class="fa-solid fa-location-crosshairs"></i> Auto-Trace Location (Google Maps)
           </button>
-          <div id="map-container" style="display: none;"></div>
         </div>
         
         <form id="shipping-form" class="shipping-form">
           <div class="form-row">
             <div class="form-group flex-1">
               <label for="full-name" class="input-label">Full Name *</label>
-              <input type="text" id="full-name" required placeholder="e.g. Amit Maurya">
+              <input type="text" id="full-name" required placeholder="Full Name">
             </div>
             <div class="form-group flex-1">
               <label for="phone-num" class="input-label">Phone Number *</label>
-              <input type="tel" id="phone-num" required pattern="[0-9]{10}" placeholder="e.g. 9876543210">
+              <input type="tel" id="phone-num" required pattern="[0-9]{10}" placeholder="10-digit Phone Number">
             </div>
           </div>
           
           <div class="form-group">
             <label for="address-line1" class="input-label">Address Line 1 (Street, Area, Colony) *</label>
-            <input type="text" id="address-line1" required placeholder="e.g. Plot No 123, Maurya Vihar">
+            <input type="text" id="address-line1" required placeholder="Flat, House no., Building, Company, Apartment">
           </div>
           
           <div class="form-group">
             <label for="address-line2" class="input-label">Address Line 2 (Landmark, Floor, Apartment) *</label>
-            <input type="text" id="address-line2" placeholder="e.g. Near Shiv Temple, 2nd Floor">
+            <input type="text" id="address-line2" placeholder="Area, Street, Sector, Village, Landmark">
           </div>
           
-          <div class="form-row">
+          <div class="form-row flex-align-start">
             <div class="form-group flex-1">
               <label for="pincode-input" class="input-label">Pincode *</label>
-              <input type="text" id="pincode-input" required maxlength="6" pattern="[0-9]{6}" placeholder="e.g. 221001" oninput="calculateDeliveryEstimate(this.value)">
+              <input type="text" id="pincode-input" required maxlength="6" pattern="[0-9]{6}" placeholder="6-digit Pincode" oninput="verifyPincodeAndAutofill(this.value)">
+              <div id="pincode-feedback" class="pincode-feedback"></div>
             </div>
             <div class="form-group flex-1">
               <label for="city-input" class="input-label">City *</label>
-              <input type="text" id="city-input" required placeholder="e.g. Varanasi">
+              <input type="text" id="city-input" required placeholder="City">
             </div>
             <div class="form-group flex-1">
               <label for="state-input" class="input-label">State *</label>
-              <input type="text" id="state-input" required placeholder="e.g. Uttar Pradesh">
+              <input type="text" id="state-input" required placeholder="State">
             </div>
           </div>
         </form>
@@ -285,7 +285,7 @@
             <div class="form-group margin-top-16">
               <label for="upi-id-input" class="input-label">Enter UPI ID (VPA) *</label>
               <div class="upi-input-row">
-                <input type="text" id="upi-id-input" placeholder="e.g. amit@okaxis">
+                <input type="text" id="upi-id-input" placeholder="Enter UPI ID (yourname@upi)">
                 <span class="secure-tick"><i class="fa-solid fa-circle-check"></i></span>
               </div>
             </div>
@@ -295,7 +295,7 @@
           <div id="pay-pane-card" class="pay-pane">
             <div class="form-group">
               <label for="card-name" class="input-label">Cardholder's Name *</label>
-              <input type="text" id="card-name" placeholder="e.g. AMIT MAURYA">
+              <input type="text" id="card-name" placeholder="Name on Card">
             </div>
             
             <div class="form-group">
@@ -418,6 +418,35 @@
   <div style="display: flex; gap: 12px; justify-content: center;">
     <button class="reset-confirm-btn" onclick="executeLogout()" style="background:#e11d48; color:white; border:none; padding:10px 24px; border-radius:10px; font-weight:600; cursor:pointer; font-family:var(--font);">Yes</button>
     <button class="reset-cancel-btn" onclick="closeLogoutConfirm()" style="background:#f1f5f9; color:#475569; border:none; padding:10px 24px; border-radius:10px; font-weight:600; cursor:pointer; font-family:var(--font);">No</button>
+  </div>
+</div>
+
+<!-- Swiggy-style Map Location Picker Modal -->
+<div id="map-picker-modal" class="map-picker-modal">
+  <div class="map-picker-content">
+    <div class="map-picker-header">
+      <h3>Select Delivery Location</h3>
+      <button type="button" class="btn-close-map" onclick="closeMapPicker()">&times;</button>
+    </div>
+    
+    <div class="map-canvas-container">
+      <div id="map-picker-canvas"></div>
+      <!-- Center Pin Overlay (stays fixed in center of map) -->
+      <div class="map-center-pin">
+        <i class="fa-solid fa-location-dot"></i>
+        <div class="pin-shadow"></div>
+      </div>
+    </div>
+    
+    <div class="map-picker-footer">
+      <div class="address-preview-box">
+        <span class="address-preview-label"><i class="fa-solid fa-map-pin"></i> Select Delivery Location (Drag Map)</span>
+        <p id="map-picker-address-text">Locating...</p>
+      </div>
+      <button type="button" id="btn-confirm-location" class="btn-confirm-location" onclick="confirmMapLocation()" disabled>
+        Confirm Location
+      </button>
+    </div>
   </div>
 </div>
 
