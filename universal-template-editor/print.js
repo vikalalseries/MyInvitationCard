@@ -177,6 +177,11 @@ function initializeIframes() {
         syncIframeData(iframe);
         // 2. Apply isolation styles specific to each view
         applyIframeIsolation(id);
+        
+        // If it's the flat preview iframe, call resetZoom() to set correct initial sizes
+        if (id === 'iframe-flat-full') {
+          resetZoom();
+        }
       };
     }
   });
@@ -857,10 +862,16 @@ function resetZoom() {
   }
 }
 
+const FLAT_TEMPLATE_WIDTH = 888;
+const FLAT_TEMPLATE_HEIGHT = 718;
+
 function updateFlatCardTransforms() {
   const card = document.querySelector('.flat-full-frame');
-  if (card) {
-    card.style.transform = `scale(${currentZoom})`;
+  const scalerWrap = document.querySelector('.flat-scaler-wrapper');
+  if (card && scalerWrap) {
+    card.style.transform = `translateX(-50%) scale(${currentZoom})`;
+    scalerWrap.style.width = (FLAT_TEMPLATE_WIDTH * currentZoom) + 'px';
+    scalerWrap.style.height = (FLAT_TEMPLATE_HEIGHT * currentZoom) + 'px';
   }
 }
 

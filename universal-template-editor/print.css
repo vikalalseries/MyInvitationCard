@@ -563,6 +563,13 @@ body {
   width: 100%;
 }
 
+.flat-scaler-wrapper {
+  position: relative;
+  transition: width var(--t), height var(--t);
+  margin: auto;
+  flex-shrink: 0;
+}
+
 .flat-frame-box {
   border-radius: 8px;
   box-shadow: var(--card-shadow-hover);
@@ -570,14 +577,16 @@ body {
   overflow: hidden;
   background: #f9f1d0;
   transition: transform var(--t);
-  transform-origin: center center;
+  transform-origin: top center;
 }
 
 .flat-full-frame {
-  width: 23.5cm;
-  height: 19cm;
-  transform: scale(0.8);
-  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 888px;
+  height: 718px;
+  transform: translateX(-50%) scale(0.8);
   flex-shrink: 0;
 }
 
