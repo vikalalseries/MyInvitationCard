@@ -396,6 +396,12 @@ function triggerCheckoutPayment() {
     return;
   }
   
+  const emergencyPhone = document.getElementById('emergency-phone-num').value.trim();
+  if (emergencyPhone && emergencyPhone.length < 10) {
+    toast("Please enter a valid 10-digit emergency mobile number", "e");
+    return;
+  }
+  
   if (pincode.length < 6) {
     toast("Please enter a valid 6-digit postal pincode", "e");
     return;
