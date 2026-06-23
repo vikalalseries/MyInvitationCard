@@ -49,9 +49,10 @@
   button { font-family:var(--font); cursor:pointer; border:none; background:none; outline:none; }
   input,textarea,select { font-family:var(--font); }
   a { text-decoration:none; color:inherit; }
-  ::-webkit-scrollbar { width:5px; }
-  ::-webkit-scrollbar-thumb { background:var(--g200); border-radius:6px; }
-  ::-webkit-scrollbar-thumb:hover { background:var(--g300); }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 10px; transition: background 0.2s ease; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
 
   /* ══════════════════════════════════════ APP SHELL */
   .app  { display:flex; flex-direction:column; height:100vh; }

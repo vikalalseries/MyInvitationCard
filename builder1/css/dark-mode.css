@@ -32,7 +32,13 @@
 
 /* Dark mode scrollbar */
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #2e2e4a;
+  background: rgba(255, 255, 255, 0.2);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+[data-theme="dark"] * {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 /* Dark mode card previews look fine since they have their own color scheme */
