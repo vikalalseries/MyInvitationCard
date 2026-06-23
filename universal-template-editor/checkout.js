@@ -264,16 +264,11 @@ function recalculateBill() {
   const subtotal = cardsTotal + paperTotal + envelopeTotal;
   
   // 4. Shipping Calculation
-  // Standard shipping is free for orders above ₹2000, otherwise ₹150
+  // Standard shipping is free
   let shippingCost = 0.00;
   if (shippingSpeed === 'standard') {
-    if (subtotal < 2000) {
-      shippingCost = 150.00;
-      document.getElementById('standard-shipping-label').textContent = '₹150.00';
-    } else {
-      shippingCost = 0.00;
-      document.getElementById('standard-shipping-label').textContent = 'FREE';
-    }
+    shippingCost = 0.00;
+    document.getElementById('standard-shipping-label').textContent = 'FREE';
   } else {
     // Express Shipping is flat rate ₹350
     shippingCost = 350.00;

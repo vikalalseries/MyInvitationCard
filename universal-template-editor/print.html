@@ -271,7 +271,7 @@
     <div class="config-panel">
       <div class="config-section">
         <h2 class="config-title">Professional Print Settings</h2>
-        <p class="config-subtitle">Configure your physical card print preferences below. The card design you customized will be merged and printed on premium stock.</p>
+        <p class="config-subtitle">Configure your physical card print preferences below.</p>
         
         <!-- Quantity Selector -->
         <div class="form-group card-quantity-group">
@@ -313,40 +313,42 @@
         <!-- Card Price Display -->
         <div class="price-banner">
           <div class="price-header-row">
-            <span class="price-banner-title"><i class="fa-solid fa-receipt"></i> Pricing Details</span>
+            <span class="price-banner-title"><i class="fa-solid fa-receipt"></i> Pricing Summary</span>
             <span class="tier-badge" id="discount-badge-label">Standard Tier</span>
           </div>
           
-          <div class="price-breakdown">
-            <div class="breakdown-row">
-              <span class="breakdown-label">Base Card Stock</span>
-              <span class="breakdown-value" id="base-price-val">₹20.00</span>
+          <div class="price-summary-row">
+            <div class="summary-item">
+              <span class="summary-label">Price per Card</span>
+              <span class="summary-val"><span class="currency">₹</span><span id="unit-price-val" class="price-amount">20.00</span></span>
             </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">Paper Finish Premium</span>
-              <span class="breakdown-value" id="paper-addon-val">+₹0.00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">Envelope Option</span>
-              <span class="breakdown-value" id="envelope-addon-val">+₹0.00</span>
-            </div>
-            <div class="breakdown-row discount-row" id="discount-breakdown-row" style="display: none;">
-              <span class="breakdown-label">Volume Discount</span>
-              <span class="breakdown-value" id="discount-addon-val">-₹0.00</span>
-            </div>
-            
-            <div class="breakdown-divider"></div>
-            
-            <div class="breakdown-row total-unit-row">
-              <span class="breakdown-label">Price per Card</span>
-              <span class="breakdown-value"><span class="currency">₹</span><span class="price-amount" id="unit-price-val">20.00</span> <span class="per-card">/ card</span></span>
-            </div>
-            
-            <div class="breakdown-row grand-total-row">
-              <span class="breakdown-label">Estimated Grand Total</span>
-              <span class="breakdown-value-grand"><span class="currency">₹</span><span class="grand-price-amount" id="total-price-val">2,000.00</span></span>
+            <div class="summary-item">
+              <span class="summary-label">Estimated Total</span>
+              <span class="summary-val grand"><span class="currency">₹</span><span id="total-price-val" class="grand-price-amount">2,000.00</span></span>
             </div>
           </div>
+          
+          <details class="price-breakdown-details">
+            <summary class="details-summary">Show pricing breakdown</summary>
+            <div class="price-breakdown">
+              <div class="breakdown-row">
+                <span class="breakdown-label">Base Card Stock</span>
+                <span class="breakdown-value" id="base-price-val">₹20.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Paper Finish Premium</span>
+                <span class="breakdown-value" id="paper-addon-val">+₹0.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Envelope Option</span>
+                <span class="breakdown-value" id="envelope-addon-val">+₹0.00</span>
+              </div>
+              <div class="breakdown-row discount-row" id="discount-breakdown-row" style="display: none;">
+                <span class="breakdown-label">Volume Discount</span>
+                <span class="breakdown-value" id="discount-addon-val">-₹0.00</span>
+              </div>
+            </div>
+          </details>
           
           <div class="volume-discount-notice" id="discount-banner">
             <i class="fa-solid fa-circle-info"></i> Order 150+ cards to unlock discount tiers!
@@ -358,50 +360,53 @@
         <!-- Paper Stock Selection -->
         <div class="form-group">
           <label class="field-label">Premium Paper Stock</label>
-          <p class="field-desc">Select the physical texture and feel of the print cardboard.</p>
           <div class="option-grid">
             <label class="option-card checked">
               <input type="radio" name="paper-stock" value="matte" checked onchange="updatePaperSelection(this)">
+              <span class="option-radio-circle"></span>
               <span class="opt-swatch swatch-matte"></span>
               <span class="opt-content">
                 <span class="opt-title">Matte Cardboard</span>
-                <span class="opt-desc">Smooth anti-glare finish, premium heavy card stock.</span>
+              </span>
+              <span class="opt-right-meta">
                 <span class="opt-addon">Included</span>
               </span>
-              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="paper-stock" value="glossy" onchange="updatePaperSelection(this)">
+              <span class="option-radio-circle"></span>
               <span class="opt-swatch swatch-glossy"></span>
               <span class="opt-content">
                 <span class="opt-title">Premium Glossy</span>
-                <span class="opt-desc">Vibrant colors with a high-shine glossy protective coat.</span>
+              </span>
+              <span class="opt-right-meta">
                 <span class="opt-addon">+₹2.00 / card</span>
               </span>
-              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="paper-stock" value="linen" onchange="updatePaperSelection(this)">
+              <span class="option-radio-circle"></span>
               <span class="opt-swatch swatch-linen"></span>
               <span class="opt-content">
                 <span class="opt-title">Elegant Textured Linen</span>
-                <span class="opt-desc">Luxurious linen weave texture, artistic matte feel.</span>
+              </span>
+              <span class="opt-right-meta">
                 <span class="opt-addon">+₹5.00 / card</span>
               </span>
-              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="paper-stock" value="metallic" onchange="updatePaperSelection(this)">
+              <span class="option-radio-circle"></span>
               <span class="opt-swatch swatch-metallic"></span>
               <span class="opt-content">
                 <span class="opt-title">Royal Metallic Gold Foil</span>
-                <span class="opt-desc">Gold shimmer cardstock with embossed gold lettering accents.</span>
+              </span>
+              <span class="opt-right-meta">
                 <span class="opt-addon">+₹8.00 / card</span>
               </span>
-              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
           </div>
         </div>
@@ -411,39 +416,41 @@
         <!-- Envelope Options -->
         <div class="form-group">
           <label class="field-label">Envelope Option</label>
-          <p class="field-desc">Choose matching envelopes for your invitation cards.</p>
-          <div class="option-grid envelope-grid">
+          <div class="option-grid">
             <label class="option-card checked">
               <input type="radio" name="envelope" value="standard" checked onchange="updateEnvelopeSelection(this)">
+              <span class="option-radio-circle"></span>
               <span class="opt-swatch swatch-crimson"></span>
               <span class="opt-content">
                 <span class="opt-title">Crimson Red Envelope</span>
-                <span class="opt-desc">Standard wedding envelope with floral border design.</span>
+              </span>
+              <span class="opt-right-meta">
                 <span class="opt-addon">Included</span>
               </span>
-              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="envelope" value="velvet" onchange="updateEnvelopeSelection(this)">
+              <span class="option-radio-circle"></span>
               <span class="opt-swatch swatch-velvet"></span>
               <span class="opt-content">
                 <span class="opt-title">Premium Velvet Silk</span>
-                <span class="opt-desc">Handmade velvet paper envelope with gold stamp seals.</span>
+              </span>
+              <span class="opt-right-meta">
                 <span class="opt-addon">+₹5.00 / card</span>
               </span>
-              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
             
             <label class="option-card">
               <input type="radio" name="envelope" value="none" onchange="updateEnvelopeSelection(this)">
+              <span class="option-radio-circle"></span>
               <span class="opt-swatch swatch-none"></span>
               <span class="opt-content">
                 <span class="opt-title">No Envelopes</span>
-                <span class="opt-desc">Ship cards only. Recommended if you have custom envelopes.</span>
+              </span>
+              <span class="opt-right-meta">
                 <span class="opt-addon">-₹2.00 / card</span>
               </span>
-              <span class="opt-select-check"><i class="fa-solid fa-circle-check"></i></span>
             </label>
           </div>
         </div>
