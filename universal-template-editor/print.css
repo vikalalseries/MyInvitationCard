@@ -1718,3 +1718,39 @@ body {
     padding: 10px;
   }
 }
+
+/* ── CUSTOM SCROLLBARS ── */
+.flat-scroll-container::-webkit-scrollbar,
+.pages-mode-container::-webkit-scrollbar,
+.config-section::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.flat-scroll-container::-webkit-scrollbar-track,
+.pages-mode-container::-webkit-scrollbar-track,
+.config-section::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.flat-scroll-container::-webkit-scrollbar-thumb,
+.pages-mode-container::-webkit-scrollbar-thumb,
+.config-section::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  transition: background var(--t);
+}
+
+.flat-scroll-container::-webkit-scrollbar-thumb:hover,
+.pages-mode-container::-webkit-scrollbar-thumb:hover,
+.config-section::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox scrollbar sizing */
+.flat-scroll-container,
+.pages-mode-container,
+.config-section {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
