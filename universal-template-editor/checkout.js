@@ -19,6 +19,8 @@ let config = null; // Config state for resolving template defaults
 let shippingSpeed = 'standard';
 let activePaymentMethod = 'upi';
 let selectedUpiBrand = 'gpay';
+let activeUpiType = 'qr';
+let qrTimerInterval = null;
 
 // Delivery Date variables
 let standardDeliveryDate = '';
@@ -43,6 +45,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   // 5. Run initial billing calculation
   recalculateBill();
+  
+  // 6. Start QR Code countdown timer
+  startQrCountdown();
 });
 
 // Load template config
@@ -298,6 +303,12 @@ function recalculateBill() {
   
   // Update Payment button label
   document.getElementById('btn-pay-total').textContent = grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  
+  // Update QR Code display amount dynamically
+  const qrAmt = document.getElementById('qr-pay-amount');
+  if (qrAmt) {
+    qrAmt.textContent = grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 }
 
 // ── PAYMENT METHODS TABS ──
@@ -324,7 +335,8 @@ function selectUpiBrand(brand) {
     tile.classList.remove('active');
   });
   
-  const activeTile = window.event ? window.event.target.closest('.upi-brand-tile') : null;
+  // Use class selector instead of window.event for robustness
+  const activeTile = document.querySelector(`.upi-brand-tile.tile-${brand}`);
   if (activeTile) {
     activeTile.classList.add('active');
   }
@@ -333,10 +345,81 @@ function selectUpiBrand(brand) {
   const upiInput = document.getElementById('upi-id-input');
   if (upiInput) {
     upiInput.value = ''; // Keep it blank as requested
+    
+    // Update dynamic focus highlight classes
+    upiInput.classList.remove('gpay-focus', 'phonepe-focus', 'paytm-focus');
+    upiInput.classList.add(`${brand}-focus`);
+    
     if (brand === 'gpay') upiInput.placeholder = 'username@okaxis';
     else if (brand === 'phonepe') upiInput.placeholder = 'mobileNumber@ybl';
     else if (brand === 'paytm') upiInput.placeholder = 'mobileNumber@paytm';
   }
+}
+
+// UPI VPA Quick-fill chip application
+function applyUpiChip(handle) {
+  const upiInput = document.getElementById('upi-id-input');
+  if (!upiInput) return;
+  
+  let val = upiInput.value.trim();
+  if (!val) {
+    // If empty, pre-fill with a generic username placeholder
+    upiInput.value = 'username' + handle;
+  } else {
+    // Replace handle if it already exists, otherwise append it
+    const atIndex = val.indexOf('@');
+    if (atIndex !== -1) {
+      val = val.substring(0, atIndex);
+    }
+    upiInput.value = val + handle;
+  }
+  
+  upiInput.focus();
+}
+
+// Switch UPI sub-tab view (QR vs VPA)
+function switchUpiType(type) {
+  activeUpiType = type;
+  
+  // Toggle sub-tab button active classes
+  document.getElementById('upi-btn-qr').classList.toggle('active', type === 'qr');
+  document.getElementById('upi-btn-vpa').classList.toggle('active', type === 'vpa');
+  
+  // Toggle sub-pane visibility
+  document.getElementById('upi-sub-pane-qr').classList.toggle('active', type === 'qr');
+  document.getElementById('upi-sub-pane-vpa').classList.toggle('active', type === 'vpa');
+  
+  // Trigger countdown timer restart if switching to QR
+  if (type === 'qr') {
+    startQrCountdown();
+  } else {
+    if (qrTimerInterval) clearInterval(qrTimerInterval);
+  }
+}
+
+// Manage QR code expiration timer countdown
+function startQrCountdown() {
+  if (qrTimerInterval) clearInterval(qrTimerInterval);
+  let timeRemaining = 300; // 5 minutes
+  const timerDisplay = document.getElementById('qr-countdown');
+  if (!timerDisplay) return;
+  
+  // Reset style in case it was previously EXPIRED
+  timerDisplay.style.color = '';
+  timerDisplay.textContent = '05:00';
+  
+  qrTimerInterval = setInterval(() => {
+    timeRemaining--;
+    if (timeRemaining <= 0) {
+      clearInterval(qrTimerInterval);
+      timerDisplay.textContent = 'EXPIRED';
+      timerDisplay.style.color = 'var(--rose-dark)';
+      return;
+    }
+    const mins = Math.floor(timeRemaining / 60);
+    const secs = timeRemaining % 60;
+    timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }, 1000);
 }
 
 // Format Credit Card input fields
@@ -404,10 +487,12 @@ function triggerCheckoutPayment() {
   
   // 2. Validate Payment inputs
   if (activePaymentMethod === 'upi') {
-    const upiId = document.getElementById('upi-id-input').value.trim();
-    if (!upiId || !upiId.includes('@')) {
-      toast("Please enter a valid UPI VPA ID (username@bank)", "e");
-      return;
+    if (activeUpiType === 'vpa') {
+      const upiId = document.getElementById('upi-id-input').value.trim();
+      if (!upiId || !upiId.includes('@')) {
+        toast("Please enter a valid UPI VPA ID (username@bank)", "e");
+        return;
+      }
     }
   } else if (activePaymentMethod === 'card') {
     const cName = document.getElementById('card-name').value.trim();
