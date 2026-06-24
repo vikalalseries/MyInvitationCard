@@ -743,3 +743,12 @@ if (confirmLogoutBtn) {
     }
   });
 }
+
+// Bind click listeners for "My Profile" popup buttons globally
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".popup-menu-btn, .sidebar-popup-item");
+  if (btn && btn.textContent.includes("My Profile")) {
+    e.preventDefault();
+    window.location.href = "profile.html";
+  }
+});

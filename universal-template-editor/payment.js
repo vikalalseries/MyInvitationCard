@@ -2,6 +2,22 @@
    payment.js - Price Summary & Razorpay Payment Logic
    ════════════════════════════════════════════════════════════ */
 
+// Initialize Firebase Auth dynamically to track logged in user
+Promise.all([
+  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+  import("../assets/js/firebase-config.js")
+]).then(([authMod, configMod]) => {
+  authMod.onAuthStateChanged(configMod.auth, (user) => {
+    if (user) {
+      window.currentUserUid = user.uid;
+    } else {
+      window.currentUserUid = null;
+    }
+  });
+}).catch(err => {
+  console.error("Failed to load Firebase modules on payment page:", err);
+});
+
 const API_BASE_URL = "http://localhost:5000/api/payment";
 let orderConfig = null;
 let shippingAddress = null;
@@ -418,6 +434,23 @@ function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
     }
   };
   
+  // If user is logged in, save order to their order history in localStorage
+  if (window.currentUserUid) {
+    const orderHistoryKey = `mic_user_orders_${window.currentUserUid}`;
+    let orderHistory = [];
+    try {
+      const raw = localStorage.getItem(orderHistoryKey);
+      if (raw) orderHistory = JSON.parse(raw);
+    } catch (e) {
+      console.error("Error reading order history:", e);
+    }
+    orderHistory.push({
+      ...orderDetails,
+      orderDate: new Date().toISOString()
+    });
+    localStorage.setItem(orderHistoryKey, JSON.stringify(orderHistory));
+  }
+
   localStorage.setItem("mic_last_order_details", JSON.stringify(orderDetails));
   localStorage.removeItem("mic_current_order_config");
   

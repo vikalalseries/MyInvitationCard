@@ -7,6 +7,7 @@ if (templateParam === '1' || templateParam === '37' || templateParam === '38') {
   templateParam = 'card1';
 }
 let activeTemplateId = templateParam;
+let activeProjectId = urlParams.get('projectId') || null;
 
 let config = null;
 let currentData = {
@@ -31,6 +32,7 @@ Promise.all([
     if (user) {
       const displayName = user.displayName?.trim() || localStorage.getItem("signupFullName")?.trim() || user.email.split('@')[0];
       currentUser = {
+        uid: user.uid,
         name: displayName,
         email: user.email,
         photoURL: user.photoURL
@@ -1662,6 +1664,45 @@ function toast(msg, type = 's') {
 
 // ── BLINKING SAVE STATUS EFFECT ──
 let saveTimeout = null;
+function autoSaveUserProject() {
+  if (!userLoggedIn || !currentUser || !currentUser.uid) return;
+  
+  const docTitle = document.getElementById('doc-title-input')?.value.trim() || 'Untitled Invitation';
+  
+  if (!activeProjectId) {
+    activeProjectId = 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?templateId=' + activeTemplateId + '&projectId=' + activeProjectId;
+    window.history.replaceState({ path: newUrl }, '', newUrl);
+  }
+  
+  const projectKey = `mic_user_projects_${currentUser.uid}`;
+  let userProjects = [];
+  try {
+    const raw = localStorage.getItem(projectKey);
+    if (raw) userProjects = JSON.parse(raw);
+  } catch (e) {
+    console.error("Error reading saved projects:", e);
+  }
+  
+  const existingIndex = userProjects.findIndex(p => p.id === activeProjectId);
+  const projectData = {
+    id: activeProjectId,
+    templateId: activeTemplateId,
+    documentTitle: docTitle,
+    lastSaved: new Date().toISOString(),
+    thumbnail: `templates/${activeTemplateId}/thumbnail.jpg`,
+    data: JSON.parse(JSON.stringify(currentData))
+  };
+  
+  if (existingIndex > -1) {
+    userProjects[existingIndex] = projectData;
+  } else {
+    userProjects.push(projectData);
+  }
+  
+  localStorage.setItem(projectKey, JSON.stringify(userProjects));
+}
+
 function triggerSaving() {
   const status = document.getElementById('save-status');
   const text = document.getElementById('save-status-text');
@@ -1675,6 +1716,9 @@ function triggerSaving() {
   saveTimeout = setTimeout(() => {
     status.classList.remove('saving');
     text.textContent = 'Draft Saved';
+    
+    // Auto save to user's drafts list
+    autoSaveUserProject();
   }, 1000);
 }
 
