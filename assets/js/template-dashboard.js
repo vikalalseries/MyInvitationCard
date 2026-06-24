@@ -536,9 +536,25 @@ onAuthStateChanged(auth, (user) => {
     popupUserName.textContent = displayName;
     popupUserEmail.textContent = user.email;
 
-    if (user.photoURL) {
-      sidebarAvatar.innerHTML = `<img src="${user.photoURL}">`;
-      popupAvatar.innerHTML = `<img src="${user.photoURL}">`;
+    let localAvatar = "";
+    try {
+      const metaRaw = localStorage.getItem(`mic_user_profile_${user.uid}`);
+      if (metaRaw) {
+        const meta = JSON.parse(metaRaw);
+        localAvatar = meta.customAvatar || meta.avatar || "";
+      }
+    } catch (e) {}
+
+    const avatarUrl = localAvatar || user.photoURL;
+
+    if (avatarUrl) {
+      if (sidebarAvatar) sidebarAvatar.innerHTML = `<img src="${avatarUrl}">`;
+      if (popupAvatar) popupAvatar.innerHTML = `<img src="${avatarUrl}">`;
+    } else {
+      const initial = displayName.charAt(0).toUpperCase();
+      const avatarHTML = `<div class="avatar-initial">${initial}</div>`;
+      if (sidebarAvatar) sidebarAvatar.innerHTML = avatarHTML;
+      if (popupAvatar) popupAvatar.innerHTML = avatarHTML;
     }
 
   } else {

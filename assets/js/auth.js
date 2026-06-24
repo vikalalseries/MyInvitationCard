@@ -539,35 +539,46 @@ onAuthStateChanged(auth, (user) => {
       mobileMenuLoggedIn.style.display = "flex";
     }
 
-    if (user.photoURL) {
+    let localAvatar = "";
+    try {
+      const metaRaw = localStorage.getItem(`mic_user_profile_${user.uid}`);
+      if (metaRaw) {
+        const meta = JSON.parse(metaRaw);
+        localAvatar = meta.customAvatar || meta.avatar || "";
+      }
+    } catch (e) {}
+
+    const avatarUrl = localAvatar || user.photoURL;
+
+    if (avatarUrl) {
       if (sidebarAvatar) {
-        sidebarAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+        sidebarAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
       }
 
       if (popupAvatar) {
-        popupAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+        popupAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
       }
 
       if (navAvatar) {
-        navAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+        navAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
       }
 
       if (popupNavAvatar) {
-        popupNavAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+        popupNavAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
       }
 
       if (mobilePopupNavAvatar) {
-        mobilePopupNavAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+        mobilePopupNavAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
       }
 
       if (mobileMenuAvatar) {
-        mobileMenuAvatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+        mobileMenuAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
       }
 
       if (mobileNavUserMenuBtn) {
         const avatar = mobileNavUserMenuBtn.querySelector(".mobile-nav-avatar");
         if (avatar) {
-          avatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+          avatar.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
         }
       }
 

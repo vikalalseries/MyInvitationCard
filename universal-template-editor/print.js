@@ -1182,8 +1182,19 @@ function updateHeaderProfileUI(user) {
     if (popupName) popupName.textContent = displayName;
     if (popupEmail) popupEmail.textContent = user.email || 'No email';
 
-    if (user.photoURL) {
-      const imgHTML = `<img src="${user.photoURL}" alt="avatar">`;
+    let localAvatar = "";
+    try {
+      const metaRaw = localStorage.getItem(`mic_user_profile_${user.uid}`);
+      if (metaRaw) {
+        const meta = JSON.parse(metaRaw);
+        localAvatar = meta.customAvatar || meta.avatar || "";
+      }
+    } catch (e) {}
+
+    const avatarUrl = localAvatar || user.photoURL;
+
+    if (avatarUrl) {
+      const imgHTML = `<img src="${avatarUrl}" alt="avatar">`;
       if (avatarSpan) avatarSpan.innerHTML = imgHTML;
       if (popupAvatar) popupAvatar.innerHTML = imgHTML;
     } else {

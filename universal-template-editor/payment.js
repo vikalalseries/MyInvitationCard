@@ -454,8 +454,7 @@ function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
   localStorage.setItem("mic_last_order_details", JSON.stringify(orderDetails));
   localStorage.removeItem("mic_current_order_config");
   
-  // Clear address details from cache
-  localStorage.removeItem("mic_shipping_address");
+  // Clear speed details from cache, but keep mic_shipping_address for persistence!
   localStorage.removeItem("mic_shipping_speed");
   
   window.location.href = "order-success.html";

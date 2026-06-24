@@ -92,6 +92,9 @@ async function loadTemplatesList() {
     const res = await fetch("data/templates.json");
     if (res.ok) {
       templates = await res.json();
+      if (currentUser) {
+        loadFavorites(currentUser.uid);
+      }
     }
   } catch (err) {
     console.error("Failed to load templates json:", err);
@@ -112,11 +115,9 @@ function setupAuthenticatedView(user) {
   profileEmail.value = user.email || "";
   greetingName.textContent = displayName;
 
-  // Set greeting banner avatar
-  setGreetingAvatarUI(user.photoURL, displayName);
-
   // Load user profile details metadata
   const metaKey = `mic_user_profile_${user.uid}`;
+  let localAvatar = "";
   try {
     const metaRaw = localStorage.getItem(metaKey);
     if (metaRaw) {
@@ -124,23 +125,34 @@ function setupAuthenticatedView(user) {
       profilePhone.value = meta.phone || "";
       profileLanguage.value = meta.language || "english";
       profileDOB.value = meta.dob || "";
+      localAvatar = meta.customAvatar || meta.avatar || "";
       
       // Select Gender radio
       const gender = meta.gender || "";
-      if (gender === "male") document.getElementById("genderMale").checked = true;
-      else if (gender === "female") document.getElementById("genderFemale").checked = true;
-      else if (gender === "other") document.getElementById("genderOther").checked = true;
+      const maleRadio = document.getElementById("genderMale");
+      const femaleRadio = document.getElementById("genderFemale");
+      const otherRadio = document.getElementById("genderOther");
+      if (maleRadio && gender === "male") maleRadio.checked = true;
+      else if (femaleRadio && gender === "female") femaleRadio.checked = true;
+      else if (otherRadio && gender === "other") otherRadio.checked = true;
     } else {
       profilePhone.value = "";
       profileLanguage.value = "english";
       profileDOB.value = "";
-      document.getElementById("genderMale").checked = false;
-      document.getElementById("genderFemale").checked = false;
-      document.getElementById("genderOther").checked = false;
+      const maleRadio = document.getElementById("genderMale");
+      const femaleRadio = document.getElementById("genderFemale");
+      const otherRadio = document.getElementById("genderOther");
+      if (maleRadio) maleRadio.checked = false;
+      if (femaleRadio) femaleRadio.checked = false;
+      if (otherRadio) otherRadio.checked = false;
     }
   } catch (e) {
     console.error(e);
   }
+
+  // Set greeting banner avatar
+  const avatarToUse = localAvatar || user.photoURL || "";
+  setGreetingAvatarUI(avatarToUse, displayName);
 
   // Load Shipping Address from localStorage
   loadShippingAddress();
@@ -311,11 +323,12 @@ function bindFormSubmissions() {
 
       try {
         const finalAvatar = customAvatarBase64 || selectedAvatarUrl || "";
+        const isBase64 = finalAvatar.startsWith("data:image/");
 
-        // Update Firebase Auth displayName & photoURL
+        // Update Firebase Auth displayName & photoURL (only pass photoURL if it's NOT base64)
         await updateProfile(auth.currentUser, {
           displayName: fullName,
-          photoURL: finalAvatar
+          photoURL: isBase64 ? "" : finalAvatar
         });
 
         // Determine gender value
@@ -333,7 +346,8 @@ function bindFormSubmissions() {
           phone: profilePhone.value.trim(),
           language: profileLanguage.value,
           dob: profileDOB.value,
-          gender: genderVal
+          gender: genderVal,
+          customAvatar: isBase64 ? finalAvatar : ""
         };
         localStorage.setItem(metaKey, JSON.stringify(metaData));
 

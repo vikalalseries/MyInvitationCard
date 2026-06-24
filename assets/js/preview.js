@@ -1,5 +1,9 @@
+import { auth } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 let templates = [];
 let selectedTemplate = null;
+let currentUser = null;
 
 /* ELEMENTS */
 const modalImage = document.getElementById("modalImage");
@@ -155,6 +159,10 @@ function renderSuggestions(template) {
 
 /* FAVORITES */
 function getFavorites() {
+  if (currentUser) {
+    const scopedFavKey = `mic_favorites_${currentUser.uid}`;
+    return JSON.parse(localStorage.getItem(scopedFavKey)) || [];
+  }
   return JSON.parse(localStorage.getItem("favorites")) || [];
 }
 
@@ -170,6 +178,7 @@ function updateFavoriteUI() {
 }
 
 function toggleFavorite() {
+  if (!selectedTemplate) return;
   let favorites = getFavorites();
 
   if (favorites.includes(selectedTemplate.id)) {
@@ -178,6 +187,11 @@ function toggleFavorite() {
     favorites.push(selectedTemplate.id);
   }
 
+  if (currentUser) {
+    const scopedFavKey = `mic_favorites_${currentUser.uid}`;
+    localStorage.setItem(scopedFavKey, JSON.stringify(favorites));
+  }
+  // Keep in global favorites too for consistency when logged out
   localStorage.setItem("favorites", JSON.stringify(favorites));
 
   updateFavoriteUI();
@@ -299,6 +313,12 @@ document.addEventListener(
 );
 
 loadTemplates();
+
+// Listen to Auth State changes
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  updateFavoriteUI();
+});
 
 
 

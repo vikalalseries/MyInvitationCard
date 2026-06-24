@@ -26,7 +26,6 @@ let qrTimerInterval = null;
 let standardDeliveryDate = '';
 let expressDeliveryDate = '';
 
-// ── INITIALIZATION ──
 window.addEventListener('DOMContentLoaded', async () => {
   // 1. Retrieve order configuration from localStorage
   loadOrderConfig();
@@ -48,6 +47,25 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   // 6. Start QR Code countdown timer
   startQrCountdown();
+
+  // 7. Pre-populate shipping address if saved in profile/localStorage
+  const savedAddress = localStorage.getItem("mic_shipping_address");
+  if (savedAddress) {
+    try {
+      const addr = JSON.parse(savedAddress);
+      if (addr) {
+        if (document.getElementById('full-name')) document.getElementById('full-name').value = addr.fullName || '';
+        if (document.getElementById('phone-num')) document.getElementById('phone-num').value = addr.phone || '';
+        if (document.getElementById('address-line1')) document.getElementById('address-line1').value = addr.address || '';
+        if (document.getElementById('address-line2')) document.getElementById('address-line2').value = addr.address2 || '';
+        if (document.getElementById('city-input')) document.getElementById('city-input').value = addr.city || '';
+        if (document.getElementById('state-input')) document.getElementById('state-input').value = addr.state || '';
+        if (document.getElementById('pincode-input')) document.getElementById('pincode-input').value = addr.pincode || '';
+      }
+    } catch (e) {
+      console.error("Error parsing saved shipping address:", e);
+    }
+  }
 });
 
 // Load template config
