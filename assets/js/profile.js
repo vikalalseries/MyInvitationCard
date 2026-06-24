@@ -213,26 +213,26 @@ function setGreetingAvatarUI(photoURL, name, isCustom = false) {
 // ── BIND TAB ACTIONS ──
 function bindTabs() {
   const triggers = document.querySelectorAll("[data-target]");
-  triggers.forEach((trigger) => {
-    trigger.addEventListener("click", () => {
-      // Clear active classes from all sidebar buttons
-      triggers.forEach((t) => {
-        t.classList.remove("active-nav");
-      });
-      // Clear active classes from content panels
-      document.querySelectorAll(".profile-tab-content").forEach((c) => {
-        c.classList.remove("active");
-      });
+  if (!triggers.length) return;
 
-      // Apply active state to clicked button
-      trigger.classList.add("active-nav");
+  const activateTab = (trigger) => {
+    const targetId = trigger.dataset.target;
+    if (!targetId) return;
 
-      // Show targeted tab panel
-      const targetId = trigger.dataset.target;
-      const targetContent = document.getElementById(targetId);
-      if (targetContent) targetContent.classList.add("active");
+    triggers.forEach((t) => t.classList.toggle("active-nav", t === trigger));
+    document.querySelectorAll(".profile-tab-content").forEach((content) => {
+      content.classList.toggle("active", content.id === targetId);
     });
+  };
+
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("click", () => activateTab(trigger));
   });
+
+  const initialTrigger = document.querySelector('.sidebar-menu-btn.active-nav[data-target]') || triggers[0];
+  if (initialTrigger) {
+    activateTab(initialTrigger);
+  }
 }
 
 // ── AVATARS PRESET & FILE UPLOAD ──

@@ -40,11 +40,69 @@ body {
   padding-bottom: 50px;
 }
 
+.profile-auth-wrapper {
+  display: grid;
+  gap: 24px;
+}
+
+.profile-page-header {
+  background: var(--fk-card-bg);
+  border: 1px solid var(--fk-border);
+  box-shadow: var(--shadow-fk);
+  border-radius: var(--radius-fk);
+  padding: 24px 28px;
+}
+
+.profile-page-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fk-blue);
+  margin-bottom: 10px;
+}
+
+.profile-page-header h1 {
+  font-size: 28px;
+  margin: 0;
+  color: var(--fk-text);
+}
+
+.profile-page-description {
+  margin-top: 10px;
+  color: var(--fk-text-gray);
+  max-width: 640px;
+  line-height: 1.7;
+}
+
 .profile-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 16px;
   align-items: start;
+}
+
+.profile-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 100px;
+  align-self: start;
+}
+
+.profile-content-area {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-tab-content {
+  display: none;
+}
+
+.profile-tab-content.active {
+  display: block;
 }
 
 /* LEFT SIDEBAR GREETING CARD */
