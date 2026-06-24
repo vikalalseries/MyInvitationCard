@@ -176,56 +176,45 @@
           </div>
         </div>
 
-        <!-- Sidebar Navigation Accordion -->
-        <div class="profile-card menu-accordion-card">
+        <!-- Sidebar Navigation Buttons Menu -->
+        <div class="profile-card menu-accordion-card" style="padding: 0; overflow: hidden;">
           
-          <!-- Section 1: My Orders -->
-          <div class="accordion-group">
-            <div class="accordion-header active-nav" data-target="profile-orders-tab">
-              <i class="fa-solid fa-box-open icon-blue"></i>
-              <span class="grp-title">MY ORDERS</span>
-              <i class="fa-solid fa-chevron-right chevron-nav"></i>
-            </div>
-          </div>
+          <button class="sidebar-menu-btn active-nav" data-target="profile-orders-tab">
+            <i class="fa-solid fa-box-open icon-blue"></i>
+            <span>My Orders</span>
+          </button>
           
-          <div class="accordion-divider"></div>
-
-          <!-- Section 2: Account Settings -->
-          <div class="accordion-group">
-            <div class="accordion-header">
-              <i class="fa-solid fa-user icon-blue"></i>
-              <span class="grp-title">ACCOUNT SETTINGS</span>
-            </div>
-            <div class="accordion-sub-links">
-              <div class="sub-link" data-target="profile-info-tab">Profile Information</div>
-              <div class="sub-link" data-target="profile-addresses-tab">Manage Addresses</div>
-            </div>
-          </div>
-
-          <div class="accordion-divider"></div>
-
-          <!-- Section 3: My Stuff -->
-          <div class="accordion-group">
-            <div class="accordion-header">
-              <i class="fa-solid fa-folder-closed icon-blue"></i>
-              <span class="grp-title">MY STUFF</span>
-            </div>
-            <div class="accordion-sub-links">
-              <div class="sub-link" data-target="profile-drafts-tab">Saved Drafts</div>
-              <div class="sub-link" data-target="profile-favorites-tab">My Favourites</div>
-              <div class="sub-link" data-target="profile-importer-tab">Import / Export VLS</div>
-            </div>
-          </div>
-
-          <div class="accordion-divider"></div>
-
-          <!-- Section 4: Logout -->
-          <div class="accordion-group">
-            <div class="accordion-header" id="sidebarLogoutTrigger">
-              <i class="fa-solid fa-power-off icon-red"></i>
-              <span class="grp-title logout-text">Logout</span>
-            </div>
-          </div>
+          <button class="sidebar-menu-btn" data-target="profile-info-tab">
+            <i class="fa-solid fa-user icon-blue"></i>
+            <span>Profile Information</span>
+          </button>
+          
+          <button class="sidebar-menu-btn" data-target="profile-addresses-tab">
+            <i class="fa-solid fa-map-location-dot icon-blue"></i>
+            <span>Manage Addresses</span>
+          </button>
+          
+          <button class="sidebar-menu-btn" data-target="profile-drafts-tab">
+            <i class="fa-solid fa-floppy-disk icon-blue"></i>
+            <span>Saved Drafts</span>
+          </button>
+          
+          <button class="sidebar-menu-btn" data-target="profile-favorites-tab">
+            <i class="fa-solid fa-star icon-blue"></i>
+            <span>My Favourites</span>
+          </button>
+          
+          <button class="sidebar-menu-btn" data-target="profile-importer-tab">
+            <i class="fa-solid fa-file-import icon-blue"></i>
+            <span>Import / Export VLS</span>
+          </button>
+          
+          <div class="sidebar-btn-divider"></div>
+          
+          <button class="sidebar-menu-btn logout-btn-sidebar" id="sidebarLogoutTrigger">
+            <i class="fa-solid fa-power-off icon-red"></i>
+            <span>Log Out</span>
+          </button>
 
         </div>
       </aside>

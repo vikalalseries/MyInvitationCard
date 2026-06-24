@@ -956,3 +956,71 @@ html.site-theme-dark .btn-danger-border:hover {
     gap: 8px;
   }
 }
+
+/* Sidebar navigation flat buttons menu styling */
+.sidebar-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 14px 20px;
+  background: transparent;
+  border: none;
+  border-left: 4px solid transparent;
+  color: var(--fk-text);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+.sidebar-menu-btn i {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.sidebar-menu-btn:hover {
+  background: var(--fk-bg);
+  color: var(--fk-blue);
+}
+
+.sidebar-menu-btn:hover i {
+  transform: scale(1.1);
+}
+
+.sidebar-menu-btn.active-nav {
+  background: rgba(40, 116, 240, 0.08);
+  border-left-color: var(--fk-blue);
+  color: var(--fk-blue);
+}
+
+.sidebar-btn-divider {
+  height: 1px;
+  background: var(--fk-border);
+  margin: 6px 0;
+}
+
+.logout-btn-sidebar:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: #ef4444 !important;
+}
+
+/* Dark mode styling for sidebar menu buttons */
+html.site-theme-dark .sidebar-menu-btn {
+  color: #e2e8f0;
+}
+
+html.site-theme-dark .sidebar-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+html.site-theme-dark .sidebar-menu-btn.active-nav {
+  background: rgba(59, 130, 246, 0.15);
+  border-left-color: #3b82f6;
+  color: #60a5fa;
+}

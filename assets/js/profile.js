@@ -215,9 +215,8 @@ function bindTabs() {
   const triggers = document.querySelectorAll("[data-target]");
   triggers.forEach((trigger) => {
     trigger.addEventListener("click", () => {
-      // Clear active classes from sidebar items
-      document.querySelectorAll("[data-target]").forEach((t) => {
-        t.classList.remove("active");
+      // Clear active classes from all sidebar buttons
+      triggers.forEach((t) => {
         t.classList.remove("active-nav");
       });
       // Clear active classes from content panels
@@ -225,17 +224,10 @@ function bindTabs() {
         c.classList.remove("active");
       });
 
-      // Apply active states
-      if (trigger.classList.contains("sub-link")) {
-        trigger.classList.add("active");
-        // Also highlight parent headers
-        const groupHeader = trigger.closest(".accordion-group")?.querySelector(".accordion-header");
-        if (groupHeader) groupHeader.classList.add("active-nav");
-      } else {
-        trigger.classList.add("active-nav");
-      }
+      // Apply active state to clicked button
+      trigger.classList.add("active-nav");
 
-      // Show targeted tab
+      // Show targeted tab panel
       const targetId = trigger.dataset.target;
       const targetContent = document.getElementById(targetId);
       if (targetContent) targetContent.classList.add("active");
@@ -479,7 +471,10 @@ function loadSavedDrafts(uid) {
   let userProjects = [];
   try {
     const raw = localStorage.getItem(projectKey);
-    if (raw) userProjects = JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) userProjects = parsed;
+    }
   } catch (e) {
     console.error(e);
   }
@@ -770,16 +765,24 @@ function loadFavorites(uid) {
   try {
     const scopedRaw = localStorage.getItem(scopedFavKey);
     if (scopedRaw) {
-      favorites = JSON.parse(scopedRaw);
+      const parsed = JSON.parse(scopedRaw);
+      if (Array.isArray(parsed)) favorites = parsed;
     } else {
       const genRaw = localStorage.getItem("favorites");
       if (genRaw) {
-        favorites = JSON.parse(genRaw);
-        localStorage.setItem(scopedFavKey, JSON.stringify(favorites));
+        const parsed = JSON.parse(genRaw);
+        if (Array.isArray(parsed)) {
+          favorites = parsed;
+          localStorage.setItem(scopedFavKey, JSON.stringify(favorites));
+        }
       }
     }
   } catch (e) {
     console.error(e);
+  }
+
+  if (!Array.isArray(favorites)) {
+    favorites = [];
   }
 
   const starredTemplates = templates.filter((t) => favorites.includes(t.id));
@@ -865,9 +868,16 @@ function loadOrderHistory(uid) {
   let orderHistory = [];
   try {
     const raw = localStorage.getItem(orderHistoryKey);
-    if (raw) orderHistory = JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) orderHistory = parsed;
+    }
   } catch (e) {
     console.error(e);
+  }
+
+  if (!Array.isArray(orderHistory)) {
+    orderHistory = [];
   }
 
   if (!orderHistory || orderHistory.length === 0) {
