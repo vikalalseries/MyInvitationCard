@@ -465,25 +465,25 @@ function triggerCheckoutPayment() {
   const pincode = document.getElementById('pincode-input').value.trim();
   
   if (!fullName || !phone || !address || !city || !state || !pincode) {
-    toast("Please fill in all required shipping address fields (*)", "e");
+    showError("Please fill in all required shipping address fields (*)");
     // Scroll address card into view
     document.getElementById('shipping-form').scrollIntoView({ behavior: 'smooth' });
     return;
   }
   
   if (phone.length < 10) {
-    toast("Please enter a valid 10-digit mobile number", "e");
+    showError("Please enter a valid 10-digit mobile number");
     return;
   }
   
   const emergencyPhone = document.getElementById('emergency-phone-num').value.trim();
   if (emergencyPhone && emergencyPhone.length < 10) {
-    toast("Please enter a valid 10-digit emergency mobile number", "e");
+    showError("Please enter a valid 10-digit emergency mobile number");
     return;
   }
   
   if (pincode.length < 6) {
-    toast("Please enter a valid 6-digit postal pincode", "e");
+    showError("Please enter a valid 6-digit postal pincode");
     return;
   }
   
@@ -537,7 +537,7 @@ function triggerCheckoutPayment() {
       order_id: data.order.id,
       handler: async function (response) {
         // Verification step
-        showProcessingPaymentModal();
+        showLoading();
         try {
           const verifyRes = await fetch(`${API_BASE_URL}/verify-payment`, {
             method: "POST",
@@ -553,22 +553,19 @@ function triggerCheckoutPayment() {
 
           const verifyData = await verifyRes.json();
 
-          // Hide loader modal
-          const modal = document.getElementById('modal-processing');
-          if (modal) modal.classList.remove('active');
+          hideLoading();
 
           if (verifyData.success) {
-            toast("Payment successful & verified!", "s");
+            showSuccess("Payment successful & verified!");
             showSuccessModal(response.razorpay_order_id, response.razorpay_payment_id, "Razorpay Online");
           } else {
-            toast("Payment verification failed: " + verifyData.message, "e");
+            showError("Payment verification failed: " + verifyData.message);
             showFailureSimulation("Verification failed: " + verifyData.message, response.razorpay_payment_id);
           }
         } catch (err) {
           console.error("Signature verification error:", err);
-          const modal = document.getElementById('modal-processing');
-          if (modal) modal.classList.remove('active');
-          toast("Error verifying payment signature", "e");
+          hideLoading();
+          showError("Error verifying payment signature");
           showFailureSimulation("Error verifying signature: " + err.message, response.razorpay_payment_id);
         }
       },
@@ -581,7 +578,7 @@ function triggerCheckoutPayment() {
       },
       modal: {
         ondismiss: function() {
-          toast("Payment cancelled", "i");
+          toast("Payment cancelled by user", "i");
         }
       }
     };
@@ -589,7 +586,7 @@ function triggerCheckoutPayment() {
     const rzp = new window.Razorpay(options);
     rzp.on('payment.failed', function (response) {
       console.error("Payment failed event:", response.error);
-      toast("Payment failed: " + response.error.description, "e");
+      showError("Payment failed: " + response.error.description);
       showFailureSimulation(response.error.description, response.error.metadata.payment_id);
     });
     rzp.open();
@@ -600,7 +597,7 @@ function triggerCheckoutPayment() {
       payBtn.disabled = false;
       payBtn.innerHTML = originalBtnText;
     }
-    toast(`Payment initialization failed: ${err.message}. Please make sure the payment server is running on port 5000.`, "e");
+    showError(`Payment initialization failed: ${err.message}. Please make sure the payment server is running on port 5000.`);
   });
 }
 
@@ -870,6 +867,44 @@ function toast(msg, type = 's') {
     t.style.transition = 'all 0.3s ease';
     setTimeout(() => t.remove(), 300);
   }, 4000);
+}
+
+// ── REUSABLE UI MESSAGES & LOADERS ──
+function showSuccess(message) {
+  toast(message, 's');
+}
+
+function showError(message) {
+  toast(message, 'e');
+}
+
+function showLoading() {
+  const modal = document.getElementById('modal-processing');
+  const progress = document.getElementById('auth-progress-bar');
+  const modalTitle = modal ? modal.querySelector('h2') : null;
+  
+  if (modalTitle) {
+    modalTitle.textContent = "Verifying Payment...";
+  }
+  if (modal) {
+    modal.classList.add('active');
+  }
+  if (progress) {
+    progress.style.width = '75%';
+    progress.style.transition = 'width 15s cubic-bezier(0.1, 0.8, 0.25, 1)';
+  }
+}
+
+function hideLoading() {
+  const modal = document.getElementById('modal-processing');
+  const progress = document.getElementById('auth-progress-bar');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+  if (progress) {
+    progress.style.width = '0%';
+    progress.style.transition = 'none';
+  }
 }
 
 // ── Firebase Modules Loader for Navbar Sync ──
