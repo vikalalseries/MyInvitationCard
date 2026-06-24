@@ -234,12 +234,32 @@
         <div class="profile-tab-content" id="profile-info-tab">
           
           <!-- Personal Info Card -->
-          <div class="profile-card content-section-card">
-            <div class="content-header">
+          <div class="profile-card content-section-card editable-section" id="section-personal">
+            <div class="content-header-inline">
               <h3>Personal Information</h3>
+              <button class="section-edit-link" data-section="personal">Edit</button>
             </div>
             
-            <form id="personalInfoForm" onsubmit="return false;">
+            <!-- Read-only Display -->
+            <div class="section-readonly" id="readonly-personal">
+              <div class="readonly-row">
+                <div class="readonly-field">
+                  <span class="readonly-label">First Name</span>
+                  <span class="readonly-value" id="displayFirstName">—</span>
+                </div>
+                <div class="readonly-field">
+                  <span class="readonly-label">Last Name</span>
+                  <span class="readonly-value" id="displayLastName">—</span>
+                </div>
+              </div>
+              <div class="readonly-field" style="margin-top: 20px;">
+                <span class="readonly-label">Your Gender</span>
+                <span class="readonly-value" id="displayGender">Not specified</span>
+              </div>
+            </div>
+            
+            <!-- Edit Mode -->
+            <div class="section-editmode" id="editmode-personal">
               <div class="form-row">
                 <div class="form-group">
                   <label for="profileFirstName">First Name <span class="required">*</span></label>
@@ -250,7 +270,6 @@
                   <input type="text" id="profileLastName" placeholder="Last Name">
                 </div>
               </div>
-
               <div class="form-group gender-selection-group">
                 <label>Your Gender</label>
                 <div class="gender-radio-options">
@@ -268,105 +287,151 @@
                   </label>
                 </div>
               </div>
-
-              <!-- Avatar selections inside profile info -->
-              <div class="form-group avatar-selection-container">
-                <label>Select Avatar Badge</label>
-                <div class="preset-avatar-grid">
-                  <div class="avatar-option" data-avatar-url="none_google">
-                    <div class="avatar-fallback google-fallback">
-                      <i class="fa-brands fa-google" style="color: #4285f4;"></i>
-                    </div>
-                    <span>None / Gmail</span>
-                  </div>
-                  <div class="avatar-option" data-avatar-url="assets/avatars/groom.png">
-                    <img src="assets/avatars/groom.png" alt="Groom" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="avatar-fallback groom-fallback">🤵</div>
-                    <span>Groom</span>
-                  </div>
-                  <div class="avatar-option" data-avatar-url="assets/avatars/bride.png">
-                    <img src="assets/avatars/bride.png" alt="Bride" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="avatar-fallback bride-fallback">👰</div>
-                    <span>Bride</span>
-                  </div>
-                  <div class="avatar-option" data-avatar-url="assets/avatars/party.png">
-                    <img src="assets/avatars/party.png" alt="Birthday" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="avatar-fallback bday-fallback">🎂</div>
-                    <span>Birthday</span>
-                  </div>
-                  <div class="avatar-option" data-avatar-url="assets/avatars/lotus.png">
-                    <img src="assets/avatars/lotus.png" alt="Lotus" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="avatar-fallback lotus-fallback">🪷</div>
-                    <span>Lotus</span>
-                  </div>
-                  <div class="avatar-option" data-avatar-url="assets/avatars/diya.png">
-                    <img src="assets/avatars/diya.png" alt="Diya" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="avatar-fallback diya-fallback">🪔</div>
-                    <span>Festive Diya</span>
-                  </div>
-                  <div class="avatar-option" data-avatar-url="assets/avatars/rings.png">
-                    <img src="assets/avatars/rings.png" alt="Rings" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="avatar-fallback rings-fallback">💍</div>
-                    <span>Engagement</span>
-                  </div>
-                </div>
-
-                <div class="custom-photo-uploader">
-                  <span>Custom Picture:</span>
-                  <label for="customAvatarFile" class="btn-secondary upload-btn-label">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo
-                  </label>
-                  <input type="file" id="customAvatarFile" accept="image/*" style="display: none;">
-                  <span id="uploadedFileName" class="file-name-text">No file chosen</span>
-                </div>
+              <div class="inline-save-actions">
+                <button type="button" class="btn-primary save-btn-fk btn-section-save" data-section="personal">SAVE</button>
+                <button type="button" class="btn-section-cancel" data-section="personal">Cancel</button>
               </div>
-            </form>
+            </div>
           </div>
 
           <!-- Email Address Card -->
-          <div class="profile-card content-section-card">
-            <div class="content-header">
+          <div class="profile-card content-section-card editable-section" id="section-email">
+            <div class="content-header-inline">
               <h3>Email Address</h3>
+              <span class="section-edit-link disabled-edit" title="Email is managed by your login provider">Edit</span>
             </div>
-            <div class="form-row">
-              <div class="form-group" style="grid-column: 1 / -1;">
-                <input type="email" id="profileEmail" readonly disabled class="disabled-input">
+            <div class="section-readonly" id="readonly-email">
+              <div class="readonly-field">
+                <span class="readonly-value" id="displayEmail">—</span>
               </div>
             </div>
           </div>
 
           <!-- Mobile Phone Card -->
-          <div class="profile-card content-section-card">
-            <div class="content-header">
+          <div class="profile-card content-section-card editable-section" id="section-mobile">
+            <div class="content-header-inline">
               <h3>Mobile Number</h3>
+              <button class="section-edit-link" data-section="mobile">Edit</button>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <input type="tel" id="profilePhone" placeholder="Enter 10-digit mobile number">
+            
+            <div class="section-readonly" id="readonly-mobile">
+              <div class="readonly-row">
+                <div class="readonly-field">
+                  <span class="readonly-label">Phone</span>
+                  <span class="readonly-value" id="displayPhone">Not provided</span>
+                </div>
+                <div class="readonly-field">
+                  <span class="readonly-label">Preferred Language</span>
+                  <span class="readonly-value" id="displayLanguage">English</span>
+                </div>
               </div>
-              <div class="form-group">
-                <select id="profileLanguage">
-                  <option value="english">Preferred Language: English</option>
-                  <option value="hindi">Preferred Language: Hindi (हिन्दी)</option>
-                </select>
+            </div>
+            
+            <div class="section-editmode" id="editmode-mobile">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="profilePhone">Mobile Number</label>
+                  <input type="tel" id="profilePhone" placeholder="Enter 10-digit mobile number">
+                </div>
+                <div class="form-group">
+                  <label for="profileLanguage">Preferred Language</label>
+                  <select id="profileLanguage">
+                    <option value="english">English</option>
+                    <option value="hindi">Hindi (हिन्दी)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="inline-save-actions">
+                <button type="button" class="btn-primary save-btn-fk btn-section-save" data-section="mobile">SAVE</button>
+                <button type="button" class="btn-section-cancel" data-section="mobile">Cancel</button>
               </div>
             </div>
           </div>
 
-          <!-- Other Metadata DOB Card -->
-          <div class="profile-card content-section-card">
-            <div class="content-header">
+          <!-- Date of Birth Card -->
+          <div class="profile-card content-section-card editable-section" id="section-dob">
+            <div class="content-header-inline">
               <h3>Date of Birth</h3>
+              <button class="section-edit-link" data-section="dob">Edit</button>
             </div>
-            <div class="form-row">
-              <div class="form-group" style="grid-column: 1 / -1;">
-                <input type="date" id="profileDOB">
+            
+            <div class="section-readonly" id="readonly-dob">
+              <div class="readonly-field">
+                <span class="readonly-value" id="displayDOB">Not set</span>
               </div>
             </div>
+            
+            <div class="section-editmode" id="editmode-dob">
+              <div class="form-row">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label for="profileDOB">Date of Birth</label>
+                  <input type="date" id="profileDOB">
+                </div>
+              </div>
+              <div class="inline-save-actions">
+                <button type="button" class="btn-primary save-btn-fk btn-section-save" data-section="dob">SAVE</button>
+                <button type="button" class="btn-section-cancel" data-section="dob">Cancel</button>
+              </div>
+            </div>
+          </div>
 
+          <!-- Avatar Selection Card -->
+          <div class="profile-card content-section-card">
+            <div class="content-header">
+              <h3>Profile Avatar</h3>
+            </div>
+            <div class="form-group avatar-selection-container" style="border-top: none; padding-top: 0; margin-top: 0;">
+              <label>Select Avatar Badge</label>
+              <div class="preset-avatar-grid">
+                <div class="avatar-option" data-avatar-url="none_google">
+                  <div class="avatar-fallback google-fallback">
+                    <i class="fa-brands fa-google" style="color: #4285f4;"></i>
+                  </div>
+                  <span>None / Gmail</span>
+                </div>
+                <div class="avatar-option" data-avatar-url="assets/avatars/groom.png">
+                  <img src="assets/avatars/groom.png" alt="Groom" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="avatar-fallback groom-fallback">🤵</div>
+                  <span>Groom</span>
+                </div>
+                <div class="avatar-option" data-avatar-url="assets/avatars/bride.png">
+                  <img src="assets/avatars/bride.png" alt="Bride" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="avatar-fallback bride-fallback">👰</div>
+                  <span>Bride</span>
+                </div>
+                <div class="avatar-option" data-avatar-url="assets/avatars/party.png">
+                  <img src="assets/avatars/party.png" alt="Birthday" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="avatar-fallback bday-fallback">🎂</div>
+                  <span>Birthday</span>
+                </div>
+                <div class="avatar-option" data-avatar-url="assets/avatars/lotus.png">
+                  <img src="assets/avatars/lotus.png" alt="Lotus" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="avatar-fallback lotus-fallback">🪷</div>
+                  <span>Lotus</span>
+                </div>
+                <div class="avatar-option" data-avatar-url="assets/avatars/diya.png">
+                  <img src="assets/avatars/diya.png" alt="Diya" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="avatar-fallback diya-fallback">🪔</div>
+                  <span>Festive Diya</span>
+                </div>
+                <div class="avatar-option" data-avatar-url="assets/avatars/rings.png">
+                  <img src="assets/avatars/rings.png" alt="Rings" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="avatar-fallback rings-fallback">💍</div>
+                  <span>Engagement</span>
+                </div>
+              </div>
+              <div class="custom-photo-uploader">
+                <span>Custom Picture:</span>
+                <label for="customAvatarFile" class="btn-secondary upload-btn-label">
+                  <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo
+                </label>
+                <input type="file" id="customAvatarFile" accept="image/*" style="display: none;">
+                <span id="uploadedFileName" class="file-name-text">No file chosen</span>
+              </div>
+            </div>
             <div class="form-actions-bar">
-              <button type="button" class="btn-primary save-btn-fk" id="saveProfileBtn">
-                SAVE DETAILS
+              <button type="button" class="btn-primary save-btn-fk" id="saveAvatarBtn">
+                SAVE AVATAR
               </button>
             </div>
           </div>
@@ -387,47 +452,85 @@
             </div>
           </div>
 
+          <!-- FAQs -->
+          <div class="profile-card content-section-card">
+            <div class="content-header">
+              <h3>FAQs</h3>
+            </div>
+            <div class="faq-list">
+              <div class="faq-item">
+                <div class="faq-question"><i class="fa-regular fa-circle-question"></i> What happens when I update my name?</div>
+                <div class="faq-answer">Your display name will be updated across all your future designs and orders. Existing saved drafts are not affected.</div>
+              </div>
+              <div class="faq-item">
+                <div class="faq-question"><i class="fa-regular fa-circle-question"></i> Can I change my email address?</div>
+                <div class="faq-answer">Email is managed by your login provider (Google/Email). Contact our support team if you need to change it.</div>
+              </div>
+              <div class="faq-item">
+                <div class="faq-question"><i class="fa-regular fa-circle-question"></i> Is my data secure?</div>
+                <div class="faq-answer">Your profile data is stored locally in your browser. Card designs and order history are saved securely to your account.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Danger Actions -->
+          <div class="profile-card content-section-card account-actions-card">
+            <div class="account-danger-actions">
+              <button class="account-action-link" id="deactivateAccountBtn">Deactivate Account</button>
+              <span class="action-separator">|</span>
+              <button class="account-action-link delete" id="deleteAccountBtn">Delete Account</button>
+            </div>
+          </div>
+
         </div>
 
         <!-- PANEL 2: MANAGE ADDRESSES -->
         <div class="profile-tab-content" id="profile-addresses-tab">
           <div class="profile-card content-section-card">
             <div class="content-header">
-              <h3>Manage Shipping Addresses</h3>
-              <p class="header-desc-label">Define your shipping credentials. These details will pre-populate the print checkout page!</p>
+              <h3>Shipping Address</h3>
+              <p class="header-desc-label">Enter the shipping address where your printed cards will be delivered.</p>
             </div>
 
-            <form id="addressDetailsForm" onsubmit="return false;">
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="addressFullName">Contact Full Name <span class="required">*</span></label>
-                  <input type="text" id="addressFullName" placeholder="Enter Full Name" required>
-                </div>
-                <div class="form-group">
-                  <label for="addressPhone">Mobile Number <span class="required">*</span></label>
-                  <input type="tel" id="addressPhone" placeholder="Enter 10-digit number" required>
-                </div>
+            <form id="addressDetailsForm" class="shipping-form" onsubmit="return false;">
+              <div class="form-group">
+                <label for="full-name" class="input-label">Full Name *</label>
+                <input type="text" id="full-name" required placeholder="Full Name">
               </div>
 
               <div class="form-row">
                 <div class="form-group">
-                  <label for="addressPincode">Pincode <span class="required">*</span></label>
-                  <input type="text" id="addressPincode" placeholder="Enter 6-digit Pincode" required maxlength="6">
+                  <label for="phone-num" class="input-label">Mobile Number *</label>
+                  <input type="tel" id="phone-num" required pattern="[0-9]{10}" placeholder="10-digit Mobile Number">
                 </div>
                 <div class="form-group">
-                  <label for="addressLine">Street Address / P.O. Box <span class="required">*</span></label>
-                  <input type="text" id="addressLine" placeholder="House No, Building, Road, Area" required>
+                  <label for="emergency-phone-num" class="input-label">Emergency Mobile No.</label>
+                  <input type="tel" id="emergency-phone-num" pattern="[0-9]{10}" placeholder="Emergency Mobile Number">
                 </div>
+              </div>
+
+              <div class="form-group">
+                <label for="address-line1" class="input-label">Address Line 1 (Street, Area, Colony) *</label>
+                <input type="text" id="address-line1" required placeholder="Flat, House no., Building, Company, Apartment">
+              </div>
+
+              <div class="form-group">
+                <label for="address-line2" class="input-label">Address Line 2 (Landmark, Floor, Apartment) *</label>
+                <input type="text" id="address-line2" placeholder="Area, Street, Sector, Village, Landmark">
               </div>
 
               <div class="form-row">
                 <div class="form-group">
-                  <label for="addressCity">City / District <span class="required">*</span></label>
-                  <input type="text" id="addressCity" placeholder="City" required>
+                  <label for="pincode-input" class="input-label">Pincode *</label>
+                  <input type="text" id="pincode-input" required maxlength="6" pattern="[0-9]{6}" placeholder="6-digit Pincode">
                 </div>
                 <div class="form-group">
-                  <label for="addressState">State <span class="required">*</span></label>
-                  <input type="text" id="addressState" placeholder="State" required>
+                  <label for="city-input" class="input-label">City *</label>
+                  <input type="text" id="city-input" required placeholder="City">
+                </div>
+                <div class="form-group">
+                  <label for="state-input" class="input-label">State *</label>
+                  <input type="text" id="state-input" required placeholder="State">
                 </div>
               </div>
 

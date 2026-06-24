@@ -26,21 +26,31 @@ const greetingName = document.getElementById("greetingName");
 
 const profileFirstName = document.getElementById("profileFirstName");
 const profileLastName = document.getElementById("profileLastName");
-const profileEmail = document.getElementById("profileEmail");
 const profilePhone = document.getElementById("profilePhone");
 const profileLanguage = document.getElementById("profileLanguage");
 const profileDOB = document.getElementById("profileDOB");
 
+// Readonly display elements
+const displayFirstName = document.getElementById("displayFirstName");
+const displayLastName = document.getElementById("displayLastName");
+const displayEmail = document.getElementById("displayEmail");
+const displayPhone = document.getElementById("displayPhone");
+const displayLanguage = document.getElementById("displayLanguage");
+const displayGender = document.getElementById("displayGender");
+const displayDOB = document.getElementById("displayDOB");
+
 // Address form elements
-const addressFullName = document.getElementById("addressFullName");
-const addressPhone = document.getElementById("addressPhone");
-const addressPincode = document.getElementById("addressPincode");
-const addressLine = document.getElementById("addressLine");
-const addressCity = document.getElementById("addressCity");
-const addressState = document.getElementById("addressState");
+const addressFullName = document.getElementById("full-name");
+const addressPhone = document.getElementById("phone-num");
+const addressEmergencyPhone = document.getElementById("emergency-phone-num");
+const addressPincode = document.getElementById("pincode-input");
+const addressLine1 = document.getElementById("address-line1");
+const addressLine2 = document.getElementById("address-line2");
+const addressCity = document.getElementById("city-input");
+const addressState = document.getElementById("state-input");
 const saveAddressBtn = document.getElementById("saveAddressBtn");
 
-const saveProfileBtn = document.getElementById("saveProfileBtn");
+const saveAvatarBtn = document.getElementById("saveAvatarBtn");
 const sendResetLinkBtn = document.getElementById("sendResetLinkBtn");
 const customAvatarFile = document.getElementById("customAvatarFile");
 const uploadedFileName = document.getElementById("uploadedFileName");
@@ -82,8 +92,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   bindAvatarPresets();
   bindCustomAvatarUpload();
   bindFormSubmissions();
+  bindSectionEditing();
   bindVlsImporter();
   bindLogoutModal();
+  bindAccountActions();
 });
 
 // Load template configs
@@ -109,46 +121,74 @@ function setupAuthenticatedView(user) {
   // Split Display Name into First Name & Last Name
   const displayName = user.displayName?.trim() || localStorage.getItem("signupFullName")?.trim() || user.email.split("@")[0];
   const nameParts = displayName.split(" ");
-  profileFirstName.value = nameParts[0] || "";
-  profileLastName.value = nameParts.slice(1).join(" ") || "";
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ") || "";
+
+  // Populate edit inputs
+  profileFirstName.value = firstName;
+  profileLastName.value = lastName;
   
-  profileEmail.value = user.email || "";
+  // Populate readonly display text
+  if (displayFirstName) displayFirstName.textContent = firstName || "—";
+  if (displayLastName) displayLastName.textContent = lastName || "—";
+  if (displayEmail) displayEmail.textContent = user.email || "—";
+  
   greetingName.textContent = displayName;
 
   // Load user profile details metadata
   const metaKey = `mic_user_profile_${user.uid}`;
   let localAvatar = "";
+  let storedPhone = "";
+  let storedLang = "english";
+  let storedDob = "";
+  let storedGender = "";
+
   try {
     const metaRaw = localStorage.getItem(metaKey);
     if (metaRaw) {
       const meta = JSON.parse(metaRaw);
-      profilePhone.value = meta.phone || "";
-      profileLanguage.value = meta.language || "english";
-      profileDOB.value = meta.dob || "";
+      storedPhone = meta.phone || "";
+      storedLang = meta.language || "english";
+      storedDob = meta.dob || "";
+      storedGender = meta.gender || "";
       localAvatar = meta.customAvatar || meta.avatar || "";
-      
-      // Select Gender radio
-      const gender = meta.gender || "";
-      const maleRadio = document.getElementById("genderMale");
-      const femaleRadio = document.getElementById("genderFemale");
-      const otherRadio = document.getElementById("genderOther");
-      if (maleRadio && gender === "male") maleRadio.checked = true;
-      else if (femaleRadio && gender === "female") femaleRadio.checked = true;
-      else if (otherRadio && gender === "other") otherRadio.checked = true;
-    } else {
-      profilePhone.value = "";
-      profileLanguage.value = "english";
-      profileDOB.value = "";
-      const maleRadio = document.getElementById("genderMale");
-      const femaleRadio = document.getElementById("genderFemale");
-      const otherRadio = document.getElementById("genderOther");
-      if (maleRadio) maleRadio.checked = false;
-      if (femaleRadio) femaleRadio.checked = false;
-      if (otherRadio) otherRadio.checked = false;
     }
   } catch (e) {
     console.error(e);
   }
+
+  // Set edit inputs
+  profilePhone.value = storedPhone;
+  profileLanguage.value = storedLang;
+  profileDOB.value = storedDob;
+
+  // Set gender radio
+  const maleRadio = document.getElementById("genderMale");
+  const femaleRadio = document.getElementById("genderFemale");
+  const otherRadio = document.getElementById("genderOther");
+  if (maleRadio) maleRadio.checked = storedGender === "male";
+  if (femaleRadio) femaleRadio.checked = storedGender === "female";
+  if (otherRadio) otherRadio.checked = storedGender === "other";
+
+  // Set readonly display values
+  if (displayPhone) displayPhone.textContent = storedPhone || "Not provided";
+  const langMap = { english: "English", hindi: "Hindi (हिन्दी)" };
+  if (displayLanguage) displayLanguage.textContent = langMap[storedLang] || "English";
+  if (displayGender) {
+    const genderMap = { male: "Male", female: "Female", other: "Other" };
+    displayGender.textContent = genderMap[storedGender] || "Not specified";
+  }
+  if (displayDOB) {
+    if (storedDob) {
+      const d = new Date(storedDob + "T00:00:00");
+      displayDOB.textContent = d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    } else {
+      displayDOB.textContent = "Not set";
+    }
+  }
+
+  // Close any open edit sections
+  document.querySelectorAll(".editable-section.editing").forEach(s => s.classList.remove("editing"));
 
   // Set greeting banner avatar
   const avatarToUse = localAvatar || user.photoURL || "";
@@ -300,15 +340,19 @@ function loadShippingAddress() {
       const addr = JSON.parse(rawAddr);
       addressFullName.value = addr.fullName || "";
       addressPhone.value = addr.phone || "";
+      if (addressEmergencyPhone) addressEmergencyPhone.value = addr.emergencyPhone || "";
       addressPincode.value = addr.pincode || "";
-      addressLine.value = addr.address || "";
+      addressLine1.value = addr.address || "";
+      addressLine2.value = addr.address2 || "";
       addressCity.value = addr.city || "";
       addressState.value = addr.state || "";
     } else {
       addressFullName.value = "";
       addressPhone.value = "";
+      if (addressEmergencyPhone) addressEmergencyPhone.value = "";
       addressPincode.value = "";
-      addressLine.value = "";
+      addressLine1.value = "";
+      addressLine2.value = "";
       addressCity.value = "";
       addressState.value = "";
     }
@@ -319,22 +363,13 @@ function loadShippingAddress() {
 
 // ── SAVE & SUBMISSIONS ──
 function bindFormSubmissions() {
-  // Save profile info
-  if (saveProfileBtn) {
-    saveProfileBtn.addEventListener("click", async () => {
+  // Save Avatar independently
+  if (saveAvatarBtn) {
+    saveAvatarBtn.addEventListener("click", async () => {
       if (!currentUser) return;
 
-      const firstName = profileFirstName.value.trim();
-      const lastName = profileLastName.value.trim();
-      if (!firstName) {
-        window.showToast("First name is required.", "error");
-        return;
-      }
-
-      const fullName = lastName ? `${firstName} ${lastName}` : firstName;
-
-      saveProfileBtn.disabled = true;
-      saveProfileBtn.textContent = "SAVING...";
+      saveAvatarBtn.disabled = true;
+      saveAvatarBtn.textContent = "SAVING...";
 
       try {
         const finalAvatar = customAvatarBase64 || selectedAvatarUrl || "";
@@ -355,48 +390,28 @@ function bindFormSubmissions() {
           localAvatarToSave = "";
         }
 
-        // Update Firebase Auth displayName & photoURL
+        // Update Firebase Auth photoURL
         await updateProfile(auth.currentUser, {
-          displayName: fullName,
           photoURL: photoURLToUpdate
         });
 
-        // Determine gender value
-        let genderVal = "";
-        const male = document.getElementById("genderMale");
-        const female = document.getElementById("genderFemale");
-        const other = document.getElementById("genderOther");
-        if (male && male.checked) genderVal = "male";
-        else if (female && female.checked) genderVal = "female";
-        else if (other && other.checked) genderVal = "other";
-
-        // Save profile metadata
+        // Update localStorage metadata with avatar only
         const metaKey = `mic_user_profile_${currentUser.uid}`;
-        const metaData = {
-          phone: profilePhone.value.trim(),
-          language: profileLanguage.value,
-          dob: profileDOB.value,
-          gender: genderVal,
-          customAvatar: localAvatarToSave
-        };
-        localStorage.setItem(metaKey, JSON.stringify(metaData));
+        let meta = {};
+        try {
+          const raw = localStorage.getItem(metaKey);
+          if (raw) meta = JSON.parse(raw);
+        } catch (e) {}
+        meta.customAvatar = localAvatarToSave;
+        localStorage.setItem(metaKey, JSON.stringify(meta));
 
-        // Update greeting banner name
-        greetingName.textContent = fullName;
-
-        // Sync header nav popup names
-        const popupName = document.getElementById("popupNavUserName");
-        if (popupName) popupName.textContent = fullName;
-        const sideName = document.getElementById("sidebarUserName");
-        if (sideName) sideName.textContent = fullName;
-
-        window.showToast("Profile details updated successfully!", "success");
+        window.showToast("Avatar updated successfully!", "success");
       } catch (err) {
         console.error(err);
-        window.showToast("Failed to save profile changes.", "error");
+        window.showToast("Failed to save avatar.", "error");
       } finally {
-        saveProfileBtn.disabled = false;
-        saveProfileBtn.textContent = "SAVE DETAILS";
+        saveAvatarBtn.disabled = false;
+        saveAvatarBtn.textContent = "SAVE AVATAR";
       }
     });
   }
@@ -406,12 +421,14 @@ function bindFormSubmissions() {
     saveAddressBtn.addEventListener("click", () => {
       const name = addressFullName.value.trim();
       const phone = addressPhone.value.trim();
+      const emergencyPhone = addressEmergencyPhone?.value.trim() || "";
       const pin = addressPincode.value.trim();
-      const line = addressLine.value.trim();
+      const line1 = addressLine1.value.trim();
+      const line2 = addressLine2.value.trim();
       const city = addressCity.value.trim();
       const state = addressState.value.trim();
 
-      if (!name || !phone || !pin || !line || !city || !state) {
+      if (!name || !phone || !pin || !line1 || !city || !state) {
         window.showToast("Please fill all required address fields.", "error");
         return;
       }
@@ -423,8 +440,10 @@ function bindFormSubmissions() {
         const addrData = {
           fullName: name,
           phone: phone,
+          emergencyPhone: emergencyPhone,
           pincode: pin,
-          address: line,
+          address: line1,
+          address2: line2,
           city: city,
           state: state
         };
@@ -459,6 +478,205 @@ function bindFormSubmissions() {
         sendResetLinkBtn.disabled = false;
         sendResetLinkBtn.textContent = "RESET PASSWORD";
       }
+    });
+  }
+}
+
+// ── INLINE EDIT SECTION TOGGLING ──
+function bindSectionEditing() {
+  // Edit buttons
+  document.querySelectorAll(".section-edit-link[data-section]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const sectionId = btn.dataset.section;
+      const section = document.getElementById(`section-${sectionId}`);
+      if (section) section.classList.add("editing");
+    });
+  });
+
+  // Cancel buttons
+  document.querySelectorAll(".btn-section-cancel[data-section]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const sectionId = btn.dataset.section;
+      cancelEditSection(sectionId);
+    });
+  });
+
+  // Save buttons
+  document.querySelectorAll(".btn-section-save[data-section]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const sectionId = btn.dataset.section;
+      saveSection(sectionId);
+    });
+  });
+}
+
+function cancelEditSection(sectionId) {
+  const section = document.getElementById(`section-${sectionId}`);
+  if (!section) return;
+  section.classList.remove("editing");
+
+  // Restore input values from current readonly display
+  if (!currentUser) return;
+
+  if (sectionId === "personal") {
+    // Revert inputs to stored values
+    const displayName = currentUser.displayName?.trim() || currentUser.email.split("@")[0];
+    const parts = displayName.split(" ");
+    profileFirstName.value = parts[0] || "";
+    profileLastName.value = parts.slice(1).join(" ") || "";
+
+    // Revert gender radio
+    const metaKey = `mic_user_profile_${currentUser.uid}`;
+    try {
+      const raw = localStorage.getItem(metaKey);
+      if (raw) {
+        const meta = JSON.parse(raw);
+        const g = meta.gender || "";
+        const m = document.getElementById("genderMale");
+        const f = document.getElementById("genderFemale");
+        const o = document.getElementById("genderOther");
+        if (m) m.checked = g === "male";
+        if (f) f.checked = g === "female";
+        if (o) o.checked = g === "other";
+      }
+    } catch (e) {}
+  } else if (sectionId === "mobile") {
+    const metaKey = `mic_user_profile_${currentUser.uid}`;
+    try {
+      const raw = localStorage.getItem(metaKey);
+      if (raw) {
+        const meta = JSON.parse(raw);
+        profilePhone.value = meta.phone || "";
+        profileLanguage.value = meta.language || "english";
+      }
+    } catch (e) {}
+  } else if (sectionId === "dob") {
+    const metaKey = `mic_user_profile_${currentUser.uid}`;
+    try {
+      const raw = localStorage.getItem(metaKey);
+      if (raw) {
+        const meta = JSON.parse(raw);
+        profileDOB.value = meta.dob || "";
+      }
+    } catch (e) {}
+  }
+}
+
+async function saveSection(sectionId) {
+  if (!currentUser) return;
+
+  const metaKey = `mic_user_profile_${currentUser.uid}`;
+  let meta = {};
+  try {
+    const raw = localStorage.getItem(metaKey);
+    if (raw) meta = JSON.parse(raw);
+  } catch (e) {}
+
+  const section = document.getElementById(`section-${sectionId}`);
+  const saveBtn = section?.querySelector(".btn-section-save");
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = "SAVING...";
+  }
+
+  try {
+    if (sectionId === "personal") {
+      const firstName = profileFirstName.value.trim();
+      const lastName = profileLastName.value.trim();
+      if (!firstName) {
+        window.showToast("First name is required.", "error");
+        return;
+      }
+
+      const fullName = lastName ? `${firstName} ${lastName}` : firstName;
+
+      // Update Firebase Auth displayName
+      await updateProfile(auth.currentUser, { displayName: fullName });
+
+      // Determine gender
+      let genderVal = "";
+      const male = document.getElementById("genderMale");
+      const female = document.getElementById("genderFemale");
+      const other = document.getElementById("genderOther");
+      if (male && male.checked) genderVal = "male";
+      else if (female && female.checked) genderVal = "female";
+      else if (other && other.checked) genderVal = "other";
+
+      meta.gender = genderVal;
+      localStorage.setItem(metaKey, JSON.stringify(meta));
+
+      // Update readonly display
+      if (displayFirstName) displayFirstName.textContent = firstName || "—";
+      if (displayLastName) displayLastName.textContent = lastName || "—";
+      const genderMap = { male: "Male", female: "Female", other: "Other" };
+      if (displayGender) displayGender.textContent = genderMap[genderVal] || "Not specified";
+
+      // Update greeting
+      greetingName.textContent = fullName;
+      const popupName = document.getElementById("popupNavUserName");
+      if (popupName) popupName.textContent = fullName;
+      const sideName = document.getElementById("sidebarUserName");
+      if (sideName) sideName.textContent = fullName;
+
+      window.showToast("Personal information saved!", "success");
+
+    } else if (sectionId === "mobile") {
+      meta.phone = profilePhone.value.trim();
+      meta.language = profileLanguage.value;
+      localStorage.setItem(metaKey, JSON.stringify(meta));
+
+      // Update readonly display
+      if (displayPhone) displayPhone.textContent = meta.phone || "Not provided";
+      const langMap = { english: "English", hindi: "Hindi (हिन्दी)" };
+      if (displayLanguage) displayLanguage.textContent = langMap[meta.language] || "English";
+
+      window.showToast("Mobile number saved!", "success");
+
+    } else if (sectionId === "dob") {
+      meta.dob = profileDOB.value;
+      localStorage.setItem(metaKey, JSON.stringify(meta));
+
+      // Update readonly display
+      if (displayDOB) {
+        if (meta.dob) {
+          const d = new Date(meta.dob + "T00:00:00");
+          displayDOB.textContent = d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+        } else {
+          displayDOB.textContent = "Not set";
+        }
+      }
+
+      window.showToast("Date of birth saved!", "success");
+    }
+
+    // Close edit mode
+    if (section) section.classList.remove("editing");
+
+  } catch (err) {
+    console.error(err);
+    window.showToast("Failed to save changes.", "error");
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "SAVE";
+    }
+  }
+}
+
+// ── ACCOUNT ACTIONS ──
+function bindAccountActions() {
+  const deactivateBtn = document.getElementById("deactivateAccountBtn");
+  const deleteBtn = document.getElementById("deleteAccountBtn");
+
+  if (deactivateBtn) {
+    deactivateBtn.addEventListener("click", () => {
+      window.showToast("Account deactivation is coming soon. Contact support for assistance.", "info");
+    });
+  }
+
+  if (deleteBtn) {
+    deleteBtn.addEventListener("click", () => {
+      window.showToast("Account deletion is coming soon. Contact support for assistance.", "info");
     });
   }
 }

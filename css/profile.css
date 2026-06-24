@@ -13,6 +13,7 @@
   --fk-border-dark: #e0e0e0;
   --fk-green: #26a541;
   --fk-orange: #ff9f00;
+  --fk-red: #ef4444;
   
   --radius-fk: 2px;
   --shadow-fk: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
@@ -295,13 +296,29 @@ body {
   margin-bottom: 18px;
 }
 
+.shipping-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.shipping-form .form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.shipping-form .form-group {
+  flex: 1;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.form-group label {
+.form-group label,
+.input-label {
   font-size: 13px;
   font-weight: 600;
   color: var(--fk-text);
@@ -963,6 +980,254 @@ html.site-theme-dark .btn-danger-border:hover {
   grid-column: 1 / -1;
 }
 
+
+/* ═══════════════════════════════════════════════════════
+   FLIPKART INLINE-EDIT SECTION STYLES
+   ═══════════════════════════════════════════════════════ */
+
+/* Inline header with Edit link */
+.content-header-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--fk-border);
+}
+
+.content-header-inline h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fk-text);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* Edit link button */
+.section-edit-link {
+  border: none;
+  background: none;
+  color: var(--fk-blue);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 10px;
+  transition: color 0.2s;
+}
+
+.section-edit-link:hover {
+  color: var(--fk-blue-dark);
+  text-decoration: underline;
+}
+
+.section-edit-link.disabled-edit {
+  color: var(--fk-text-gray);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.section-edit-link.disabled-edit:hover {
+  text-decoration: none;
+  color: var(--fk-text-gray);
+}
+
+/* Readonly display fields */
+.section-readonly {
+  padding: 4px 0;
+}
+
+.readonly-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.readonly-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.readonly-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fk-text-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.readonly-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fk-text);
+  line-height: 1.5;
+}
+
+/* Edit mode — hidden by default, shown via .editing class */
+.section-editmode {
+  display: none;
+  animation: fadeInSection 0.25s ease;
+}
+
+@keyframes fadeInSection {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.editable-section.editing .section-editmode {
+  display: block;
+}
+
+.editable-section.editing .section-readonly {
+  display: none;
+}
+
+.editable-section.editing .section-edit-link {
+  display: none;
+}
+
+/* Inline Save / Cancel actions row */
+.inline-save-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--fk-border);
+}
+
+.btn-section-cancel {
+  border: none;
+  background: none;
+  color: var(--fk-blue);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 20px;
+  transition: color 0.2s;
+}
+
+.btn-section-cancel:hover {
+  color: var(--fk-blue-dark);
+  text-decoration: underline;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FAQ LIST STYLES
+   ═══════════════════════════════════════════════════════ */
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.faq-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--fk-border);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.faq-item:first-child {
+  padding-top: 0;
+}
+
+.faq-question {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fk-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.faq-question i {
+  color: var(--fk-blue);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.faq-answer {
+  font-size: 13px;
+  color: var(--fk-text-gray);
+  line-height: 1.7;
+  padding-left: 26px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ACCOUNT DANGER ACTIONS
+   ═══════════════════════════════════════════════════════ */
+
+.account-actions-card {
+  padding: 16px 32px !important;
+}
+
+.account-danger-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.account-action-link {
+  border: none;
+  background: none;
+  color: var(--fk-text-gray);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.account-action-link:hover {
+  color: var(--fk-blue);
+  text-decoration: underline;
+}
+
+.account-action-link.delete:hover {
+  color: var(--fk-red);
+}
+
+.action-separator {
+  color: var(--fk-border-dark);
+  font-size: 14px;
+  user-select: none;
+}
+
+/* Dark mode overrides for inline-edit */
+html.site-theme-dark .section-edit-link {
+  color: #60a5fa;
+}
+
+html.site-theme-dark .section-edit-link:hover {
+  color: #93bbfc;
+}
+
+html.site-theme-dark .btn-section-cancel {
+  color: #60a5fa;
+}
+
+html.site-theme-dark .btn-section-cancel:hover {
+  color: #93bbfc;
+}
+
+html.site-theme-dark .faq-question i {
+  color: #60a5fa;
+}
+
+html.site-theme-dark .account-action-link:hover {
+  color: #60a5fa;
+}
+
+html.site-theme-dark .account-action-link.delete:hover {
+  color: #ef4444;
+}
+
 /* Responsive Customization */
 @media (max-width: 900px) {
   .profile-layout {
@@ -1012,6 +1277,20 @@ html.site-theme-dark .btn-danger-border:hover {
     flex-direction: column;
     text-align: center;
     gap: 8px;
+  }
+  
+  .readonly-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  
+  .inline-save-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .inline-save-actions .btn-section-cancel {
+    text-align: center;
   }
 }
 
