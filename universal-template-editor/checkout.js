@@ -453,6 +453,8 @@ function setupCardFormatters() {
 }
 
 // ── PAYMENT VERIFICATION & SIMULATION ──
+const API_BASE_URL = "http://localhost:5000/api/payment";
+
 function triggerCheckoutPayment() {
   // 1. Verify Shipping fields are completely filled
   const fullName = document.getElementById('full-name').value.trim();
@@ -485,44 +487,121 @@ function triggerCheckoutPayment() {
     return;
   }
   
-  // 2. Validate Payment inputs
-  if (activePaymentMethod === 'upi') {
-    if (activeUpiType === 'vpa') {
-      const upiId = document.getElementById('upi-id-input').value.trim();
-      if (!upiId || !upiId.includes('@')) {
-        toast("Please enter a valid UPI VPA ID (username@bank)", "e");
-        return;
-      }
-    }
-  } else if (activePaymentMethod === 'card') {
-    const cName = document.getElementById('card-name').value.trim();
-    const cNum = document.getElementById('card-number').value.trim();
-    const cExp = document.getElementById('card-expiry').value.trim();
-    const cCvv = document.getElementById('card-cvv').value.trim();
-    
-    if (!cName || !cNum || !cExp || !cCvv) {
-      toast("Please fill in all card details", "e");
-      return;
-    }
-    
-    if (cNum.replace(/\s/g, '').length < 16) {
-      toast("Invalid credit card number length", "e");
-      return;
-    }
-    
-    if (cExp.length < 5 || !cExp.includes('/')) {
-      toast("Invalid card expiration date (MM/YY format required)", "e");
-      return;
-    }
-    
-    if (cCvv.length < 3) {
-      toast("Invalid CVV/CVC code length", "e");
-      return;
-    }
+  // 2. Disable payment button and set loading state
+  const payBtn = document.querySelector('.btn-pay-now');
+  const originalBtnText = payBtn ? payBtn.innerHTML : 'Pay Now';
+  if (payBtn) {
+    payBtn.disabled = true;
+    payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Order...';
   }
+
+  // 3. Calculate amount
+  const grandTotal = parseFloat(document.getElementById('bill-grand-total').textContent);
   
-  // 3. Trigger loader payment simulation
-  showProcessingPaymentModal();
+  // 4. Create order on the payment backend
+  fetch(`${API_BASE_URL}/create-order`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      amount: grandTotal,
+      receipt: `receipt_mic_${Math.floor(10000 + Math.random() * 90000)}`
+    })
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`Server returned status ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    if (!data.success) {
+      throw new Error(data.message || "Failed to create order");
+    }
+
+    // Restore button state
+    if (payBtn) {
+      payBtn.disabled = false;
+      payBtn.innerHTML = originalBtnText;
+    }
+
+    // 5. Open Razorpay Checkout standard popup
+    const options = {
+      key: data.key_id,
+      amount: data.order.amount,
+      currency: data.order.currency,
+      name: "MyInvitationCard",
+      description: orderConfig.documentTitle || "Invitation Card Order",
+      image: "https://myinvitationcard.vercel.app/assets/images/logo.png",
+      order_id: data.order.id,
+      handler: async function (response) {
+        // Verification step
+        showProcessingPaymentModal();
+        try {
+          const verifyRes = await fetch(`${API_BASE_URL}/verify-payment`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            })
+          });
+
+          const verifyData = await verifyRes.json();
+
+          // Hide loader modal
+          const modal = document.getElementById('modal-processing');
+          if (modal) modal.classList.remove('active');
+
+          if (verifyData.success) {
+            toast("Payment successful & verified!", "s");
+            showSuccessModal(response.razorpay_order_id, response.razorpay_payment_id, "Razorpay Online");
+          } else {
+            toast("Payment verification failed: " + verifyData.message, "e");
+            showFailureSimulation("Verification failed: " + verifyData.message, response.razorpay_payment_id);
+          }
+        } catch (err) {
+          console.error("Signature verification error:", err);
+          const modal = document.getElementById('modal-processing');
+          if (modal) modal.classList.remove('active');
+          toast("Error verifying payment signature", "e");
+          showFailureSimulation("Error verifying signature: " + err.message, response.razorpay_payment_id);
+        }
+      },
+      prefill: {
+        name: fullName,
+        contact: phone
+      },
+      theme: {
+        color: "#6366f1"
+      },
+      modal: {
+        ondismiss: function() {
+          toast("Payment cancelled", "i");
+        }
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.on('payment.failed', function (response) {
+      console.error("Payment failed event:", response.error);
+      toast("Payment failed: " + response.error.description, "e");
+      showFailureSimulation(response.error.description, response.error.metadata.payment_id);
+    });
+    rzp.open();
+  })
+  .catch(err => {
+    console.error("Order creation error:", err);
+    if (payBtn) {
+      payBtn.disabled = false;
+      payBtn.innerHTML = originalBtnText;
+    }
+    toast(`Payment initialization failed: ${err.message}. Please make sure the payment server is running on port 5000.`, "e");
+  });
 }
 
 function showProcessingPaymentModal() {
@@ -579,10 +658,10 @@ function showProcessingPaymentModal() {
   }, 100);
 }
 
-function showFailureSimulation() {
+function showFailureSimulation(customReason, customTxnId) {
   // Generate random failure reference
   const randNum = Math.floor(10000 + Math.random() * 90000);
-  const failureRef = `TXN-REF-${randNum}-2026`;
+  const failureRef = customTxnId || `TXN-REF-${randNum}-2026`;
   
   // Recompute bill variables for storing
   const qty = orderConfig.quantity;
@@ -616,16 +695,18 @@ function showFailureSimulation() {
   const grandTotal = subtotal + shippingCost + gstTax;
   
   // Determine failure reason
-  let reason = "The transaction was declined by the bank due to insufficient funds or incorrect credentials.";
-  if (activePaymentMethod === 'upi') {
-    reason = "The UPI transaction timed out. Please ensure you open your UPI app and authorize the payment request within the time limit.";
-  } else if (activePaymentMethod === 'card') {
-    const cvvEl = document.getElementById('card-cvv');
-    const cvv = cvvEl ? cvvEl.value.trim() : '';
-    if (cvv === '999') {
-      reason = "Authentication failed. The CVV/CVC number entered is invalid.";
-    } else {
-      reason = "The card payment was declined by the issuing bank. Please check your card status, limits, or contact your bank.";
+  let reason = customReason || "The transaction was declined by the bank due to insufficient funds or incorrect credentials.";
+  if (!customReason) {
+    if (activePaymentMethod === 'upi') {
+      reason = "The UPI transaction timed out. Please ensure you open your UPI app and authorize the payment request within the time limit.";
+    } else if (activePaymentMethod === 'card') {
+      const cvvEl = document.getElementById('card-cvv');
+      const cvv = cvvEl ? cvvEl.value.trim() : '';
+      if (cvv === '999') {
+        reason = "Authentication failed. The CVV/CVC number entered is invalid.";
+      } else {
+        reason = "The card payment was declined by the issuing bank. Please check your card status, limits, or contact your bank.";
+      }
     }
   }
   
@@ -653,23 +734,28 @@ function showFailureSimulation() {
   window.location.href = "payment-failed.html";
 }
 
-function showSuccessModal() {
-  // Generate random order ID
-  const randNum = Math.floor(10000 + Math.random() * 90000);
-  const orderId = `MIC-${randNum}-2026`;
+function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
+  // Use Razorpay Order ID if available, or generate a random one
+  const orderId = razorpayOrderId || `MIC-${Math.floor(10000 + Math.random() * 90000)}-2026`;
   
   // Set delivery estimate
   const finalEst = shippingSpeed === 'standard' ? standardDeliveryDate : expressDeliveryDate;
   
   // Set payment mode label
   let payModeText = '';
-  if (activePaymentMethod === 'upi') {
+  if (methodUsed) {
+    payModeText = methodUsed;
+  } else if (activePaymentMethod === 'upi') {
     const upiAppName = selectedUpiBrand === 'gpay' ? 'Google Pay' : selectedUpiBrand === 'phonepe' ? 'PhonePe' : 'Paytm';
     payModeText = `UPI (${upiAppName})`;
   } else if (activePaymentMethod === 'card') {
     payModeText = 'Credit/Debit Card';
   } else {
     payModeText = 'Net Banking';
+  }
+
+  if (razorpayPaymentId) {
+    payModeText += ` (Ref: ${razorpayPaymentId})`;
   }
   
   // Recompute bill variables for storing
