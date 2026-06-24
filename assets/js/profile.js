@@ -152,7 +152,7 @@ function setupAuthenticatedView(user) {
 
   // Set greeting banner avatar
   const avatarToUse = localAvatar || user.photoURL || "";
-  setGreetingAvatarUI(avatarToUse, displayName);
+  setGreetingAvatarUI(avatarToUse, displayName, !!localAvatar);
 
   // Load Shipping Address from localStorage
   loadShippingAddress();
@@ -176,11 +176,11 @@ function setupGuestView() {
 }
 
 // Render banner avatar
-function setGreetingAvatarUI(photoURL, name) {
+function setGreetingAvatarUI(photoURL, name, isCustom = false) {
   const initial = (name || "U").charAt(0).toUpperCase();
-  selectedAvatarUrl = photoURL || "";
-  customAvatarBase64 = "";
-  uploadedFileName.textContent = "No file chosen";
+  selectedAvatarUrl = isCustom ? "" : (photoURL || "");
+  customAvatarBase64 = isCustom ? photoURL : "";
+  uploadedFileName.textContent = isCustom ? "Custom Uploaded Photo" : "No file chosen";
 
   if (photoURL) {
     greetingAvatar.innerHTML = `<img src="${photoURL}" alt="avatar">`;
@@ -189,14 +189,25 @@ function setGreetingAvatarUI(photoURL, name) {
   }
 
   // Highlight selected preset option
+  let highlighted = false;
   document.querySelectorAll(".avatar-option").forEach((opt) => {
     const optUrl = opt.dataset.avatarUrl;
-    if (photoURL === optUrl) {
+    if (!isCustom && photoURL && photoURL === optUrl) {
       opt.classList.add("selected");
+      highlighted = true;
     } else {
       opt.classList.remove("selected");
     }
   });
+
+  // If no preset matched, and it's not custom, highlight "None / Gmail"
+  if (!isCustom && !highlighted) {
+    const noneOpt = document.querySelector('.avatar-option[data-avatar-url="none_google"]');
+    if (noneOpt) {
+      noneOpt.classList.add("selected");
+      selectedAvatarUrl = "none_google";
+    }
+  }
 }
 
 // ── BIND TAB ACTIONS ──
@@ -243,7 +254,19 @@ function bindAvatarPresets() {
       uploadedFileName.textContent = "No file chosen";
 
       // Instantly preview in sidebar
-      greetingAvatar.innerHTML = `<img src="${selectedAvatarUrl}" alt="avatar">`;
+      if (selectedAvatarUrl === "none_google") {
+        const googleProviderData = auth.currentUser?.providerData?.find(p => p.providerId === 'google.com');
+        const googlePhotoURL = googleProviderData?.photoURL || auth.currentUser?.photoURL || "";
+        const initial = (auth.currentUser?.displayName || "User").charAt(0).toUpperCase();
+
+        if (googlePhotoURL) {
+          greetingAvatar.innerHTML = `<img src="${googlePhotoURL}" alt="avatar">`;
+        } else {
+          greetingAvatar.innerHTML = `<div class="avatar-initial">${initial}</div>`;
+        }
+      } else {
+        greetingAvatar.innerHTML = `<img src="${selectedAvatarUrl}" alt="avatar">`;
+      }
     });
   });
 }
@@ -325,10 +348,25 @@ function bindFormSubmissions() {
         const finalAvatar = customAvatarBase64 || selectedAvatarUrl || "";
         const isBase64 = finalAvatar.startsWith("data:image/");
 
-        // Update Firebase Auth displayName & photoURL (only pass photoURL if it's NOT base64)
+        let photoURLToUpdate = "";
+        let localAvatarToSave = "";
+
+        if (finalAvatar === "none_google") {
+          const googleProviderData = auth.currentUser?.providerData?.find(p => p.providerId === 'google.com');
+          photoURLToUpdate = googleProviderData?.photoURL || "";
+          localAvatarToSave = "";
+        } else if (isBase64) {
+          photoURLToUpdate = "";
+          localAvatarToSave = finalAvatar;
+        } else {
+          photoURLToUpdate = finalAvatar;
+          localAvatarToSave = "";
+        }
+
+        // Update Firebase Auth displayName & photoURL
         await updateProfile(auth.currentUser, {
           displayName: fullName,
-          photoURL: isBase64 ? "" : finalAvatar
+          photoURL: photoURLToUpdate
         });
 
         // Determine gender value
@@ -347,7 +385,7 @@ function bindFormSubmissions() {
           language: profileLanguage.value,
           dob: profileDOB.value,
           gender: genderVal,
-          customAvatar: isBase64 ? finalAvatar : ""
+          customAvatar: localAvatarToSave
         };
         localStorage.setItem(metaKey, JSON.stringify(metaData));
 
