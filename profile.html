@@ -184,46 +184,75 @@
           </div>
         </div>
 
-        <!-- Sidebar Navigation Buttons Menu -->
+        <!-- Sidebar Navigation Accordion Menu -->
         <div class="profile-card menu-accordion-card" style="padding: 0; overflow: hidden;">
           
-          <button class="sidebar-menu-btn active-nav" data-target="profile-orders-tab">
+          <!-- MY ORDERS — standalone top link -->
+          <button class="sidebar-menu-btn orders-top-btn active-nav" data-target="profile-orders-tab">
             <i class="fa-solid fa-box-open icon-blue"></i>
-            <span>My Orders</span>
-          </button>
-          
-          <button class="sidebar-menu-btn" data-target="profile-info-tab">
-            <i class="fa-solid fa-user icon-blue"></i>
-            <span>Profile Information</span>
-          </button>
-          
-          <button class="sidebar-menu-btn" data-target="profile-addresses-tab">
-            <i class="fa-solid fa-map-location-dot icon-blue"></i>
-            <span>Manage Addresses</span>
-          </button>
-          
-          <button class="sidebar-menu-btn" data-target="profile-drafts-tab">
-            <i class="fa-solid fa-floppy-disk icon-blue"></i>
-            <span>Saved Drafts</span>
-          </button>
-          
-          <button class="sidebar-menu-btn" data-target="profile-favorites-tab">
-            <i class="fa-solid fa-star icon-blue"></i>
-            <span>My Favourites</span>
-          </button>
-          
-          <button class="sidebar-menu-btn" data-target="profile-importer-tab">
-            <i class="fa-solid fa-file-import icon-blue"></i>
-            <span>Import / Export VLS</span>
-          </button>
-          
-          <div class="sidebar-btn-divider"></div>
-          
-          <button class="sidebar-menu-btn logout-btn-sidebar" id="sidebarLogoutTrigger">
-            <i class="fa-solid fa-power-off icon-red"></i>
-            <span>Log Out</span>
+            <span>MY ORDERS</span>
+            <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
           </button>
 
+          <div class="sidebar-btn-divider"></div>
+
+          <!-- ACCOUNT SETTINGS group -->
+          <div class="sidebar-group">
+            <div class="sidebar-group-header">
+              <i class="fa-solid fa-user icon-blue"></i>
+              <span class="sidebar-group-title">ACCOUNT SETTINGS</span>
+            </div>
+            <button class="sidebar-sub-link" data-target="profile-info-tab">
+              Profile Information
+            </button>
+            <button class="sidebar-sub-link" data-target="profile-addresses-tab">
+              Manage Addresses
+            </button>
+          </div>
+
+          <div class="sidebar-btn-divider"></div>
+
+          <!-- MY STUFF group -->
+          <div class="sidebar-group">
+            <div class="sidebar-group-header">
+              <i class="fa-solid fa-layer-group icon-blue"></i>
+              <span class="sidebar-group-title">MY STUFF</span>
+            </div>
+            <button class="sidebar-sub-link" data-target="profile-drafts-tab">
+              Saved Drafts
+            </button>
+            <button class="sidebar-sub-link" data-target="profile-favorites-tab">
+              My Favourites
+            </button>
+            <button class="sidebar-sub-link" data-target="profile-importer-tab">
+              Import / Export VLS
+            </button>
+          </div>
+
+          <div class="sidebar-btn-divider"></div>
+
+          <!-- LOGOUT -->
+          <button class="sidebar-menu-btn logout-btn-sidebar" id="sidebarLogoutTrigger">
+            <i class="fa-solid fa-power-off icon-red"></i>
+            <span>Logout</span>
+          </button>
+
+        </div>
+
+        <!-- Frequently Visited -->
+        <div class="profile-card frequently-visited-card">
+          <span class="freq-label">Frequently Visited:</span>
+          <div class="freq-links">
+            <a href="template-dashboard.html" class="freq-link">
+              <i class="fa-solid fa-palette"></i> Templates
+            </a>
+            <a href="pricing.html" class="freq-link">
+              <i class="fa-solid fa-crown"></i> Pricing
+            </a>
+            <a href="about.html" class="freq-link">
+              <i class="fa-solid fa-circle-info"></i> Help Center
+            </a>
+          </div>
         </div>
       </aside>
 
@@ -273,18 +302,18 @@
               <div class="form-group gender-selection-group">
                 <label>Your Gender</label>
                 <div class="gender-radio-options">
-                  <label class="radio-label">
+                  <div class="radio-item">
                     <input type="radio" name="userGender" value="male" id="genderMale">
-                    <span>Male</span>
-                  </label>
-                  <label class="radio-label">
+                    <label for="genderMale">Male</label>
+                  </div>
+                  <div class="radio-item">
                     <input type="radio" name="userGender" value="female" id="genderFemale">
-                    <span>Female</span>
-                  </label>
-                  <label class="radio-label">
+                    <label for="genderFemale">Female</label>
+                  </div>
+                  <div class="radio-item">
                     <input type="radio" name="userGender" value="other" id="genderOther">
-                    <span>Other</span>
-                  </label>
+                    <label for="genderOther">Other</label>
+                  </div>
                 </div>
               </div>
               <div class="inline-save-actions">
@@ -487,59 +516,88 @@
         <!-- PANEL 2: MANAGE ADDRESSES -->
         <div class="profile-tab-content" id="profile-addresses-tab">
           <div class="profile-card content-section-card">
-            <div class="content-header">
-              <h3>Shipping Address</h3>
-              <p class="header-desc-label">Enter the shipping address where your printed cards will be delivered.</p>
+            
+            <!-- Header row with "ADD ADDRESS" button -->
+            <div class="section-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--fk-border);">
+              <div>
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--fk-text); text-transform: uppercase; margin: 0;">Manage Addresses</h3>
+                <p class="header-desc-label" style="margin-top: 4px; margin-bottom: 0;">Add up to 3 shipping addresses for delivery.</p>
+              </div>
+              <button type="button" id="addNewAddressBtn" class="btn-primary btn-sm btn-new-design" style="padding: 8px 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-plus"></i> ADD ADDRESS
+              </button>
             </div>
 
-            <form id="addressDetailsForm" class="shipping-form" onsubmit="return false;">
-              <div class="form-group">
-                <label for="full-name" class="input-label">Full Name *</label>
-                <input type="text" id="full-name" required placeholder="Full Name">
-              </div>
+            <!-- Addresses List Container -->
+            <div id="addressesListContainer" class="addresses-list-wrapper">
+              <!-- Rendered dynamically -->
+            </div>
 
-              <div class="form-row">
+            <!-- Edit / Add Form (hidden by default) -->
+            <div id="addressFormWrapper" class="address-form-wrapper" style="display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--fk-border); animation: fadeInSection 0.25s ease;">
+              <h4 id="addressFormTitle" style="font-size: 16px; font-weight: 600; color: var(--fk-text); margin-bottom: 16px; text-transform: uppercase;">Add New Address</h4>
+              
+              <form id="addressDetailsForm" class="shipping-form" onsubmit="return false;">
+                <input type="hidden" id="edit-address-index" value="">
+                
                 <div class="form-group">
-                  <label for="phone-num" class="input-label">Mobile Number *</label>
-                  <input type="tel" id="phone-num" required pattern="[0-9]{10}" placeholder="10-digit Mobile Number">
+                  <label for="full-name" class="input-label">Full Name *</label>
+                  <input type="text" id="full-name" required placeholder="Full Name">
                 </div>
-                <div class="form-group">
-                  <label for="emergency-phone-num" class="input-label">Emergency Mobile No.</label>
-                  <input type="tel" id="emergency-phone-num" pattern="[0-9]{10}" placeholder="Emergency Mobile Number">
-                </div>
-              </div>
 
-              <div class="form-group">
-                <label for="address-line1" class="input-label">Address Line 1 (Street, Area, Colony) *</label>
-                <input type="text" id="address-line1" required placeholder="Flat, House no., Building, Company, Apartment">
-              </div>
-
-              <div class="form-group">
-                <label for="address-line2" class="input-label">Address Line 2 (Landmark, Floor, Apartment) *</label>
-                <input type="text" id="address-line2" placeholder="Area, Street, Sector, Village, Landmark">
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="pincode-input" class="input-label">Pincode *</label>
-                  <input type="text" id="pincode-input" required maxlength="6" pattern="[0-9]{6}" placeholder="6-digit Pincode">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="phone-num" class="input-label">Mobile Number *</label>
+                    <input type="tel" id="phone-num" required pattern="[0-9]{10}" placeholder="10-digit Mobile Number">
+                  </div>
+                  <div class="form-group">
+                    <label for="emergency-phone-num" class="input-label">Emergency Mobile No.</label>
+                    <input type="tel" id="emergency-phone-num" pattern="[0-9]{10}" placeholder="Emergency Mobile Number">
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="city-input" class="input-label">City *</label>
-                  <input type="text" id="city-input" required placeholder="City">
-                </div>
-                <div class="form-group">
-                  <label for="state-input" class="input-label">State *</label>
-                  <input type="text" id="state-input" required placeholder="State">
-                </div>
-              </div>
 
-              <div class="form-actions-bar">
-                <button type="button" class="btn-primary save-btn-fk" id="saveAddressBtn">
-                  SAVE ADDRESS
-                </button>
-              </div>
-            </form>
+                <div class="form-group">
+                  <label for="address-line1" class="input-label">Address Line 1 (Street, Area, Colony) *</label>
+                  <input type="text" id="address-line1" required placeholder="Flat, House no., Building, Company, Apartment">
+                </div>
+
+                <div class="form-group">
+                  <label for="address-line2" class="input-label">Address Line 2 (Landmark, Floor, Apartment) *</label>
+                  <input type="text" id="address-line2" placeholder="Area, Street, Sector, Village, Landmark">
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="pincode-input" class="input-label">Pincode *</label>
+                    <input type="text" id="pincode-input" required maxlength="6" pattern="[0-9]{6}" placeholder="6-digit Pincode">
+                  </div>
+                  <div class="form-group">
+                    <label for="city-input" class="input-label">City *</label>
+                    <input type="text" id="city-input" required placeholder="City">
+                  </div>
+                  <div class="form-group">
+                    <label for="state-input" class="input-label">State *</label>
+                    <input type="text" id="state-input" required placeholder="State">
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 8px;">
+                  <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="address-default-checkbox" style="width: auto; cursor: pointer;">
+                    <span style="font-size: 13px; font-weight: 500;">Set as default shipping address</span>
+                  </label>
+                </div>
+
+                <div class="inline-save-actions">
+                  <button type="button" class="btn-primary save-btn-fk" id="saveAddressBtn">
+                    SAVE ADDRESS
+                  </button>
+                  <button type="button" class="btn-section-cancel" id="cancelAddressBtn" style="background: none; border: 1px solid var(--fk-border-dark); color: var(--fk-text);">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
 

@@ -760,6 +760,11 @@ document.addEventListener("click", (e) => {
   const btn = e.target.closest(".popup-menu-btn, .sidebar-popup-item");
   if (btn && btn.textContent.includes("My Profile")) {
     e.preventDefault();
-    window.location.href = "profile.html";
+    const path = window.location.pathname;
+    const isSubdir = path.includes('/universal-template-editor/') || 
+                     path.includes('/builder1/') || 
+                     path.includes('/payment/') ||
+                     path.includes('/card1/');
+    window.location.href = isSubdir ? "../profile.html" : "profile.html";
   }
 });

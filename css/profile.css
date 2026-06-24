@@ -383,20 +383,31 @@ body {
   margin-top: 8px;
 }
 
-.radio-label {
+.radio-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
-  font-size: 14px;
-  user-select: none;
 }
 
-.radio-label input[type="radio"] {
+.radio-item input[type="radio"] {
   width: 18px;
   height: 18px;
   accent-color: var(--fk-blue);
   cursor: pointer;
+  margin: 0;
+  position: relative;
+  z-index: 5;
+  pointer-events: auto !important;
+}
+
+.gender-radio-options .radio-item label {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fk-text);
+  margin: 0;
+  user-select: none;
 }
 
 /* Avatar presets selection style */
@@ -1294,31 +1305,40 @@ html.site-theme-dark .account-action-link.delete:hover {
   }
 }
 
-/* Sidebar navigation flat buttons menu styling */
+/* ═══════════════════════════════════════════════════════
+   FLIPKART ACCORDION SIDEBAR STYLES
+   ═══════════════════════════════════════════════════════ */
+
+/* Top-level standalone buttons (My Orders, Logout) */
 .sidebar-menu-btn {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   width: 100%;
   padding: 14px 20px;
   background: transparent;
   border: none;
-  border-left: 4px solid transparent;
   color: var(--fk-text);
   font-size: 14px;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-radius: 0;
   box-sizing: border-box;
 }
 
-.sidebar-menu-btn i {
+.sidebar-menu-btn i.icon-blue {
   font-size: 16px;
   width: 20px;
   text-align: center;
-  transition: transform 0.2s ease;
+  color: var(--fk-blue);
+}
+
+.sidebar-menu-btn i.icon-red {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  color: #ef4444;
 }
 
 .sidebar-menu-btn:hover {
@@ -1326,28 +1346,151 @@ html.site-theme-dark .account-action-link.delete:hover {
   color: var(--fk-blue);
 }
 
-.sidebar-menu-btn:hover i {
-  transform: scale(1.1);
+/* Orders top button — special row with chevron */
+.orders-top-btn {
+  position: relative;
 }
 
-.sidebar-menu-btn.active-nav {
-  background: rgba(40, 116, 240, 0.08);
-  border-left-color: var(--fk-blue);
+.orders-top-btn span {
+  flex-grow: 1;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.sidebar-chevron {
+  font-size: 11px;
+  color: var(--fk-text-gray);
+  margin-left: auto;
+}
+
+.orders-top-btn.active-nav {
+  background: rgba(40, 116, 240, 0.06);
   color: var(--fk-blue);
 }
 
+/* Sidebar group (ACCOUNT SETTINGS, MY STUFF) */
+.sidebar-group {
+  padding: 0;
+}
+
+.sidebar-group-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px 8px 20px;
+  user-select: none;
+}
+
+.sidebar-group-header i {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  color: var(--fk-blue);
+}
+
+.sidebar-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fk-text-gray);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Sub-links under each group */
+.sidebar-sub-link {
+  display: block;
+  width: 100%;
+  padding: 12px 20px 12px 54px;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: var(--fk-text);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-sizing: border-box;
+}
+
+.sidebar-sub-link:hover {
+  background: var(--fk-bg);
+  color: var(--fk-blue);
+}
+
+.sidebar-sub-link.active-nav {
+  background: rgba(40, 116, 240, 0.06);
+  border-left-color: var(--fk-blue);
+  color: var(--fk-blue);
+  font-weight: 700;
+}
+
+/* Dividers */
 .sidebar-btn-divider {
   height: 1px;
   background: var(--fk-border);
-  margin: 6px 0;
+  margin: 0;
 }
 
+/* Logout hover */
 .logout-btn-sidebar:hover {
-  background: rgba(239, 68, 68, 0.08) !important;
+  background: rgba(239, 68, 68, 0.06) !important;
   color: #ef4444 !important;
 }
 
-/* Dark mode styling for sidebar menu buttons */
+/* Frequently Visited Card */
+.frequently-visited-card {
+  background: var(--fk-card-bg);
+  border: 1px solid var(--fk-border);
+  box-shadow: var(--shadow-fk);
+  border-radius: var(--radius-fk);
+  padding: 16px 20px;
+}
+
+.freq-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fk-text-gray);
+  letter-spacing: 0.3px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.freq-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.freq-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fk-blue);
+  background: rgba(40, 116, 240, 0.06);
+  border: 1px solid rgba(40, 116, 240, 0.15);
+  border-radius: 20px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.freq-link:hover {
+  background: rgba(40, 116, 240, 0.12);
+  border-color: var(--fk-blue);
+}
+
+.freq-link i {
+  font-size: 11px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DARK MODE — SIDEBAR OVERRIDES
+   ═══════════════════════════════════════════════════════ */
+
 html.site-theme-dark .sidebar-menu-btn {
   color: #e2e8f0;
 }
@@ -1356,8 +1499,174 @@ html.site-theme-dark .sidebar-menu-btn:hover {
   background: rgba(255, 255, 255, 0.05);
 }
 
-html.site-theme-dark .sidebar-menu-btn.active-nav {
-  background: rgba(59, 130, 246, 0.15);
+html.site-theme-dark .orders-top-btn.active-nav {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+}
+
+html.site-theme-dark .sidebar-sub-link {
+  color: #cbd5e1;
+}
+
+html.site-theme-dark .sidebar-sub-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #60a5fa;
+}
+
+html.site-theme-dark .sidebar-sub-link.active-nav {
+  background: rgba(59, 130, 246, 0.12);
   border-left-color: #3b82f6;
   color: #60a5fa;
+}
+
+html.site-theme-dark .freq-link {
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+html.site-theme-dark .freq-link:hover {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: #3b82f6;
+}
+
+/* Multiple Address Manager Styles */
+.addresses-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.address-card-item {
+  border: 1px solid var(--fk-border);
+  border-radius: 4px;
+  padding: 20px;
+  background: var(--white, #fff);
+  position: relative;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.address-card-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.address-card-item.is-default {
+  border-color: var(--fk-blue, #2874f0);
+  background: rgba(40, 116, 240, 0.01);
+}
+
+.address-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.address-card-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.address-card-radio {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.address-card-name {
+  font-weight: 600;
+  color: var(--fk-text, #212121);
+  font-size: 15px;
+}
+
+.address-card-phone {
+  color: var(--fk-gray, #878787);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.address-default-badge {
+  background: #f0f5ff;
+  color: var(--fk-blue, #2874f0);
+  font-size: 10px;
+  padding: 3px 8px;
+  font-weight: 600;
+  border-radius: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.address-card-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.address-action-btn {
+  background: none;
+  border: none;
+  color: var(--fk-blue, #2874f0);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.address-action-btn.delete {
+  color: #d11a2a;
+}
+
+.address-action-btn:hover {
+  text-decoration: underline;
+}
+
+.address-card-body {
+  padding-left: 26px;
+  color: var(--fk-text, #212121);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.address-card-body p {
+  margin: 4px 0;
+}
+
+/* Dark mode overrides */
+html.site-theme-dark .address-card-item {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+html.site-theme-dark .address-card-item.is-default {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+html.site-theme-dark .address-card-name {
+  color: #f8fafc;
+}
+
+html.site-theme-dark .address-card-phone {
+  color: #94a3b8;
+}
+
+html.site-theme-dark .address-default-badge {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+html.site-theme-dark .address-card-body {
+  color: #cbd5e1;
+}
+
+html.site-theme-dark .address-action-btn {
+  color: #60a5fa;
+}
+
+html.site-theme-dark .address-action-btn.delete {
+  color: #f87171;
 }

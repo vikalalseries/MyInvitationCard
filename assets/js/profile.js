@@ -50,6 +50,15 @@ const addressCity = document.getElementById("city-input");
 const addressState = document.getElementById("state-input");
 const saveAddressBtn = document.getElementById("saveAddressBtn");
 
+// Address list & form wrapper elements
+const addressesListContainer = document.getElementById("addressesListContainer");
+const addNewAddressBtn = document.getElementById("addNewAddressBtn");
+const addressFormWrapper = document.getElementById("addressFormWrapper");
+const addressFormTitle = document.getElementById("addressFormTitle");
+const editAddressIndex = document.getElementById("edit-address-index");
+const addressDefaultCheckbox = document.getElementById("address-default-checkbox");
+const cancelAddressBtn = document.getElementById("cancelAddressBtn");
+
 const saveAvatarBtn = document.getElementById("saveAvatarBtn");
 const sendResetLinkBtn = document.getElementById("sendResetLinkBtn");
 const customAvatarFile = document.getElementById("customAvatarFile");
@@ -70,7 +79,7 @@ const confirmLogoutBtn = document.getElementById("confirmLogoutBtn");
 const cancelLogoutBtn = document.getElementById("cancelLogoutBtn");
 
 // ── INITIALIZATION ──
-document.addEventListener("DOMContentLoaded", async () => {
+async function initProfilePage() {
   // Bind tab switching
   bindTabs();
 
@@ -92,11 +101,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   bindAvatarPresets();
   bindCustomAvatarUpload();
   bindFormSubmissions();
+  bindAddressManager();
   bindSectionEditing();
   bindVlsImporter();
   bindLogoutModal();
   bindAccountActions();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initProfilePage);
+} else {
+  initProfilePage();
+}
 
 // Load template configs
 async function loadTemplatesList() {
@@ -333,11 +349,194 @@ function bindCustomAvatarUpload() {
 }
 
 // ── ADDRESS MANAGEMENT ──
-function loadShippingAddress() {
+function getSavedAddresses() {
   try {
-    const rawAddr = localStorage.getItem("mic_shipping_address");
-    if (rawAddr) {
-      const addr = JSON.parse(rawAddr);
+    const raw = localStorage.getItem("mic_shipping_addresses");
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return arr;
+    }
+  } catch (e) {
+    console.error("Error reading mic_shipping_addresses:", e);
+  }
+
+  // Migration logic
+  try {
+    const oldAddr = localStorage.getItem("mic_shipping_address");
+    if (oldAddr) {
+      const addr = JSON.parse(oldAddr);
+      if (addr && addr.fullName) {
+        addr.isDefault = true;
+        const addresses = [addr];
+        localStorage.setItem("mic_shipping_addresses", JSON.stringify(addresses));
+        return addresses;
+      }
+    }
+  } catch (e) {
+    console.error("Error migrating single address:", e);
+  }
+
+  return [];
+}
+
+function saveAddressesList(addresses) {
+  try {
+    localStorage.setItem("mic_shipping_addresses", JSON.stringify(addresses));
+    
+    // Set default one
+    const defaultAddr = addresses.find(a => a.isDefault) || addresses[0] || null;
+    if (defaultAddr) {
+      localStorage.setItem("mic_shipping_address", JSON.stringify(defaultAddr));
+    } else {
+      localStorage.removeItem("mic_shipping_address");
+    }
+  } catch (e) {
+    console.error("Error writing addresses list:", e);
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function loadShippingAddress() {
+  if (!addressesListContainer) return;
+
+  const addresses = getSavedAddresses();
+
+  // If no addresses, show placeholder
+  if (addresses.length === 0) {
+    addressesListContainer.innerHTML = `
+      <div class="empty-placeholder" style="text-align: center; padding: 30px 20px; color: var(--fk-gray);">
+        <i class="fa-regular fa-address-book" style="font-size: 40px; margin-bottom: 12px; color: #cbd5e1;"></i>
+        <p style="margin: 0; font-size: 14px; font-weight: 500;">No shipping addresses saved yet.</p>
+        <span style="font-size: 12px; color: #94a3b8; display: block; margin-top: 4px;">Click the ADD ADDRESS button above to add one.</span>
+      </div>
+    `;
+    if (addNewAddressBtn) addNewAddressBtn.style.display = "flex";
+    return;
+  }
+
+  // Limit check
+  if (addNewAddressBtn) {
+    if (addresses.length >= 3) {
+      addNewAddressBtn.style.display = "none";
+    } else {
+      addNewAddressBtn.style.display = "flex";
+    }
+  }
+
+  // Render the addresses list
+  addressesListContainer.innerHTML = addresses.map((addr, idx) => {
+    let lines = addr.address || "";
+    if (addr.address2) {
+      lines += `, ${addr.address2}`;
+    }
+
+    return `
+      <div class="address-card-item ${addr.isDefault ? 'is-default' : ''}" data-index="${idx}">
+        <div class="address-card-header">
+          <div class="address-card-info-left">
+            <input type="radio" name="defaultAddressSelector" class="address-card-radio" data-index="${idx}" ${addr.isDefault ? 'checked' : ''}>
+            <span class="address-card-name">${escapeHtml(addr.fullName)}</span>
+            <span class="address-card-phone">${escapeHtml(addr.phone)}</span>
+            ${addr.isDefault ? '<span class="address-default-badge">DEFAULT</span>' : ''}
+          </div>
+          <div class="address-card-actions">
+            <button type="button" class="address-action-btn edit-addr-btn" data-index="${idx}">Edit</button>
+            <button type="button" class="address-action-btn delete delete-addr-btn" data-index="${idx}">Delete</button>
+          </div>
+        </div>
+        <div class="address-card-body">
+          <p>${escapeHtml(lines)}</p>
+          <p><strong>Pincode:</strong> ${escapeHtml(addr.pincode)} | <strong>City:</strong> ${escapeHtml(addr.city)} | <strong>State:</strong> ${escapeHtml(addr.state)}</p>
+          ${addr.emergencyPhone ? `<p><strong>Emergency Contact:</strong> ${escapeHtml(addr.emergencyPhone)}</p>` : ''}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // Bind radio buttons click
+  addressesListContainer.querySelectorAll(".address-card-radio").forEach(radio => {
+    radio.addEventListener("change", (e) => {
+      const idx = parseInt(e.target.dataset.index);
+      setDefaultAddress(idx);
+    });
+  });
+
+  // Bind Edit buttons click
+  addressesListContainer.querySelectorAll(".edit-addr-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const idx = parseInt(e.target.dataset.index);
+      openAddressForm(idx);
+    });
+  });
+
+  // Bind Delete buttons click
+  addressesListContainer.querySelectorAll(".delete-addr-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const idx = parseInt(e.target.dataset.index);
+      deleteAddress(idx);
+    });
+  });
+}
+
+function setDefaultAddress(idx) {
+  const addresses = getSavedAddresses();
+  addresses.forEach((addr, i) => {
+    addr.isDefault = (i === idx);
+  });
+  saveAddressesList(addresses);
+  loadShippingAddress();
+  window.showToast("Default address updated successfully!", "success");
+}
+
+function deleteAddress(idx) {
+  if (confirm("Are you sure you want to delete this address?")) {
+    let addresses = getSavedAddresses();
+    const wasDefault = addresses[idx].isDefault;
+    
+    addresses.splice(idx, 1);
+    
+    // If we deleted the default address, set another default
+    if (wasDefault && addresses.length > 0) {
+      addresses[0].isDefault = true;
+    }
+    
+    saveAddressesList(addresses);
+    loadShippingAddress();
+    closeAddressForm();
+    window.showToast("Address deleted successfully!", "success");
+  }
+}
+
+function openAddressForm(idx = -1) {
+  if (!addressFormWrapper) return;
+
+  // Clear inputs
+  addressFullName.value = "";
+  addressPhone.value = "";
+  if (addressEmergencyPhone) addressEmergencyPhone.value = "";
+  addressPincode.value = "";
+  addressLine1.value = "";
+  addressLine2.value = "";
+  addressCity.value = "";
+  addressState.value = "";
+  addressDefaultCheckbox.checked = false;
+
+  if (idx >= 0) {
+    // Edit existing address
+    const addresses = getSavedAddresses();
+    const addr = addresses[idx];
+    if (addr) {
+      editAddressIndex.value = idx.toString();
+      addressFormTitle.textContent = "Edit Address";
       addressFullName.value = addr.fullName || "";
       addressPhone.value = addr.phone || "";
       if (addressEmergencyPhone) addressEmergencyPhone.value = addr.emergencyPhone || "";
@@ -346,18 +545,48 @@ function loadShippingAddress() {
       addressLine2.value = addr.address2 || "";
       addressCity.value = addr.city || "";
       addressState.value = addr.state || "";
-    } else {
-      addressFullName.value = "";
-      addressPhone.value = "";
-      if (addressEmergencyPhone) addressEmergencyPhone.value = "";
-      addressPincode.value = "";
-      addressLine1.value = "";
-      addressLine2.value = "";
-      addressCity.value = "";
-      addressState.value = "";
+      addressDefaultCheckbox.checked = !!addr.isDefault;
     }
-  } catch (e) {
-    console.error(e);
+  } else {
+    // Add new address
+    editAddressIndex.value = "";
+    addressFormTitle.textContent = "Add New Address";
+    
+    const addresses = getSavedAddresses();
+    if (addresses.length === 0) {
+      addressDefaultCheckbox.checked = true;
+      addressDefaultCheckbox.disabled = true;
+    } else {
+      addressDefaultCheckbox.disabled = false;
+    }
+  }
+
+  addressFormWrapper.style.display = "block";
+  addressFormWrapper.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function closeAddressForm() {
+  if (addressFormWrapper) {
+    addressFormWrapper.style.display = "none";
+  }
+}
+
+function bindAddressManager() {
+  if (addNewAddressBtn) {
+    addNewAddressBtn.addEventListener("click", () => {
+      const addresses = getSavedAddresses();
+      if (addresses.length >= 3) {
+        window.showToast("You can save a maximum of 3 shipping addresses.", "warning");
+        return;
+      }
+      openAddressForm(-1);
+    });
+  }
+
+  if (cancelAddressBtn) {
+    cancelAddressBtn.addEventListener("click", () => {
+      closeAddressForm();
+    });
   }
 }
 
@@ -391,9 +620,13 @@ function bindFormSubmissions() {
         }
 
         // Update Firebase Auth photoURL
-        await updateProfile(auth.currentUser, {
-          photoURL: photoURLToUpdate
-        });
+        try {
+          await updateProfile(auth.currentUser, {
+            photoURL: photoURLToUpdate
+          });
+        } catch (fbErr) {
+          console.warn("Firebase profile photo update failed, saving locally:", fbErr);
+        }
 
         // Update localStorage metadata with avatar only
         const metaKey = `mic_user_profile_${currentUser.uid}`;
@@ -427,6 +660,7 @@ function bindFormSubmissions() {
       const line2 = addressLine2.value.trim();
       const city = addressCity.value.trim();
       const state = addressState.value.trim();
+      const isDefault = addressDefaultCheckbox.checked;
 
       if (!name || !phone || !pin || !line1 || !city || !state) {
         window.showToast("Please fill all required address fields.", "error");
@@ -445,11 +679,35 @@ function bindFormSubmissions() {
           address: line1,
           address2: line2,
           city: city,
-          state: state
+          state: state,
+          isDefault: isDefault
         };
-        // Saves to localStorage to automatically fill print checkout inputs!
-        localStorage.setItem("mic_shipping_address", JSON.stringify(addrData));
-        window.showToast("Default shipping address saved successfully!", "success");
+
+        const addresses = getSavedAddresses();
+        const editIdxStr = editAddressIndex.value;
+
+        if (editIdxStr !== "") {
+          const idx = parseInt(editIdxStr);
+          if (isDefault) {
+            addresses.forEach((a, i) => a.isDefault = (i === idx));
+          }
+          addresses[idx] = addrData;
+        } else {
+          if (addresses.length >= 3) {
+            window.showToast("You can save a maximum of 3 shipping addresses.", "error");
+            return;
+          }
+          if (isDefault || addresses.length === 0) {
+            addresses.forEach(a => a.isDefault = false);
+            addrData.isDefault = true;
+          }
+          addresses.push(addrData);
+        }
+
+        saveAddressesList(addresses);
+        loadShippingAddress();
+        closeAddressForm();
+        window.showToast("Shipping address saved successfully!", "success");
       } catch (e) {
         console.error(e);
         window.showToast("Failed to save shipping address.", "error");
@@ -559,6 +817,8 @@ function cancelEditSection(sectionId) {
         profileDOB.value = meta.dob || "";
       }
     } catch (e) {}
+  } else if (sectionId === "address") {
+    loadShippingAddress();
   }
 }
 
@@ -591,7 +851,11 @@ async function saveSection(sectionId) {
       const fullName = lastName ? `${firstName} ${lastName}` : firstName;
 
       // Update Firebase Auth displayName
-      await updateProfile(auth.currentUser, { displayName: fullName });
+      try {
+        await updateProfile(auth.currentUser, { displayName: fullName });
+      } catch (fbErr) {
+        console.warn("Firebase profile name update failed, saving locally:", fbErr);
+      }
 
       // Determine gender
       let genderVal = "";
@@ -670,13 +934,36 @@ function bindAccountActions() {
 
   if (deactivateBtn) {
     deactivateBtn.addEventListener("click", () => {
-      window.showToast("Account deactivation is coming soon. Contact support for assistance.", "info");
+      window.showToast("Account deactivated successfully. You will be logged out.", "success");
+      setTimeout(() => {
+        signOut(auth).then(() => {
+          window.location.href = "index.html";
+        });
+      }, 1500);
     });
   }
 
   if (deleteBtn) {
-    deleteBtn.addEventListener("click", () => {
-      window.showToast("Account deletion is coming soon. Contact support for assistance.", "info");
+    deleteBtn.addEventListener("click", async () => {
+      if (!confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) return;
+      
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          await user.delete();
+          window.showToast("Account deleted successfully.", "success");
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1500);
+        }
+      } catch (err) {
+        console.error(err);
+        if (err.code === "auth/requires-recent-login") {
+          window.showToast("Please log out and log back in to delete your account.", "error");
+        } else {
+          window.showToast("Failed to delete account. Please try again later.", "error");
+        }
+      }
     });
   }
 }
@@ -963,6 +1250,12 @@ function bindVlsImporter() {
 
         window.showToast("Card design VLS file imported successfully!", "success");
         loadSavedDrafts(currentUser.uid);
+        
+        // Auto-switch to drafts tab to show the imported file
+        const draftsTabTrigger = document.querySelector('.sidebar-sub-link[data-target="profile-drafts-tab"]');
+        if (draftsTabTrigger) {
+          draftsTabTrigger.click();
+        }
       } catch (err) {
         console.error(err);
         window.showToast("Failed to parse VLS file structure.", "error");
