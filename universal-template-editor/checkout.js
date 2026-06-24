@@ -236,78 +236,19 @@ function updateShippingMethod(el) {
 
 // Bill Calculations
 function recalculateBill() {
-  const qty = orderConfig.quantity;
+  const qty = orderConfig.quantity || 100;
+  const designTitle = orderConfig.documentTitle || "Wedding Card";
   
-  // 1. Base unit card price tier (aligned with print.js)
-  let basePriceRate = 10.00;
-  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
-  if (discountPercent < 0) discountPercent = 0;
-  let basePrice = basePriceRate * (1 - discountPercent / 100);
+  // Update simplified overview labels
+  const overviewDesign = document.getElementById('overview-design-name');
+  if (overviewDesign) overviewDesign.textContent = designTitle;
   
-  const cardsTotal = qty * basePrice;
+  const overviewQty = document.getElementById('overview-qty');
+  if (overviewQty) overviewQty.textContent = `${qty} Cards`;
   
-  // 2. Paperstock addons
-  let paperUnitCost = 0.00;
-  let paperName = 'Matte';
-  switch (orderConfig.paperStock) {
-    case 'glossy': paperUnitCost = 2.00; paperName = 'Premium Glossy'; break;
-    case 'linen': paperUnitCost = 5.00; paperName = 'Textured Linen'; break;
-    case 'metallic': paperUnitCost = 8.00; paperName = 'Gold Foil Metallic'; break;
-  }
-  const paperTotal = qty * paperUnitCost;
-  
-  // 3. Envelope option addons
-  let envelopeUnitCost = 0.00;
-  let envelopeName = 'Standard Crimson';
-  switch (orderConfig.envelopeOption) {
-    case 'velvet': envelopeUnitCost = 5.00; envelopeName = 'Premium Velvet Silk'; break;
-    case 'none': envelopeUnitCost = -2.00; envelopeName = 'Omitted Envelopes'; break;
-  }
-  const envelopeTotal = qty * envelopeUnitCost;
-  
-  // Subtotal before shipping/tax
-  const subtotal = cardsTotal + paperTotal + envelopeTotal;
-  
-  // 4. Shipping Calculation
-  // Standard shipping is free
-  let shippingCost = 0.00;
-  if (shippingSpeed === 'standard') {
-    shippingCost = 0.00;
-    document.getElementById('standard-shipping-label').textContent = 'FREE';
-  } else {
-    // Express Shipping is flat rate ₹350
-    shippingCost = 350.00;
-  }
-  
-  // 5. GST (18%) calculated on subtotal + shipping
-  const taxBase = subtotal + shippingCost;
-  const gstTax = taxBase * 0.18;
-  
-  // 6. Grand total
-  const grandTotal = subtotal + shippingCost + gstTax;
-  
-  // Update bill UI Labels
-  document.getElementById('bill-qty').textContent = qty;
-  document.getElementById('bill-base-price').textContent = basePrice.toFixed(2);
-  document.getElementById('bill-cards-total').textContent = cardsTotal.toFixed(2);
-  
-  document.getElementById('bill-paper-name').textContent = paperName;
-  document.getElementById('bill-paper-total').textContent = paperTotal.toFixed(2);
-  
-  document.getElementById('bill-envelope-name').textContent = envelopeName;
-  document.getElementById('bill-envelope-total').textContent = envelopeTotal.toFixed(2);
-  
-  document.getElementById('bill-shipping-val').textContent = shippingCost === 0 ? 'FREE' : `₹${shippingCost.toFixed(2)}`;
-  document.getElementById('bill-tax-val').textContent = gstTax.toFixed(2);
-  document.getElementById('bill-grand-total').textContent = grandTotal.toFixed(2);
-  
-  // Update Payment button label
-  document.getElementById('btn-pay-total').textContent = grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  
-  // Update QR Code display amount dynamically
-  const qrAmt = document.getElementById('qr-pay-amount');
-  if (qrAmt) {
-    qrAmt.textContent = grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const overviewSpeed = document.getElementById('overview-shipping-speed');
+  if (overviewSpeed) {
+    overviewSpeed.textContent = shippingSpeed === 'standard' ? 'Standard Courier (FREE)' : 'Express Priority (+₹350.00)';
   }
 }
 
@@ -452,14 +393,13 @@ function setupCardFormatters() {
   }
 }
 
-// ── PAYMENT VERIFICATION & SIMULATION ──
-const API_BASE_URL = "http://localhost:5000/api/payment";
-
-function triggerCheckoutPayment() {
+// ── PROCEED TO PAYMENT SUMMARY PAGE ──
+function proceedToPaymentPage() {
   // 1. Verify Shipping fields are completely filled
   const fullName = document.getElementById('full-name').value.trim();
   const phone = document.getElementById('phone-num').value.trim();
   const address = document.getElementById('address-line1').value.trim();
+  const address2 = document.getElementById('address-line2').value.trim();
   const city = document.getElementById('city-input').value.trim();
   const state = document.getElementById('state-input').value.trim();
   const pincode = document.getElementById('pincode-input').value.trim();
@@ -487,340 +427,23 @@ function triggerCheckoutPayment() {
     return;
   }
   
-  // 2. Disable payment button and set loading state
-  const payBtn = document.querySelector('.btn-pay-now');
-  const originalBtnText = payBtn ? payBtn.innerHTML : 'Pay Now';
-  if (payBtn) {
-    payBtn.disabled = true;
-    payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Order...';
-  }
-
-  // 3. Calculate amount
-  const grandTotal = parseFloat(document.getElementById('bill-grand-total').textContent);
-  
-  // 4. Create order on the payment backend
-  fetch(`${API_BASE_URL}/create-order`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      amount: grandTotal,
-      receipt: `receipt_mic_${Math.floor(10000 + Math.random() * 90000)}`
-    })
-  })
-  .then(res => {
-    if (!res.ok) {
-      throw new Error(`Server returned status ${res.status}`);
-    }
-    return res.json();
-  })
-  .then(data => {
-    if (!data.success) {
-      throw new Error(data.message || "Failed to create order");
-    }
-
-    // Restore button state
-    if (payBtn) {
-      payBtn.disabled = false;
-      payBtn.innerHTML = originalBtnText;
-    }
-
-    // 5. Open Razorpay Checkout standard popup
-    const options = {
-      key: data.key_id,
-      amount: data.order.amount,
-      currency: data.order.currency,
-      name: "MyInvitationCard",
-      description: orderConfig.documentTitle || "Invitation Card Order",
-      image: "https://myinvitationcard.vercel.app/assets/images/logo.png",
-      order_id: data.order.id,
-      handler: async function (response) {
-        // Verification step
-        showLoading();
-        try {
-          const verifyRes = await fetch(`${API_BASE_URL}/verify-payment`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature
-            })
-          });
-
-          const verifyData = await verifyRes.json();
-
-          hideLoading();
-
-          if (verifyData.success) {
-            showSuccess("Payment successful & verified!");
-            showSuccessModal(response.razorpay_order_id, response.razorpay_payment_id, "Razorpay Online");
-          } else {
-            showError("Payment verification failed: " + verifyData.message);
-            showFailureSimulation("Verification failed: " + verifyData.message, response.razorpay_payment_id);
-          }
-        } catch (err) {
-          console.error("Signature verification error:", err);
-          hideLoading();
-          showError("Error verifying payment signature");
-          showFailureSimulation("Error verifying signature: " + err.message, response.razorpay_payment_id);
-        }
-      },
-      prefill: {
-        name: fullName,
-        contact: phone
-      },
-      theme: {
-        color: "#6366f1"
-      },
-      modal: {
-        ondismiss: function() {
-          toast("Payment cancelled by user", "i");
-        }
-      }
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.on('payment.failed', function (response) {
-      console.error("Payment failed event:", response.error);
-      showError("Payment failed: " + response.error.description);
-      showFailureSimulation(response.error.description, response.error.metadata.payment_id);
-    });
-    rzp.open();
-  })
-  .catch(err => {
-    console.error("Order creation error:", err);
-    if (payBtn) {
-      payBtn.disabled = false;
-      payBtn.innerHTML = originalBtnText;
-    }
-    showError(`Payment initialization failed: ${err.message}. Please make sure the payment server is running on port 5000.`);
-  });
-}
-
-function showProcessingPaymentModal() {
-  const modal = document.getElementById('modal-processing');
-  const progress = document.getElementById('auth-progress-bar');
-  if (!modal || !progress) return;
-  
-  modal.classList.add('active');
-  progress.style.width = '0%';
-  
-  // Determine if payment should fail based on input criteria (for simulation)
-  let shouldFail = false;
-  
-  const fullNameEl = document.getElementById('full-name');
-  if (fullNameEl && fullNameEl.value.trim().toLowerCase().includes('fail')) {
-    shouldFail = true;
-  }
-  
-  if (activePaymentMethod === 'upi') {
-    const upiIdEl = document.getElementById('upi-id-input');
-    if (upiIdEl && upiIdEl.value.trim().toLowerCase().includes('fail')) {
-      shouldFail = true;
-    }
-  } else if (activePaymentMethod === 'card') {
-    const cNumEl = document.getElementById('card-number');
-    const cCvvEl = document.getElementById('card-cvv');
-    if (cNumEl) {
-      const cNum = cNumEl.value.replace(/\s/g, '');
-      if (cNum === '4111111111111112' || cNum === '0000000000000000') {
-        shouldFail = true;
-      }
-    }
-    if (cCvvEl && cCvvEl.value.trim() === '999') {
-      shouldFail = true;
-    }
-  }
-  
-  let percent = 0;
-  const interval = setInterval(() => {
-    percent += 4;
-    progress.style.width = `${percent}%`;
-    
-    if (percent >= 100) {
-      clearInterval(interval);
-      setTimeout(() => {
-        modal.classList.remove('active');
-        if (shouldFail) {
-          showFailureSimulation();
-        } else {
-          showSuccessModal();
-        }
-      }, 300);
-    }
-  }, 100);
-}
-
-function showFailureSimulation(customReason, customTxnId) {
-  // Generate random failure reference
-  const randNum = Math.floor(10000 + Math.random() * 90000);
-  const failureRef = customTxnId || `TXN-REF-${randNum}-2026`;
-  
-  // Recompute bill variables for storing
-  const qty = orderConfig.quantity;
-  
-  let basePriceRate = 10.00;
-  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
-  if (discountPercent < 0) discountPercent = 0;
-  let basePrice = basePriceRate * (1 - discountPercent / 100);
-  const cardsTotal = qty * basePrice;
-  
-  let paperUnitCost = 0.00;
-  switch (orderConfig.paperStock) {
-    case 'glossy': paperUnitCost = 2.00; break;
-    case 'linen': paperUnitCost = 5.00; break;
-    case 'metallic': paperUnitCost = 8.00; break;
-  }
-  const paperTotal = qty * paperUnitCost;
-  
-  let envelopeUnitCost = 0.00;
-  switch (orderConfig.envelopeOption) {
-    case 'glossy': case 'pink': case 'crimson': case 'gold': envelopeUnitCost = 3.00; break;
-    case 'velvet': envelopeUnitCost = 5.00; break;
-    case 'none': envelopeUnitCost = -2.00; break;
-  }
-  const envelopeTotal = qty * envelopeUnitCost;
-  const subtotal = cardsTotal + paperTotal + envelopeTotal;
-  
-  let shippingCost = shippingSpeed === 'standard' ? 0.00 : 350.00;
-  const taxBase = subtotal + shippingCost;
-  const gstTax = taxBase * 0.18;
-  const grandTotal = subtotal + shippingCost + gstTax;
-  
-  // Determine failure reason
-  let reason = customReason || "The transaction was declined by the bank due to insufficient funds or incorrect credentials.";
-  if (!customReason) {
-    if (activePaymentMethod === 'upi') {
-      reason = "The UPI transaction timed out. Please ensure you open your UPI app and authorize the payment request within the time limit.";
-    } else if (activePaymentMethod === 'card') {
-      const cvvEl = document.getElementById('card-cvv');
-      const cvv = cvvEl ? cvvEl.value.trim() : '';
-      if (cvv === '999') {
-        reason = "Authentication failed. The CVV/CVC number entered is invalid.";
-      } else {
-        reason = "The card payment was declined by the issuing bank. Please check your card status, limits, or contact your bank.";
-      }
-    }
-  }
-  
-  let payModeText = '';
-  if (activePaymentMethod === 'upi') {
-    const upiAppName = selectedUpiBrand === 'gpay' ? 'Google Pay' : selectedUpiBrand === 'phonepe' ? 'PhonePe' : 'Paytm';
-    payModeText = `UPI (${upiAppName})`;
-  } else if (activePaymentMethod === 'card') {
-    payModeText = 'Credit/Debit Card';
-  } else {
-    payModeText = 'Net Banking';
-  }
-  
-  const failedDetails = {
-    orderId: `MIC-${randNum}-2026`,
-    txnId: failureRef,
-    amount: grandTotal,
-    reason: reason,
-    paymentMode: payModeText
+  // 2. Save shipping details to localStorage
+  const shippingDetails = {
+    fullName,
+    phone,
+    emergencyPhone,
+    address,
+    address2,
+    city,
+    state,
+    pincode
   };
   
-  localStorage.setItem("mic_failed_order_details", JSON.stringify(failedDetails));
+  localStorage.setItem("mic_shipping_address", JSON.stringify(shippingDetails));
+  localStorage.setItem("mic_shipping_speed", shippingSpeed);
   
-  // Redirect to payment failed page
-  window.location.href = "payment-failed.html";
-}
-
-function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
-  // Use Razorpay Order ID if available, or generate a random one
-  const orderId = razorpayOrderId || `MIC-${Math.floor(10000 + Math.random() * 90000)}-2026`;
-  
-  // Set delivery estimate
-  const finalEst = shippingSpeed === 'standard' ? standardDeliveryDate : expressDeliveryDate;
-  
-  // Set payment mode label
-  let payModeText = '';
-  if (methodUsed) {
-    payModeText = methodUsed;
-  } else if (activePaymentMethod === 'upi') {
-    const upiAppName = selectedUpiBrand === 'gpay' ? 'Google Pay' : selectedUpiBrand === 'phonepe' ? 'PhonePe' : 'Paytm';
-    payModeText = `UPI (${upiAppName})`;
-  } else if (activePaymentMethod === 'card') {
-    payModeText = 'Credit/Debit Card';
-  } else {
-    payModeText = 'Net Banking';
-  }
-
-  if (razorpayPaymentId) {
-    payModeText += ` (Ref: ${razorpayPaymentId})`;
-  }
-  
-  // Recompute bill variables for storing
-  const qty = orderConfig.quantity;
-  
-  let basePriceRate = 10.00;
-  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
-  if (discountPercent < 0) discountPercent = 0;
-  let basePrice = basePriceRate * (1 - discountPercent / 100);
-  const cardsTotal = qty * basePrice;
-  
-  let paperUnitCost = 0.00;
-  switch (orderConfig.paperStock) {
-    case 'glossy': paperUnitCost = 2.00; break;
-    case 'linen': paperUnitCost = 5.00; break;
-    case 'metallic': paperUnitCost = 8.00; break;
-  }
-  const paperTotal = qty * paperUnitCost;
-  
-  let envelopeUnitCost = 0.00;
-  switch (orderConfig.envelopeOption) {
-    case 'velvet': envelopeUnitCost = 5.00; break;
-    case 'none': envelopeUnitCost = -2.00; break;
-  }
-  const envelopeTotal = qty * envelopeUnitCost;
-  const subtotal = cardsTotal + paperTotal + envelopeTotal;
-  
-  let shippingCost = shippingSpeed === 'standard' ? 0.00 : 350.00;
-  const taxBase = subtotal + shippingCost;
-  const gstTax = taxBase * 0.18;
-  const grandTotal = subtotal + shippingCost + gstTax;
-  
-  const orderDetails = {
-    orderId,
-    templateId: orderConfig.templateId,
-    documentTitle: orderConfig.documentTitle,
-    quantity: qty,
-    paperStock: orderConfig.paperStock,
-    envelopeOption: orderConfig.envelopeOption,
-    basePrice,
-    cardsTotal,
-    paperTotal,
-    envelopeTotal,
-    subtotal,
-    shippingCost,
-    gstTax,
-    grandTotal,
-    deliveryDate: finalEst,
-    paymentMode: payModeText,
-    data: orderConfig.data,
-    shippingAddress: {
-      fullName: document.getElementById('full-name').value.trim(),
-      phone: document.getElementById('phone-num').value.trim(),
-      emergencyPhone: document.getElementById('emergency-phone-num').value.trim(),
-      address: document.getElementById('address-line1').value.trim(),
-      city: document.getElementById('city-input').value.trim(),
-      state: document.getElementById('state-input').value.trim(),
-      pincode: document.getElementById('pincode-input').value.trim()
-    }
-  };
-  
-  localStorage.setItem("mic_last_order_details", JSON.stringify(orderDetails));
-  
-  // Clear current order config since it is checked out
-  localStorage.removeItem("mic_current_order_config");
-  
-  // Redirect to success page
-  window.location.href = "order-success.html";
+  // 3. Redirect to payment summary page
+  window.location.href = "payment.html";
 }
 
 // Receipt print trigger

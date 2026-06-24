@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price Summary & Payment — MyInvitationCard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<link rel="stylesheet" href="checkout.css">
+</head>
+<body>
+
+<div class="app">
+  
+  <!-- ══════════════════════════════════════ TOPBAR NAVBAR -->
+  <header class="topbar">
+    <!-- Back to Shipping -->
+    <a href="checkout.html" class="tb-home" title="Back to Shipping Address"><i class="fa-solid fa-arrow-left"></i></a>
+    
+    <!-- Site Logo -->
+    <a href="../template-dashboard.html" class="tb-logo" title="MyInvitationCard">
+      <svg class="tb-logo-svg" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60 42 C60 37,54 33,49 33 C42 33,39 40,39 45 C39 54,49 61,60 69 C71 61,81 54,81 45 C81 40,78 33,71 33 C66 33,60 37,60 42Z" fill="#ef4444" opacity="0.9"/>
+        <path d="M18 42 L18 78 Q18 84 24 84 L96 84 Q102 84 102 78 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 42 L60 14 L102 42" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+        <path d="M102 42 L60 68" fill="none" stroke="#6d28d9" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <span class="tb-logo-name">MyInvitationCard</span>
+    </a>
+    
+    <div class="tb-sep"></div>
+    <div class="step-indicator">
+      <span class="step">1. Configure Print</span>
+      <span class="step-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+      <span class="step">2. Shipping Address</span>
+      <span class="step-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+      <span class="step active">3. Payment & Price</span>
+    </div>
+  </header>
+  
+  <!-- ══════════════════════════════════════ BODY SECTION -->
+  <main class="body">
+    
+    <!-- Left Column: Shipping summary & Order overview -->
+    <div class="checkout-left">
+      <!-- Shipping summary -->
+      <div class="section-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--spacing-sm);">
+          <h2 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-location-dot"></i> Shipping Summary</h2>
+          <a href="checkout.html" class="edit-link" style="font-size: 0.88rem;"><i class="fa-solid fa-pen"></i> Edit Address</a>
+        </div>
+        <p class="section-subtitle">Please review your delivery address before making payment.</p>
+        
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--r-sm); padding: 18px; line-height: 1.6; font-family: var(--font);">
+          <h4 id="shipping-summary-name" style="margin: 0 0 6px 0; color: #0f172a; font-weight: 700; font-size: 1.05rem;">Loading...</h4>
+          <p id="shipping-summary-address" style="margin: 0 0 6px 0; color: #475569; font-size: 0.94rem;">Loading address...</p>
+          <p style="margin: 0; color: #475569; font-size: 0.94rem;">
+            <strong>Mobile:</strong> <span id="shipping-summary-phone">Loading...</span> 
+            <span id="shipping-summary-emergency-row" style="display:none;"> | <strong>Emergency:</strong> <span id="shipping-summary-emergency">N/A</span></span>
+          </p>
+        </div>
+      </div>
+      
+      <!-- Miniature design overview thumbnail -->
+      <div class="section-card card-design-review">
+        <h2 class="section-title"><i class="fa-regular fa-image"></i> Card Design Review</h2>
+        <div class="design-review-body">
+          <div class="design-thumbnail-container">
+            <iframe id="iframe-checkout-preview" src=""></iframe>
+          </div>
+          <div class="design-meta-details">
+            <h4 id="checkout-card-title">Wedding Card</h4>
+            <p>Professional design configuration: <span id="checkout-qty-summary">100</span> cards printed on <span id="checkout-paper-summary">Matte Cardboard</span> with <span id="checkout-envelope-summary">Crimson Envelope</span>.</p>
+            <a href="print.html" class="edit-link"><i class="fa-solid fa-pen"></i> Edit print selections</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Column: Bill Breakdown & Payment Gateway -->
+    <div class="checkout-right">
+      <!-- Order Bill Breakdown -->
+      <div class="bill-breakdown-card">
+        <h3 class="bill-title">Order Price Summary</h3>
+        
+        <div class="bill-list">
+          <div class="bill-item">
+            <span class="bill-item-label">Print Cards base price (<span id="bill-qty">100</span> × ₹<span id="bill-base-price">20.00</span>)</span>
+            <span class="bill-item-val">₹<span id="bill-cards-total">2000.00</span></span>
+          </div>
+          <div class="bill-item" id="bill-item-paper">
+            <span class="bill-item-label">Paper Stock Upgrade (<span id="bill-paper-name">Matte</span>)</span>
+            <span class="bill-item-val">₹<span id="bill-paper-total">0.00</span></span>
+          </div>
+          <div class="bill-item" id="bill-item-envelope">
+            <span class="bill-item-label">Envelope Selections (<span id="bill-envelope-name">Standard Red</span>)</span>
+            <span class="bill-item-val">₹<span id="bill-envelope-total">0.00</span></span>
+          </div>
+          <div class="bill-item">
+            <span class="bill-item-label">Shipping & Handling</span>
+            <span class="bill-item-val" id="bill-shipping-val">₹0.00</span>
+          </div>
+          <div class="bill-item">
+            <span class="bill-item-label">GST Tax (18%)</span>
+            <span class="bill-item-val">₹<span id="bill-tax-val">360.00</span></span>
+          </div>
+          
+          <div class="bill-divider"></div>
+          
+          <div class="bill-total-row">
+            <span class="bill-total-label">Grand Total</span>
+            <span class="bill-total-val">₹<span id="bill-grand-total">2360.00</span></span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Payment Gateway Action Card -->
+      <div class="payment-method-card">
+        <div class="payment-header-row" style="margin-bottom: 20px;">
+          <div class="payment-title-group">
+            <h3 class="bill-title" style="margin-bottom: 4px;"><i class="fa-solid fa-shield-halved"></i> Secure Checkout Gateway</h3>
+            <p class="payment-subtitle" style="margin: 0;">100% Secure SSL encrypted integration.</p>
+          </div>
+        </div>
+        
+        <!-- Pay button -->
+        <button type="button" class="btn-pay-now" onclick="triggerRazorpayPayment()">
+          <svg class="rzp-btn-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px; fill: white; margin-right: 4px; vertical-align: middle; display: inline-block;">
+            <path d="M12 2L2 22h9.5L13.5 12 15 22h7L12 2z"/>
+          </svg>
+          Pay with Razorpay ₹<span id="btn-pay-total">2,360.00</span>
+        </button>
+        
+        <!-- Trust Badges -->
+        <div class="payment-trust-badges">
+          <div class="trust-badge-item"><i class="fa-brands fa-cc-visa"></i></div>
+          <div class="trust-badge-item"><i class="fa-brands fa-cc-mastercard"></i></div>
+          <div class="trust-badge-item"><span class="rupay-text">RuPay</span></div>
+          <div class="trust-badge-item"><span class="upi-text">UPI</span></div>
+          <div class="trust-badge-divider"></div>
+          <div class="trust-badge-label">
+            <svg class="razorpay-logo-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 12px; height: 12px; margin-right: 3px; vertical-align: middle; display: inline-block; fill: #3399cc;">
+              <path d="M2 22l6-18h7.5l-6 18H2zm11-18h9v3.5h-5.5L15 22h-3.5l1.5-18z"/>
+            </svg>
+            Razorpay Secure Gateway
+          </div>
+          <div class="trust-badge-divider"></div>
+          <div class="trust-badge-label"><i class="fa-solid fa-shield-halved"></i> PCI-DSS Compliant</div>
+        </div>
+      </div>
+    </div>
+    
+  </main>
+</div>
+
+<!-- Modal: Payment Processing Loader -->
+<div class="modal" id="modal-processing">
+  <div class="modal-card">
+    <div class="spinner"></div>
+    <h2>Verifying Payment...</h2>
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="auth-progress-bar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Razorpay Checkout SDK -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="payment.js"></script>
+</body>
+</html>
