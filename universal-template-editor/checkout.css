@@ -828,7 +828,7 @@ input[type="password"]:focus,
 /* Secure Pay button */
 .btn-pay-now {
   width: 100%;
-  background: linear-gradient(135deg, var(--rose-dark) 0%, #be123c 100%);
+  background: linear-gradient(135deg, #3399cc 0%, #0c367b 100%);
   color: var(--w);
   border: none;
   height: 52px;
@@ -840,15 +840,15 @@ input[type="password"]:focus,
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.2);
+  box-shadow: 0 4px 15px rgba(12, 54, 123, 0.2);
   transition: all var(--t);
   margin-top: 24px;
 }
 
 .btn-pay-now:hover {
-  background: linear-gradient(135deg, #be123c 0%, #9f1239 100%);
+  background: linear-gradient(135deg, #2b82ad 0%, #082658 100%);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.35);
+  box-shadow: 0 6px 20px rgba(12, 54, 123, 0.35);
 }
 
 /* Payment trust badges */

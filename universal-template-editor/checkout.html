@@ -417,7 +417,10 @@
         
         <!-- Pay button -->
         <button type="button" class="btn-pay-now" onclick="triggerCheckoutPayment()">
-          <i class="fa-solid fa-lock"></i> Pay securely ₹<span id="btn-pay-total">2,360.00</span>
+          <svg class="rzp-btn-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px; fill: white; margin-right: 4px; vertical-align: middle; display: inline-block;">
+            <path d="M12 2L2 22h9.5L13.5 12 15 22h7L12 2z"/>
+          </svg>
+          Pay with Razorpay ₹<span id="btn-pay-total">2,360.00</span>
         </button>
         
         <!-- Trust Badges -->
@@ -428,12 +431,10 @@
           <div class="trust-badge-item"><span class="upi-text">UPI</span></div>
           <div class="trust-badge-divider"></div>
           <div class="trust-badge-label">
-            <svg class="sbi-logo-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 12px; height: 12px; margin-right: 3px; vertical-align: middle; display: inline-block;">
-              <circle cx="12" cy="12" r="10" fill="#00a9e0"/>
-              <circle cx="12" cy="12" r="3.5" fill="#ffffff"/>
-              <rect x="10.5" y="12" width="3" height="10" fill="#ffffff"/>
+            <svg class="razorpay-logo-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 12px; height: 12px; margin-right: 3px; vertical-align: middle; display: inline-block; fill: #3399cc;">
+              <path d="M2 22l6-18h7.5l-6 18H2zm11-18h9v3.5h-5.5L15 22h-3.5l1.5-18z"/>
             </svg>
-            SBI ePay Gateway
+            Razorpay Secure Gateway
           </div>
           <div class="trust-badge-divider"></div>
           <div class="trust-badge-label"><i class="fa-solid fa-shield-halved"></i> PCI-DSS Compliant</div>
