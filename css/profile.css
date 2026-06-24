@@ -371,6 +371,10 @@ body {
   border: 1px solid var(--fk-border-dark);
 }
 
+.avatar-option img + .avatar-fallback {
+  display: none;
+}
+
 .avatar-option span {
   font-size: 11px;
   font-weight: 600;
