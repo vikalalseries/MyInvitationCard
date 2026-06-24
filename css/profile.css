@@ -249,7 +249,7 @@ body {
   color: var(--fk-text);
 }
 
-.form-group input,
+.form-group input:not([type="radio"]):not([type="checkbox"]),
 .form-group select {
   padding: 12px 14px;
   border: 1px solid var(--fk-border-dark);
@@ -261,7 +261,7 @@ body {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-group input:focus,
+.form-group input:not([type="radio"]):not([type="checkbox"]):focus,
 .form-group select:focus {
   border-color: var(--fk-blue);
   box-shadow: 0 1px 3px rgba(40, 116, 240, 0.15);
