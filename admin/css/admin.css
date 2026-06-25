@@ -1169,10 +1169,13 @@ body {
   align-self: flex-start;
 }
 
-.custom-logo {
-  transition: transform 0.3s ease;
+.custom-logo path:first-of-type {
+  transform-origin: center;
+  transition: transform 0.28s ease, filter 0.28s ease;
 }
 
-.sidebar-header:hover .custom-logo {
-  transform: scale(1.1) rotate(-5deg);
+.logo-wrapper:hover .custom-logo path:first-of-type,
+.sidebar-header:hover .custom-logo path:first-of-type {
+  transform: translateY(6px) scale(0.85);
+  filter: drop-shadow(0 2px 4px rgba(229, 62, 62, 0.4));
 }
