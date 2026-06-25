@@ -645,9 +645,7 @@ if (navUserMenuBtn && navUserPopup) {
     navUserPopup.classList.toggle("show");
   });
 
-  navUserPopup.addEventListener("click", (e) => {
-    e.stopPropagation();
-  });
+
 }
 
 /* MOBILE PROFILE POPUP */
@@ -662,19 +660,21 @@ if (mobileNavUserMenuBtn && mobileNavUserPopup) {
     mobileNavUserPopup.classList.toggle("show");
   });
 
-  mobileNavUserPopup.addEventListener("click", (e) => {
-    e.stopPropagation();
-  });
+
 }
 
 /* CLICK ANYWHERE OUTSIDE TO CLOSE */
-document.addEventListener("click", () => {
-  if (navUserPopup) {
-    navUserPopup.classList.remove("show");
+document.addEventListener("click", (e) => {
+  if (navUserPopup && navUserPopup.classList.contains("show")) {
+    if (!navUserPopup.contains(e.target) && (!navUserMenuBtn || !navUserMenuBtn.contains(e.target))) {
+      navUserPopup.classList.remove("show");
+    }
   }
 
-  if (mobileNavUserPopup) {
-    mobileNavUserPopup.classList.remove("show");
+  if (mobileNavUserPopup && mobileNavUserPopup.classList.contains("show")) {
+    if (!mobileNavUserPopup.contains(e.target) && (!mobileNavUserMenuBtn || !mobileNavUserMenuBtn.contains(e.target))) {
+      mobileNavUserPopup.classList.remove("show");
+    }
   }
 });
 
@@ -753,18 +753,4 @@ if (confirmLogoutBtn) {
       console.error(err);
     }
   });
-}
-
-// Bind click listeners for "My Profile" popup buttons globally
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest(".popup-menu-btn, .sidebar-popup-item");
-  if (btn && btn.textContent.includes("My Profile")) {
-    e.preventDefault();
-    const path = window.location.pathname;
-    const isSubdir = path.includes('/universal-template-editor/') || 
-                     path.includes('/builder1/') || 
-                     path.includes('/payment/') ||
-                     path.includes('/card1/');
-    window.location.href = isSubdir ? "../profile.html" : "profile.html";
-  }
-});
+}
