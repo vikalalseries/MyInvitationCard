@@ -7,6 +7,12 @@ const TemplateSchema = new mongoose.Schema(
     category: { type: String, default: "wedding" },
     thumbnail: { type: String },
     price: { type: Number, default: 0 },
+    offerPrice: { type: Number, default: null },
+    offerLabel: { type: String, default: "" },
+    offerStartDate: { type: Date, default: null },
+    offerEndDate: { type: Date, default: null },
+    isFeatured: { type: Boolean, default: false },
+    isPremium: { type: Boolean, default: false },
     status: { type: String, default: "active" }, // "active", "draft", "hidden"
     files: [{ type: String }],
     version: { type: Number, default: 1 }

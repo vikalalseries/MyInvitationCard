@@ -1443,8 +1443,30 @@ window.triggerRefund = async function(razorpayPaymentId, amount) {
   }
 };
 
-// 7. Pricing & Site settings
+// 7. Pricing & Site settings — Template Pricing Management
+let allPricingTemplates = []; // cached template list for filtering
+
 async function fetchPricing() {
+  const grid = document.getElementById("pricingTemplateGrid");
+  if (grid) {
+    grid.innerHTML = `<div class="pricing-empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading templates...</p></div>`;
+  }
+
+  try {
+    // Fetch templates for the pricing grid
+    const tplRes = await fetch(`${BACKEND_URL}/api/admin/templates`);
+    const tplData = await tplRes.json();
+    if (!tplRes.ok) throw new Error(tplData.message);
+    allPricingTemplates = tplData.templates || [];
+    renderPricingGrid(allPricingTemplates);
+  } catch (err) {
+    if (grid) {
+      grid.innerHTML = `<div class="pricing-empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load templates</p></div>`;
+    }
+    showToast("Failed to load template pricing data", "error");
+  }
+
+  // Also load global pricing values
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/pricing`);
     const data = await res.json();
@@ -1459,10 +1481,247 @@ async function fetchPricing() {
     document.getElementById("taxRateInput").value = config.tax_rate || 18;
     document.getElementById("shippingBaseInput").value = config.shipping_base || 40;
   } catch (err) {
-    showToast("Failed to load pricing values", "error");
+    // Silent — global pricing failed but template grid may still work
   }
 }
 
+function renderPricingGrid(templates) {
+  const grid = document.getElementById("pricingTemplateGrid");
+  const countEl = document.getElementById("pricingResultsCount");
+  if (!grid) return;
+
+  if (templates.length === 0) {
+    grid.innerHTML = `<div class="pricing-empty-state"><i class="fa-solid fa-box-open"></i><p>No templates match your filters</p></div>`;
+    if (countEl) countEl.textContent = "0 templates";
+    return;
+  }
+
+  if (countEl) countEl.textContent = `${templates.length} template${templates.length !== 1 ? "s" : ""}`;
+  grid.innerHTML = "";
+
+  templates.forEach(t => {
+    const card = document.createElement("div");
+    card.className = "pricing-template-card";
+    card.setAttribute("data-category", t.category || "");
+    card.setAttribute("data-status", t.status || "active");
+    card.setAttribute("data-template-id", t.templateId);
+
+    // Compute thumbnail URL
+    let thumbUrl = t.thumbnail || "";
+    if (thumbUrl && !thumbUrl.startsWith("http") && !thumbUrl.startsWith("assets")) {
+      thumbUrl = `${BACKEND_URL}/${thumbUrl}`;
+    } else if (thumbUrl && thumbUrl.startsWith("assets")) {
+      thumbUrl = `../${thumbUrl}`;
+    }
+
+    // Determine if offer is currently active
+    const now = new Date();
+    const hasOffer = t.offerPrice != null && t.offerPrice > 0;
+    const offerActive = hasOffer && (
+      (!t.offerStartDate && !t.offerEndDate) ||
+      (t.offerStartDate && t.offerEndDate && new Date(t.offerStartDate) <= now && new Date(t.offerEndDate) >= now) ||
+      (t.offerStartDate && !t.offerEndDate && new Date(t.offerStartDate) <= now) ||
+      (!t.offerStartDate && t.offerEndDate && new Date(t.offerEndDate) >= now)
+    );
+
+    // Build badges HTML
+    let badgesHtml = `<span class="cat-badge">${(t.category || "general").toUpperCase()}</span>`;
+    if (offerActive && t.offerLabel) {
+      badgesHtml += `<span class="offer-badge">${t.offerLabel}</span>`;
+    }
+
+    // Build flags HTML
+    let flagsHtml = "";
+    if (t.isFeatured) flagsHtml += `<span class="flag-icon featured" title="Featured"><i class="fa-solid fa-star"></i></span>`;
+    if (t.isPremium) flagsHtml += `<span class="flag-icon premium" title="Premium"><i class="fa-solid fa-crown"></i></span>`;
+
+    // Build price display
+    let priceHtml = "";
+    if (offerActive) {
+      priceHtml = `
+        <span class="current-price">₹${t.offerPrice}</span>
+        <span class="original-price">₹${t.price}</span>
+        ${t.offerLabel ? `<span class="offer-tag">${t.offerLabel}</span>` : ""}
+      `;
+    } else {
+      priceHtml = `<span class="current-price">₹${t.price}</span>`;
+      if (hasOffer) {
+        priceHtml += `<span class="offer-tag" style="background:var(--warning-bg);color:var(--warning-color);">Offer Scheduled</span>`;
+      }
+    }
+
+    card.innerHTML = `
+      <div class="pricing-card-thumb" style="background-image: url('${thumbUrl}')">
+        <div class="pricing-card-badges">${badgesHtml}</div>
+        ${flagsHtml ? `<div class="pricing-card-flags">${flagsHtml}</div>` : ""}
+      </div>
+      <div class="pricing-card-body">
+        <h4 title="${t.name}">${t.name}</h4>
+        <div class="pricing-card-price-row">${priceHtml}</div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="pricing-card-id">ID: ${t.templateId}</span>
+          <span class="pricing-card-status ${t.status || 'active'}">${(t.status || "active").toUpperCase()}</span>
+        </div>
+        <div class="pricing-card-action">
+          <button class="btn-set-price" onclick="openPricingModal('${t.templateId}')">
+            <i class="fa-solid fa-pen-to-square"></i> Set Price & Offers
+          </button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// Filter pricing templates
+function filterPricingTemplates() {
+  const category = document.getElementById("pricingCategoryFilter").value;
+  const status = document.getElementById("pricingStatusFilter").value;
+  const search = (document.getElementById("pricingSearchInput").value || "").trim().toLowerCase();
+
+  let filtered = allPricingTemplates;
+
+  if (category !== "all") {
+    filtered = filtered.filter(t => (t.category || "").toLowerCase() === category);
+  }
+  if (status !== "all") {
+    filtered = filtered.filter(t => (t.status || "active").toLowerCase() === status);
+  }
+  if (search) {
+    filtered = filtered.filter(t =>
+      (t.name || "").toLowerCase().includes(search) ||
+      (t.templateId || "").toLowerCase().includes(search)
+    );
+  }
+
+  renderPricingGrid(filtered);
+}
+
+// Attach filter event listeners
+["pricingCategoryFilter", "pricingStatusFilter"].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener("change", filterPricingTemplates);
+});
+const pricingSearchEl = document.getElementById("pricingSearchInput");
+if (pricingSearchEl) pricingSearchEl.addEventListener("input", filterPricingTemplates);
+
+// ---- PRICING MODAL ----
+let currentPricingTemplateId = null;
+
+window.openPricingModal = function(templateId) {
+  if (!hasPermission("pricing.edit")) {
+    showToast("You do not have permission to edit template pricing", "error");
+    return;
+  }
+
+  const t = allPricingTemplates.find(tpl => tpl.templateId === templateId);
+  if (!t) {
+    showToast("Template not found", "error");
+    return;
+  }
+
+  currentPricingTemplateId = templateId;
+
+  // Compute thumbnail
+  let thumbUrl = t.thumbnail || "";
+  if (thumbUrl && !thumbUrl.startsWith("http") && !thumbUrl.startsWith("assets")) {
+    thumbUrl = `${BACKEND_URL}/${thumbUrl}`;
+  } else if (thumbUrl && thumbUrl.startsWith("assets")) {
+    thumbUrl = `../${thumbUrl}`;
+  }
+
+  // Populate modal preview
+  document.getElementById("pricingModalThumb").style.backgroundImage = `url('${thumbUrl}')`;
+  document.getElementById("pricingModalName").textContent = t.name;
+  document.getElementById("pricingModalCategory").textContent = (t.category || "general").toUpperCase();
+  document.getElementById("pricingModalId").textContent = `ID: ${t.templateId}`;
+
+  // Populate form fields
+  document.getElementById("modalBasePrice").value = t.price || 0;
+  document.getElementById("modalOfferPrice").value = (t.offerPrice != null && t.offerPrice > 0) ? t.offerPrice : "";
+  document.getElementById("modalOfferLabel").value = t.offerLabel || "";
+  document.getElementById("modalOfferStart").value = t.offerStartDate ? new Date(t.offerStartDate).toISOString().split("T")[0] : "";
+  document.getElementById("modalOfferEnd").value = t.offerEndDate ? new Date(t.offerEndDate).toISOString().split("T")[0] : "";
+  document.getElementById("modalIsFeatured").checked = !!t.isFeatured;
+  document.getElementById("modalIsPremium").checked = !!t.isPremium;
+
+  // Open modal
+  document.getElementById("pricingModalOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+};
+
+window.closePricingModal = function() {
+  document.getElementById("pricingModalOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+  currentPricingTemplateId = null;
+};
+
+// Close button & cancel button
+const pricingModalCloseBtn = document.getElementById("pricingModalClose");
+if (pricingModalCloseBtn) pricingModalCloseBtn.addEventListener("click", closePricingModal);
+
+const pricingModalCancelBtn = document.getElementById("pricingModalCancelBtn");
+if (pricingModalCancelBtn) pricingModalCancelBtn.addEventListener("click", closePricingModal);
+
+// Close on backdrop click
+const pricingModalOverlay = document.getElementById("pricingModalOverlay");
+if (pricingModalOverlay) {
+  pricingModalOverlay.addEventListener("click", (e) => {
+    if (e.target === pricingModalOverlay) closePricingModal();
+  });
+}
+
+// Close on Escape key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && pricingModalOverlay && pricingModalOverlay.classList.contains("open")) {
+    closePricingModal();
+  }
+});
+
+// Save pricing modal
+const pricingModalSaveBtn = document.getElementById("pricingModalSaveBtn");
+if (pricingModalSaveBtn) {
+  pricingModalSaveBtn.addEventListener("click", async () => {
+    if (!currentPricingTemplateId) return;
+
+    const payload = {
+      price: Number(document.getElementById("modalBasePrice").value) || 0,
+      offerPrice: document.getElementById("modalOfferPrice").value ? Number(document.getElementById("modalOfferPrice").value) : null,
+      offerLabel: document.getElementById("modalOfferLabel").value.trim(),
+      offerStartDate: document.getElementById("modalOfferStart").value || null,
+      offerEndDate: document.getElementById("modalOfferEnd").value || null,
+      isFeatured: document.getElementById("modalIsFeatured").checked,
+      isPremium: document.getElementById("modalIsPremium").checked,
+      adminUser: adminUser.username
+    };
+
+    pricingModalSaveBtn.disabled = true;
+    pricingModalSaveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/templates/${currentPricingTemplateId}/pricing`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      showToast(data.message, "success");
+      closePricingModal();
+
+      // Refresh the template grid
+      fetchPricing();
+    } catch (err) {
+      showToast(err.message, "error");
+    } finally {
+      pricingModalSaveBtn.disabled = false;
+      pricingModalSaveBtn.innerHTML = `<i class="fa-solid fa-check"></i> Save Changes`;
+    }
+  });
+}
+
+// Global pricing form submit
 const pricingSettingsForm = document.getElementById("pricingSettingsForm");
 if (pricingSettingsForm) {
   pricingSettingsForm.addEventListener("submit", async (e) => {

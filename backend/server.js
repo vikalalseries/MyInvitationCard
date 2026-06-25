@@ -942,6 +942,42 @@ app.delete("/api/admin/templates/:templateId", async (req, res) => {
   }
 });
 
+// Update individual template pricing & offers
+app.patch("/api/admin/templates/:templateId/pricing", async (req, res) => {
+  try {
+    const { templateId } = req.params;
+    const { price, offerPrice, offerLabel, offerStartDate, offerEndDate, isFeatured, isPremium, adminUser } = req.body;
+
+    const template = await Template.findOne({ templateId });
+    if (!template) {
+      return res.status(404).json({ success: false, message: "Template not found" });
+    }
+
+    // Build update object with only provided fields
+    const updateFields = {};
+    if (price !== undefined) updateFields.price = Number(price);
+    if (offerPrice !== undefined) updateFields.offerPrice = offerPrice === "" || offerPrice === null ? null : Number(offerPrice);
+    if (offerLabel !== undefined) updateFields.offerLabel = offerLabel;
+    if (offerStartDate !== undefined) updateFields.offerStartDate = offerStartDate || null;
+    if (offerEndDate !== undefined) updateFields.offerEndDate = offerEndDate || null;
+    if (isFeatured !== undefined) updateFields.isFeatured = Boolean(isFeatured);
+    if (isPremium !== undefined) updateFields.isPremium = Boolean(isPremium);
+
+    await Template.findOneAndUpdate({ templateId }, updateFields);
+
+    const audit = new AuditLog({
+      username: adminUser || "admin",
+      action: "pricing.template.edit",
+      details: `Updated pricing for template ${template.name} (ID: ${templateId}): ${JSON.stringify(updateFields)}`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: `Pricing updated for "${template.name}"` });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Fetch print & shipping orders (extended with customer details & payment status)
 app.get("/api/admin/orders", async (req, res) => {
   try {

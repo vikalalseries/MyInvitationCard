@@ -498,6 +498,46 @@
 
         <!-- 7. PRICING & SETTINGS PANEL -->
         <section id="pricingTab" class="tab-panel">
+          <!-- TEMPLATE PRICING MANAGEMENT -->
+          <div class="card-admin">
+            <div class="card-admin-header">
+              <h3><i class="fa-solid fa-tags" style="margin-right:8px; color:var(--primary-color);"></i>Template Pricing & Offers</h3>
+            </div>
+
+            <!-- FILTER BAR -->
+            <div class="pricing-filter-bar">
+              <select id="pricingCategoryFilter">
+                <option value="all">All Categories</option>
+                <option value="wedding">Wedding</option>
+                <option value="birthday">Birthday</option>
+                <option value="nikah">Nikah</option>
+                <option value="anniversary">Anniversary</option>
+                <option value="engagement">Engagement</option>
+              </select>
+              <select id="pricingStatusFilter">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="draft">Draft</option>
+                <option value="hidden">Hidden</option>
+              </select>
+              <div class="pricing-search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="pricingSearchInput" placeholder="Search template name or ID...">
+              </div>
+              <span class="pricing-results-count" id="pricingResultsCount"></span>
+            </div>
+
+            <!-- TEMPLATE PRICING GRID -->
+            <div class="pricing-template-grid" id="pricingTemplateGrid">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <!-- GLOBAL SETTINGS SECTION (below template grid) -->
+          <div class="pricing-section-divider">
+            <h3><i class="fa-solid fa-sliders" style="margin-right:8px; color:var(--primary-color);"></i>Global Pricing & Site Settings</h3>
+          </div>
+
           <div class="dashboard-row">
             <div class="dashboard-col flex-1">
               <div class="card-admin">
@@ -566,6 +606,86 @@
             </div>
           </div>
         </section>
+
+        <!-- PRICING EDIT MODAL (appended outside sections) -->
+        <div class="pricing-modal-overlay" id="pricingModalOverlay">
+          <div class="pricing-modal">
+            <div class="pricing-modal-header">
+              <h3><i class="fa-solid fa-pen-ruler" style="margin-right:8px;"></i>Edit Pricing & Offers</h3>
+              <button class="pricing-modal-close" id="pricingModalClose" title="Close">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div class="pricing-modal-preview" id="pricingModalPreview">
+              <div class="pricing-modal-thumb" id="pricingModalThumb"></div>
+              <div class="pricing-modal-preview-info">
+                <h4 id="pricingModalName">Template Name</h4>
+                <span id="pricingModalCategory">Category</span>
+                <span id="pricingModalId">ID: —</span>
+              </div>
+            </div>
+            <div class="pricing-modal-body">
+              <!-- Price Section -->
+              <div class="pricing-modal-section-title">Pricing</div>
+              <div class="pricing-modal-row">
+                <div class="form-group-admin">
+                  <label for="modalBasePrice">Base Price (₹)</label>
+                  <input type="number" id="modalBasePrice" min="0" placeholder="e.g. 149">
+                </div>
+                <div class="form-group-admin">
+                  <label for="modalOfferPrice">Offer / Discount Price (₹)</label>
+                  <input type="number" id="modalOfferPrice" min="0" placeholder="Leave empty if no offer">
+                </div>
+              </div>
+
+              <!-- Offer Details -->
+              <div class="pricing-modal-section-title">Offer Details</div>
+              <div class="form-group-admin">
+                <label for="modalOfferLabel">Offer Label</label>
+                <input type="text" id="modalOfferLabel" placeholder="e.g. 50% OFF, Diwali Special, Summer Sale">
+              </div>
+              <div class="pricing-modal-row">
+                <div class="form-group-admin">
+                  <label for="modalOfferStart">Offer Start Date</label>
+                  <input type="date" id="modalOfferStart">
+                </div>
+                <div class="form-group-admin">
+                  <label for="modalOfferEnd">Offer End Date</label>
+                  <input type="date" id="modalOfferEnd">
+                </div>
+              </div>
+
+              <!-- Flags -->
+              <div class="pricing-modal-section-title">Template Flags</div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label"><i class="fa-solid fa-star" style="color:var(--warning-color); margin-right:6px;"></i>Featured Template</div>
+                  <div class="toggle-desc">Shows on homepage and featured sections</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="modalIsFeatured">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label"><i class="fa-solid fa-crown" style="color:var(--primary-color); margin-right:6px;"></i>Premium Template</div>
+                  <div class="toggle-desc">Only accessible to premium plan users</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="modalIsPremium">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="pricing-modal-footer">
+              <button class="btn-cancel" id="pricingModalCancelBtn">Cancel</button>
+              <button class="btn-save" id="pricingModalSaveBtn">
+                <i class="fa-solid fa-check"></i> Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
 
         <!-- 8. AUDIT LOGS PANEL -->
         <section id="auditTab" class="tab-panel">
