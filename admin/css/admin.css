@@ -534,7 +534,7 @@ body {
 .top-bar-admin {
   height: 80px;
   border-bottom: 1px solid var(--border-color);
-  padding: 0 40px;
+  padding: 0 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
