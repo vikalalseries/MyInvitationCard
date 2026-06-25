@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - MyInvitationCard</title>
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="login-body">
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-wrapper">
+          <i class="fa-solid fa-shield-halved security-logo"></i>
+        </div>
+        <h2>Admin Portal</h2>
+        <p>Please log in using your admin credentials</p>
+      </div>
+
+      <!-- STEP 1: CREDENTIALS FORM -->
+      <form id="credentialsForm" class="login-form">
+        <div class="form-group-admin">
+          <label for="adminUsername">Username</label>
+          <div class="input-icon-wrap">
+            <i class="fa-regular fa-user"></i>
+            <input type="text" id="adminUsername" placeholder="Enter username" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group-admin">
+          <div class="label-row">
+            <label for="adminPassword">Password</label>
+            <a href="#" id="forgotPasswordLink" class="forgot-link">Forgot?</a>
+          </div>
+          <div class="input-icon-wrap">
+            <i class="fa-regular fa-lock"></i>
+            <input type="password" id="adminPassword" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+        </div>
+
+        <button type="submit" class="admin-btn-primary" id="loginSubmitBtn">
+          <span>Continue</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+
+      <!-- STEP 2: OTP VERIFICATION FORM (HIDDEN BY DEFAULT) -->
+      <form id="otpVerificationForm" class="login-form hidden">
+        <div class="otp-instruction">
+          <i class="fa-solid fa-envelope-open-text"></i>
+          <p>We've sent a 6-digit verification code to your registered email.</p>
+          <span class="dev-otp-indicator" id="devOtpText" style="display:none; font-size:11px; color:#10b981; margin-top:5px; font-weight:600;"></span>
+        </div>
+
+        <div class="form-group-admin">
+          <label for="adminOtp">Verification Code</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-key"></i>
+            <input type="text" id="adminOtp" placeholder="Enter 6-digit code" maxlength="6" required>
+          </div>
+        </div>
+
+        <button type="submit" class="admin-btn-primary" id="verifyOtpBtn">
+          <span>Verify & Login</span>
+          <i class="fa-solid fa-circle-check"></i>
+        </button>
+        <button type="button" class="admin-btn-link" id="backToCredentialsBtn">Back to credentials</button>
+      </form>
+
+      <!-- PASSWORD RESET MODAL / FORM (HIDDEN BY DEFAULT) -->
+      <div id="passwordResetWrapper" class="login-form hidden">
+        <div class="reset-header">
+          <button id="closeResetBtn" class="close-btn-admin"><i class="fa-solid fa-xmark"></i></button>
+          <h3>Password Recovery</h3>
+          <p id="resetSubtext">Enter your username to request security OTPs</p>
+        </div>
+
+        <!-- RESET STEP 1: USERNAME -->
+        <form id="resetRequestForm">
+          <div class="form-group-admin">
+            <label for="resetUsername">Username</label>
+            <div class="input-icon-wrap">
+              <i class="fa-regular fa-user"></i>
+              <input type="text" id="resetUsername" placeholder="Enter admin username" required>
+            </div>
+          </div>
+          <button type="submit" class="admin-btn-primary" id="sendResetOtpsBtn">Send Verification Codes</button>
+        </form>
+
+        <!-- RESET STEP 2: OTP CODES -->
+        <form id="resetVerifyForm" class="hidden">
+          <div class="form-group-admin">
+            <label for="resetEmailOtp">Email OTP</label>
+            <div class="input-icon-wrap">
+              <i class="fa-regular fa-envelope"></i>
+              <input type="text" id="resetEmailOtp" placeholder="Enter email code" maxlength="6" required>
+            </div>
+            <span class="dev-otp-indicator" id="devEmailOtpText" style="display:none; font-size:11px; color:#10b981; margin-top:2px;"></span>
+          </div>
+
+          <div class="form-group-admin">
+            <label for="resetPhoneOtp">Mobile OTP</label>
+            <div class="input-icon-wrap">
+              <i class="fa-solid fa-mobile-screen"></i>
+              <input type="text" id="resetPhoneOtp" placeholder="Enter mobile code" maxlength="6" required>
+            </div>
+            <span class="dev-otp-indicator" id="devPhoneOtpText" style="display:none; font-size:11px; color:#10b981; margin-top:2px;"></span>
+          </div>
+          <button type="submit" class="admin-btn-primary" id="verifyResetOtpsBtn">Verify Codes</button>
+        </form>
+
+        <!-- RESET STEP 3: NEW PASSWORD -->
+        <form id="resetCompleteForm" class="hidden">
+          <div class="form-group-admin">
+            <label for="newPassword">New Password</label>
+            <div class="input-icon-wrap">
+              <i class="fa-regular fa-lock"></i>
+              <input type="password" id="newPassword" placeholder="••••••••" required>
+            </div>
+          </div>
+
+          <div class="form-group-admin">
+            <label for="confirmNewPassword">Confirm New Password</label>
+            <div class="input-icon-wrap">
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" id="confirmNewPassword" placeholder="••••••••" required>
+            </div>
+          </div>
+          <button type="submit" class="admin-btn-primary" id="completeResetBtn">Reset Password</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="toast-container-admin"></div>
+
+  <!-- SCRIPTS -->
+  <script src="js/admin-login.js"></script>
+</body>
+</html>

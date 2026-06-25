@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - MyInvitationCard</title>
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="dashboard-body">
+
+  <div class="dashboard-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar-admin">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-gem dashboard-logo"></i>
+        <span>Admin Panel</span>
+      </div>
+      
+      <div class="user-badge">
+        <div class="user-avatar-circle" id="adminUserAvatar">A</div>
+        <div class="user-badge-info">
+          <h4 id="adminUsernameBadge">Admin</h4>
+          <p id="adminRoleBadge">Master Owner</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-target="overviewTab" id="nav-overview">
+          <i class="fa-solid fa-chart-pie"></i> Overview
+        </button>
+        <button class="nav-item" data-target="usersTab" id="nav-users">
+          <i class="fa-solid fa-users"></i> Users
+        </button>
+        <button class="nav-item" data-target="adminsTab" id="nav-admins">
+          <i class="fa-solid fa-user-shield"></i> Admins
+        </button>
+        <button class="nav-item" data-target="templatesTab" id="nav-templates">
+          <i class="fa-solid fa-folder-open"></i> Templates
+        </button>
+        <button class="nav-item" data-target="ordersTab" id="nav-orders">
+          <i class="fa-solid fa-truck-ramp-box"></i> Orders
+        </button>
+        <button class="nav-item" data-target="paymentsTab" id="nav-payments">
+          <i class="fa-solid fa-credit-card"></i> Payments
+        </button>
+        <button class="nav-item" data-target="pricingTab" id="nav-pricing">
+          <i class="fa-solid fa-tags"></i> Pricing & Settings
+        </button>
+        <button class="nav-item" data-target="auditTab" id="nav-audit">
+          <i class="fa-solid fa-list-check"></i> Audit Logs
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="adminLogoutBtn" class="logout-btn-admin">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN PANEL -->
+    <main class="main-content-admin">
+      
+      <!-- TOP NAVIGATION BAR -->
+      <header class="top-bar-admin">
+        <div class="top-bar-left">
+          <h2 id="currentTabTitle">Overview</h2>
+        </div>
+        <div class="top-bar-right">
+          <div class="system-time">
+            <i class="fa-regular fa-clock"></i>
+            <span id="currentSystemTime">2026-06-25 15:10:32</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- PANELS CONTENT -->
+      <div class="tab-content-container">
+
+        <!-- 1. OVERVIEW PANEL -->
+        <section id="overviewTab" class="tab-panel active">
+          <!-- STATS CARDS GRID -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon rev-color"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+              <div class="stat-details">
+                <h3 id="statRevenue">₹4,580</h3>
+                <p>Today's Sales</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon sales-color"><i class="fa-solid fa-basket-shopping"></i></div>
+              <div class="stat-details">
+                <h3 id="statOrders">32</h3>
+                <p>Total Orders</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon users-color"><i class="fa-solid fa-user-plus"></i></div>
+              <div class="stat-details">
+                <h3 id="statUsers">324</h3>
+                <p>Total Users</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon temp-color"><i class="fa-solid fa-shapes"></i></div>
+              <div class="stat-details">
+                <h3 id="statTemplates">18</h3>
+                <p>Active Templates</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ANALYTICS ROW -->
+          <div class="dashboard-row">
+            <div class="dashboard-col flex-2">
+              <div class="card-admin">
+                <div class="card-admin-header">
+                  <h3>Recent Sales Performance</h3>
+                  <span class="badge success-badge">Live</span>
+                </div>
+                <div class="analytics-chart-placeholder">
+                  <div class="simulated-chart-bar" style="height: 40%"><span>Mon</span></div>
+                  <div class="simulated-chart-bar" style="height: 60%"><span>Tue</span></div>
+                  <div class="simulated-chart-bar" style="height: 80%"><span>Wed</span></div>
+                  <div class="simulated-chart-bar" style="height: 50%"><span>Thu</span></div>
+                  <div class="simulated-chart-bar" style="height: 95%"><span>Fri</span></div>
+                  <div class="simulated-chart-bar" style="height: 70%"><span>Sat</span></div>
+                  <div class="simulated-chart-bar" style="height: 85%"><span>Sun</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-col flex-1">
+              <div class="card-admin">
+                <div class="card-admin-header">
+                  <h3>Highlights</h3>
+                </div>
+                <div class="highlight-list">
+                  <div class="highlight-item">
+                    <div class="hl-badge"><i class="fa-solid fa-fire"></i></div>
+                    <div class="hl-desc">
+                      <h4>Popular Template</h4>
+                      <p id="statPopularTemplate">Royal Wedding #18</p>
+                    </div>
+                  </div>
+                  <div class="highlight-item">
+                    <div class="hl-badge"><i class="fa-solid fa-percent"></i></div>
+                    <div class="hl-desc">
+                      <h4>Conversion Rate</h4>
+                      <p id="statConversionRate">5.4%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. USERS PANEL -->
+        <section id="usersTab" class="tab-panel">
+          <div class="card-admin">
+            <div class="card-admin-header">
+              <h3>Registered Customer Base</h3>
+              <div class="search-wrap-admin">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="userSearchInput" placeholder="Search customer email/name...">
+              </div>
+            </div>
+            <div class="table-wrapper-admin">
+              <table class="table-admin" id="usersTable">
+                <thead>
+                  <tr>
+                    <th>Profile</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Gender</th>
+                    <th>Joined</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. ADMINS PANEL -->
+        <section id="adminsTab" class="tab-panel">
+          <div class="dashboard-row">
+            <div class="dashboard-col flex-2">
+              <div class="card-admin">
+                <div class="card-admin-header">
+                  <h3>System Administrators</h3>
+                </div>
+                <div class="table-wrapper-admin">
+                  <table class="table-admin" id="adminsTable">
+                    <thead>
+                      <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Last Login</th>
+                      </tr>
+                    </thead>
+                    <tbody id="adminsTableBody">
+                      <!-- Injected via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-col flex-1">
+              <div class="card-admin">
+                <div class="card-admin-header">
+                  <h3>Create Admin Account</h3>
+                </div>
+                <form id="createAdminForm" class="card-form-admin">
+                  <div class="form-group-admin">
+                    <label for="newAdminUser">Username</label>
+                    <input type="text" id="newAdminUser" placeholder="e.g. support01" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="newAdminEmail">Email</label>
+                    <input type="email" id="newAdminEmail" placeholder="support@website.com" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="newAdminPhone">Phone Number</label>
+                    <input type="text" id="newAdminPhone" placeholder="+919876543210" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="newAdminPassword">Password</label>
+                    <input type="password" id="newAdminPassword" placeholder="Strong password" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="newAdminRole">Department Role</label>
+                    <select id="newAdminRole" required>
+                      <option value="Template Manager">Template Manager</option>
+                      <option value="Pricing Manager">Pricing Manager</option>
+                      <option value="Order Manager">Order Manager</option>
+                      <option value="Payment Manager">Payment Manager</option>
+                      <option value="Customer Support">Customer Support</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="admin-btn-primary" style="margin-top:10px;">Create Admin</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. TEMPLATES PANEL -->
+        <section id="templatesTab" class="tab-panel">
+          <div class="dashboard-row">
+            <!-- LIST OF TEMPLATES -->
+            <div class="dashboard-col flex-2">
+              <div class="card-admin">
+                <div class="card-admin-header">
+                  <h3>Active Invitation Templates</h3>
+                </div>
+                <div class="templates-cms-grid" id="templatesGrid">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- ZIP UPLOAD CMS PANEL -->
+            <div class="dashboard-col flex-1">
+              <div class="card-admin">
+                <div class="card-admin-header">
+                  <h3>Upload Template ZIP</h3>
+                </div>
+                <form id="templateUploadForm" class="card-form-admin" enctype="multipart/form-data">
+                  <div class="form-group-admin">
+                    <label for="templateIdInput">Template ID (Unique)</label>
+                    <input type="text" id="templateIdInput" placeholder="e.g. card101" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="templateNameInput">Template Name</label>
+                    <input type="text" id="templateNameInput" placeholder="e.g. Royal Wedding Invitation" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="templateCategoryInput">Category</label>
+                    <select id="templateCategoryInput">
+                      <option value="wedding">Wedding</option>
+                      <option value="birthday">Birthday</option>
+                      <option value="nikah">Nikah</option>
+                      <option value="anniversary">Anniversary</option>
+                      <option value="engagement">Engagement</option>
+                    </select>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="templatePriceInput">Price (INR)</label>
+                    <input type="number" id="templatePriceInput" value="149" min="0" required>
+                  </div>
+                  
+                  <div class="form-group-admin">
+                    <label>Upload ZIP Package</label>
+                    <div class="upload-dropzone-admin" id="dropzoneAdmin">
+                      <i class="fa-solid fa-file-zipper upload-drop-icon"></i>
+                      <p>Drag & drop template ZIP here or click to browse</p>
+                      <span class="upload-filename-indicator" id="uploadFilename">No ZIP selected</span>
+                      <input type="file" id="templateZipFile" accept=".zip" style="display: none;" required>
+                    </div>
+                  </div>
+
+                  <!-- UPLOAD PROGRESS INDICATOR -->
+                  <div class="upload-progress-wrap hidden" id="uploadProgressWrapper">
+                    <div class="progress-bar-admin">
+                      <div class="progress-fill-admin" id="uploadProgressBar" style="width: 0%;"></div>
+                    </div>
+                    <span id="uploadProgressPercent">0%</span>
+                  </div>
+
+                  <button type="submit" class="admin-btn-primary" style="margin-top:10px;" id="uploadSubmitBtn">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload & Extract
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. ORDERS PANEL -->
+        <section id="ordersTab" class="tab-panel">
+          <div class="card-admin">
+            <div class="card-admin-header">
+              <h3>Shipping & Print Orders</h3>
+            </div>
+            <div class="table-wrapper-admin">
+              <table class="table-admin" id="ordersTable">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>User ID</th>
+                    <th>Card Template</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                  <!-- Simulated or loaded rows -->
+                  <tr>
+                    <td>#ORD-12568</td>
+                    <td>uid_rahul98</td>
+                    <td>Royal Wedding #18</td>
+                    <td><span class="badge progress-badge" id="orderStatus1">Printing</span></td>
+                    <td>
+                      <select class="order-status-select" onchange="updateOrderStatus('12568', this.value)">
+                        <option value="Printing" selected>Printing</option>
+                        <option value="Dispatched">Dispatched</option>
+                        <option value="Delivered">Delivered</option>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>#ORD-12569</td>
+                    <td>uid_priya02</td>
+                    <td>Nikah Royal Gold</td>
+                    <td><span class="badge success-badge">Delivered</span></td>
+                    <td>
+                      <select class="order-status-select" disabled>
+                        <option value="Delivered" selected>Delivered</option>
+                      </select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. PAYMENTS PANEL -->
+        <section id="paymentsTab" class="tab-panel">
+          <div class="card-admin">
+            <div class="card-admin-header">
+              <h3>Verified Transactions</h3>
+            </div>
+            <div class="table-wrapper-admin">
+              <table class="table-admin" id="paymentsTable">
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Razorpay Payment ID</th>
+                    <th>User UID</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="paymentsTableBody">
+                  <!-- Simulated or loaded rows -->
+                  <tr>
+                    <td>#TXN-98274</td>
+                    <td>pay_NZsk892jkdks</td>
+                    <td>uid_rahul98</td>
+                    <td>₹149.00</td>
+                    <td><span class="badge success-badge">Paid</span></td>
+                    <td><button class="table-action-btn delete" onclick="triggerRefund('pay_NZsk892jkdks', 149)">Refund</button></td>
+                  </tr>
+                  <tr>
+                    <td>#TXN-98275</td>
+                    <td>pay_NZsk892jlasf</td>
+                    <td>uid_priya02</td>
+                    <td>₹99.00</td>
+                    <td><span class="badge success-badge">Paid</span></td>
+                    <td><button class="table-action-btn delete" onclick="triggerRefund('pay_NZsk892jlasf', 99)">Refund</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. PRICING & SETTINGS PANEL -->
+        <section id="pricingTab" class="tab-panel">
+          <div class="dashboard-row">
+            <div class="dashboard-col flex-1">
+              <div class="card-admin">
+                <div class="card-admin-header">
+                  <h3>Pricing Configurations</h3>
+                </div>
+                <form id="pricingSettingsForm" class="card-form-admin">
+                  <div class="form-group-admin">
+                    <label for="weddingPriceInput">Wedding Card Base (INR)</label>
+                    <input type="number" id="weddingPriceInput" min="0" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="birthdayPriceInput">Birthday Card Base (INR)</label>
+                    <input type="number" id="birthdayPriceInput" min="0" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="nikahPriceInput">Nikah Card Base (INR)</label>
+                    <input type="number" id="nikahPriceInput" min="0" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="premiumExportInput">Premium PDF Export (INR)</label>
+                    <input type="number" id="premiumExportInput" min="0" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="printingPriceInput">Printing (INR per page)</label>
+                    <input type="number" id="printingPriceInput" min="0" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="taxRateInput">GST/Tax Rate (%)</label>
+                    <input type="number" id="taxRateInput" min="0" max="100" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="shippingBaseInput">Base Shipping Fee (INR)</label>
+                    <input type="number" id="shippingBaseInput" min="0" required>
+                  </div>
+                  <button type="submit" class="admin-btn-primary">Save Configurations</button>
+                </form>
+              </div>
+            </div>
+
+            <div class="dashboard-col flex-1">
+              <div class="card-admin">
+                <div class="card-admin-header">
+                  <h3>Website Metadata & Site Settings</h3>
+                </div>
+                <form id="siteSettingsForm" class="card-form-admin" onsubmit="event.preventDefault(); showToast('Metadata settings updated!', 'success');">
+                  <div class="form-group-admin">
+                    <label for="siteName">Website Title</label>
+                    <input type="text" id="siteName" value="MyInvitationCard" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="supportEmail">Customer Support Email</label>
+                    <input type="email" id="supportEmail" value="support@myinvitationcard.com" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="supportWhatsapp">Customer Support WhatsApp</label>
+                    <input type="text" id="supportWhatsapp" value="+919876543210" required>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="upiMerchant">Merchant UPI Address</label>
+                    <input type="text" id="upiMerchant" value="myinvitationcard@upi" required>
+                  </div>
+                  <button type="submit" class="admin-btn-primary">Update Settings</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. AUDIT LOGS PANEL -->
+        <section id="auditTab" class="tab-panel">
+          <div class="card-admin">
+            <div class="card-admin-header">
+              <h3>System Activity Log Feed</h3>
+            </div>
+            <div class="table-wrapper-admin">
+              <table class="table-admin" id="auditTable">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="auditTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="toast-container-admin"></div>
+
+  <!-- SCRIPTS -->
+  <script src="js/admin-dashboard.js"></script>
+</body>
+</html>

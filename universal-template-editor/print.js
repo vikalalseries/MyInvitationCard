@@ -1207,8 +1207,12 @@ async function updateHeaderProfileUI(user) {
     let avatarUrl = localAvatar || user.photoURL;
 
     // Fix relative path if subdirectory
-    if (avatarUrl && avatarUrl.startsWith("assets/")) {
-      avatarUrl = "../" + avatarUrl;
+    if (avatarUrl) {
+      if (avatarUrl.startsWith("assets/")) {
+        avatarUrl = "../" + avatarUrl;
+      } else if (avatarUrl.startsWith("/assets/")) {
+        avatarUrl = ".." + avatarUrl;
+      }
     }
 
     if (avatarUrl) {

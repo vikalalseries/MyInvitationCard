@@ -289,7 +289,7 @@ async function setupAuthenticatedView(user) {
 
   // Set greeting banner avatar (check if it's base64 or a preset to determine custom badge)
   const avatarToUse = localAvatar || user.photoURL || "";
-  const isCustom = !!localAvatar && !localAvatar.startsWith("assets/") && !localAvatar.startsWith("http");
+  const isCustom = !!localAvatar && !localAvatar.startsWith("assets/") && !localAvatar.startsWith("/assets/") && !localAvatar.startsWith("http");
   setGreetingAvatarUI(avatarToUse, displayName, isCustom);
 }
 
