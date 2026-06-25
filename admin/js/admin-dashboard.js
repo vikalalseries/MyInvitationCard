@@ -323,6 +323,7 @@ window.openEditAdminModal = function(username, email, phone, role) {
   if (!modal) return;
   
   document.getElementById("editAdminOldUsername").value = username;
+  document.getElementById("editAdminOldRole").value = role;
   document.getElementById("editAdminUsernameDisplay").value = username;
   document.getElementById("editAdminEmail").value = email;
   document.getElementById("editAdminPhone").value = phone;
@@ -426,6 +427,7 @@ if (editAdminForm) {
   editAdminForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const oldUsername = document.getElementById("editAdminOldUsername").value;
+    const oldRole = document.getElementById("editAdminOldRole").value;
     const newUsername = document.getElementById("editAdminUsernameDisplay").value.trim();
     const email = document.getElementById("editAdminEmail").value.trim();
     const phone = document.getElementById("editAdminPhone").value.trim();
@@ -455,7 +457,7 @@ if (editAdminForm) {
       };
       if (password) payload.password = password;
       
-      const isMaster = oldUsername === "admin";
+      const isMaster = oldRole === "Master Owner" || oldUsername === "admin";
       if (!isMaster) {
         payload.role = role;
         payload.permissions = permissions;

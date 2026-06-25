@@ -919,16 +919,10 @@ app.put("/api/admin/accounts/:username", async (req, res) => {
     if (email) targetAdmin.email = email;
     if (phone) targetAdmin.phone = phone;
 
-    // Role protection
-    if (role) {
-      if (targetAdmin.role === "Master Owner" && role !== "Master Owner") {
-        return res.status(400).json({ success: false, message: "Cannot change the role of the Master Owner account" });
-      }
-      targetAdmin.role = role;
-    }
-
-    if (permissions && targetAdmin.role !== "Master Owner") {
-      targetAdmin.permissions = permissions;
+    // Role protection (Master Owner role and permissions are locked and cannot be changed)
+    if (targetAdmin.role !== "Master Owner") {
+      if (role) targetAdmin.role = role;
+      if (permissions) targetAdmin.permissions = permissions;
     }
 
     if (password) {
