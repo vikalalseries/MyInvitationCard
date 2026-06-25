@@ -3,9 +3,58 @@
 */
 
 :root {
+  /* LIGHT MODE (DEFAULT) */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --bg-sidebar: #ffffff;
+  
+  --border-color: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(15, 23, 42, 0.15);
+  
+  --text-main: #334155;
+  --text-muted: #64748b;
+  --text-active: #0f172a;
+  
+  --primary-color: #4f46e5; /* Indigo */
+  --primary-hover: #4338ca;
+  --primary-glow: rgba(79, 70, 229, 0.12);
+  
+  --success-color: #059669; /* Emerald */
+  --success-bg: rgba(5, 150, 105, 0.1);
+  
+  --warning-color: #d97706; /* Amber */
+  --warning-bg: rgba(217, 119, 6, 0.1);
+  
+  --danger-color: #dc2626; /* Rose */
+  --danger-bg: rgba(220, 38, 38, 0.1);
+  
+  --info-color: #2563eb; /* Blue */
+  --info-bg: rgba(37, 99, 235, 0.1);
+  
+  --font-title: 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  /* Theme-specific overrides for custom transparent components */
+  --login-bg: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.08) 0%, var(--bg-primary) 90%);
+  --login-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  --card-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+  --bg-input: rgba(15, 23, 42, 0.03);
+  --bg-input-focus: #ffffff;
+  --bg-topbar: rgba(255, 255, 255, 0.7);
+  --bg-soft: rgba(15, 23, 42, 0.03);
+  --bg-soft-hover: rgba(15, 23, 42, 0.06);
+  --bg-table-hover: rgba(15, 23, 42, 0.015);
+  --bg-chart-area: rgba(15, 23, 42, 0.02);
+  --bg-card-secondary: rgba(15, 23, 42, 0.03);
+  --bg-badge-role: rgba(15, 23, 42, 0.05);
+}
+
+/* Scoped variables for dark theme */
+html.site-theme-dark {
   --bg-primary: #0a0b10;
   --bg-secondary: #12141c;
-  --bg-card: rgba(22, 25, 38, 0.7);
+  --bg-card: rgba(22, 25, 38, 0.75);
   --bg-sidebar: #0d0f17;
   
   --border-color: rgba(255, 255, 255, 0.08);
@@ -30,9 +79,20 @@
   
   --info-color: #3b82f6; /* Blue */
   --info-bg: rgba(59, 130, 246, 0.15);
-  
-  --font-title: 'Outfit', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  /* Theme-specific overrides for custom transparent components */
+  --login-bg: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.12) 0%, var(--bg-primary) 90%);
+  --login-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --bg-input: rgba(10, 11, 16, 0.6);
+  --bg-input-focus: rgba(10, 11, 16, 0.9);
+  --bg-topbar: rgba(10, 11, 16, 0.5);
+  --bg-soft: rgba(255, 255, 255, 0.03);
+  --bg-soft-hover: rgba(255, 255, 255, 0.05);
+  --bg-table-hover: rgba(255, 255, 255, 0.015);
+  --bg-chart-area: rgba(0, 0, 0, 0.1);
+  --bg-card-secondary: rgba(10, 11, 16, 0.4);
+  --bg-badge-role: rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -72,7 +132,7 @@ body {
 
 /* --- LOGIN PAGE --- */
 .login-body {
-  background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.12) 0%, rgba(10, 11, 16, 1) 90%);
+  background: var(--login-bg);
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -91,7 +151,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 40px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--login-shadow);
 }
 
 .login-header {
@@ -178,7 +238,7 @@ body {
 .input-icon-wrap input,
 .form-group-admin select {
   width: 100%;
-  background: rgba(10, 11, 16, 0.6);
+  background: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 14px 16px 14px 45px;
@@ -203,7 +263,7 @@ body {
 .form-group-admin select:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 4px var(--primary-glow);
-  background: rgba(10, 11, 16, 0.9);
+  background: var(--bg-input-focus);
 }
 
 .admin-btn-primary {
@@ -254,7 +314,7 @@ body {
 /* OTP Instruction UI */
 .otp-instruction {
   text-align: center;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-soft);
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 25px;
@@ -357,7 +417,7 @@ body {
   align-items: center;
   gap: 15px;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.01);
+  background: var(--bg-soft);
 }
 
 .user-avatar-circle {
@@ -421,7 +481,7 @@ body {
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-soft-hover);
   color: var(--text-main);
 }
 
@@ -477,7 +537,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(10, 11, 16, 0.5);
+  background: var(--bg-topbar);
   backdrop-filter: blur(12px);
   z-index: 10;
   flex-shrink: 0;
@@ -491,7 +551,7 @@ body {
 }
 
 .system-time {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-soft);
   border: 1px solid var(--border-color);
   border-radius: 30px;
   padding: 8px 16px;
@@ -525,7 +585,7 @@ body {
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  box-shadow: var(--card-shadow);
 }
 
 .card-admin-header {
@@ -618,7 +678,7 @@ body {
   align-items: flex-end;
   justify-content: space-around;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--bg-chart-area);
 }
 
 .simulated-chart-bar {
@@ -651,7 +711,7 @@ body {
   align-items: center;
   gap: 15px;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-soft);
   border: 1px solid var(--border-color);
   border-radius: 10px;
 }
@@ -660,7 +720,7 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.05);
+  background: var(--bg-soft-hover);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -711,7 +771,7 @@ body {
 }
 
 .table-admin tr:hover td {
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--bg-table-hover);
 }
 
 .customer-avatar-img {
@@ -736,7 +796,7 @@ body {
 .danger-badge { background: var(--danger-bg); color: var(--danger-color); }
 .info-badge { background: var(--info-bg); color: var(--info-color); }
 .progress-badge { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
-.role-badge { background: rgba(255, 255, 255, 0.08); color: var(--text-main); }
+.role-badge { background: var(--bg-badge-role); color: var(--text-main); }
 .code-badge { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); color: #60a5fa; font-family: monospace; }
 
 /* Table Action Buttons */
@@ -786,7 +846,7 @@ body {
 }
 
 .template-cms-card {
-  background: rgba(10, 11, 16, 0.4);
+  background: var(--bg-card-secondary);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
@@ -856,7 +916,7 @@ body {
 /* Upload drag and drop zone */
 .upload-dropzone-admin {
   border: 2px dashed var(--border-color);
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-chart-area);
   border-radius: 12px;
   padding: 30px 20px;
   text-align: center;
@@ -890,7 +950,7 @@ body {
 .upload-filename-indicator {
   display: inline-block;
   font-size: 11.5px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-soft-hover);
   border: 1px solid var(--border-color);
   color: var(--text-muted);
   padding: 4px 10px;
@@ -919,7 +979,7 @@ body {
 .progress-bar-admin {
   flex-grow: 1;
   height: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-soft-hover);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -942,7 +1002,7 @@ body {
 
 /* --- ORDER & TRANSACTION CONTROLS --- */
 .order-status-select {
-  background: rgba(10, 11, 16, 0.6);
+  background: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 6px 12px;
@@ -1037,7 +1097,7 @@ body {
 
 .search-wrap-admin input {
   width: 100%;
-  background: rgba(10, 11, 16, 0.4);
+  background: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: 30px;
   padding: 8px 12px 8px 32px;
@@ -1050,5 +1110,69 @@ body {
 
 .search-wrap-admin input:focus {
   border-color: var(--primary-color);
-  background: rgba(10, 11, 16, 0.8);
+  background: var(--bg-input-focus);
+}
+
+
+/* --- THEME TOGGLE & BRANDING CUSTOM ADDITIONS --- */
+.floating-theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.theme-toggle-btn-admin {
+  background: var(--bg-soft);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.theme-toggle-btn-admin:hover {
+  background: var(--primary-glow);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transform: scale(1.05) rotate(15deg);
+}
+
+.sidebar-branding {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-branding .site-name {
+  font-family: var(--font-title);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-active);
+  line-height: 1.2;
+}
+
+.sidebar-branding .admin-badge {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  margin-top: 2px;
+  align-self: flex-start;
+}
+
+.custom-logo {
+  transition: transform 0.3s ease;
+}
+
+.sidebar-header:hover .custom-logo {
+  transform: scale(1.1) rotate(-5deg);
 }

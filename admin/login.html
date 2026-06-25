@@ -4,20 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login - MyInvitationCard</title>
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("siteTheme");
+        var isDark = savedTheme === "dark";
+        document.documentElement.classList.add("theme-preload");
+        document.documentElement.dataset.siteTheme = isDark ? "dark" : "light";
+        if (isDark) {
+          document.documentElement.classList.add("site-theme-dark");
+        } else {
+          document.documentElement.classList.remove("site-theme-dark");
+        }
+      } catch (e) {}
+    })();
+  </script>
   <!-- Google Fonts & FontAwesome -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/admin.css">
+  <script src="js/admin-theme.js" defer></script>
 </head>
 <body class="login-body">
+  <!-- FLOATING THEME TOGGLE -->
+  <div class="floating-theme-toggle">
+    <button id="themeToggleBtn" class="theme-toggle-btn-admin" title="Toggle Theme">
+      <i class="fa-regular fa-moon"></i>
+    </button>
+  </div>
 
   <div class="login-wrapper">
     <div class="login-card">
       <div class="login-header">
-        <div class="logo-wrapper">
-          <i class="fa-solid fa-shield-halved security-logo"></i>
+        <div class="logo-wrapper" style="background: none; border: none; width: 70px; height: 70px;">
+          <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+            <!-- SMALL HEART -->
+            <path
+              d="M60 42
+                 C60 37, 54 33, 49 33
+                 C42 33, 39 40, 39 45
+                 C39 54, 49 61, 60 69
+                 C71 61, 81 54, 81 45
+                 C81 40, 78 33, 71 33
+                 C66 33, 60 37, 60 42Z"
+              fill="#ef4444"
+            />
+            <!-- ENVELOPE OUTER BORDER -->
+            <path
+              d="M18 42
+                 L18 78
+                 Q18 84 24 84
+                 L96 84
+                 Q102 84 102 78
+                 L102 42"
+              fill="none"
+              stroke="var(--primary-color)"
+              stroke-width="6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <!-- TOP FLAP -->
+            <path
+              d="M18 42 L60 14 L102 42"
+              fill="none"
+              stroke="var(--primary-color)"
+              stroke-width="6"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            />
+            <!-- LEFT INNER LINE -->
+            <path
+              d="M18 42 L60 68"
+              fill="none"
+              stroke="var(--primary-color)"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+            <!-- RIGHT INNER LINE -->
+            <path
+              d="M102 42 L60 68"
+              fill="none"
+              stroke="var(--primary-color)"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+          </svg>
         </div>
-        <h2>Admin Portal</h2>
+        <h2>MyInvitationCard</h2>
+        <p style="font-weight: 600; color: var(--primary-color); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; margin-top: 5px; margin-bottom: 2px;">Admin Portal</p>
         <p>Please log in using your admin credentials</p>
       </div>
 

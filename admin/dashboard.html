@@ -4,10 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - MyInvitationCard</title>
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("siteTheme");
+        var isDark = savedTheme === "dark";
+        document.documentElement.classList.add("theme-preload");
+        document.documentElement.dataset.siteTheme = isDark ? "dark" : "light";
+        if (isDark) {
+          document.documentElement.classList.add("site-theme-dark");
+        } else {
+          document.documentElement.classList.remove("site-theme-dark");
+        }
+      } catch (e) {}
+    })();
+  </script>
   <!-- Google Fonts & FontAwesome -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/admin.css">
+  <script src="js/admin-theme.js" defer></script>
 </head>
 <body class="dashboard-body">
 
@@ -15,8 +31,62 @@
     <!-- SIDEBAR -->
     <aside class="sidebar-admin">
       <div class="sidebar-header">
-        <i class="fa-solid fa-gem dashboard-logo"></i>
-        <span>Admin Panel</span>
+        <svg class="custom-logo" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px; flex-shrink: 0;">
+          <!-- SMALL HEART -->
+          <path
+            d="M60 42
+               C60 37, 54 33, 49 33
+               C42 33, 39 40, 39 45
+               C39 54, 49 61, 60 69
+               C71 61, 81 54, 81 45
+               C81 40, 78 33, 71 33
+               C66 33, 60 37, 60 42Z"
+            fill="#ef4444"
+          />
+          <!-- ENVELOPE OUTER BORDER -->
+          <path
+            d="M18 42
+               L18 78
+               Q18 84 24 84
+               L96 84
+               Q102 84 102 78
+               L102 42"
+            fill="none"
+            stroke="var(--primary-color)"
+            stroke-width="6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <!-- TOP FLAP -->
+          <path
+            d="M18 42 L60 14 L102 42"
+            fill="none"
+            stroke="var(--primary-color)"
+            stroke-width="6"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
+          <!-- LEFT INNER LINE -->
+          <path
+            d="M18 42 L60 68"
+            fill="none"
+            stroke="var(--primary-color)"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+          <!-- RIGHT INNER LINE -->
+          <path
+            d="M102 42 L60 68"
+            fill="none"
+            stroke="var(--primary-color)"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+        </svg>
+        <div class="sidebar-branding">
+          <span class="site-name">MyInvitationCard</span>
+          <span class="admin-badge">Admin</span>
+        </div>
       </div>
       
       <div class="user-badge">
@@ -69,7 +139,10 @@
         <div class="top-bar-left">
           <h2 id="currentTabTitle">Overview</h2>
         </div>
-        <div class="top-bar-right">
+        <div class="top-bar-right" style="display: flex; align-items: center; gap: 15px;">
+          <button id="themeToggleBtn" class="theme-toggle-btn-admin" title="Toggle Theme">
+            <i class="fa-regular fa-moon"></i>
+          </button>
           <div class="system-time">
             <i class="fa-regular fa-clock"></i>
             <span id="currentSystemTime">2026-06-25 15:10:32</span>
