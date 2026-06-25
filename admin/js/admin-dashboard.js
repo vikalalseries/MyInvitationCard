@@ -322,15 +322,17 @@ window.openEditAdminModal = function(username, email, phone, role) {
   const modal = document.getElementById("editAdminModal");
   if (!modal) return;
   
-  document.getElementById("editAdminUsername").value = username;
+  document.getElementById("editAdminOldUsername").value = username;
+  document.getElementById("editAdminUsernameDisplay").value = username;
   document.getElementById("editAdminEmail").value = email;
   document.getElementById("editAdminPhone").value = phone;
   
   const roleGroup = document.getElementById("editAdminRoleGroup");
   const roleSelect = document.getElementById("editAdminRole");
+  const isMaster = role === "Master Owner" || username === "admin";
   
   // Master admin cannot change role
-  if (username === "admin") {
+  if (isMaster) {
     roleGroup.style.display = "none";
     roleSelect.removeAttribute("required");
   } else {
@@ -423,7 +425,8 @@ const editAdminForm = document.getElementById("editAdminForm");
 if (editAdminForm) {
   editAdminForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const username = document.getElementById("editAdminUsername").value;
+    const oldUsername = document.getElementById("editAdminOldUsername").value;
+    const newUsername = document.getElementById("editAdminUsernameDisplay").value.trim();
     const email = document.getElementById("editAdminEmail").value.trim();
     const phone = document.getElementById("editAdminPhone").value.trim();
     const password = document.getElementById("editAdminPassword").value;
@@ -445,17 +448,20 @@ if (editAdminForm) {
 
     try {
       const payload = {
+        newUsername,
         email,
         phone,
         adminUser: adminUser.username
       };
       if (password) payload.password = password;
-      if (username !== "admin") {
+      
+      const isMaster = oldUsername === "admin";
+      if (!isMaster) {
         payload.role = role;
         payload.permissions = permissions;
       }
 
-      const res = await fetch(`${BACKEND_URL}/api/admin/accounts/${username}`, {
+      const res = await fetch(`${BACKEND_URL}/api/admin/accounts/${oldUsername}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -465,6 +471,23 @@ if (editAdminForm) {
       
       showToast(data.message, "success");
       document.getElementById("editAdminModal").classList.add("hidden");
+
+      // If editing my own profile, update local storage session and badge info
+      if (oldUsername === adminUser.username) {
+        localStorage.setItem("mic_admin_session", JSON.stringify(data.admin));
+        
+        // Update in-memory values
+        adminUser.username = data.admin.username;
+        adminUser.email = data.admin.email;
+        adminUser.phone = data.admin.phone;
+        adminUser.role = data.admin.role;
+        adminUser.permissions = data.admin.permissions;
+
+        // Update badges
+        document.getElementById("adminUsernameBadge").textContent = data.admin.username;
+        document.getElementById("adminUserAvatar").textContent = data.admin.username.substring(0, 2).toUpperCase();
+      }
+
       fetchAdmins();
     } catch (err) {
       showToast(err.message, "error");

@@ -600,7 +600,11 @@
         <button id="closeEditModalBtn" class="close-modal-btn"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form id="editAdminForm" class="card-form-admin">
-        <input type="hidden" id="editAdminUsername">
+        <input type="hidden" id="editAdminOldUsername">
+        <div class="form-group-admin">
+          <label for="editAdminUsernameDisplay">Username</label>
+          <input type="text" id="editAdminUsernameDisplay" required>
+        </div>
         <div class="form-group-admin">
           <label for="editAdminEmail">Email</label>
           <input type="email" id="editAdminEmail" required>

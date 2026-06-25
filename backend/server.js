@@ -899,18 +899,37 @@ app.delete("/api/admin/users/:uid", async (req, res) => {
 app.put("/api/admin/accounts/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    const { email, phone, role, password, permissions, adminUser } = req.body;
+    const { newUsername, email, phone, role, password, permissions, adminUser } = req.body;
 
     const targetAdmin = await Admin.findOne({ username });
     if (!targetAdmin) {
       return res.status(404).json({ success: false, message: "Admin account not found" });
     }
 
+    // Support updating username
+    if (newUsername && newUsername.trim() !== username) {
+      const duplicate = await Admin.findOne({ username: newUsername.trim() });
+      if (duplicate) {
+        return res.status(400).json({ success: false, message: "New username is already taken by another administrator" });
+      }
+      targetAdmin.username = newUsername.trim();
+    }
+
     // Update fields if provided
     if (email) targetAdmin.email = email;
     if (phone) targetAdmin.phone = phone;
-    if (role && username !== "admin") targetAdmin.role = role; // Don't let master admin role change
-    if (permissions && username !== "admin") targetAdmin.permissions = permissions;
+
+    // Role protection
+    if (role) {
+      if (targetAdmin.role === "Master Owner" && role !== "Master Owner") {
+        return res.status(400).json({ success: false, message: "Cannot change the role of the Master Owner account" });
+      }
+      targetAdmin.role = role;
+    }
+
+    if (permissions && targetAdmin.role !== "Master Owner") {
+      targetAdmin.permissions = permissions;
+    }
 
     if (password) {
       targetAdmin.passwordHash = await bcrypt.hash(password, 10);
@@ -921,11 +940,20 @@ app.put("/api/admin/accounts/:username", async (req, res) => {
     const audit = new AuditLog({
       username: adminUser || "admin",
       action: "admins.edit",
-      details: `Updated admin account: ${username}`
+      details: `Updated admin account: ${username}${newUsername && newUsername !== username ? ` (New username: ${newUsername})` : ""}`
     });
     await audit.save();
 
-    res.json({ success: true, message: "Admin account updated successfully" });
+    // Prepare updated user object for the response
+    const updatedAdmin = {
+      username: targetAdmin.username,
+      email: targetAdmin.email,
+      phone: targetAdmin.phone,
+      role: targetAdmin.role,
+      permissions: targetAdmin.permissions
+    };
+
+    res.json({ success: true, message: "Admin account updated successfully", admin: updatedAdmin });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -937,16 +965,16 @@ app.patch("/api/admin/accounts/:username/status", async (req, res) => {
     const { username } = req.params;
     const { status, adminUser } = req.body;
 
-    if (username === "admin") {
-      return res.status(400).json({ success: false, message: "Cannot change the status of the default Master Owner admin account" });
-    }
-    if (username === adminUser) {
-      return res.status(400).json({ success: false, message: "Cannot deactivate your own admin account" });
-    }
-
     const targetAdmin = await Admin.findOne({ username });
     if (!targetAdmin) {
       return res.status(404).json({ success: false, message: "Admin account not found" });
+    }
+
+    if (targetAdmin.role === "Master Owner") {
+      return res.status(400).json({ success: false, message: "Cannot change the status of a Master Owner account" });
+    }
+    if (targetAdmin.username === adminUser) {
+      return res.status(400).json({ success: false, message: "Cannot deactivate your own admin account" });
     }
 
     targetAdmin.status = status; // "active" or "inactive"
@@ -971,16 +999,16 @@ app.delete("/api/admin/accounts/:username", async (req, res) => {
     const { username } = req.params;
     const { adminUser } = req.query;
 
-    if (username === "admin") {
-      return res.status(400).json({ success: false, message: "Cannot delete the default Master Owner admin account" });
-    }
-    if (username === adminUser) {
-      return res.status(400).json({ success: false, message: "Cannot delete your own admin account" });
-    }
-
     const targetAdmin = await Admin.findOne({ username });
     if (!targetAdmin) {
       return res.status(404).json({ success: false, message: "Admin account not found" });
+    }
+
+    if (targetAdmin.role === "Master Owner") {
+      return res.status(400).json({ success: false, message: "Cannot delete a Master Owner admin account" });
+    }
+    if (targetAdmin.username === adminUser) {
+      return res.status(400).json({ success: false, message: "Cannot delete your own admin account" });
     }
 
     await Admin.deleteOne({ username });
