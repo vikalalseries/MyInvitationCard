@@ -25,7 +25,7 @@ app.use(cors({
     "http://localhost:5500",
     "https://myinvitationcard.vercel.app"
   ],
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true
 }));
 app.use(express.json());
