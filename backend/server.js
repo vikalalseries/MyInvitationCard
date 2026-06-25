@@ -895,6 +895,76 @@ app.delete("/api/admin/users/:uid", async (req, res) => {
   }
 });
 
+// Edit admin account
+app.put("/api/admin/accounts/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { email, phone, role, password, permissions, adminUser } = req.body;
+
+    const targetAdmin = await Admin.findOne({ username });
+    if (!targetAdmin) {
+      return res.status(404).json({ success: false, message: "Admin account not found" });
+    }
+
+    // Update fields if provided
+    if (email) targetAdmin.email = email;
+    if (phone) targetAdmin.phone = phone;
+    if (role && username !== "admin") targetAdmin.role = role; // Don't let master admin role change
+    if (permissions && username !== "admin") targetAdmin.permissions = permissions;
+
+    if (password) {
+      targetAdmin.passwordHash = await bcrypt.hash(password, 10);
+    }
+
+    await targetAdmin.save();
+
+    const audit = new AuditLog({
+      username: adminUser || "admin",
+      action: "admins.edit",
+      details: `Updated admin account: ${username}`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: "Admin account updated successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Toggle admin status (deactivate/activate)
+app.patch("/api/admin/accounts/:username/status", async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { status, adminUser } = req.body;
+
+    if (username === "admin") {
+      return res.status(400).json({ success: false, message: "Cannot change the status of the default Master Owner admin account" });
+    }
+    if (username === adminUser) {
+      return res.status(400).json({ success: false, message: "Cannot deactivate your own admin account" });
+    }
+
+    const targetAdmin = await Admin.findOne({ username });
+    if (!targetAdmin) {
+      return res.status(404).json({ success: false, message: "Admin account not found" });
+    }
+
+    targetAdmin.status = status; // "active" or "inactive"
+    await targetAdmin.save();
+
+    const audit = new AuditLog({
+      username: adminUser || "admin",
+      action: status === "active" ? "admins.activate" : "admins.deactivate",
+      details: `${status === "active" ? "Activated" : "Deactivated"} admin account: ${username}`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: `Admin account status updated to ${status}` });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Delete admin account
 app.delete("/api/admin/accounts/:username", async (req, res) => {
   try {

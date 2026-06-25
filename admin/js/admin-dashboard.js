@@ -250,7 +250,7 @@ window.deleteUser = async function(uid) {
 async function fetchAdmins() {
   const tableBody = document.getElementById("adminsTableBody");
   if (!tableBody) return;
-  tableBody.innerHTML = `<tr><td colspan="6" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/accounts`);
@@ -262,7 +262,27 @@ async function fetchAdmins() {
       const tr = document.createElement("tr");
       const lastLoginDate = acc.lastLogin ? new Date(acc.lastLogin).toLocaleString() : "Never";
       const isSelf = acc.username === adminUser.username;
-      
+      const isMaster = acc.username === "admin";
+
+      let actionButtons = "";
+
+      // Edit option is always available (allows own profile edit and other admins edit)
+      actionButtons += `<button class="table-action-btn edit" style="border-color: rgba(99, 102, 241, 0.2); color: var(--primary-color);" onclick="openEditAdminModal('${acc.username}', '${acc.email}', '${acc.phone}', '${acc.role}')"><i class="fa-regular fa-pen-to-square"></i> Edit</button>`;
+
+      // Status Toggle (Deactivate / Activate)
+      if (!isSelf && !isMaster) {
+        if (acc.status === "active") {
+          actionButtons += `<button class="table-action-btn warning" style="border-color: rgba(245, 158, 11, 0.2); color: var(--warning-color);" onclick="toggleAdminStatus('${acc.username}', 'inactive')"><i class="fa-solid fa-ban"></i> Deactivate</button>`;
+        } else {
+          actionButtons += `<button class="table-action-btn success" style="border-color: rgba(16, 185, 129, 0.2); color: var(--success-color);" onclick="toggleAdminStatus('${acc.username}', 'active')"><i class="fa-solid fa-circle-check"></i> Activate</button>`;
+        }
+      }
+
+      // Delete (Remove)
+      if (!isSelf && !isMaster && hasPermission("admins.delete")) {
+        actionButtons += `<button class="table-action-btn delete" onclick="deleteAdmin('${acc.username}')"><i class="fa-regular fa-trash-can"></i> Remove</button>`;
+      }
+
       tr.innerHTML = `
         <td><strong>${acc.username}</strong></td>
         <td>${acc.email}</td>
@@ -271,9 +291,9 @@ async function fetchAdmins() {
         <td><span class="badge ${acc.status === 'active' ? 'success-badge' : 'danger-badge'}">${acc.status}</span></td>
         <td>${lastLoginDate}</td>
         <td>
-          ${hasPermission("admins.delete") && acc.username !== 'admin' && !isSelf ? 
-            `<button class="table-action-btn delete" onclick="deleteAdmin('${acc.username}')"><i class="fa-regular fa-trash-can"></i> Remove</button>` : 
-            (isSelf ? `<span class="badge success-badge">You</span>` : `<span class="badge info-badge">Locked</span>`)}
+          <div style="display: flex; align-items: center; gap: 8px;">
+            ${actionButtons}
+          </div>
         </td>
       `;
       tableBody.appendChild(tr);
@@ -288,6 +308,55 @@ window.deleteAdmin = async function(username) {
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/accounts/${username}?adminUser=${adminUser.username}`, {
       method: "DELETE"
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+    showToast(data.message, "success");
+    fetchAdmins();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+window.openEditAdminModal = function(username, email, phone, role) {
+  const modal = document.getElementById("editAdminModal");
+  if (!modal) return;
+  
+  document.getElementById("editAdminUsername").value = username;
+  document.getElementById("editAdminEmail").value = email;
+  document.getElementById("editAdminPhone").value = phone;
+  
+  const roleGroup = document.getElementById("editAdminRoleGroup");
+  const roleSelect = document.getElementById("editAdminRole");
+  
+  // Master admin cannot change role
+  if (username === "admin") {
+    roleGroup.style.display = "none";
+    roleSelect.removeAttribute("required");
+  } else {
+    roleGroup.style.display = "block";
+    roleSelect.setAttribute("required", "required");
+    roleSelect.value = role;
+  }
+  
+  document.getElementById("editAdminPassword").value = "";
+  modal.classList.remove("hidden");
+};
+
+window.toggleAdminStatus = async function(username, status) {
+  const actionText = status === "active" ? "activate" : "deactivate";
+  if (!confirm(`Are you sure you want to ${actionText} admin account '${username}'?`)) return;
+  
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/accounts/${username}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        status,
+        adminUser: adminUser.username
+      })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
@@ -346,6 +415,68 @@ if (createAdminForm) {
     } catch (err) {
       showToast(err.message, "error");
     }
+  });
+}
+
+// Edit admin account form submission
+const editAdminForm = document.getElementById("editAdminForm");
+if (editAdminForm) {
+  editAdminForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = document.getElementById("editAdminUsername").value;
+    const email = document.getElementById("editAdminEmail").value.trim();
+    const phone = document.getElementById("editAdminPhone").value.trim();
+    const password = document.getElementById("editAdminPassword").value;
+    const role = document.getElementById("editAdminRole").value;
+
+    // Define permissions mapping based on role selection
+    let permissions = [];
+    if (role === "Template Manager") {
+      permissions = ["template.create", "template.edit", "template.delete", "template.publish"];
+    } else if (role === "Pricing Manager") {
+      permissions = ["pricing.edit", "pricing.view"];
+    } else if (role === "Order Manager") {
+      permissions = ["orders.update", "orders.view"];
+    } else if (role === "Payment Manager") {
+      permissions = ["payment.view", "payment.refund"];
+    } else if (role === "Customer Support") {
+      permissions = ["users.view", "orders.view"];
+    }
+
+    try {
+      const payload = {
+        email,
+        phone,
+        adminUser: adminUser.username
+      };
+      if (password) payload.password = password;
+      if (username !== "admin") {
+        payload.role = role;
+        payload.permissions = permissions;
+      }
+
+      const res = await fetch(`${BACKEND_URL}/api/admin/accounts/${username}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      
+      showToast(data.message, "success");
+      document.getElementById("editAdminModal").classList.add("hidden");
+      fetchAdmins();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  });
+}
+
+// Close Edit Admin Modal
+const closeEditModalBtn = document.getElementById("closeEditModalBtn");
+if (closeEditModalBtn) {
+  closeEditModalBtn.addEventListener("click", () => {
+    document.getElementById("editAdminModal").classList.add("hidden");
   });
 }
 

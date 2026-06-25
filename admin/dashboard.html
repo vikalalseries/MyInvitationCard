@@ -279,6 +279,7 @@
                         <th>Role</th>
                         <th>Status</th>
                         <th>Last Login</th>
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody id="adminsTableBody">
@@ -589,6 +590,42 @@
       </div>
 
     </main>
+  </div>
+
+  <!-- EDIT ADMIN MODAL -->
+  <div id="editAdminModal" class="modal-overlay-admin hidden">
+    <div class="modal-card-admin">
+      <div class="modal-card-header">
+        <h3>Edit Administrator Profile</h3>
+        <button id="closeEditModalBtn" class="close-modal-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="editAdminForm" class="card-form-admin">
+        <input type="hidden" id="editAdminUsername">
+        <div class="form-group-admin">
+          <label for="editAdminEmail">Email</label>
+          <input type="email" id="editAdminEmail" required>
+        </div>
+        <div class="form-group-admin">
+          <label for="editAdminPhone">Phone Number</label>
+          <input type="text" id="editAdminPhone" required>
+        </div>
+        <div class="form-group-admin">
+          <label for="editAdminPassword">New Password (Optional)</label>
+          <input type="password" id="editAdminPassword" placeholder="Leave blank to keep current">
+        </div>
+        <div class="form-group-admin" id="editAdminRoleGroup">
+          <label for="editAdminRole">Department Role</label>
+          <select id="editAdminRole">
+            <option value="Template Manager">Template Manager</option>
+            <option value="Pricing Manager">Pricing Manager</option>
+            <option value="Order Manager">Order Manager</option>
+            <option value="Payment Manager">Payment Manager</option>
+            <option value="Customer Support">Customer Support</option>
+          </select>
+        </div>
+        <button type="submit" class="admin-btn-primary" style="margin-top:15px;">Save Changes</button>
+      </form>
+    </div>
   </div>
 
   <!-- TOAST NOTIFICATION CONTAINER -->
