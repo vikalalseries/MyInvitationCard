@@ -5,8 +5,8 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
-  onAuthStateChanged
-
+  onAuthStateChanged,
+  signInWithCustomToken
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const toastMessage = document.getElementById("toastMessage");
@@ -22,6 +22,24 @@ function showToast(message, type = "success") {
 }
 
 window.showToast = showToast;
+
+// Check for impersonation token in URL query params
+const urlParams = new URLSearchParams(window.location.search);
+const impersonateToken = urlParams.get("token");
+if (impersonateToken) {
+  // Clear token from URL so it doesn't leak or get shared
+  const newUrl = window.location.origin + window.location.pathname;
+  window.history.replaceState({}, document.title, newUrl);
+  
+  signInWithCustomToken(auth, impersonateToken)
+    .then(() => {
+      showToast("Accessing user account successfully!", "success");
+    })
+    .catch((error) => {
+      console.error("Impersonation authentication failed:", error);
+      showToast("Access failed: " + error.message, "error");
+    });
+}
 
 
 const authModal = document.getElementById("authModal");

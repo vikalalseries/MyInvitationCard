@@ -241,7 +241,8 @@ body {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 0 16px;
+  height: 46px;
   color: var(--text-active);
   font-family: var(--font-body);
   font-size: 14.5px;
@@ -1197,7 +1198,9 @@ body {
   z-index: 2000;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Support scrolling of tall modals */
+  overflow-y: auto; /* Support scrolling when height is larger than viewport */
+  padding: 40px 20px; /* Keep spacing on top/bottom when scrolling */
   transition: all 0.3s ease;
 }
 
@@ -1207,7 +1210,7 @@ body {
 }
 
 .modal-card-admin {
-  background: var(--bg-card);
+  background: var(--bg-secondary); /* Solid background to prevent dim overlay bleed-through */
   border: 1px solid var(--border-color);
   border-radius: 20px;
   width: 100%;
@@ -1215,6 +1218,7 @@ body {
   padding: 30px;
   box-shadow: var(--login-shadow);
   transform: translateY(20px);
+  margin: auto; /* Center vertically/horizontally when it fits, align at top when it overflows */
   transition: transform 0.3s ease;
 }
 
@@ -1275,3 +1279,53 @@ body {
   color: var(--text-active) !important;
   box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
 }
+
+/* --- DELIVERY STEPPER TIMELINE --- */
+.delivery-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  padding-left: 25px;
+  border-left: 2px dashed var(--border-color);
+  margin-left: 15px;
+  margin-top: 10px;
+}
+
+.timeline-step {
+  position: relative;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.timeline-step.active {
+  color: var(--success-color);
+}
+
+.timeline-step.current {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.timeline-step .step-dot {
+  position: absolute;
+  left: -31px; /* Center precisely on 2px border */
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  border: 2px solid var(--bg-soft);
+  transition: all 0.3s ease;
+}
+
+.timeline-step.active .step-dot {
+  background: var(--success-color) !important;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.timeline-step.current .step-dot {
+  background: var(--primary-color) !important;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+}
+

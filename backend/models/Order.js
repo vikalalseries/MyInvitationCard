@@ -20,8 +20,24 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Pending", "Printing", "Dispatched", "Delivered"],
+    enum: ["Pending", "Confirmed", "Processing", "Dispatched", "Out for Delivery", "Delivered", "Cancelled"],
     default: "Pending"
+  },
+  carrier: {
+    type: String,
+    default: ""
+  },
+  trackingId: {
+    type: String,
+    default: ""
+  },
+  estimatedDelivery: {
+    type: String,
+    default: ""
+  },
+  notes: {
+    type: String,
+    default: ""
   },
   createdAt: {
     type: Date,

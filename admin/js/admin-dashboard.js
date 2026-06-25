@@ -1,5 +1,8 @@
 // Admin Dashboard Handler
 const BACKEND_URL = "http://localhost:5000";
+let allUsers = [];
+let allCredentials = [];
+let allOrders = [];
 
 // Toast Notification helper
 function showToast(message, type = "success") {
@@ -76,6 +79,16 @@ Object.keys(tabPermissions).forEach(navId => {
   }
 });
 
+// Filter Credentials DB tab (restricted to Master Owner)
+const navCredentialsBtn = document.getElementById("nav-credentials");
+if (adminUser.role === "Master Owner") {
+  if (navCredentialsBtn) navCredentialsBtn.style.display = "block";
+} else {
+  if (navCredentialsBtn) navCredentialsBtn.remove();
+  const credentialsPanel = document.getElementById("credentialsTab");
+  if (credentialsPanel) credentialsPanel.remove();
+}
+
 // Setup active tab on load
 if (firstActiveTab) {
   document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active"));
@@ -150,6 +163,9 @@ function loadTabData(tabId) {
     case "usersTab":
       fetchUsers();
       break;
+    case "credentialsTab":
+      fetchCredentials();
+      break;
     case "adminsTab":
       fetchAdmins();
       break;
@@ -195,40 +211,73 @@ async function fetchOverviewStats() {
 async function fetchUsers() {
   const tableBody = document.getElementById("usersTableBody");
   if (!tableBody) return;
-  tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  tableBody.innerHTML = `<tr><td colspan="9" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/users`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
-    tableBody.innerHTML = "";
-    if (data.users.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No users registered yet.</td></tr>`;
-      return;
-    }
-
-    data.users.forEach(user => {
-      const tr = document.createElement("tr");
-      const avatarUrl = user.profileImage || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name || user.email)}`;
-      const dateJoined = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A";
-      
-      tr.innerHTML = `
-        <td><img src="${avatarUrl}" alt="avatar" class="customer-avatar-img"></td>
-        <td><strong>${user.name || 'Not filled'}</strong></td>
-        <td>${user.email || 'N/A'}</td>
-        <td>${user.phone || 'N/A'}</td>
-        <td>${user.gender || 'N/A'}</td>
-        <td>${dateJoined}</td>
-        <td>
-          ${hasPermission("users.delete") ? `<button class="table-action-btn delete" onclick="deleteUser('${user.uid}')"><i class="fa-regular fa-trash-can"></i> Delete</button>` : `<span class="badge info-badge">No Permission</span>`}
-        </td>
-      `;
-      tableBody.appendChild(tr);
-    });
+    allUsers = data.users || [];
+    renderUsersTable(allUsers);
   } catch (err) {
     showToast(err.message, "error");
   }
+}
+
+function renderUsersTable(users) {
+  const tableBody = document.getElementById("usersTableBody");
+  if (!tableBody) return;
+
+  tableBody.innerHTML = "";
+  if (users.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center;">No users registered yet.</td></tr>`;
+    return;
+  }
+
+  users.forEach(user => {
+    const tr = document.createElement("tr");
+    const avatarUrl = user.profileImage || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name || user.email)}`;
+    const dateJoined = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A";
+    const statusText = user.status === "disabled" ? "Disabled" : "Active";
+    const statusClass = user.status === "disabled" ? "danger-badge" : "success-badge";
+    const ordersCount = user.ordersCount || 0;
+    
+    // Status button toggler
+    const isUserDisabled = user.status === "disabled";
+    const toggleBtn = isUserDisabled
+      ? `<button class="table-action-btn success" onclick="toggleUserStatus('${user.uid}', false)"><i class="fa-solid fa-user-check"></i> Activate</button>`
+      : `<button class="table-action-btn warning" onclick="toggleUserStatus('${user.uid}', true)"><i class="fa-solid fa-user-slash"></i> Deactivate</button>`;
+
+    // Delete button
+    const deleteBtn = hasPermission("users.delete")
+      ? `<button class="table-action-btn delete" onclick="deleteUser('${user.uid}')"><i class="fa-regular fa-trash-can"></i> Delete</button>`
+      : "";
+
+    // Impersonate button (Master Owner only)
+    const impersonateBtn = adminUser.role === "Master Owner"
+      ? `<button class="table-action-btn edit" onclick="impersonateUser('${user.uid}')"><i class="fa-solid fa-right-to-bracket"></i> Access</button>`
+      : "";
+
+    tr.innerHTML = `
+      <td><img src="${avatarUrl}" alt="avatar" class="customer-avatar-img"></td>
+      <td><strong>${user.name || 'Not filled'}</strong></td>
+      <td>${user.email || 'N/A'}</td>
+      <td>${user.phone || 'N/A'}</td>
+      <td>${user.gender || 'N/A'}</td>
+      <td>${dateJoined}</td>
+      <td><span class="badge ${statusClass}">${statusText}</span></td>
+      <td><span class="badge progress-badge">${ordersCount}</span></td>
+      <td>
+        <div style="display: flex; gap: 5px;">
+          ${toggleBtn}
+          ${impersonateBtn}
+          ${deleteBtn}
+        </div>
+      </td>
+    `;
+    tableBody.appendChild(tr);
+  });
 }
 
 window.deleteUser = async function(uid) {
@@ -245,6 +294,200 @@ window.deleteUser = async function(uid) {
     showToast(err.message, "error");
   }
 };
+
+window.toggleUserStatus = async function(uid, isDisabled) {
+  const actionText = isDisabled ? "deactivate" : "activate";
+  if (!confirm(`Are you sure you want to ${actionText} this customer account?`)) return;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/users/${uid}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        disabled: isDisabled,
+        adminUser: adminUser.username
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    showToast(data.message, "success");
+    fetchUsers();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+window.exportUsersToCSV = function() {
+  if (allUsers.length === 0) {
+    showToast("No user data available to export.", "error");
+    return;
+  }
+
+  const headers = [
+    "User ID (UID)",
+    "Name",
+    "Email",
+    "Phone",
+    "Gender",
+    "Date of Birth (DOB)",
+    "Preferred Language",
+    "Joined Date",
+    "Status",
+    "Orders Placed",
+    "Saved AddressesCount",
+    "Saved Addresses"
+  ];
+
+  const csvRows = [headers.join(",")];
+
+  allUsers.forEach(user => {
+    const addressStr = (user.addresses || []).map(addr => {
+      return `[${addr.fullName}, Phone: ${addr.phone}, Address: ${addr.address}, ${addr.city}, ${addr.state} - ${addr.pincode}]`;
+    }).join(" | ");
+
+    const row = [
+      user.uid || "",
+      user.name || "Not filled",
+      user.email || "N/A",
+      user.phone || "N/A",
+      user.gender || "N/A",
+      user.dob || "N/A",
+      user.language || "english",
+      user.createdAt ? new Date(user.createdAt).toISOString() : "N/A",
+      user.status || "active",
+      user.ordersCount || 0,
+      (user.addresses || []).length,
+      addressStr
+    ];
+
+    const escapedRow = row.map(val => {
+      let stringVal = String(val);
+      stringVal = stringVal.replace(/"/g, '""');
+      if (stringVal.includes(",") || stringVal.includes("\n") || stringVal.includes('"') || stringVal.includes("|")) {
+        stringVal = `"${stringVal}"`;
+      }
+      return stringVal;
+    });
+
+    csvRows.push(escapedRow.join(","));
+  });
+
+  const blob = new Blob([csvRows.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.setAttribute("href", window.URL.createObjectURL(blob));
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0, 10);
+  link.setAttribute("download", `registered_users_${dateStr}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  showToast("CSV exported successfully!", "success");
+};
+
+// 2b. Credentials management & Impersonation
+async function fetchCredentials() {
+  const tableBody = document.getElementById("credentialsTableBody");
+  if (!tableBody) return;
+  tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/users/credentials?adminUser=${encodeURIComponent(adminUser.username)}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    allCredentials = data.credentials || [];
+    renderCredentialsTable(allCredentials);
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+function renderCredentialsTable(credentials) {
+  const tableBody = document.getElementById("credentialsTableBody");
+  if (!tableBody) return;
+  
+  tableBody.innerHTML = "";
+  if (credentials.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No credentials metadata found.</td></tr>`;
+    return;
+  }
+
+  credentials.forEach(c => {
+    const tr = document.createElement("tr");
+    const joinedDate = c.createdAt !== "N/A" ? new Date(c.createdAt).toLocaleDateString() : "N/A";
+    const statusText = c.disabled ? "Disabled" : "Active";
+    const statusClass = c.disabled ? "danger-badge" : "success-badge";
+    const hashContent = c.passwordHash && c.passwordHash !== "N/A"
+      ? `<span class="badge code-badge" title="${c.passwordHash}">${c.passwordHash.substring(0, 15)}...</span>`
+      : `<span class="badge info-badge">Encrypted</span>`;
+
+    tr.innerHTML = `
+      <td><strong>${c.name}</strong></td>
+      <td>${c.email}</td>
+      <td><span class="badge code-badge">${c.uid}</span></td>
+      <td>${joinedDate}</td>
+      <td>${hashContent}</td>
+      <td><span class="badge ${statusClass}">${statusText}</span></td>
+      <td>
+        <button class="table-action-btn edit" onclick="impersonateUser('${c.uid}')">
+          <i class="fa-solid fa-right-to-bracket"></i> Access
+        </button>
+      </td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
+
+window.impersonateUser = async function(uid) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/users/${uid}/impersonate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        adminUser: adminUser.username
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    const token = data.token;
+    showToast("Launching user account session...", "success");
+    window.open(`../profile.html?token=${encodeURIComponent(token)}`, "_blank");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+// Bind search input listeners immediately
+const userSearchInputEl = document.getElementById("userSearchInput");
+if (userSearchInputEl) {
+  userSearchInputEl.addEventListener("input", (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    const filtered = allUsers.filter(u => 
+      (u.name && u.name.toLowerCase().includes(query)) ||
+      (u.email && u.email.toLowerCase().includes(query)) ||
+      (u.phone && u.phone.includes(query)) ||
+      (u.uid && u.uid.toLowerCase().includes(query))
+    );
+    renderUsersTable(filtered);
+  });
+}
+
+const credentialSearchInputEl = document.getElementById("credentialSearchInput");
+if (credentialSearchInputEl) {
+  credentialSearchInputEl.addEventListener("input", (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    const filtered = allCredentials.filter(c => 
+      (c.name && c.name.toLowerCase().includes(query)) ||
+      (c.email && c.email.toLowerCase().includes(query)) ||
+      (c.uid && c.uid.toLowerCase().includes(query)) ||
+      (c.phone && c.phone.includes(query))
+    );
+    renderCredentialsTable(filtered);
+  });
+}
 
 // 3. Admins management
 async function fetchAdmins() {
@@ -706,64 +949,441 @@ if (templateUploadForm) {
 async function fetchOrders() {
   const tableBody = document.getElementById("ordersTableBody");
   if (!tableBody) return;
-  tableBody.innerHTML = `<tr><td colspan="5" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/orders`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
-    tableBody.innerHTML = "";
-    if (data.orders.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No orders placed yet.</td></tr>`;
-      return;
-    }
-
-    data.orders.forEach(order => {
-      const tr = document.createElement("tr");
-      let badgeClass = "info-badge";
-      if (order.status === "Printing") badgeClass = "progress-badge";
-      else if (order.status === "Dispatched") badgeClass = "warning-badge";
-      else if (order.status === "Delivered") badgeClass = "success-badge";
-
-      const canUpdate = hasPermission("orders.update");
-      
-      tr.innerHTML = `
-        <td><strong>#${order.orderId}</strong></td>
-        <td><code>${order.uid}</code></td>
-        <td>${order.templateName}</td>
-        <td><span class="badge ${badgeClass}">${order.status}</span></td>
-        <td>
-          <select class="order-status-select" onchange="updateOrderStatus('${order.orderId}', this.value)" ${!canUpdate ? 'disabled' : ''}>
-            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-            <option value="Printing" ${order.status === 'Printing' ? 'selected' : ''}>Printing</option>
-            <option value="Dispatched" ${order.status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
-            <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-          </select>
-        </td>
-      `;
-      tableBody.appendChild(tr);
-    });
+    allOrders = data.orders || [];
+    filterAndRenderOrders();
   } catch (err) {
     showToast(err.message, "error");
   }
 }
 
-window.updateOrderStatus = async function(orderId, status) {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/status`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, adminUser: adminUser.username })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message);
-    showToast(data.message, "success");
-    fetchOrders();
-  } catch (err) {
-    showToast(err.message, "error");
+// Filter and render orders dynamically based on search query and date scope (Day/Week/Month/Year)
+function filterAndRenderOrders() {
+  const query = document.getElementById("orderSearchInput")?.value.toLowerCase().trim() || "";
+  const dateFilter = document.getElementById("orderDateFilter")?.value || "all";
+  
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+  const filtered = allOrders.filter(o => {
+    // 1. Date Scope Filter
+    if (o.createdAt) {
+      const orderDate = new Date(o.createdAt);
+      if (dateFilter === "today" && orderDate < startOfToday) return false;
+      if (dateFilter === "week" && orderDate < startOfWeek) return false;
+      if (dateFilter === "month" && orderDate < startOfMonth) return false;
+      if (dateFilter === "year" && orderDate < startOfYear) return false;
+    } else if (dateFilter !== "all") {
+      return false; // exclude if no timestamp and filtering is active
+    }
+
+    // 2. Text Search Query Filter
+    const matchesQuery = 
+      o.orderId.toLowerCase().includes(query) ||
+      (o.customerName && o.customerName.toLowerCase().includes(query)) ||
+      (o.customerPhone && o.customerPhone.includes(query)) ||
+      (o.templateName && o.templateName.toLowerCase().includes(query)) ||
+      (o.templateId && o.templateId.toLowerCase().includes(query)) ||
+      (o.uid && o.uid.toLowerCase().includes(query));
+
+    return matchesQuery;
+  });
+
+  renderOrdersTable(filtered);
+}
+
+function renderOrdersTable(orders) {
+  const tableBody = document.getElementById("ordersTableBody");
+  if (!tableBody) return;
+
+  tableBody.innerHTML = "";
+  if (orders.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No orders match the current filters.</td></tr>`;
+    return;
+  }
+
+  orders.forEach(order => {
+    const tr = document.createElement("tr");
+    
+    // Status color mapping
+    let badgeClass = "info-badge";
+    if (order.status === "Pending") badgeClass = "role-badge";
+    else if (order.status === "Confirmed") badgeClass = "info-badge";
+    else if (order.status === "Processing") badgeClass = "progress-badge";
+    else if (order.status === "Dispatched") badgeClass = "warning-badge";
+    else if (order.status === "Out for Delivery") badgeClass = "progress-badge";
+    else if (order.status === "Delivered") badgeClass = "success-badge";
+    else if (order.status === "Cancelled") badgeClass = "danger-badge";
+
+    // Date formatting
+    const datePlaced = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "N/A";
+
+    // Payment display
+    const paymentText = order.paymentStatus === "Paid" 
+      ? `<span class="badge success-badge">Paid (₹${order.amountPaid})</span>` 
+      : `<span class="badge danger-badge">Unpaid</span>`;
+
+    // Manage actions (Order Manager and Master Admin can view/edit)
+    const canUpdate = hasPermission("orders.update");
+    const actionBtn = canUpdate
+      ? `<button class="table-action-btn edit" onclick="openDeliveryModal('${order.orderId}')"><i class="fa-solid fa-truck-ramp-box"></i> Manage Delivery</button>`
+      : `<button class="table-action-btn" onclick="openDeliveryModal('${order.orderId}')"><i class="fa-regular fa-eye"></i> View Shipment</button>`;
+
+    tr.innerHTML = `
+      <td><strong>#${order.orderId}</strong></td>
+      <td>
+        <strong>${order.customerName}</strong><br>
+        <span style="font-size:12px; color:var(--text-muted);">${order.customerPhone}</span>
+      </td>
+      <td>
+        <strong>${order.templateName}</strong><br>
+        <span style="font-size:12px; color:var(--text-muted);">${order.templateId}</span>
+      </td>
+      <td>${paymentText}</td>
+      <td><code>${datePlaced}</code></td>
+      <td><span class="badge ${badgeClass}">${order.status}</span></td>
+      <td>${actionBtn}</td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
+
+// Open Delivery / Shipment Management Modal
+window.openDeliveryModal = function(orderId) {
+  const order = allOrders.find(o => o.orderId === orderId);
+  if (!order) {
+    showToast("Order details not found", "error");
+    return;
+  }
+
+  // Set values in the modal form
+  document.getElementById("deliveryOrderId").value = order.orderId;
+  document.getElementById("deliveryStatus").value = order.status || "Pending";
+  document.getElementById("deliveryCarrier").value = order.carrier || "";
+  document.getElementById("deliveryTrackingId").value = order.trackingId || "";
+  document.getElementById("deliveryNotes").value = order.notes || "";
+  
+  // Format Date value (YYYY-MM-DD) for HTML5 input date
+  if (order.estimatedDelivery) {
+    try {
+      const d = new Date(order.estimatedDelivery);
+      if (!isNaN(d.getTime())) {
+        document.getElementById("deliveryEstDate").value = d.toISOString().split("T")[0];
+      } else {
+        document.getElementById("deliveryEstDate").value = "";
+      }
+    } catch (e) {
+      document.getElementById("deliveryEstDate").value = "";
+    }
+  } else {
+    document.getElementById("deliveryEstDate").value = "";
+  }
+
+  // Populate customer & address section
+  document.getElementById("deliveryCustName").textContent = order.customerName || "N/A";
+  document.getElementById("deliveryCustPhone").textContent = order.customerPhone || "N/A";
+  document.getElementById("deliveryCustEmail").textContent = order.customerEmail || "N/A";
+
+  const addr = order.shippingAddress;
+  if (addr) {
+    const fullAddress = `${addr.fullName}, Phone: ${addr.phone}${addr.emergencyPhone ? ' (Alt: ' + addr.emergencyPhone + ')' : ''}, Address: ${addr.address}${addr.address2 ? ', ' + addr.address2 : ''}, ${addr.city}, ${addr.state} - ${addr.pincode}`;
+    document.getElementById("deliveryAddressText").textContent = fullAddress;
+  } else {
+    document.getElementById("deliveryAddressText").textContent = "No shipping address saved for this customer profile.";
+  }
+
+  // Disable inputs if order.update permission is missing
+  const canUpdate = hasPermission("orders.update");
+  document.getElementById("deliveryStatus").disabled = !canUpdate;
+  document.getElementById("deliveryCarrier").disabled = !canUpdate;
+  document.getElementById("deliveryTrackingId").disabled = !canUpdate;
+  document.getElementById("deliveryEstDate").disabled = !canUpdate;
+  document.getElementById("deliveryNotes").disabled = !canUpdate;
+  
+  const saveBtn = document.querySelector("#deliveryTrackingForm button[type='submit']");
+  if (saveBtn) saveBtn.style.display = canUpdate ? "block" : "none";
+
+  // Update Stepper Journey UI
+  updateTimelineUI(order);
+
+  // Show Modal
+  const modal = document.getElementById("manageDeliveryModal");
+  if (modal) modal.classList.remove("hidden");
+};
+
+// Close Delivery Modal
+window.closeDeliveryModal = function() {
+  const modal = document.getElementById("manageDeliveryModal");
+  if (modal) modal.classList.add("hidden");
+};
+
+// Copy Address helper
+window.copyDeliveryAddress = function() {
+  const text = document.getElementById("deliveryAddressText").textContent;
+  if (text && text !== "No shipping address saved for this customer profile.") {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast("Shipping address copied to clipboard!", "success"))
+      .catch(() => showToast("Failed to copy address", "error"));
   }
 };
+
+// Update interactive Shipment Journey Stepper Timeline UI (Amazon/Flipkart Style)
+function updateTimelineUI(order) {
+  const statuses = ["Pending", "Confirmed", "Processing", "Dispatched", "Out for Delivery", "Delivered"];
+  const currentStatus = order.status;
+  
+  // Find current index in timeline
+  const currentIndex = statuses.indexOf(currentStatus);
+
+  statuses.forEach((status, idx) => {
+    const stepEl = document.getElementById(`step-${status.replace(/ /g, "-")}`);
+    if (!stepEl) return;
+
+    const dateEl = stepEl.querySelector(".step-date");
+    
+    // Clear custom class styling
+    stepEl.className = "timeline-step";
+
+    if (idx < currentIndex) {
+      // Completed steps
+      stepEl.classList.add("active");
+      if (dateEl) {
+        if (status === "Pending") {
+          dateEl.textContent = order.createdAt ? new Date(order.createdAt).toLocaleString() : "Completed";
+        } else if (status === "Dispatched" && order.carrier) {
+          dateEl.textContent = `Via ${order.carrier} (${order.trackingId || 'AWB Pending'})`;
+        } else {
+          dateEl.textContent = "Completed";
+        }
+      }
+    } else if (idx === currentIndex) {
+      // Current step
+      stepEl.classList.add("current");
+      stepEl.classList.add("active");
+      if (dateEl) {
+        if (currentStatus === "Pending") {
+          dateEl.textContent = "Awaiting confirmation";
+        } else if (currentStatus === "Dispatched" && order.carrier) {
+          dateEl.textContent = `Dispatched via ${order.carrier} (AWB: ${order.trackingId || 'N/A'})`;
+        } else if (currentStatus === "Delivered") {
+          dateEl.textContent = "Delivered successfully";
+        } else {
+          dateEl.textContent = "In progress";
+        }
+      }
+    } else {
+      // Upcoming steps
+      if (dateEl) {
+        if (status === "Delivered" && order.estimatedDelivery) {
+          dateEl.textContent = `Est: ${new Date(order.estimatedDelivery).toLocaleDateString()}`;
+        } else {
+          dateEl.textContent = "Pending";
+        }
+      }
+    }
+  });
+
+  // If order is Cancelled, mark all steps as red/inactive or show cancellation alert
+  if (currentStatus === "Cancelled") {
+    statuses.forEach(status => {
+      const stepEl = document.getElementById(`step-${status.replace(/ /g, "-")}`);
+      if (stepEl) {
+        stepEl.className = "timeline-step";
+        const dateEl = stepEl.querySelector(".step-date");
+        if (dateEl) dateEl.textContent = "Cancelled";
+      }
+    });
+    // Highlight first step as cancelled in red
+    const firstStep = document.getElementById("step-Pending");
+    if (firstStep) {
+      firstStep.style.color = "var(--danger-color)";
+      const dot = firstStep.querySelector(".step-dot");
+      if (dot) {
+        dot.style.background = "var(--danger-color)";
+        dot.style.boxShadow = "0 0 8px var(--danger-color)";
+      }
+    }
+  } else {
+    // Reset Pending first step color if not cancelled
+    const firstStep = document.getElementById("step-Pending");
+    if (firstStep) {
+      firstStep.style.color = "";
+      const dot = firstStep.querySelector(".step-dot");
+      if (dot) {
+        dot.style.background = "";
+        dot.style.boxShadow = "";
+      }
+    }
+  }
+}
+
+// Tracking Form submit
+const deliveryTrackingForm = document.getElementById("deliveryTrackingForm");
+if (deliveryTrackingForm) {
+  deliveryTrackingForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!hasPermission("orders.update")) {
+      showToast("Permission denied", "error");
+      return;
+    }
+
+    const orderId = document.getElementById("deliveryOrderId").value;
+    const status = document.getElementById("deliveryStatus").value;
+    const carrier = document.getElementById("deliveryCarrier").value;
+    const trackingId = document.getElementById("deliveryTrackingId").value.trim();
+    const estimatedDelivery = document.getElementById("deliveryEstDate").value;
+    const notes = document.getElementById("deliveryNotes").value.trim();
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status,
+          carrier,
+          trackingId,
+          estimatedDelivery,
+          notes,
+          adminUser: adminUser.username
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      showToast("Order tracking details updated!", "success");
+      closeDeliveryModal();
+      fetchOrders();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  });
+}
+
+// Export filtered orders database to CSV
+window.exportOrdersToCSV = function() {
+  const query = document.getElementById("orderSearchInput")?.value.toLowerCase().trim() || "";
+  const dateFilter = document.getElementById("orderDateFilter")?.value || "all";
+  
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+  const filtered = allOrders.filter(o => {
+    if (o.createdAt) {
+      const orderDate = new Date(o.createdAt);
+      if (dateFilter === "today" && orderDate < startOfToday) return false;
+      if (dateFilter === "week" && orderDate < startOfWeek) return false;
+      if (dateFilter === "month" && orderDate < startOfMonth) return false;
+      if (dateFilter === "year" && orderDate < startOfYear) return false;
+    } else if (dateFilter !== "all") {
+      return false;
+    }
+    const matchesQuery = 
+      o.orderId.toLowerCase().includes(query) ||
+      (o.customerName && o.customerName.toLowerCase().includes(query)) ||
+      (o.customerPhone && o.customerPhone.includes(query)) ||
+      (o.templateName && o.templateName.toLowerCase().includes(query)) ||
+      (o.templateId && o.templateId.toLowerCase().includes(query)) ||
+      (o.uid && o.uid.toLowerCase().includes(query));
+    return matchesQuery;
+  });
+
+  if (filtered.length === 0) {
+    showToast("No order data matches the current filters to export.", "error");
+    return;
+  }
+
+  const headers = [
+    "Order ID",
+    "User ID (UID)",
+    "Customer Name",
+    "Customer Email",
+    "Customer Phone",
+    "Card Template Name",
+    "Card Template ID",
+    "Date Placed",
+    "Payment Status",
+    "Amount Paid (INR)",
+    "Delivery Status",
+    "Courier Partner",
+    "Tracking ID (AWB)",
+    "Estimated Delivery Date",
+    "Shipping Address Details",
+    "Courier Notes"
+  ];
+
+  const csvRows = [headers.join(",")];
+
+  filtered.forEach(order => {
+    const addr = order.shippingAddress;
+    const addressStr = addr
+      ? `[${addr.fullName}, Phone: ${addr.phone}${addr.emergencyPhone ? ' (Alt: ' + addr.emergencyPhone + ')' : ''}, Address: ${addr.address}${addr.address2 ? ', ' + addr.address2 : ''}, ${addr.city}, ${addr.state} - ${addr.pincode}]`
+      : "No shipping address saved";
+
+    const row = [
+      order.orderId || "",
+      order.uid || "",
+      order.customerName || "N/A",
+      order.customerEmail || "N/A",
+      order.customerPhone || "N/A",
+      order.templateName || "",
+      order.templateId || "",
+      order.createdAt ? new Date(order.createdAt).toISOString() : "N/A",
+      order.paymentStatus || "Pending",
+      order.amountPaid || 0,
+      order.status || "Pending",
+      order.carrier || "N/A",
+      order.trackingId || "N/A",
+      order.estimatedDelivery || "N/A",
+      addressStr,
+      order.notes || ""
+    ];
+
+    const escapedRow = row.map(val => {
+      let stringVal = String(val);
+      stringVal = stringVal.replace(/"/g, '""');
+      if (stringVal.includes(",") || stringVal.includes("\n") || stringVal.includes('"') || stringVal.includes("|")) {
+        stringVal = `"${stringVal}"`;
+      }
+      return stringVal;
+    });
+
+    csvRows.push(escapedRow.join(","));
+  });
+
+  const blob = new Blob([csvRows.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.setAttribute("href", window.URL.createObjectURL(blob));
+  const dateStr = now.toISOString().slice(0, 10);
+  link.setAttribute("download", `orders_export_${dateFilter}_${dateStr}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  showToast(`Exported ${filtered.length} orders successfully!`, "success");
+};
+
+// Bind search and filter input listeners
+const orderSearchInput = document.getElementById("orderSearchInput");
+if (orderSearchInput) {
+  orderSearchInput.addEventListener("input", filterAndRenderOrders);
+}
+
+const orderDateFilter = document.getElementById("orderDateFilter");
+if (orderDateFilter) {
+  orderDateFilter.addEventListener("change", filterAndRenderOrders);
+}
 
 // 6. Payments transactions
 async function fetchPayments() {

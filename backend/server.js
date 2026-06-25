@@ -655,16 +655,161 @@ app.post("/api/admin/audit-logs", async (req, res) => {
   }
 });
 
-// Fetch Users List
+// Fetch Users List (Includes Status and Order Count)
 app.get("/api/admin/users", async (req, res) => {
   try {
     const UserCollection = require("./models/User");
-    const users = await UserCollection.find().limit(100);
-    res.json({ success: true, users });
+    const OrderCollection = require("./models/Order");
+    
+    const users = await UserCollection.find().limit(200);
+    const usersData = [];
+    
+    for (const user of users) {
+      // Get number of orders placed
+      const ordersCount = await OrderCollection.countDocuments({ uid: user.uid });
+      
+      // Get user metadata from Firebase to check if user is active/disabled
+      let status = "active";
+      try {
+        const firebaseUser = await admin.auth().getUser(user.uid);
+        status = firebaseUser.disabled ? "disabled" : "active";
+      } catch (err) {
+        // Fallback if not found in Firebase auth
+      }
+      
+      usersData.push({
+        ...user.toObject(),
+        ordersCount,
+        status
+      });
+    }
+    
+    res.json({ success: true, users: usersData });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
+// Fetch User Credentials - Restricted to Master Owner only
+app.get("/api/admin/users/credentials", async (req, res) => {
+  try {
+    const { adminUser } = req.query;
+    if (!adminUser) {
+      return res.status(400).json({ success: false, message: "Missing admin user parameter" });
+    }
+
+    // Authenticate that request is from Master Owner
+    const adminAcc = await Admin.findOne({ username: adminUser });
+    if (!adminAcc || adminAcc.role !== "Master Owner") {
+      return res.status(403).json({ success: false, message: "Access denied. Only Master Owner can view credentials." });
+    }
+
+    const UserCollection = require("./models/User");
+    const users = await UserCollection.find().select("uid name email phone").limit(200);
+    const credentials = [];
+
+    for (const u of users) {
+      let firebaseUser = null;
+      try {
+        firebaseUser = await admin.auth().getUser(u.uid);
+      } catch (err) {}
+
+      // NOTE: Firebase Auth does not store raw passwords, but we can return password hash (passwordHash) or providers/metadata
+      credentials.push({
+        uid: u.uid,
+        name: u.name || "N/A",
+        email: u.email || "N/A",
+        phone: u.phone || "N/A",
+        passwordHash: firebaseUser ? (firebaseUser.passwordHash || "Encrypted (Firebase Auth)") : "N/A",
+        disabled: firebaseUser ? firebaseUser.disabled : false,
+        createdAt: firebaseUser ? firebaseUser.metadata.creationTime : "N/A"
+      });
+    }
+
+    // Log this sensitive action
+    const audit = new AuditLog({
+      username: adminUser,
+      action: "users.view_credentials",
+      details: "Viewed user credentials database"
+    });
+    await audit.save();
+
+    res.json({ success: true, credentials });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Toggle Customer Status (Deactivate / Activate Customer)
+app.patch("/api/admin/users/:uid/status", async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const { disabled, adminUser } = req.body;
+
+    // Check if customer exists
+    const UserCollection = require("./models/User");
+    const customer = await UserCollection.findOne({ uid });
+    if (!customer) {
+      return res.status(404).json({ success: false, message: "Customer not found" });
+    }
+
+    // Toggle status in Firebase Auth
+    await admin.auth().updateUser(uid, {
+      disabled: disabled // true to disable, false to enable
+    });
+
+    const audit = new AuditLog({
+      username: adminUser || "admin",
+      action: disabled ? "users.disable" : "users.enable",
+      details: `${disabled ? "Disabled" : "Enabled"} customer account: ${customer.name || customer.email} (UID: ${uid})`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: `Customer account status updated successfully` });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Impersonate Customer (Generate custom token) - Restricted to Master Owner only
+app.post("/api/admin/users/:uid/impersonate", async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const { adminUser } = req.body;
+    if (!adminUser) {
+      return res.status(400).json({ success: false, message: "Missing admin user parameter" });
+    }
+
+    // Authenticate that request is from Master Owner
+    const adminAcc = await Admin.findOne({ username: adminUser });
+    if (!adminAcc || adminAcc.role !== "Master Owner") {
+      return res.status(403).json({ success: false, message: "Access denied. Only Master Owner can impersonate users." });
+    }
+
+    // Check if customer exists in local DB
+    const UserCollection = require("./models/User");
+    const customer = await UserCollection.findOne({ uid });
+    if (!customer) {
+      return res.status(404).json({ success: false, message: "Customer profile not found" });
+    }
+
+    // Generate Firebase Custom Token
+    const customToken = await admin.auth().createCustomToken(uid);
+
+    // Log the sensitive action
+    const audit = new AuditLog({
+      username: adminUser,
+      action: "users.impersonate",
+      details: `Generated impersonation token for customer: ${customer.name || customer.email} (UID: ${uid})`
+    });
+    await audit.save();
+
+    res.json({ success: true, token: customToken });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 
 // Fetch Admin Accounts
 app.get("/api/admin/accounts", async (req, res) => {
@@ -797,38 +942,64 @@ app.delete("/api/admin/templates/:templateId", async (req, res) => {
   }
 });
 
-// Fetch print & shipping orders
+// Fetch print & shipping orders (extended with customer details & payment status)
 app.get("/api/admin/orders", async (req, res) => {
   try {
     const orders = await Order.find().sort({ createdAt: -1 });
-    res.json({ success: true, orders });
+    const ordersData = [];
+    
+    for (const order of orders) {
+      // Find customer info
+      const customer = await User.findOne({ uid: order.uid });
+      // Find matching payment if any
+      const payment = await Payment.findOne({ uid: order.uid }).sort({ createdAt: -1 });
+      
+      ordersData.push({
+        ...order.toObject(),
+        customerName: customer ? customer.name : "Not filled",
+        customerEmail: customer ? customer.email : "N/A",
+        customerPhone: customer ? customer.phone : "N/A",
+        shippingAddress: customer && customer.addresses && customer.addresses.length > 0 
+          ? customer.addresses.find(a => a.isDefault) || customer.addresses[0] 
+          : null,
+        paymentStatus: payment ? payment.status : "Pending",
+        amountPaid: payment ? payment.amount : 0
+      });
+    }
+    
+    res.json({ success: true, orders: ordersData });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
-// Update order status
+// Update order status & delivery details
 app.post("/api/admin/orders/:orderId/status", async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { status, adminUser } = req.body;
+    const { status, carrier, trackingId, estimatedDelivery, notes, adminUser } = req.body;
     const order = await Order.findOne({ orderId });
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
     const oldStatus = order.status;
-    order.status = status;
+    if (status !== undefined) order.status = status;
+    if (carrier !== undefined) order.carrier = carrier;
+    if (trackingId !== undefined) order.trackingId = trackingId;
+    if (estimatedDelivery !== undefined) order.estimatedDelivery = estimatedDelivery;
+    if (notes !== undefined) order.notes = notes;
+
     await order.save();
 
     const audit = new AuditLog({
       username: adminUser || "admin",
       action: "orders.update",
-      details: `Updated order status for ${orderId} from ${oldStatus} to ${status}`
+      details: `Updated order ${orderId} details: status ${oldStatus}->${order.status}, tracking ID: ${order.trackingId || 'N/A'}`
     });
     await audit.save();
 
-    res.json({ success: true, message: "Order status updated successfully", data: order });
+    res.json({ success: true, message: "Order details updated successfully", data: order });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
