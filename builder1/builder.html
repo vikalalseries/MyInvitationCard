@@ -4309,7 +4309,7 @@ function getAvatarBgColor(name) {
 }
 
 // ── Update profile avatar & button in header ──
-function updateHeaderProfileUI(user) {
+async function updateHeaderProfileUI(user) {
   const avatarBtn = document.getElementById('builderUserMenuBtn');
   const loginBtn = document.getElementById('builderHeaderLoginBtn');
   const avatarSpan = document.getElementById('builderAvatar');
@@ -4325,8 +4325,29 @@ function updateHeaderProfileUI(user) {
     if (popupName) popupName.textContent = displayName;
     if (popupEmail) popupEmail.textContent = user.email || 'No email';
 
-    if (user.photoURL) {
-      const imgHTML = `<img src="${user.photoURL}" alt="avatar">`;
+    let localAvatar = "";
+    // Fetch from MongoDB
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/${user.uid}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.success && json.data && json.data.profileImage) {
+          localAvatar = json.data.profileImage;
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch user avatar from MongoDB:", err);
+    }
+
+    let avatarUrl = localAvatar || user.photoURL;
+
+    // Fix relative path if subdirectory
+    if (avatarUrl && avatarUrl.startsWith("assets/")) {
+      avatarUrl = "../" + avatarUrl;
+    }
+
+    if (avatarUrl) {
+      const imgHTML = `<img src="${avatarUrl}" alt="avatar">`;
       if (avatarSpan) avatarSpan.innerHTML = imgHTML;
       if (popupAvatar) popupAvatar.innerHTML = imgHTML;
     } else {

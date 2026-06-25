@@ -2,13 +2,49 @@
    profile.js - Flipkart Style Profile Page Controller Logic
    ════════════════════════════════════════════════════════════ */
 
-import { auth } from "./firebase-config.js";
+import { auth, storage } from "./firebase-config.js";
 import {
   onAuthStateChanged,
   updateProfile,
   sendPasswordResetEmail,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const BACKEND_URL = "http://localhost:5000";
+
+async function fetchUserProfile(uid) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/users/${uid}`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.success) return json.data;
+    }
+  } catch (err) {
+    console.error("Failed to fetch profile from MongoDB:", err);
+  }
+  return null;
+}
+
+async function saveUserProfile(uid, data) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/users/${uid}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+    return res.ok;
+  } catch (err) {
+    console.error("Failed to save profile to MongoDB:", err);
+    return false;
+  }
+}
 
 // State variables
 let currentUser = null;
@@ -130,7 +166,7 @@ async function loadTemplatesList() {
 }
 
 // ── SET UP VIEWS ──
-function setupAuthenticatedView(user) {
+async function setupAuthenticatedView(user) {
   guestProfileView.style.display = "none";
   authProfileView.style.display = "grid";
 
@@ -151,26 +187,71 @@ function setupAuthenticatedView(user) {
   
   greetingName.textContent = displayName;
 
-  // Load user profile details metadata
-  const metaKey = `mic_user_profile_${user.uid}`;
+  // Load Shipping Address from localStorage (temporary/fallback)
+  loadShippingAddress();
+
+  // Load tab grids
+  loadSavedDrafts(user.uid);
+  loadFavorites(user.uid);
+  loadOrderHistory(user.uid);
+
+  // Fetch from MongoDB
+  const profile = await fetchUserProfile(user.uid);
   let localAvatar = "";
   let storedPhone = "";
   let storedLang = "english";
   let storedDob = "";
   let storedGender = "";
+  let storedAddresses = null;
 
-  try {
-    const metaRaw = localStorage.getItem(metaKey);
-    if (metaRaw) {
-      const meta = JSON.parse(metaRaw);
-      storedPhone = meta.phone || "";
-      storedLang = meta.language || "english";
-      storedDob = meta.dob || "";
-      storedGender = meta.gender || "";
-      localAvatar = meta.customAvatar || meta.avatar || "";
-    }
-  } catch (e) {
-    console.error(e);
+  if (profile) {
+    storedPhone = profile.phone || "";
+    storedLang = profile.language || "english";
+    storedDob = profile.dob || "";
+    storedGender = profile.gender || "";
+    localAvatar = profile.profileImage || "";
+    storedAddresses = profile.addresses || [];
+  } else {
+    // Fallback/Migration from localStorage
+    const metaKey = `mic_user_profile_${user.uid}`;
+    try {
+      const raw = localStorage.getItem(metaKey);
+      if (raw) {
+        const meta = JSON.parse(raw);
+        storedPhone = meta.phone || "";
+        storedLang = meta.language || "english";
+        storedDob = meta.dob || "";
+        storedGender = meta.gender || "";
+        localAvatar = meta.customAvatar || meta.avatar || "";
+      }
+    } catch (e) {}
+
+    // Save to MongoDB so profile is initialized
+    const initialAddresses = getSavedAddresses();
+    await saveUserProfile(user.uid, {
+      name: displayName,
+      email: user.email,
+      phone: storedPhone,
+      language: storedLang,
+      dob: storedDob,
+      gender: storedGender,
+      profileImage: localAvatar,
+      addresses: initialAddresses
+    });
+  }
+
+  if (storedAddresses) {
+    // Sync addresses to localStorage for the address list UI to load
+    try {
+      localStorage.setItem("mic_shipping_addresses", JSON.stringify(storedAddresses));
+      const defaultAddr = storedAddresses.find(a => a.isDefault) || storedAddresses[0] || null;
+      if (defaultAddr) {
+        localStorage.setItem("mic_shipping_address", JSON.stringify(defaultAddr));
+      } else {
+        localStorage.removeItem("mic_shipping_address");
+      }
+    } catch (e) {}
+    loadShippingAddress();
   }
 
   // Set edit inputs
@@ -206,17 +287,10 @@ function setupAuthenticatedView(user) {
   // Close any open edit sections
   document.querySelectorAll(".editable-section.editing").forEach(s => s.classList.remove("editing"));
 
-  // Set greeting banner avatar
+  // Set greeting banner avatar (check if it's base64 or a preset to determine custom badge)
   const avatarToUse = localAvatar || user.photoURL || "";
-  setGreetingAvatarUI(avatarToUse, displayName, !!localAvatar);
-
-  // Load Shipping Address from localStorage
-  loadShippingAddress();
-
-  // Load tab grids
-  loadSavedDrafts(user.uid);
-  loadFavorites(user.uid);
-  loadOrderHistory(user.uid);
+  const isCustom = !!localAvatar && !localAvatar.startsWith("assets/") && !localAvatar.startsWith("http");
+  setGreetingAvatarUI(avatarToUse, displayName, isCustom);
 }
 
 function setupGuestView() {
@@ -487,17 +561,24 @@ function loadShippingAddress() {
   });
 }
 
-function setDefaultAddress(idx) {
+async function setDefaultAddress(idx) {
   const addresses = getSavedAddresses();
   addresses.forEach((addr, i) => {
     addr.isDefault = (i === idx);
   });
   saveAddressesList(addresses);
+
+  if (currentUser) {
+    await saveUserProfile(currentUser.uid, {
+      addresses: addresses
+    });
+  }
+
   loadShippingAddress();
   window.showToast("Default address updated successfully!", "success");
 }
 
-function deleteAddress(idx) {
+async function deleteAddress(idx) {
   if (confirm("Are you sure you want to delete this address?")) {
     let addresses = getSavedAddresses();
     const wasDefault = addresses[idx].isDefault;
@@ -510,6 +591,13 @@ function deleteAddress(idx) {
     }
     
     saveAddressesList(addresses);
+
+    if (currentUser) {
+      await saveUserProfile(currentUser.uid, {
+        addresses: addresses
+      });
+    }
+
     loadShippingAddress();
     closeAddressForm();
     window.showToast("Address deleted successfully!", "success");
@@ -605,18 +693,26 @@ function bindFormSubmissions() {
         const isBase64 = finalAvatar.startsWith("data:image/");
 
         let photoURLToUpdate = "";
-        let localAvatarToSave = "";
+        let profileImageToSave = "";
 
         if (finalAvatar === "none_google") {
           const googleProviderData = auth.currentUser?.providerData?.find(p => p.providerId === 'google.com');
           photoURLToUpdate = googleProviderData?.photoURL || "";
-          localAvatarToSave = "";
+          profileImageToSave = photoURLToUpdate;
         } else if (isBase64) {
-          photoURLToUpdate = "";
-          localAvatarToSave = finalAvatar;
+          // Upload to Firebase Storage!
+          const fetchRes = await fetch(customAvatarBase64);
+          const blob = await fetchRes.blob();
+          const storageRef = ref(storage, `users/${currentUser.uid}/profile.jpg`);
+          await uploadBytes(storageRef, blob);
+          const downloadUrl = await getDownloadURL(storageRef);
+          
+          photoURLToUpdate = downloadUrl;
+          profileImageToSave = downloadUrl;
         } else {
+          // Preset avatar
           photoURLToUpdate = finalAvatar;
-          localAvatarToSave = "";
+          profileImageToSave = finalAvatar;
         }
 
         // Update Firebase Auth photoURL
@@ -625,17 +721,22 @@ function bindFormSubmissions() {
             photoURL: photoURLToUpdate
           });
         } catch (fbErr) {
-          console.warn("Firebase profile photo update failed, saving locally:", fbErr);
+          console.warn("Firebase profile photo update failed:", fbErr);
         }
 
-        // Update localStorage metadata with avatar only
+        // Save to MongoDB
+        await saveUserProfile(currentUser.uid, {
+          profileImage: profileImageToSave
+        });
+
+        // Also update local cache for quick local loading
         const metaKey = `mic_user_profile_${currentUser.uid}`;
         let meta = {};
         try {
           const raw = localStorage.getItem(metaKey);
           if (raw) meta = JSON.parse(raw);
         } catch (e) {}
-        meta.customAvatar = localAvatarToSave;
+        meta.customAvatar = profileImageToSave;
         localStorage.setItem(metaKey, JSON.stringify(meta));
 
         window.showToast("Avatar updated successfully!", "success");
@@ -651,7 +752,7 @@ function bindFormSubmissions() {
 
   // Save shipping address
   if (saveAddressBtn) {
-    saveAddressBtn.addEventListener("click", () => {
+    saveAddressBtn.addEventListener("click", async () => {
       const name = addressFullName.value.trim();
       const phone = addressPhone.value.trim();
       const emergencyPhone = addressEmergencyPhone?.value.trim() || "";
@@ -704,7 +805,14 @@ function bindFormSubmissions() {
           addresses.push(addrData);
         }
 
+        // Save locally
         saveAddressesList(addresses);
+
+        // Sync to MongoDB
+        await saveUserProfile(currentUser.uid, {
+          addresses: addresses
+        });
+
         loadShippingAddress();
         closeAddressForm();
         window.showToast("Shipping address saved successfully!", "success");
@@ -869,6 +977,12 @@ async function saveSection(sectionId) {
       meta.gender = genderVal;
       localStorage.setItem(metaKey, JSON.stringify(meta));
 
+      // Save to MongoDB
+      await saveUserProfile(currentUser.uid, {
+        name: fullName,
+        gender: genderVal
+      });
+
       // Update readonly display
       if (displayFirstName) displayFirstName.textContent = firstName || "—";
       if (displayLastName) displayLastName.textContent = lastName || "—";
@@ -889,6 +1003,12 @@ async function saveSection(sectionId) {
       meta.language = profileLanguage.value;
       localStorage.setItem(metaKey, JSON.stringify(meta));
 
+      // Save to MongoDB
+      await saveUserProfile(currentUser.uid, {
+        phone: meta.phone,
+        language: meta.language
+      });
+
       // Update readonly display
       if (displayPhone) displayPhone.textContent = meta.phone || "Not provided";
       const langMap = { english: "English", hindi: "Hindi (हिन्दी)" };
@@ -899,6 +1019,11 @@ async function saveSection(sectionId) {
     } else if (sectionId === "dob") {
       meta.dob = profileDOB.value;
       localStorage.setItem(metaKey, JSON.stringify(meta));
+
+      // Save to MongoDB
+      await saveUserProfile(currentUser.uid, {
+        dob: meta.dob
+      });
 
       // Update readonly display
       if (displayDOB) {

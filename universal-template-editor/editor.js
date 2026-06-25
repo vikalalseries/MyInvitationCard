@@ -1926,7 +1926,7 @@ function checkAuthState() {
 }
 
 // ── Update profile avatar & button in header ──
-function updateHeaderProfileUI(user) {
+async function updateHeaderProfileUI(user) {
   const avatarBtn = document.getElementById('builderUserMenuBtn');
   const loginBtn = document.getElementById('builderHeaderLoginBtn');
   const avatarSpan = document.getElementById('builderAvatar');
@@ -1951,7 +1951,25 @@ function updateHeaderProfileUI(user) {
       }
     } catch (e) {}
 
-    const avatarUrl = localAvatar || user.photoURL;
+    // Async fetch from MongoDB
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/${user.uid}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.success && json.data && json.data.profileImage) {
+          localAvatar = json.data.profileImage;
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch user avatar from MongoDB:", err);
+    }
+
+    let avatarUrl = localAvatar || user.photoURL;
+
+    // Fix relative path if subdirectory
+    if (avatarUrl && avatarUrl.startsWith("assets/")) {
+      avatarUrl = "../" + avatarUrl;
+    }
 
     if (avatarUrl) {
       const imgHTML = `<img src="${avatarUrl}" alt="avatar">`;

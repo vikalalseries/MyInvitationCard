@@ -3,8 +3,16 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const { Resend } = require("resend");
 const admin = require("firebase-admin");
+const mongoose = require("mongoose");
+const User = require("./models/User");
 
 dotenv.config();
+
+// Connect to MongoDB
+const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/myinvitationcard";
+mongoose.connect(mongoUri)
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch(err => console.error("MongoDB connection error:", err));
 
 const app = express();
 
@@ -21,7 +29,16 @@ app.use(express.json());
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON);
+let serviceAccount;
+if (process.env.FIREBASE_ADMIN_JSON) {
+  serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON);
+} else {
+  try {
+    serviceAccount = require("./config/firebase-admin.json");
+  } catch (err) {
+    console.error("Firebase admin JSON not found. Please set FIREBASE_ADMIN_JSON env variable.");
+  }
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -186,6 +203,50 @@ app.post("/verify-otp", async (req, res) => {
       success: false,
       message: error.message
     });
+  }
+});
+
+
+// Get User Profile
+app.get("/api/users/:uid", async (req, res) => {
+  try {
+    const { uid } = req.params;
+    let user = await User.findOne({ uid });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    res.json({ success: true, data: user });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Create/Update User Profile
+app.post("/api/users/:uid", async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const { name, email, phone, gender, dob, language, profileImage, addresses } = req.body;
+
+    let user = await User.findOne({ uid });
+    if (!user) {
+      user = new User({ uid });
+    }
+
+    if (name !== undefined) user.name = name;
+    if (email !== undefined) user.email = email;
+    if (phone !== undefined) user.phone = phone;
+    if (gender !== undefined) user.gender = gender;
+    if (dob !== undefined) user.dob = dob;
+    if (language !== undefined) user.language = language;
+    if (profileImage !== undefined) user.profileImage = profileImage;
+    if (addresses !== undefined) user.addresses = addresses;
+
+    await user.save();
+    res.json({ success: true, data: user });
+  } catch (error) {
+    console.error("Error saving user:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
