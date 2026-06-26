@@ -433,31 +433,87 @@ function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
       pincode: shippingAddress.pincode
     }
   };
-  
-  // If user is logged in, save order to their order history in localStorage
-  if (window.currentUserUid) {
-    const orderHistoryKey = `mic_user_orders_${window.currentUserUid}`;
-    let orderHistory = [];
-    try {
-      const raw = localStorage.getItem(orderHistoryKey);
-      if (raw) orderHistory = JSON.parse(raw);
-    } catch (e) {
-      console.error("Error reading order history:", e);
-    }
-    orderHistory.push({
-      ...orderDetails,
-      orderDate: new Date().toISOString()
-    });
-    localStorage.setItem(orderHistoryKey, JSON.stringify(orderHistory));
-  }
 
-  localStorage.setItem("mic_last_order_details", JSON.stringify(orderDetails));
-  localStorage.removeItem("mic_current_order_config");
+  const backendOrderPayload = {
+    orderId: orderId,
+    uid: window.currentUserUid || "guest_" + Math.floor(1000 + Math.random() * 9000),
+    templateId: orderConfig.templateId,
+    templateName: orderConfig.documentTitle || "Wedding Card",
+    orderType: shippingSpeed === 'express' ? 'express' : 'normal',
+    status: "Confirmed",
+    stockOption: orderConfig.paperStock || "matte",
+    premiumPaperStock: orderConfig.premiumPaper || null,
+    envelopeOption: orderConfig.envelopeOption || "standard",
+    quantity: qty,
+    deliveryMethod: shippingSpeed,
+    templatePreviewUrl: `storage/templates/${orderConfig.templateId}/thumbnail.jpg`,
+    templateEditData: orderConfig.data || {},
+    pricing: {
+      baseRate: basePrice,
+      stockPrice: paperUnitCost,
+      premiumStockPrice: 0,
+      envelopePrice: envelopeUnitCost,
+      deliveryPrice: shippingCost,
+      baseTotal: cardsTotal,
+      addonsTotal: paperTotal + envelopeTotal,
+      subtotal: subtotal,
+      tax: gstTax,
+      total: grandTotal
+    },
+    shippingAddress: {
+      fullName: shippingAddress.fullName,
+      phone: shippingAddress.phone,
+      emergencyPhone: shippingAddress.emergencyPhone || "",
+      pincode: shippingAddress.pincode,
+      address: shippingAddress.address,
+      address2: shippingAddress.address2 || "",
+      city: shippingAddress.city,
+      state: shippingAddress.state
+    },
+    paymentId: razorpayPaymentId || ""
+  };
   
-  // Clear speed details from cache, but keep mic_shipping_address for persistence!
-  localStorage.removeItem("mic_shipping_speed");
-  
-  window.location.href = "order-success.html";
+  // Call backend API to persist the order
+  fetch(`http://localhost:5000/api/orders/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(backendOrderPayload)
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("Order saved to backend:", data);
+  })
+  .catch(err => {
+    console.error("Failed to save order to backend database:", err);
+  })
+  .finally(() => {
+    // If user is logged in, save order to their order history in localStorage
+    if (window.currentUserUid) {
+      const orderHistoryKey = `mic_user_orders_${window.currentUserUid}`;
+      let orderHistory = [];
+      try {
+        const raw = localStorage.getItem(orderHistoryKey);
+        if (raw) orderHistory = JSON.parse(raw);
+      } catch (e) {
+        console.error("Error reading order history:", e);
+      }
+      orderHistory.push({
+        ...orderDetails,
+        orderDate: new Date().toISOString()
+      });
+      localStorage.setItem(orderHistoryKey, JSON.stringify(orderHistory));
+    }
+
+    localStorage.setItem("mic_last_order_details", JSON.stringify(orderDetails));
+    localStorage.removeItem("mic_current_order_config");
+    
+    // Clear speed details from cache, but keep mic_shipping_address for persistence!
+    localStorage.removeItem("mic_shipping_speed");
+    
+    window.location.href = "order-success.html";
+  });
 }
 
 // Redirect to payment failed page
