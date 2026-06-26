@@ -388,8 +388,39 @@ body {
 .f-name  { font-size:0.43cm; font-weight:700; color:#6e0035; line-height:1.5; }
 .f-addr  { font-size:0.38cm; color:#6e0035; line-height:1.5; margin-top:0.02cm; }
 
-@page { size:23.5cm 19cm; margin:0; }
-@media print { body { background:none; padding:0; } }
+@page { size: 23.5cm 19cm; margin: 0; }
+@media print {
+  body {
+    background: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    height: 19cm !important;
+    display: block !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .card {
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0.5cm !important; /* Reduced padding to fit exactly in 19cm height with safety margin */
+    gap: 0.3cm !important;
+    min-height: auto !important;
+    height: 19cm !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    overflow: hidden !important;
+  }
+  .sec {
+    background: none !important;
+    page-break-inside: avoid !important;
+    height: 8.5cm !important;
+  }
+  .sec::before { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -552,6 +583,9 @@ body {
 <style id="custom-card-styles"></style>
 
 <script>
+const urlParams = new URLSearchParams(window.location.search);
+const hideBg = urlParams.get('hideBg') === 'true';
+
 // Date formatting helper variables
 const _HI_MONTHS = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
 const _HI_DAYS   = ['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
@@ -648,7 +682,7 @@ function buildBorderFrameCss(style) {
   }
   const preset = BORDER_FRAME_PRESETS[style.borderPreset || 'classic'] || BORDER_FRAME_PRESETS.classic;
   const borderColor = style.borderColor || style.accentColor || '#8b0040';
-  const cardBg = style.cardBg || '#f9f1d0';
+  const cardBg = hideBg ? 'transparent' : (style.cardBg || '#f9f1d0');
   const shadows = preset.rings.map((ring) => `inset 0 0 0 ${ring} ${cardBg}`).join(', ');
   let radius = '';
   if (style.curveLevel !== undefined && preset.borderRadius) {
@@ -746,17 +780,22 @@ function applyCustomStyles(style) {
 
   let cssText = `
     body {
-      background: ${style.bodyBg || '#c8829a'};
+      background: ${hideBg ? 'none !important' : (style.bodyBg || '#c8829a')};
       font-family: '${style.fontFamily || 'Noto Serif Devanagari'}', serif;
     }
     .card {
-      background: ${style.cardBg || '#f9f1d0'};
+      background: ${hideBg ? 'none !important' : (style.cardBg || '#f9f1d0')};
       padding: ${style.cardPadding}cm;
       gap: ${style.sectionGap}cm;
+      box-shadow: ${hideBg ? 'none !important' : ''};
+      border: ${hideBg ? 'none !important' : ''};
     }
     .sec {
       ${buildBorderFrameCss(style)}
-      background: ${style.cardBg || '#f9f1d0'};
+      background: ${hideBg ? 'none !important' : (style.cardBg || '#f9f1d0')};
+    }
+    .sec::before {
+      display: ${hideBg ? 'none !important' : 'block'};
     }
     .fl {
       color: ${style.accentColor || '#8b0040'};
