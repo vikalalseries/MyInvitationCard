@@ -14,17 +14,71 @@ dotenv.config();
 // Connect to MongoDB
 const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/myinvitationcard";
 mongoose.connect(mongoUri)
-  .then(() => console.log("MongoDB connected successfully"))
+  .then(async () => {
+    console.log("MongoDB connected successfully");
+
+    // Auto-seed templates if collection is empty
+    try {
+      const Template = require("./models/Template");
+      const count = await Template.countDocuments();
+      if (count === 0) {
+        console.log("Templates collection is empty. Seeding templates from templates.json...");
+        const fs = require("fs");
+        const path = require("path");
+        const templatesJsonPath = path.join(__dirname, "../data/templates.json");
+        if (fs.existsSync(templatesJsonPath)) {
+          const templatesData = JSON.parse(fs.readFileSync(templatesJsonPath, "utf-8"));
+          const templatesToInsert = templatesData.map(t => {
+            const isPremium = t.category === "premium";
+            // Pricing from Configure Print page (print.js): basePriceRate = ₹10.00/card
+            return {
+              templateId: String(t.id),
+              name: t.title,
+              category: t.event || "wedding",
+              thumbnail: t.thumbnail || "",
+              price: 10,
+              offerPrice: 8,
+              offerLabel: "Order 150+ Get 20% OFF",
+              offerStartDate: null,
+              offerEndDate: null,
+              isFeatured: !!t.featured,
+              isPremium: isPremium,
+              status: "active",
+              files: []
+            };
+          });
+          await Template.insertMany(templatesToInsert);
+          console.log(`Successfully auto-seeded ${templatesToInsert.length} templates.`);
+        } else {
+          console.warn("templates.json file not found at " + templatesJsonPath);
+        }
+      }
+    } catch (seedErr) {
+      console.error("Failed to auto-seed templates:", seedErr);
+    }
+  })
   .catch(err => console.error("MongoDB connection error:", err));
 
 const app = express();
 
 app.use(cors({
-  origin: [
-    "http://127.0.0.1:5500",
-    "http://localhost:5500",
-    "https://myinvitationcard.vercel.app"
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, or file:// protocol)
+    if (!origin || origin === "null") {
+      return callback(null, true);
+    }
+    const allowed = [
+      "http://127.0.0.1:5500",
+      "http://localhost:5500",
+      "http://127.0.0.1:5501",
+      "http://localhost:5501",
+      "https://myinvitationcard.vercel.app"
+    ];
+    if (allowed.indexOf(origin) !== -1 || origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
+      return callback(null, true);
+    }
+    return callback(new Error("Not allowed by CORS"));
+  },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true
 }));
@@ -538,7 +592,7 @@ app.get("/api/admin/dashboard-stats", async (req, res) => {
     const UserCollection = require("./models/User");
     const totalUsers = await UserCollection.countDocuments() || 324;
     const templatesCount = await Template.countDocuments() || 18;
-    
+
     res.json({
       success: true,
       stats: {
@@ -660,14 +714,14 @@ app.get("/api/admin/users", async (req, res) => {
   try {
     const UserCollection = require("./models/User");
     const OrderCollection = require("./models/Order");
-    
+
     const users = await UserCollection.find().limit(200);
     const usersData = [];
-    
+
     for (const user of users) {
       // Get number of orders placed
       const ordersCount = await OrderCollection.countDocuments({ uid: user.uid });
-      
+
       // Get user metadata from Firebase to check if user is active/disabled
       let status = "active";
       try {
@@ -676,14 +730,14 @@ app.get("/api/admin/users", async (req, res) => {
       } catch (err) {
         // Fallback if not found in Firebase auth
       }
-      
+
       usersData.push({
         ...user.toObject(),
         ordersCount,
         status
       });
     }
-    
+
     res.json({ success: true, users: usersData });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -712,7 +766,7 @@ app.get("/api/admin/users/credentials", async (req, res) => {
       let firebaseUser = null;
       try {
         firebaseUser = await admin.auth().getUser(u.uid);
-      } catch (err) {}
+      } catch (err) { }
 
       // NOTE: Firebase Auth does not store raw passwords, but we can return password hash (passwordHash) or providers/metadata
       credentials.push({
@@ -983,26 +1037,26 @@ app.get("/api/admin/orders", async (req, res) => {
   try {
     const orders = await Order.find().sort({ createdAt: -1 });
     const ordersData = [];
-    
+
     for (const order of orders) {
       // Find customer info
       const customer = await User.findOne({ uid: order.uid });
       // Find matching payment if any
       const payment = await Payment.findOne({ uid: order.uid }).sort({ createdAt: -1 });
-      
+
       ordersData.push({
         ...order.toObject(),
         customerName: customer ? customer.name : "Not filled",
         customerEmail: customer ? customer.email : "N/A",
         customerPhone: customer ? customer.phone : "N/A",
-        shippingAddress: customer && customer.addresses && customer.addresses.length > 0 
-          ? customer.addresses.find(a => a.isDefault) || customer.addresses[0] 
+        shippingAddress: customer && customer.addresses && customer.addresses.length > 0
+          ? customer.addresses.find(a => a.isDefault) || customer.addresses[0]
           : null,
         paymentStatus: payment ? payment.status : "Pending",
         amountPaid: payment ? payment.amount : 0
       });
     }
-    
+
     res.json({ success: true, orders: ordersData });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
