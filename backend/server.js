@@ -590,19 +590,59 @@ app.post("/api/admin/reset-password/complete", async (req, res) => {
 app.get("/api/admin/dashboard-stats", async (req, res) => {
   try {
     const UserCollection = require("./models/User");
-    const totalUsers = await UserCollection.countDocuments() || 324;
-    const templatesCount = await Template.countDocuments() || 18;
+    const OrderCollection = require("./models/Order");
+    const PaymentCollection = require("./models/Payment");
+
+    // Real collections counts
+    const totalUsers = await UserCollection.countDocuments();
+    const templatesCount = await Template.countDocuments();
+    const totalOrders = await OrderCollection.countDocuments();
+
+    // Total revenue sum
+    const payments = await PaymentCollection.find({ status: "Paid" });
+    const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
+
+    // Popular template aggregation
+    const popular = await OrderCollection.aggregate([
+      { $group: { _id: "$templateName", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 1 }
+    ]);
+    const popularTemplate = popular.length > 0 ? popular[0]._id : "None";
+
+    // Conversion rate
+    const conversionRate = totalUsers > 0 
+      ? ((totalOrders / totalUsers) * 100).toFixed(1) + "%" 
+      : "0%";
+
+    // Get weekly sales for the last 7 days
+    const weeklySales = [];
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      d.setHours(0, 0, 0, 0);
+      const nextDay = new Date(d);
+      nextDay.setDate(nextDay.getDate() + 1);
+
+      const dayPayments = await PaymentCollection.find({
+        status: "Paid",
+        createdAt: { $gte: d, $lt: nextDay }
+      });
+      const revenue = dayPayments.reduce((sum, p) => sum + p.amount, 0);
+      weeklySales.push({ day: days[d.getDay()], revenue });
+    }
 
     res.json({
       success: true,
       stats: {
-        totalUsers,
-        totalOrders: 32,
-        totalRevenue: 4580,
-        salesToday: 14,
-        templatesCount,
-        popularTemplate: "Royal Wedding #18",
-        conversionRate: "5.4%"
+        totalUsers: totalUsers || 0,
+        totalOrders: totalOrders || 0,
+        totalRevenue: totalRevenue || 0,
+        templatesCount: templatesCount || 0,
+        popularTemplate,
+        conversionRate,
+        weeklySales
       }
     });
   } catch (error) {
@@ -1049,9 +1089,11 @@ app.get("/api/admin/orders", async (req, res) => {
         customerName: customer ? customer.name : "Not filled",
         customerEmail: customer ? customer.email : "N/A",
         customerPhone: customer ? customer.phone : "N/A",
-        shippingAddress: customer && customer.addresses && customer.addresses.length > 0
-          ? customer.addresses.find(a => a.isDefault) || customer.addresses[0]
-          : null,
+        shippingAddress: order.shippingAddress && order.shippingAddress.fullName
+          ? order.shippingAddress
+          : (customer && customer.addresses && customer.addresses.length > 0
+            ? customer.addresses.find(a => a.isDefault) || customer.addresses[0]
+            : null),
         paymentStatus: payment ? payment.status : "Pending",
         amountPaid: payment ? payment.amount : 0
       });
@@ -1063,22 +1105,119 @@ app.get("/api/admin/orders", async (req, res) => {
   }
 });
 
-// Update order status & delivery details
+// Fetch single order details
+app.get("/api/admin/orders/:orderId", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    // Find customer info
+    const customer = await User.findOne({ uid: order.uid });
+    // Find matching payment if any
+    const payment = await Payment.findOne({ uid: order.uid }).sort({ createdAt: -1 });
+
+    const orderData = {
+      ...order.toObject(),
+      customerName: customer ? customer.name : "Not filled",
+      customerEmail: customer ? customer.email : "N/A",
+      customerPhone: customer ? customer.phone : "N/A",
+      shippingAddress: order.shippingAddress && order.shippingAddress.fullName
+        ? order.shippingAddress
+        : (customer && customer.addresses && customer.addresses.length > 0
+          ? customer.addresses.find(a => a.isDefault) || customer.addresses[0]
+          : null),
+      paymentStatus: payment ? payment.status : "Pending",
+      amountPaid: payment ? payment.amount : 0
+    };
+
+    res.json({ success: true, order: orderData });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Create Order (called from frontend after checkout / payment)
+app.post("/api/orders/create", async (req, res) => {
+  try {
+    const orderData = req.body;
+    if (!orderData.orderId || !orderData.uid) {
+      return res.status(400).json({ success: false, message: "Missing orderId or uid" });
+    }
+
+    // Check if order already exists
+    let order = await Order.findOne({ orderId: orderData.orderId });
+    if (order) {
+      return res.status(200).json({ success: true, message: "Order already exists", data: order });
+    }
+
+    // Set initial status and tracking history
+    const initialStatus = orderData.status || "Confirmed";
+    const initialTracking = [{
+      status: initialStatus,
+      location: "Warehouse",
+      description: "Order placed successfully. Payment verified.",
+      timestamp: new Date(),
+      updatedBy: "system"
+    }];
+
+    order = new Order({
+      ...orderData,
+      status: initialStatus,
+      trackingHistory: initialTracking,
+      createdAt: new Date()
+    });
+
+    await order.save();
+
+    const audit = new AuditLog({
+      username: "customer",
+      action: "orders.create",
+      details: `Customer placed order ${orderData.orderId} for template ${orderData.templateName || orderData.templateId}`
+    });
+    await audit.save();
+
+    res.status(201).json({ success: true, message: "Order created successfully", data: order });
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Update order status & delivery details (Standard route updated to sync trackingHistory)
 app.post("/api/admin/orders/:orderId/status", async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { status, carrier, trackingId, estimatedDelivery, notes, adminUser } = req.body;
+    const { status, carrier, trackingId, estimatedDelivery, notes, adminUser, location, description } = req.body;
     const order = await Order.findOne({ orderId });
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
     const oldStatus = order.status;
-    if (status !== undefined) order.status = status;
+    let statusChanged = false;
+
+    if (status !== undefined && status !== order.status) {
+      order.status = status;
+      statusChanged = true;
+    }
     if (carrier !== undefined) order.carrier = carrier;
     if (trackingId !== undefined) order.trackingId = trackingId;
     if (estimatedDelivery !== undefined) order.estimatedDelivery = estimatedDelivery;
     if (notes !== undefined) order.notes = notes;
+
+    // If status changed, push to tracking history
+    if (statusChanged) {
+      order.trackingHistory.push({
+        status: status,
+        location: location || "Processing Center",
+        description: description || `Order status updated to ${status}`,
+        timestamp: new Date(),
+        updatedBy: adminUser || "admin"
+      });
+    }
 
     await order.save();
 
@@ -1090,6 +1229,263 @@ app.post("/api/admin/orders/:orderId/status", async (req, res) => {
     await audit.save();
 
     res.json({ success: true, message: "Order details updated successfully", data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Add tracking checkpoint manually
+app.post("/api/admin/orders/:orderId/tracking", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status, location, description, adminUser } = req.body;
+
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    if (status) {
+      order.status = status;
+    }
+
+    order.trackingHistory.push({
+      status: status || order.status,
+      location: location || "In Transit",
+      description: description || "Package location updated",
+      timestamp: new Date(),
+      updatedBy: adminUser || "admin"
+    });
+
+    await order.save();
+
+    const audit = new AuditLog({
+      username: adminUser || "admin",
+      action: "orders.tracking.update",
+      details: `Added tracking checkpoint for order ${orderId}: status ${order.status}, location ${location}`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: "Tracking update added successfully", data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Add admin comment
+app.post("/api/admin/orders/:orderId/comment", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { comment, adminUser } = req.body;
+
+    if (!comment || !adminUser) {
+      return res.status(400).json({ success: false, message: "Comment and adminUser are required" });
+    }
+
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    order.adminComments.push({
+      comment,
+      adminUser,
+      createdAt: new Date()
+    });
+
+    await order.save();
+
+    const audit = new AuditLog({
+      username: adminUser,
+      action: "orders.comment.add",
+      details: `Added admin comment on order ${orderId}`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: "Comment added successfully", data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Add/update order problems
+app.post("/api/admin/orders/:orderId/problem", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { action, problemId, type, description, adminUser } = req.body; // action: "report" or "resolve"
+
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    if (action === "report") {
+      if (!type || !description) {
+        return res.status(400).json({ success: false, message: "Type and description are required to report a problem" });
+      }
+
+      order.problems.push({
+        type,
+        description,
+        status: "Open",
+        reportedBy: adminUser || "admin",
+        createdAt: new Date()
+      });
+
+      // Optionally add a tracking update about the problem
+      order.trackingHistory.push({
+        status: order.status,
+        location: "Support Center",
+        description: `⚠️ Problem Reported: ${type} - ${description}`,
+        timestamp: new Date(),
+        updatedBy: adminUser || "admin"
+      });
+
+    } else if (action === "resolve") {
+      if (!problemId) {
+        return res.status(400).json({ success: false, message: "problemId is required to resolve a problem" });
+      }
+
+      const problem = order.problems.id(problemId);
+      if (!problem) {
+        return res.status(404).json({ success: false, message: "Problem not found" });
+      }
+
+      problem.status = "Resolved";
+      problem.resolvedBy = adminUser || "admin";
+      problem.resolvedAt = new Date();
+
+      order.trackingHistory.push({
+        status: order.status,
+        location: "Support Center",
+        description: `✅ Resolved Problem: ${problem.type}`,
+        timestamp: new Date(),
+        updatedBy: adminUser || "admin"
+      });
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid action. Must be 'report' or 'resolve'" });
+    }
+
+    await order.save();
+
+    const audit = new AuditLog({
+      username: adminUser || "admin",
+      action: `orders.problem.${action}`,
+      details: `${action === "report" ? "Reported" : "Resolved"} problem on order ${orderId}`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: `Problem ${action === "report" ? "reported" : "resolved"} successfully", data: order` });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Update customer review/rating
+app.post("/api/orders/:orderId/review", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { rating, comment } = req.body;
+
+    if (rating === undefined) {
+      return res.status(400).json({ success: false, message: "Rating is required" });
+    }
+
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    order.review = {
+      rating: Number(rating),
+      comment: comment || "",
+      createdAt: new Date()
+    };
+
+    await order.save();
+
+    const audit = new AuditLog({
+      username: "customer",
+      action: "orders.review.submit",
+      details: `Customer submitted a review for order ${orderId}: rating ${rating}`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: "Feedback submitted successfully", data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Assign/update delivery partner
+app.patch("/api/admin/orders/:orderId/delivery-partner", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { name, phone, vehicleNumber, photo, adminUser } = req.body;
+
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    order.deliveryPartner = {
+      name: name || "",
+      phone: phone || "",
+      vehicleNumber: vehicleNumber || "",
+      photo: photo || ""
+    };
+
+    // Push tracking history entry if delivery partner assigned
+    if (name) {
+      order.trackingHistory.push({
+        status: order.status,
+        location: "Dispatch Hub",
+        description: `Delivery partner ${name} assigned (${vehicleNumber || 'No vehicle info'})`,
+        timestamp: new Date(),
+        updatedBy: adminUser || "admin"
+      });
+    }
+
+    await order.save();
+
+    const audit = new AuditLog({
+      username: adminUser || "admin",
+      action: "orders.delivery_partner.assign",
+      details: `Assigned delivery partner ${name} to order ${orderId}`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: "Delivery partner details updated successfully", data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Mark print slip as printed
+app.patch("/api/admin/orders/:orderId/slip-printed", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { adminUser } = req.body;
+
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    order.slipPrinted = true;
+    order.slipPrintedAt = new Date();
+    order.slipPrintedBy = adminUser || "admin";
+
+    await order.save();
+
+    const audit = new AuditLog({
+      username: adminUser || "admin",
+      action: "orders.slip.print",
+      details: `Printed packaging slip for order ${orderId}`
+    });
+    await audit.save();
+
+    res.json({ success: true, message: "Slip print state updated", data: order });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
