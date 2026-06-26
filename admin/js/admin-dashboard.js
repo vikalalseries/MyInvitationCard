@@ -4,6 +4,30 @@ let allUsers = [];
 let allCredentials = [];
 let allOrders = [];
 
+// ── TEMPLATE FOLDER RESOLVER ──
+// Maps any templateId from the DB to an actual folder inside universal-template-editor/templates/.
+// Only 'card1' exists right now — all other IDs (card101, card102, 1, 37…) fall back to it.
+const TEMPLATE_FOLDER_MAP = {
+  'card1': 'card1',
+  '1': 'card1',
+  '37': 'card1',
+  '38': 'card1'
+};
+function resolveTemplateFolder(templateId) {
+  if (!templateId) return 'card1';
+  const id = String(templateId).toLowerCase();
+  // Exact match
+  if (TEMPLATE_FOLDER_MAP[id]) return TEMPLATE_FOLDER_MAP[id];
+  // Strip numeric suffix: 'card101' → 'card1'
+  const stripped = id.replace(/\d+$/, '');
+  if (stripped && TEMPLATE_FOLDER_MAP[stripped + '1']) return TEMPLATE_FOLDER_MAP[stripped + '1'];
+  // Pattern: starts with 'card' → use card1
+  if (id.startsWith('card')) return 'card1';
+  // Purely numeric → card1
+  if (/^\d+$/.test(id)) return 'card1';
+  return 'card1';
+}
+
 // Toast Notification helper
 function showToast(message, type = "success") {
   const container = document.getElementById("toastContainer");
@@ -1075,7 +1099,7 @@ function renderOrdersTable(orders) {
       <td><code>${datePlaced}</code></td>
       <td><span class="badge ${badgeClass}">${order.status}</span></td>
       <td>${order.orderType || 'normal'}</td>
-      <td><button class="table-action-btn edit" onclick="window.open('../universal-template-editor/editor.html?templateId=${order.templateId}', '_blank')"><i class="fa-solid fa-eye"></i> View Template</button></td>
+      <td><button class="table-action-btn edit" onclick="openPrintCardModal('${order.orderId}')"><i class="fa-solid fa-eye"></i> View Design</button></td>
       <td><button class="table-action-btn edit" onclick="window.open('${BACKEND_URL}/api/admin/orders/${order._id}/slip', '_blank')"><i class="fa-solid fa-print"></i> Print Slip</button></td>
       <td>${actionBtn}</td>
     `;
@@ -1149,7 +1173,8 @@ window.openDeliveryModal = async function(orderId) {
     const iframe = document.getElementById("orderTemplateIframe");
     const placeholder = document.getElementById("orderTemplatePlaceholder");
     if (iframe) {
-      iframe.src = `../universal-template-editor/editor.html?templateId=${order.templateId}&preview=true&readOnly=true`;
+      const templateFolder = resolveTemplateFolder(order.templateId);
+      iframe.src = `../universal-template-editor/templates/${templateFolder}/template.html`;
       
       // Pass the customized user fields to the preview iframe on load
       iframe.onload = function() {
@@ -2474,4 +2499,90 @@ setInterval(() => {
     }
   }
 }, 10000);
+
+// ── CUSTOM PRINT CARD MODAL FUNCTIONS ──
+
+window.openPrintCardModal = async function(orderId) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}`);
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.message || "Failed to fetch order details");
+
+    const order = data.order;
+    window.currentSelectedPrintOrder = order;
+
+    const orderIdEl = document.getElementById("printModalOrderId");
+    if (orderIdEl) orderIdEl.textContent = order.orderId;
+    
+    // Set checkbox to checked (hide background by default)
+    const toggle = document.getElementById("printModalHideBgToggle");
+    if (toggle) toggle.checked = true;
+    
+    // Update bg status text
+    const statusText = document.getElementById("printModalBgStatusText");
+    if (statusText) statusText.textContent = "Hide Card Background (Easy Print)";
+
+    // Load iframe
+    loadPrintCardIframe(order, true);
+
+    const modal = document.getElementById("printCardModal");
+    if (modal) modal.classList.remove("hidden");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+window.closePrintCardModal = function() {
+  const modal = document.getElementById("printCardModal");
+  if (modal) modal.classList.add("hidden");
+  const iframe = document.getElementById("printCardIframe");
+  if (iframe) iframe.src = "about:blank";
+};
+
+window.togglePrintModalBg = function() {
+  const order = window.currentSelectedPrintOrder;
+  if (!order) return;
+  
+  const toggle = document.getElementById("printModalHideBgToggle");
+  const hideBg = toggle ? toggle.checked : true;
+  
+  const statusText = document.getElementById("printModalBgStatusText");
+  if (statusText) {
+    statusText.textContent = hideBg ? "Hide Card Background (Easy Print)" : "Show Card Background";
+  }
+
+  loadPrintCardIframe(order, hideBg);
+};
+
+window.printCardIframe = function() {
+  const iframe = document.getElementById("printCardIframe");
+  if (!iframe) return;
+  
+  try {
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+  } catch (e) {
+    showToast("Error starting print preview: " + e.message, "error");
+  }
+};
+
+function loadPrintCardIframe(order, hideBg) {
+  const iframe = document.getElementById("printCardIframe");
+  if (!iframe) return;
+
+  // Resolve the actual folder (card101 → card1 etc.)
+  const templateFolder = resolveTemplateFolder(order.templateId);
+  // Load the template HTML file with hideBg parameter
+  const templatePath = `../universal-template-editor/templates/${templateFolder}/template.html?hideBg=${hideBg}`;
+  iframe.src = templatePath;
+
+  iframe.onload = function() {
+    if (order.templateEditData) {
+      iframe.contentWindow.postMessage({
+        type: 'UPDATE_TEMPLATE_DATA',
+        data: order.templateEditData
+      }, '*');
+    }
+  };
+}
 
