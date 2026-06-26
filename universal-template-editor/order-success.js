@@ -279,9 +279,34 @@ function submitFeedback(event) {
     submitBtn.setAttribute('disabled', 'true');
     submitBtn.textContent = 'Submitting...';
   }
+
+  // Load details to get orderId
+  const savedDetailsStr = localStorage.getItem("mic_last_order_details");
+  let orderId = "mock-id";
+  if (savedDetailsStr) {
+    try {
+      const parsed = JSON.parse(savedDetailsStr);
+      if (parsed && parsed.orderId) {
+        orderId = parsed.orderId;
+      }
+    } catch(e) {
+      console.error(e);
+    }
+  }
   
-  // Simulate API delay
-  setTimeout(() => {
+  // Submit to backend Mongo database
+  fetch(`http://localhost:5000/api/orders/${orderId}/review`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      rating: selectedRating,
+      comment: comment
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
     if (form) form.style.display = 'none';
     if (successMsg) {
       successMsg.style.display = 'block';
@@ -291,9 +316,18 @@ function submitFeedback(event) {
         successMsg.style.opacity = '1';
       }, 50);
     }
-    
     showToast("Feedback submitted! Thank you for sharing your experience.", "success");
-  }, 1000);
+  })
+  .catch(err => {
+    console.error("Error submitting feedback:", err);
+    // fallback simulation
+    if (form) form.style.display = 'none';
+    if (successMsg) {
+      successMsg.style.display = 'block';
+      successMsg.style.opacity = '1';
+    }
+    showToast("Feedback simulation submitted (Backend offline).", "info");
+  });
 }
 
 // Local print Invoice trigger
