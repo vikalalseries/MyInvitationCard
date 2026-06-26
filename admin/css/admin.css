@@ -1941,3 +1941,132 @@ body {
   }
 }
 
+/* Redesigned Order Modal Tabs & Checkpoint Steppers */
+.order-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.order-tab-btn:hover {
+  color: var(--text-active);
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 8px 8px 0 0;
+}
+
+.order-tab-btn.active {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.order-tab-panel {
+  display: none;
+  animation: fadeInTab 0.25s ease;
+}
+
+.order-tab-panel.active {
+  display: block;
+}
+
+@keyframes fadeInTab {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Scrollbar for Modal Panels */
+.order-tab-content-wrapper::-webkit-scrollbar,
+#adminCommentsList::-webkit-scrollbar,
+#trackingHistoryLogs::-webkit-scrollbar,
+#problemsList::-webkit-scrollbar,
+#orderCustomizationsList::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.order-tab-content-wrapper::-webkit-scrollbar-track,
+#adminCommentsList::-webkit-scrollbar-track,
+#trackingHistoryLogs::-webkit-scrollbar-track,
+#problemsList::-webkit-scrollbar-track,
+#orderCustomizationsList::-webkit-scrollbar-track {
+  background: transparent;
+}
+.order-tab-content-wrapper::-webkit-scrollbar-thumb,
+#adminCommentsList::-webkit-scrollbar-thumb,
+#trackingHistoryLogs::-webkit-scrollbar-thumb,
+#problemsList::-webkit-scrollbar-thumb,
+#orderCustomizationsList::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+.order-tab-content-wrapper::-webkit-scrollbar-thumb:hover,
+#adminCommentsList::-webkit-scrollbar-thumb:hover,
+#trackingHistoryLogs::-webkit-scrollbar-thumb:hover,
+#problemsList::-webkit-scrollbar-thumb:hover,
+#orderCustomizationsList::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Interactive Star Rating Colors */
+#reviewStarRating i.fa-solid {
+  color: #fbbf24;
+}
+#reviewStarRating i.fa-regular {
+  color: var(--text-muted);
+}
+
+/* Tracking History Timeline Checkpoint Styles */
+#trackingHistoryLogs div::before {
+  content: '';
+  position: absolute;
+  left: -17.5px;
+  top: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  border: 2px solid var(--bg-secondary);
+  box-shadow: 0 0 4px var(--primary-color);
+}
+
+/* Progress and Status Badges color matching */
+.badge.progress-badge {
+  background: rgba(99, 102, 241, 0.1) !important;
+  color: var(--primary-color) !important;
+}
+
+.badge.success-badge {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: var(--success-color) !important;
+}
+
+.badge.danger-badge {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: var(--danger-color) !important;
+}
+
+.badge.warning-badge {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: var(--warning-color) !important;
+}
+
+.badge.info-badge {
+  background: rgba(59, 130, 246, 0.1) !important;
+  color: #3b82f6 !important;
+}
+
+.badge.role-badge {
+  background: rgba(156, 163, 175, 0.1) !important;
+  color: #9ca3af !important;
+}
+
+

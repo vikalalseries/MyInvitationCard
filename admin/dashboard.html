@@ -438,12 +438,15 @@
                 <thead>
                   <tr>
                     <th>Order ID</th>
-                    <th>Customer Name</th>
-                    <th>Card Template</th>
+                    <th>Customer</th>
+                    <th>Template</th>
                     <th>Payment</th>
                     <th>Date Placed</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th>Type</th>
+                    <th>View Design</th>
+                    <th>Print Slip</th>
+                    <th>Delivery Manage</th>
                   </tr>
                 </thead>
                 <tbody id="ordersTableBody">
@@ -747,141 +750,377 @@
     </main>
   </div>
 
-  <!-- DELIVERY MANAGEMENT MODAL (Amazon/Flipkart Style) -->
+  <!-- DELIVERY & ORDER DETAIL MANAGEMENT MODAL (Tabbed Layout) -->
   <div id="manageDeliveryModal" class="modal-overlay-admin hidden">
-    <div class="modal-card-admin" style="max-width: 750px; width: 90%;">
-      <div class="modal-card-header">
-        <h3>Manage Order Delivery</h3>
+    <div class="modal-card-admin" style="max-width: 950px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; padding: 25px;">
+      <div class="modal-card-header" style="margin-bottom: 15px;">
+        <div>
+          <h3 style="margin: 0;"><i class="fa-solid fa-receipt"></i> Order Management Portal</h3>
+          <span style="font-size: 13px; color: var(--text-muted);">Order ID: <strong id="portalOrderId" style="color: var(--primary-color);">N/A</strong></span>
+        </div>
         <button id="closeDeliveryModalBtn" class="close-modal-btn" onclick="closeDeliveryModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="delivery-modal-body" style="display: flex; gap: 24px; padding: 20px; flex-wrap: wrap;">
-        <!-- Left Column: Shipping Info & Tracking Inputs -->
-        <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
-          
-          <!-- Customer & Shipping Card -->
-          <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
-            <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-active); display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-truck-ramp-box"></i> Shipping Information
-            </h4>
-            <div style="font-size: 14px; line-height: 1.5; color: var(--text-main);">
-              <div><strong>Name:</strong> <span id="deliveryCustName">Rahul Sharma</span></div>
-              <div><strong>Phone:</strong> <span id="deliveryCustPhone">+919876543210</span></div>
-              <div><strong>Email:</strong> <span id="deliveryCustEmail">rahul@gmail.com</span></div>
-              <div style="margin-top: 10px; padding: 12px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-color); position: relative;">
-                <strong>Address:</strong><br>
-                <span id="deliveryAddressText">123 Lane, Near Metro, Sector 4, New Delhi - 110001</span>
-                <button onclick="copyDeliveryAddress()" style="position: absolute; right: 8px; top: 8px; background: none; border: none; color: var(--primary-color); cursor: pointer;" title="Copy Address">
-                  <i class="fa-regular fa-copy"></i>
+      
+      <!-- Tab Navigation -->
+      <div class="order-tabs-nav" style="display: flex; gap: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; overflow-x: auto; white-space: nowrap;">
+        <button class="order-tab-btn active" onclick="switchOrderTab('order-details-tab', this)"><i class="fa-solid fa-circle-info"></i> Order Details</button>
+        <button class="order-tab-btn" onclick="switchOrderTab('delivery-tracking-tab', this)"><i class="fa-solid fa-truck-fast"></i> Delivery & Tracking</button>
+        <button class="order-tab-btn" onclick="switchOrderTab('comments-problems-tab', this)"><i class="fa-solid fa-comments"></i> Reviews & Comments</button>
+        <button class="order-tab-btn" onclick="switchOrderTab('print-slip-tab', this)"><i class="fa-solid fa-print"></i> Packaging Slip</button>
+      </div>
+
+      <!-- Tab Content Area (Scrollable) -->
+      <div class="order-tab-content-wrapper" style="flex: 1; overflow-y: auto; padding-right: 5px;">
+        
+        <!-- TAB 1: ORDER DETAILS -->
+        <div id="order-details-tab" class="order-tab-panel active">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            
+            <!-- Left Column: Specs & Template Details -->
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+              <!-- Template Preview & Info -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px;">
+                <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--text-active); border-bottom: 1px solid var(--border-color); padding-bottom: 6px;"><i class="fa-regular fa-image"></i> Customized Template</h4>
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                  <div style="width: 100px; height: 130px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <iframe id="orderTemplateIframe" style="width: 400px; height: 520px; border: none; transform: scale(0.25); transform-origin: top left; pointer-events: none; position: absolute; top: 0; left: 0;"></iframe>
+                    <div id="orderTemplatePlaceholder" style="font-size: 11px; text-align: center; color: var(--text-muted); padding: 5px; z-index: 1;">No Preview Available</div>
+                  </div>
+                  <div style="flex: 1; font-size: 14px; line-height: 1.5; color: var(--text-main);">
+                    <div><strong>Template Name:</strong> <span id="specTemplateName">N/A</span></div>
+                    <div><strong>Template ID:</strong> <span id="specTemplateId">N/A</span></div>
+                    <div><strong>Quantity:</strong> <span id="specQuantity">N/A</span></div>
+                    <div style="margin-top: 8px;">
+                      <a id="viewTemplateEditorBtn" href="#" target="_blank" class="table-action-btn edit" style="display: inline-block; padding: 5px 10px; border: 1px solid var(--border-color); border-radius: 6px; text-decoration: none; font-size: 12.5px;">
+                        <i class="fa-solid fa-pen-to-square"></i> Open in Editor
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Customizations List -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px;">
+                <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-active); border-bottom: 1px solid var(--border-color); padding-bottom: 6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> User Customization Fields</h4>
+                <div id="orderCustomizationsList" style="max-height: 150px; overflow-y: auto; font-size: 13px; display: flex; flex-direction: column; gap: 6px; padding-right: 5px;">
+                  <!-- Dynamically loaded customizations -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Print specs & Billing -->
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+              <!-- Printing Specifications -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px;">
+                <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-active); border-bottom: 1px solid var(--border-color); padding-bottom: 6px;"><i class="fa-solid fa-print"></i> Printing Specifications</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; font-size: 13.5px; color: var(--text-main);">
+                  <div><strong>Paper Finish:</strong></div><div id="specPaperStock">N/A</div>
+                  <div><strong>Premium Paper:</strong></div><div id="specPremiumPaper">None</div>
+                  <div><strong>Envelope Option:</strong></div><div id="specEnvelope">N/A</div>
+                  <div><strong>Delivery Speed:</strong></div><div id="specDeliveryMethod">N/A</div>
+                </div>
+              </div>
+
+              <!-- Detailed Pricing & Billing -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px;">
+                <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-active); border-bottom: 1px solid var(--border-color); padding-bottom: 6px;"><i class="fa-solid fa-receipt"></i> Detailed Bill & Payment</h4>
+                <div style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; color: var(--text-main); margin-bottom: 10px;">
+                  <div style="display: flex; justify-content: space-between;"><span>Base Print Cost:</span><span id="billBaseCost">₹0.00</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Paper Premium Upgrade:</span><span id="billPaperAddon">₹0.00</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Envelope Selection:</span><span id="billEnvelopeAddon">₹0.00</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Shipping Charge:</span><span id="billShippingCost">₹0.00</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Subtotal:</span><span id="billSubtotal">₹0.00</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>GST Tax (18%):</span><span id="billTax">₹0.00</span></div>
+                  <div style="display: flex; justify-content: space-between; border-top: 1px dashed var(--border-color); padding-top: 5px; font-weight: 700; color: var(--text-active);">
+                    <span>Grand Total:</span><span id="billGrandTotal">₹0.00</span>
+                  </div>
+                </div>
+                <div style="border-top: 1px solid var(--border-color); padding-top: 8px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
+                  <div><strong>Payment Status:</strong> <span id="billPaymentStatus" class="badge">Pending</span></div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">Ref: <span id="billPaymentRef">N/A</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB 2: DELIVERY & TRACKING -->
+        <div id="delivery-tracking-tab" class="order-tab-panel">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            
+            <!-- Left: Inputs & Carrier Assignment -->
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+              <!-- Shipping Address Details -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; font-size: 13.5px; color: var(--text-main);">
+                <h4 style="margin-top: 0; margin-bottom: 8px; color: var(--text-active); display: flex; justify-content: space-between; align-items: center;">
+                  <span><i class="fa-solid fa-map-pin"></i> Shipping Address</span>
+                  <button onclick="copyDeliveryAddress()" style="background: none; border: none; color: var(--primary-color); cursor: pointer;" title="Copy Address">
+                    <i class="fa-regular fa-copy"></i> Copy
+                  </button>
+                </h4>
+                <div style="line-height: 1.4;">
+                  <div><strong>Recipient:</strong> <span id="tab2CustName">N/A</span> (<span id="tab2CustPhone">N/A</span>)</div>
+                  <div><strong>Email:</strong> <span id="tab2CustEmail">N/A</span></div>
+                  <div id="tab2AddressText" style="margin-top: 6px; padding: 8px; background: var(--bg-primary); border-radius: 6px; border: 1px dashed var(--border-color);">
+                    N/A
+                  </div>
+                </div>
+              </div>
+
+              <!-- Carrier Update Form -->
+              <form id="tab2TrackingForm" class="card-form-admin" style="padding: 15px; background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; margin: 0;">
+                <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--text-active);"><i class="fa-solid fa-truck-ramp-box"></i> Courier Carrier Update</h4>
+                
+                <div class="form-group-admin">
+                  <label for="tab2Status">Delivery status</label>
+                  <select id="tab2Status" style="width: 100%;">
+                    <option value="Pending">Pending (Awaiting Confirmation)</option>
+                    <option value="Confirmed">Confirmed (Accepted)</option>
+                    <option value="Processing">Processing (Printing)</option>
+                    <option value="Dispatched">Dispatched (Shipped)</option>
+                    <option value="Out for Delivery">Out for Delivery</option>
+                    <option value="Delivered">Delivered (Completed)</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="Returned">Returned</option>
+                  </select>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                  <div class="form-group-admin" style="flex: 1;">
+                    <label for="tab2Carrier">Courier Partner</label>
+                    <select id="tab2Carrier" style="width: 100%;">
+                      <option value="">Select Carrier</option>
+                      <option value="Blue Dart">Blue Dart</option>
+                      <option value="Delhivery">Delhivery</option>
+                      <option value="DTDC">DTDC</option>
+                      <option value="India Post">India Post</option>
+                      <option value="DHL">DHL</option>
+                      <option value="FedEx">FedEx</option>
+                      <option value="Other">Other / Local</option>
+                    </select>
+                  </div>
+                  <div class="form-group-admin" style="flex: 1;">
+                    <label for="tab2TrackingId">AWB / Tracking Number</label>
+                    <input type="text" id="tab2TrackingId" placeholder="Tracking ID">
+                  </div>
+                </div>
+
+                <div class="form-group-admin">
+                  <label for="tab2EstDate">Estimated Delivery Date</label>
+                  <input type="date" id="tab2EstDate">
+                </div>
+
+                <div class="form-group-admin">
+                  <label for="tab2Notes">Internal Notes</label>
+                  <textarea id="tab2Notes" placeholder="Courier notes" style="width: 100%; min-height: 45px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-active); padding: 8px; font-family: var(--font-body); resize: vertical;"></textarea>
+                </div>
+
+                <button type="submit" class="admin-btn-primary" style="margin-top: 5px; width: 100%;">
+                  <i class="fa-solid fa-floppy-disk"></i> Save Carrier Info
+                </button>
+              </form>
+
+              <!-- Delivery Partner Assignment -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px;">
+                <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--text-active);"><i class="fa-solid fa-user-ninja"></i> Assign Local Delivery Partner</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                  <div class="form-group-admin" style="margin-bottom: 0;">
+                    <label style="font-size: 11px;">Partner Name</label>
+                    <input type="text" id="partnerName" placeholder="e.g. Ramesh Kumar">
+                  </div>
+                  <div class="form-group-admin" style="margin-bottom: 0;">
+                    <label style="font-size: 11px;">Phone No</label>
+                    <input type="text" id="partnerPhone" placeholder="10-digit number">
+                  </div>
+                  <div class="form-group-admin" style="margin-bottom: 0; grid-column: span 2;">
+                    <label style="font-size: 11px;">Vehicle Number</label>
+                    <input type="text" id="partnerVehicle" placeholder="e.g. DL 1CA 1234">
+                  </div>
+                </div>
+                <button onclick="saveDeliveryPartner()" class="table-action-btn success" style="margin-top: 10px; width: 100%; height: 35px;">
+                  <i class="fa-solid fa-check"></i> Assign Delivery Partner
                 </button>
               </div>
             </div>
-          </div>
 
-          <!-- Tracking Update Form -->
-          <form id="deliveryTrackingForm" class="card-form-admin" style="padding: 0;">
-            <input type="hidden" id="deliveryOrderId">
-            
-            <div class="form-group-admin">
-              <label for="deliveryStatus">Delivery Status</label>
-              <select id="deliveryStatus" style="width: 100%;">
-                <option value="Pending">Pending (Awaiting Confirmation)</option>
-                <option value="Confirmed">Confirmed (Order Accepted)</option>
-                <option value="Processing">Processing (Printing/Preparing)</option>
-                <option value="Dispatched">Dispatched (Shipped)</option>
-                <option value="Out for Delivery">Out for Delivery</option>
-                <option value="Delivered">Delivered (Completed)</option>
-                <option value="Cancelled">Cancelled</option>
-              </select>
-            </div>
-            
-            <div style="display: flex; gap: 10px;">
-              <div class="form-group-admin" style="flex: 1;">
-                <label for="deliveryCarrier">Courier Partner</label>
-                <select id="deliveryCarrier" style="width: 100%;">
-                  <option value="">Select Carrier</option>
-                  <option value="Blue Dart">Blue Dart</option>
-                  <option value="Delhivery">Delhivery</option>
-                  <option value="DTDC">DTDC</option>
-                  <option value="India Post">India Post</option>
-                  <option value="DHL">DHL</option>
-                  <option value="FedEx">FedEx</option>
-                  <option value="Other">Other / Local</option>
-                </select>
+            <!-- Right: Real-time Checkpoint Addition & History Stepper -->
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+              <!-- Add Tracking Checkpoint manually -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px;">
+                <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-active);"><i class="fa-solid fa-map-location-dot"></i> Add Real-Time Tracking Checkpoint</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                  <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                      <label style="font-size: 11px; display: block; margin-bottom: 4px; font-weight: 600;">Location</label>
+                      <input type="text" id="checkpointLocation" placeholder="e.g. Delhi Hub, Out for delivery" style="width: 100%; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; color: var(--text-active);">
+                    </div>
+                    <div style="flex: 1;">
+                      <label style="font-size: 11px; display: block; margin-bottom: 4px; font-weight: 600;">Update Status</label>
+                      <select id="checkpointStatus" style="width: 100%; height: 29px; border-radius: 6px; background: var(--bg-primary); color: var(--text-active); border: 1px solid var(--border-color);">
+                        <option value="">Keep current status</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Dispatched">Dispatched</option>
+                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; display: block; margin-bottom: 4px; font-weight: 600;">Checkpoint Description</label>
+                    <textarea id="checkpointDesc" placeholder="e.g. Package arrived at Delhi distribution center" style="width: 100%; min-height: 40px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-active); padding: 6px; font-family: var(--font-body); resize: vertical;"></textarea>
+                  </div>
+                  <button onclick="addTrackingCheckpoint()" class="admin-btn-primary" style="padding: 6px 12px; margin-top: 5px; height: 35px; width: 100%;">
+                    <i class="fa-solid fa-location-arrow"></i> Push Location Update
+                  </button>
+                </div>
               </div>
-              <div class="form-group-admin" style="flex: 1;">
-                <label for="deliveryTrackingId">Tracking Number / AWB</label>
-                <input type="text" id="deliveryTrackingId" placeholder="e.g. 129847129">
+
+              <!-- Shipment Journey Timeline -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; flex: 1; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--text-active);"><i class="fa-solid fa-clock-rotate-left"></i> Location & Status Journey</h4>
+                
+                <div style="display: flex; gap: 20px; flex: 1; flex-wrap: wrap;">
+                  <!-- Vertical Status Stepper -->
+                  <div class="delivery-timeline" style="flex: 1; min-width: 150px;">
+                    <div class="timeline-step" id="step-Pending">
+                      <div class="step-dot"></div>
+                      <strong>Order Placed</strong>
+                      <div style="font-size: 11px; color: var(--text-muted);" class="step-date">Pending verification</div>
+                    </div>
+                    <div class="timeline-step" id="step-Confirmed">
+                      <div class="step-dot"></div>
+                      <strong>Confirmed</strong>
+                      <div style="font-size: 11px; color: var(--text-muted);" class="step-date">Accepted</div>
+                    </div>
+                    <div class="timeline-step" id="step-Processing">
+                      <div class="step-dot"></div>
+                      <strong>Printing</strong>
+                      <div style="font-size: 11px; color: var(--text-muted);" class="step-date">Preparing</div>
+                    </div>
+                    <div class="timeline-step" id="step-Dispatched">
+                      <div class="step-dot"></div>
+                      <strong>Dispatched</strong>
+                      <div style="font-size: 11px; color: var(--text-muted);" class="step-date">Shipped</div>
+                    </div>
+                    <div class="timeline-step" id="step-Out-for-Delivery">
+                      <div class="step-dot"></div>
+                      <strong>Out for Delivery</strong>
+                      <div style="font-size: 11px; color: var(--text-muted);" class="step-date">On route</div>
+                    </div>
+                    <div class="timeline-step" id="step-Delivered">
+                      <div class="step-dot"></div>
+                      <strong>Delivered</strong>
+                      <div style="font-size: 11px; color: var(--text-muted);" class="step-date">Completed</div>
+                    </div>
+                  </div>
+
+                  <!-- Detailed Tracking History Logs -->
+                  <div style="flex: 1.5; min-width: 200px; display: flex; flex-direction: column;">
+                    <h5 style="margin-top: 0; margin-bottom: 8px; color: var(--text-active);">Tracking Logs</h5>
+                    <div id="trackingHistoryLogs" style="flex: 1; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; border-left: 2px solid var(--border-color); padding-left: 12px; margin-left: 5px;">
+                      <!-- Checkpoint history printed dynamically -->
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="form-group-admin">
-              <label for="deliveryEstDate">Estimated Delivery Date</label>
-              <input type="date" id="deliveryEstDate">
-            </div>
-
-            <div class="form-group-admin">
-              <label for="deliveryNotes">Internal Courier Notes</label>
-              <textarea id="deliveryNotes" placeholder="e.g. Left at security gate, box packaged carefully..." style="width: 100%; min-height: 60px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-active); padding: 8px; font-family: var(--font-body); resize: vertical;"></textarea>
-            </div>
-
-            <button type="submit" class="admin-btn-primary" style="margin-top: 10px;">
-              <i class="fa-solid fa-floppy-disk"></i> Save Delivery Details
-            </button>
-          </form>
-        </div>
-
-        <!-- Right Column: Interactive Stepper Timeline -->
-        <div style="flex: 0.8; min-width: 250px; background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; flex-direction: column;">
-          <h4 style="margin-top: 0; margin-bottom: 20px; color: var(--text-active); display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-map-location-dot"></i> Shipment Journey
-          </h4>
-          
-          <div class="delivery-timeline">
-            
-            <!-- Step 1: Placed -->
-            <div class="timeline-step" id="step-Pending">
-              <div class="step-dot"></div>
-              <strong>Order Placed</strong>
-              <div style="font-size: 12px; color: var(--text-muted);" class="step-date">Awaiting confirmation</div>
-            </div>
-            
-            <!-- Step 2: Confirmed -->
-            <div class="timeline-step" id="step-Confirmed">
-              <div class="step-dot"></div>
-              <strong>Order Confirmed</strong>
-              <div style="font-size: 12px; color: var(--text-muted);" class="step-date">Verified & accepted</div>
-            </div>
-
-            <!-- Step 3: Processing -->
-            <div class="timeline-step" id="step-Processing">
-              <div class="step-dot"></div>
-              <strong>Processing / Printing</strong>
-              <div style="font-size: 12px; color: var(--text-muted);" class="step-date">Preparing invitation layout</div>
-            </div>
-
-            <!-- Step 4: Dispatched -->
-            <div class="timeline-step" id="step-Dispatched">
-              <div class="step-dot"></div>
-              <strong>Dispatched</strong>
-              <div style="font-size: 12px; color: var(--text-muted);" class="step-date">Handed over to courier</div>
-            </div>
-
-            <!-- Step 5: Out for Delivery -->
-            <div class="timeline-step" id="step-Out-for-Delivery">
-              <div class="step-dot"></div>
-              <strong>Out for Delivery</strong>
-              <div style="font-size: 12px; color: var(--text-muted);" class="step-date">Courier out in region</div>
-            </div>
-
-            <!-- Step 6: Delivered -->
-            <div class="timeline-step" id="step-Delivered">
-              <div class="step-dot"></div>
-              <strong>Delivered</strong>
-              <div style="font-size: 12px; color: var(--text-muted);" class="step-date">Package handed over</div>
-            </div>
-            
           </div>
         </div>
+
+        <!-- TAB 3: REVIEWS & COMMENTS -->
+        <div id="comments-problems-tab" class="order-tab-panel">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            
+            <!-- Left: Customer Review & Admin Comments -->
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+              <!-- Customer Feedback Review -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px;">
+                <h4 style="margin-top: 0; margin-bottom: 8px; color: var(--text-active);"><i class="fa-regular fa-star-half-stroke"></i> Customer Review Feedback</h4>
+                <div id="customerReviewCard" style="padding: 10px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-color);">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <div id="reviewStarRating" style="color: #fbbf24; font-size: 18px;">
+                      <!-- Stars populated dynamically -->
+                    </div>
+                    <span id="reviewDateText" style="font-size: 11px; color: var(--text-muted);">No review submitted yet</span>
+                  </div>
+                  <p id="reviewCommentText" style="margin: 0; font-size: 13.5px; color: var(--text-main); font-style: italic;">"The customer hasn't submitted feedback for this order yet."</p>
+                </div>
+              </div>
+
+              <!-- Internal Admin Comments Thread -->
+              <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; height: 320px;">
+                <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-active);"><i class="fa-solid fa-comments"></i> Admin Comments Thread</h4>
+                <div id="adminCommentsList" style="flex: 1; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; padding-right: 5px;">
+                  <!-- Comments thread -->
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <input type="text" id="newAdminCommentInput" placeholder="Type internal note/comment..." style="flex: 1; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; color: var(--text-active); font-size: 13px;">
+                  <button onclick="addAdminComment()" class="admin-btn-primary" style="height: 34px; padding: 0 12px; margin-top: 0; flex-shrink: 0;"><i class="fa-regular fa-paper-plane"></i></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Problems Log & Reporting -->
+            <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; flex-direction: column;">
+              <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-active);"><i class="fa-solid fa-triangle-exclamation"></i> Transit Problems & Issue Logger</h4>
+              
+              <!-- Report problem form -->
+              <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 15px; font-size: 13px;">
+                <h5 style="margin-top: 0; margin-bottom: 8px; color: var(--text-active);">Report New Issue</h5>
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                  <div style="flex: 1;">
+                    <label style="font-size: 10px; font-weight: 600; display: block; margin-bottom: 3px;">Issue Type</label>
+                    <select id="problemType" style="width: 100%; height: 28px; border-radius: 6px; background: var(--bg-soft); border: 1px solid var(--border-color); color: var(--text-active);">
+                      <option value="Delayed">Delayed Shipment</option>
+                      <option value="Wrong Address">Wrong Address / Undelivered</option>
+                      <option value="Damaged">Damaged Print / Package</option>
+                      <option value="Other">Other Issues</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-bottom: 8px;">
+                  <label style="font-size: 10px; font-weight: 600; display: block; margin-bottom: 3px;">Detailed Description</label>
+                  <textarea id="problemDescription" placeholder="Explain the issue in detail..." style="width: 100%; min-height: 40px; background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-active); padding: 6px; font-family: var(--font-body); resize: vertical;"></textarea>
+                </div>
+                <button onclick="reportProblemIssue()" class="table-action-btn delete" style="width: 100%; height: 32px; font-size: 12.5px; background: rgba(239, 68, 68, 0.1);">
+                  <i class="fa-solid fa-circle-exclamation"></i> Log Problem Issue
+                </button>
+              </div>
+
+              <!-- List of problems -->
+              <h5 style="margin-top: 0; margin-bottom: 8px; color: var(--text-active);">Active & Resolved Issues</h5>
+              <div id="problemsList" style="flex: 1; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 5px;">
+                <!-- Problem items -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB 4: PRINT SLIP -->
+        <div id="print-slip-tab" class="order-tab-panel">
+          <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+            <div style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; width: 100%; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h4 style="margin: 0; color: var(--text-active);"><i class="fa-solid fa-file-invoice"></i> Packaging & Dispatch Slip</h4>
+                <div id="slipPrintedStatusText" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                  Slip not printed yet
+                </div>
+              </div>
+              <button onclick="printOrderSlipBtn()" class="table-action-btn success" style="height: 38px; padding: 0 16px;">
+                <i class="fa-solid fa-print"></i> Print Packaging Slip
+              </button>
+            </div>
+
+            <!-- Print Slip Document Preview -->
+            <div id="printSlipDocPreview" style="background: white; color: black; border: 1px solid #ddd; border-radius: 8px; padding: 30px; width: 100%; max-width: 700px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); font-family: 'Courier New', Courier, monospace; line-height: 1.4;">
+              <!-- Slip document structure dynamically rendered -->
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

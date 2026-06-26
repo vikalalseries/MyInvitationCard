@@ -89,6 +89,8 @@ if (adminUser.role === "Master Owner") {
   if (credentialsPanel) credentialsPanel.remove();
 }
 
+let currentActiveTabId = "overviewTab";
+
 // Setup active tab on load
 if (firstActiveTab) {
   document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active"));
@@ -96,6 +98,7 @@ if (firstActiveTab) {
   
   firstActiveTab.classList.add("active");
   const targetId = firstActiveTab.getAttribute("data-target");
+  currentActiveTabId = targetId;
   document.getElementById(targetId).classList.add("active");
   document.getElementById("currentTabTitle").textContent = firstActiveTab.textContent.trim();
   
@@ -120,6 +123,7 @@ document.querySelectorAll(".nav-item").forEach(btn => {
     
     btn.classList.add("active");
     const targetId = btn.getAttribute("data-target");
+    currentActiveTabId = targetId;
     document.getElementById(targetId).classList.add("active");
     document.getElementById("currentTabTitle").textContent = btn.textContent.trim();
     
@@ -196,12 +200,31 @@ async function fetchOverviewStats() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
     
-    document.getElementById("statRevenue").textContent = `₹${data.stats.totalRevenue}`;
+    document.getElementById("statRevenue").textContent = `₹${data.stats.totalRevenue.toLocaleString("en-IN")}`;
     document.getElementById("statOrders").textContent = data.stats.totalOrders;
     document.getElementById("statUsers").textContent = data.stats.totalUsers;
     document.getElementById("statTemplates").textContent = data.stats.templatesCount;
     document.getElementById("statPopularTemplate").textContent = data.stats.popularTemplate;
     document.getElementById("statConversionRate").textContent = data.stats.conversionRate;
+
+    // Render weekly sales chart dynamically
+    const chartContainer = document.querySelector(".analytics-chart-placeholder");
+    if (chartContainer && data.stats.weeklySales) {
+      chartContainer.innerHTML = "";
+      
+      const sales = data.stats.weeklySales;
+      const maxRevenue = Math.max(...sales.map(s => s.revenue), 1000); // minimum scale factor
+
+      sales.forEach(s => {
+        const heightPercent = Math.max(5, Math.round((s.revenue / maxRevenue) * 95));
+        const bar = document.createElement("div");
+        bar.className = "simulated-chart-bar";
+        bar.style.height = `${heightPercent}%`;
+        bar.title = `${s.day}: ₹${s.revenue.toFixed(2)}`;
+        bar.innerHTML = `<span>${s.day}</span>`;
+        chartContainer.appendChild(bar);
+      });
+    }
   } catch (err) {
     console.error("Failed to load dashboard stats", err);
   }
@@ -1051,73 +1074,247 @@ function renderOrdersTable(orders) {
       <td>${paymentText}</td>
       <td><code>${datePlaced}</code></td>
       <td><span class="badge ${badgeClass}">${order.status}</span></td>
+      <td>${order.orderType || 'normal'}</td>
+      <td><button class="table-action-btn edit" onclick="window.open('../universal-template-editor/editor.html?templateId=${order.templateId}', '_blank')"><i class="fa-solid fa-eye"></i> View Template</button></td>
+      <td><button class="table-action-btn edit" onclick="window.open('${BACKEND_URL}/api/admin/orders/${order._id}/slip', '_blank')"><i class="fa-solid fa-print"></i> Print Slip</button></td>
       <td>${actionBtn}</td>
     `;
     tableBody.appendChild(tr);
   });
 }
 
-// Open Delivery / Shipment Management Modal
-window.openDeliveryModal = function(orderId) {
-  const order = allOrders.find(o => o.orderId === orderId);
-  if (!order) {
-    showToast("Order details not found", "error");
-    return;
-  }
+// Value formatter helpers
+function formatValue(val) {
+  if (!val) return "N/A";
+  return val.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+}
 
-  // Set values in the modal form
-  document.getElementById("deliveryOrderId").value = order.orderId;
-  document.getElementById("deliveryStatus").value = order.status || "Pending";
-  document.getElementById("deliveryCarrier").value = order.carrier || "";
-  document.getElementById("deliveryTrackingId").value = order.trackingId || "";
-  document.getElementById("deliveryNotes").value = order.notes || "";
-  
-  // Format Date value (YYYY-MM-DD) for HTML5 input date
-  if (order.estimatedDelivery) {
-    try {
-      const d = new Date(order.estimatedDelivery);
-      if (!isNaN(d.getTime())) {
-        document.getElementById("deliveryEstDate").value = d.toISOString().split("T")[0];
-      } else {
-        document.getElementById("deliveryEstDate").value = "";
-      }
-    } catch (e) {
-      document.getElementById("deliveryEstDate").value = "";
+function formatKey(key) {
+  if (!key) return "";
+  return key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/_/g, ' ')
+    .trim()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+// Switch Order Modal Tabs
+window.switchOrderTab = function(tabId, btn) {
+  document.querySelectorAll(".order-tab-panel").forEach(panel => {
+    panel.classList.remove("active");
+  });
+  document.querySelectorAll(".order-tab-btn").forEach(button => {
+    button.classList.remove("active");
+  });
+  const targetPanel = document.getElementById(tabId);
+  if (targetPanel) targetPanel.classList.add("active");
+  if (btn) btn.classList.add("active");
+};
+
+// Open Delivery & Order Detail Portal Modal
+window.openDeliveryModal = async function(orderId) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}`);
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.message || "Failed to fetch order details");
+    
+    const order = data.order;
+    window.currentSelectedOrder = order;
+
+    // Reset tabs
+    const firstTabBtn = document.querySelector(".order-tab-btn");
+    if (firstTabBtn) window.switchOrderTab('order-details-tab', firstTabBtn);
+
+    // Populate modal title
+    document.getElementById("portalOrderId").textContent = order.orderId;
+    
+    // TAB 1: ORDER DETAILS
+    document.getElementById("specTemplateName").textContent = order.templateName || "N/A";
+    document.getElementById("specTemplateId").textContent = order.templateId || "N/A";
+    document.getElementById("specQuantity").textContent = order.quantity || "N/A";
+    document.getElementById("specPaperStock").textContent = formatValue(order.stockOption);
+    document.getElementById("specPremiumPaper").textContent = order.premiumPaperStock ? formatValue(order.premiumPaperStock) : "None";
+    document.getElementById("specEnvelope").textContent = formatValue(order.envelopeOption);
+    document.getElementById("specDeliveryMethod").textContent = formatValue(order.deliveryMethod);
+    
+    // View Editor button
+    const viewEditorBtn = document.getElementById("viewTemplateEditorBtn");
+    if (viewEditorBtn) {
+      viewEditorBtn.href = `../universal-template-editor/editor.html?templateId=${order.templateId}`;
     }
-  } else {
-    document.getElementById("deliveryEstDate").value = "";
+
+    // Load Preview iframe
+    const iframe = document.getElementById("orderTemplateIframe");
+    const placeholder = document.getElementById("orderTemplatePlaceholder");
+    if (iframe) {
+      iframe.src = `../universal-template-editor/editor.html?templateId=${order.templateId}&preview=true&readOnly=true`;
+      
+      // Pass the customized user fields to the preview iframe on load
+      iframe.onload = function() {
+        if (order.templateEditData) {
+          iframe.contentWindow.postMessage({
+            type: 'UPDATE_TEMPLATE_DATA',
+            data: order.templateEditData
+          }, '*');
+        }
+      };
+      
+      iframe.style.display = "block";
+      if (placeholder) placeholder.style.display = "none";
+    }
+    
+    // User customizations list (key-value)
+    const customizationsList = document.getElementById("orderCustomizationsList");
+    if (customizationsList) {
+      customizationsList.innerHTML = "";
+      if (order.templateEditData && order.templateEditData.fields) {
+        const fields = order.templateEditData.fields;
+        for (const [key, val] of Object.entries(fields)) {
+          if (val && typeof val === "string") {
+            const div = document.createElement("div");
+            div.style.display = "flex";
+            div.style.justifyContent = "space-between";
+            div.style.borderBottom = "1px dashed var(--border-color)";
+            div.style.paddingBottom = "3px";
+            div.innerHTML = `<span style="font-weight:600; color:var(--text-muted);">${formatKey(key)}:</span><span>${val}</span>`;
+            customizationsList.appendChild(div);
+          }
+        }
+      }
+      if (customizationsList.children.length === 0) {
+        customizationsList.innerHTML = `<div style="color:var(--text-muted); font-style:italic;">No custom fields edited.</div>`;
+      }
+    }
+
+    // Billing details
+    const pricing = order.pricing || {};
+    document.getElementById("billBaseCost").textContent = `₹${(pricing.baseTotal || 0).toFixed(2)}`;
+    document.getElementById("billPaperAddon").textContent = `₹${(pricing.paperTotal || 0).toFixed(2)}`;
+    document.getElementById("billEnvelopeAddon").textContent = `₹${(pricing.envelopeTotal || 0).toFixed(2)}`;
+    document.getElementById("billShippingCost").textContent = `₹${(pricing.deliveryPrice || 0).toFixed(2)}`;
+    document.getElementById("billSubtotal").textContent = `₹${(pricing.subtotal || 0).toFixed(2)}`;
+    document.getElementById("billTax").textContent = `₹${(pricing.tax || 0).toFixed(2)}`;
+    document.getElementById("billGrandTotal").textContent = `₹${(pricing.total || 0).toFixed(2)}`;
+    
+    const paymentStatusBadge = document.getElementById("billPaymentStatus");
+    if (paymentStatusBadge) {
+      paymentStatusBadge.textContent = order.paymentStatus || "Pending";
+      paymentStatusBadge.className = `badge ${order.paymentStatus === "Paid" ? "success-badge" : "danger-badge"}`;
+    }
+    document.getElementById("billPaymentRef").textContent = order.paymentId || "N/A";
+
+    // TAB 2: DELIVERY & TRACKING
+    document.getElementById("tab2CustName").textContent = order.customerName || "N/A";
+    document.getElementById("tab2CustPhone").textContent = order.customerPhone || "N/A";
+    document.getElementById("tab2CustEmail").textContent = order.customerEmail || "N/A";
+    
+    const addr = order.shippingAddress;
+    if (addr) {
+      document.getElementById("tab2AddressText").innerHTML = `
+        <strong>${addr.fullName}</strong><br>
+        ${addr.address}${addr.address2 ? ', ' + addr.address2 : ''}<br>
+        ${addr.city}, ${addr.state} - <strong>${addr.pincode}</strong><br>
+        Phone: ${addr.phone} ${addr.emergencyPhone ? '(Alt: ' + addr.emergencyPhone + ')' : ''}
+      `;
+    } else {
+      document.getElementById("tab2AddressText").textContent = "No shipping address saved.";
+    }
+
+    // Set form input values
+    document.getElementById("tab2Status").value = order.status || "Pending";
+    document.getElementById("tab2Carrier").value = order.carrier || "";
+    document.getElementById("tab2TrackingId").value = order.trackingId || "";
+    document.getElementById("tab2Notes").value = order.notes || "";
+    
+    if (order.estimatedDelivery) {
+      try {
+        const d = new Date(order.estimatedDelivery);
+        if (!isNaN(d.getTime())) {
+          document.getElementById("tab2EstDate").value = d.toISOString().split("T")[0];
+        } else {
+          document.getElementById("tab2EstDate").value = "";
+        }
+      } catch (e) {
+        document.getElementById("tab2EstDate").value = "";
+      }
+    } else {
+      document.getElementById("tab2EstDate").value = "";
+    }
+
+    // Assign local delivery partner fields
+    const dp = order.deliveryPartner || {};
+    document.getElementById("partnerName").value = dp.name || "";
+    document.getElementById("partnerPhone").value = dp.phone || "";
+    document.getElementById("partnerVehicle").value = dp.vehicleNumber || "";
+
+    // Clear Manual checkpoint inputs
+    document.getElementById("checkpointLocation").value = "";
+    document.getElementById("checkpointStatus").value = "";
+    document.getElementById("checkpointDesc").value = "";
+
+    // Render interactive stepper journey and logs
+    updateTimelineUI(order);
+    renderTrackingHistoryLogs(order.trackingHistory || []);
+
+    // TAB 3: REVIEWS & COMMENTS
+    // Customer Review rating & comment
+    const review = order.review || {};
+    const starContainer = document.getElementById("reviewStarRating");
+    if (starContainer) {
+      starContainer.innerHTML = "";
+      const rating = review.rating || 0;
+      if (rating > 0) {
+        for (let i = 1; i <= 5; i++) {
+          starContainer.innerHTML += `<i class="${i <= rating ? 'fa-solid' : 'fa-regular'} fa-star"></i>`;
+        }
+        document.getElementById("reviewDateText").textContent = `Reviewed on ${new Date(review.createdAt).toLocaleDateString()}`;
+        document.getElementById("reviewCommentText").textContent = `"${review.comment || 'No comment written'}"`;
+      } else {
+        starContainer.innerHTML = `<span style="font-size:13px; color:var(--text-muted);">Not Rated</span>`;
+        document.getElementById("reviewDateText").textContent = "No review submitted yet";
+        document.getElementById("reviewCommentText").textContent = "The customer hasn't submitted feedback for this order yet.";
+      }
+    }
+
+    // Admin comments thread
+    renderAdminCommentsList(order.adminComments || []);
+    
+    // Clear comment input
+    document.getElementById("newAdminCommentInput").value = "";
+
+    // Reset problem report fields
+    document.getElementById("problemType").selectedIndex = 0;
+    document.getElementById("problemDescription").value = "";
+
+    // Render problems log
+    renderProblemsList(order.problems || []);
+
+    // TAB 4: PRINT SLIP
+    renderSlipDocPreview(order);
+
+    // Permissions check
+    const canUpdate = hasPermission("orders.update");
+    document.getElementById("tab2Status").disabled = !canUpdate;
+    document.getElementById("tab2Carrier").disabled = !canUpdate;
+    document.getElementById("tab2TrackingId").disabled = !canUpdate;
+    document.getElementById("tab2EstDate").disabled = !canUpdate;
+    document.getElementById("tab2Notes").disabled = !canUpdate;
+    document.getElementById("partnerName").disabled = !canUpdate;
+    document.getElementById("partnerPhone").disabled = !canUpdate;
+    document.getElementById("partnerVehicle").disabled = !canUpdate;
+    
+    const saveCarrierBtn = document.querySelector("#tab2TrackingForm button[type='submit']");
+    if (saveCarrierBtn) saveCarrierBtn.style.display = canUpdate ? "block" : "none";
+
+    // Show modal
+    const modal = document.getElementById("manageDeliveryModal");
+    if (modal) modal.classList.remove("hidden");
+
+  } catch (err) {
+    showToast(err.message, "error");
   }
-
-  // Populate customer & address section
-  document.getElementById("deliveryCustName").textContent = order.customerName || "N/A";
-  document.getElementById("deliveryCustPhone").textContent = order.customerPhone || "N/A";
-  document.getElementById("deliveryCustEmail").textContent = order.customerEmail || "N/A";
-
-  const addr = order.shippingAddress;
-  if (addr) {
-    const fullAddress = `${addr.fullName}, Phone: ${addr.phone}${addr.emergencyPhone ? ' (Alt: ' + addr.emergencyPhone + ')' : ''}, Address: ${addr.address}${addr.address2 ? ', ' + addr.address2 : ''}, ${addr.city}, ${addr.state} - ${addr.pincode}`;
-    document.getElementById("deliveryAddressText").textContent = fullAddress;
-  } else {
-    document.getElementById("deliveryAddressText").textContent = "No shipping address saved for this customer profile.";
-  }
-
-  // Disable inputs if order.update permission is missing
-  const canUpdate = hasPermission("orders.update");
-  document.getElementById("deliveryStatus").disabled = !canUpdate;
-  document.getElementById("deliveryCarrier").disabled = !canUpdate;
-  document.getElementById("deliveryTrackingId").disabled = !canUpdate;
-  document.getElementById("deliveryEstDate").disabled = !canUpdate;
-  document.getElementById("deliveryNotes").disabled = !canUpdate;
-  
-  const saveBtn = document.querySelector("#deliveryTrackingForm button[type='submit']");
-  if (saveBtn) saveBtn.style.display = canUpdate ? "block" : "none";
-
-  // Update Stepper Journey UI
-  updateTimelineUI(order);
-
-  // Show Modal
-  const modal = document.getElementById("manageDeliveryModal");
-  if (modal) modal.classList.remove("hidden");
 };
 
 // Close Delivery Modal
@@ -1128,8 +1325,8 @@ window.closeDeliveryModal = function() {
 
 // Copy Address helper
 window.copyDeliveryAddress = function() {
-  const text = document.getElementById("deliveryAddressText").textContent;
-  if (text && text !== "No shipping address saved for this customer profile.") {
+  const text = document.getElementById("tab2AddressText").innerText;
+  if (text) {
     navigator.clipboard.writeText(text)
       .then(() => showToast("Shipping address copied to clipboard!", "success"))
       .catch(() => showToast("Failed to copy address", "error"));
@@ -1192,14 +1389,14 @@ function updateTimelineUI(order) {
     }
   });
 
-  // If order is Cancelled, mark all steps as red/inactive or show cancellation alert
-  if (currentStatus === "Cancelled") {
+  // If order is Cancelled or Returned, mark all steps appropriately
+  if (currentStatus === "Cancelled" || currentStatus === "Returned") {
     statuses.forEach(status => {
       const stepEl = document.getElementById(`step-${status.replace(/ /g, "-")}`);
       if (stepEl) {
         stepEl.className = "timeline-step";
         const dateEl = stepEl.querySelector(".step-date");
-        if (dateEl) dateEl.textContent = "Cancelled";
+        if (dateEl) dateEl.textContent = currentStatus;
       }
     });
     // Highlight first step as cancelled in red
@@ -1226,25 +1423,235 @@ function updateTimelineUI(order) {
   }
 }
 
-// Tracking Form submit
-const deliveryTrackingForm = document.getElementById("deliveryTrackingForm");
-if (deliveryTrackingForm) {
-  deliveryTrackingForm.addEventListener("submit", async (e) => {
+// Render tracking history checkpoint logs
+function renderTrackingHistoryLogs(history) {
+  const container = document.getElementById("trackingHistoryLogs");
+  if (!container) return;
+  container.innerHTML = "";
+  
+  if (history.length === 0) {
+    container.innerHTML = `<div style="color:var(--text-muted); font-style:italic;">No tracking checkpoints pushed.</div>`;
+    return;
+  }
+
+  const sorted = [...history].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  sorted.forEach(log => {
+    const div = document.createElement("div");
+    div.style.position = "relative";
+    div.style.marginBottom = "8px";
+    div.style.borderBottom = "1px solid var(--border-color)";
+    div.style.paddingBottom = "5px";
+    
+    const time = new Date(log.timestamp).toLocaleString();
+    div.innerHTML = `
+      <div style="font-weight:600; color:var(--text-active);">${log.status} - ${log.location}</div>
+      <div style="color:var(--text-main); margin: 2px 0;">${log.description}</div>
+      <div style="font-size:10px; color:var(--text-muted);">${time} | By: ${log.updatedBy}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// Render Admin comments list
+function renderAdminCommentsList(comments) {
+  const container = document.getElementById("adminCommentsList");
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (comments.length === 0) {
+    container.innerHTML = `<div style="color:var(--text-muted); text-align:center; font-style:italic; padding: 20px 0;">No internal comments yet.</div>`;
+    return;
+  }
+
+  comments.forEach(c => {
+    const isMe = c.adminUser === adminUser.username;
+    const bubbleWrapper = document.createElement("div");
+    bubbleWrapper.style.display = "flex";
+    bubbleWrapper.style.flexDirection = "column";
+    bubbleWrapper.style.alignItems = isMe ? "flex-end" : "flex-start";
+    bubbleWrapper.style.width = "100%";
+
+    const bubble = document.createElement("div");
+    bubble.style.maxWidth = "85%";
+    bubble.style.background = isMe ? "rgba(99, 102, 241, 0.15)" : "var(--bg-soft)";
+    bubble.style.border = `1px solid ${isMe ? 'var(--primary-color)' : 'var(--border-color)'}`;
+    bubble.style.borderRadius = "12px";
+    bubble.style.padding = "8px 12px";
+    bubble.style.fontSize = "13px";
+    bubble.style.wordBreak = "break-word";
+    
+    bubble.innerHTML = `
+      <div style="font-weight:700; font-size:11px; margin-bottom:3px; color:var(--text-active);">${c.adminUser}</div>
+      <div style="color:var(--text-main);">${c.comment}</div>
+      <div style="font-size:9.5px; text-align:right; color:var(--text-muted); margin-top:4px;">${new Date(c.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+    `;
+    bubbleWrapper.appendChild(bubble);
+    container.appendChild(bubbleWrapper);
+  });
+
+  container.scrollTop = container.scrollHeight;
+}
+
+// Render problem issues list
+function renderProblemsList(problems) {
+  const container = document.getElementById("problemsList");
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (problems.length === 0) {
+    container.innerHTML = `<div style="color:var(--text-muted); text-align:center; font-style:italic; padding: 20px 0;">No problems logged for this order.</div>`;
+    return;
+  }
+
+  problems.forEach(p => {
+    const card = document.createElement("div");
+    card.style.background = p.status === "Open" ? "rgba(239, 68, 68, 0.05)" : "rgba(16, 185, 129, 0.05)";
+    card.style.border = `1px solid ${p.status === 'Open' ? 'var(--danger-color)' : 'var(--success-color)'}`;
+    card.style.borderRadius = "8px";
+    card.style.padding = "10px";
+    card.style.fontSize = "12.5px";
+    card.style.position = "relative";
+
+    const dateStr = new Date(p.createdAt).toLocaleDateString();
+    let actionBtn = "";
+    if (p.status === "Open" && hasPermission("orders.update")) {
+      actionBtn = `<button onclick="resolveProblem('${p._id}')" class="table-action-btn success" style="position:absolute; right:10px; top:10px; height:26px; padding:0 8px; font-size:11px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-check"></i> Resolve</button>`;
+    }
+
+    let footer = `Reported: ${p.reportedBy} on ${dateStr}`;
+    if (p.status === "Resolved") {
+      footer += ` | Resolved: ${p.resolvedBy} on ${new Date(p.resolvedAt).toLocaleDateString()}`;
+    }
+
+    card.innerHTML = `
+      <div style="font-weight:700; color:var(--text-active); margin-bottom:4px;">
+        <span class="badge ${p.status === 'Open' ? 'danger-badge' : 'success-badge'}">${p.status}</span>
+        [${p.type}]
+      </div>
+      <div style="color:var(--text-main); margin-bottom:6px; padding-right: 70px;">${p.description}</div>
+      <div style="font-size:10px; color:var(--text-muted);">${footer}</div>
+      ${actionBtn}
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Render packing slip preview
+function renderSlipDocPreview(order) {
+  const container = document.getElementById("printSlipDocPreview");
+  if (!container) return;
+
+  const addr = order.shippingAddress || {};
+  const pricing = order.pricing || {};
+  const statusText = order.slipPrinted 
+    ? `<span style="color:green; font-weight:bold;">PRINTER COPY (Printed by ${order.slipPrintedBy} on ${new Date(order.slipPrintedAt).toLocaleString()})</span>`
+    : `<span style="color:red; font-weight:bold;">PENDING PRINT</span>`;
+
+  document.getElementById("slipPrintedStatusText").innerHTML = order.slipPrinted
+    ? `<i class="fa-solid fa-circle-check" style="color:var(--success-color);"></i> Printed by <strong>${order.slipPrintedBy}</strong> on ${new Date(order.slipPrintedAt).toLocaleString()}`
+    : `<i class="fa-solid fa-circle-xmark" style="color:var(--danger-color);"></i> Slip not printed yet`;
+
+  container.innerHTML = `
+    <div class="header">
+      <div class="logo">MY INVITATION CARD</div>
+      <div style="font-size:12px; margin-top:5px;">Digital & Printed Personal Invitations</div>
+      <div style="font-size:14px; font-weight:bold; margin-top:15px; text-decoration:underline;">PACKING & DISPATCH SLIP</div>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-top:20px;">
+      <div>
+        <strong>Order ID:</strong> #${order.orderId}<br>
+        <strong>Order Date:</strong> ${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}<br>
+        <strong>Status:</strong> ${order.status}<br>
+        <strong>Slip Status:</strong> ${statusText}
+      </div>
+      <div style="text-align:right;">
+        <strong>Courier Partner:</strong> ${order.carrier || 'Pending Assignment'}<br>
+        <strong>AWB / Tracking ID:</strong> ${order.trackingId || 'Pending AWB'}<br>
+        <strong>Est. Delivery:</strong> ${order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString() : 'N/A'}
+      </div>
+    </div>
+    
+    <hr>
+    
+    <div style="font-size:13px;">
+      <strong>SHIPPING TO:</strong><br>
+      <div style="margin-top:5px; font-size:14px; line-height:1.5;">
+        <strong>${addr.fullName || 'N/A'}</strong><br>
+        ${addr.address || 'N/A'}<br>
+        ${addr.address2 ? addr.address2 + '<br>' : ''}
+        ${addr.city || 'N/A'}, ${addr.state || 'N/A'} - <strong>${addr.pincode || 'N/A'}</strong><br>
+        <strong>Phone:</strong> ${addr.phone || 'N/A'} ${addr.emergencyPhone ? '(Alt: ' + addr.emergencyPhone + ')' : ''}
+      </div>
+    </div>
+    
+    <hr>
+    
+    <table class="details-table" style="font-size:13px;">
+      <thead>
+        <tr>
+          <th>Invitation Template</th>
+          <th>Paper Specs</th>
+          <th>Envelope Choice</th>
+          <th>Qty</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong>${order.templateName || 'N/A'}</strong><br>
+            <span style="font-size:11px; color:#555;">ID: ${order.templateId}</span>
+          </td>
+          <td>
+            Stock: ${formatValue(order.stockOption)}<br>
+            Premium: ${order.premiumPaperStock ? formatValue(order.premiumPaperStock) : 'None'}
+          </td>
+          <td>
+            ${formatValue(order.envelopeOption)}
+          </td>
+          <td>
+            <strong>${order.quantity || 100} units</strong>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="pricing-summary" style="font-size:13px;">
+      <strong>Payment Status:</strong> ${order.paymentStatus || 'Pending'} (${order.paymentId ? 'Razorpay ' + order.paymentId : 'No payment ref'})<br>
+      <div style="font-size:15px; font-weight:bold; margin-top:5px;">Grand Total: ₹${(pricing.total || 0).toFixed(2)}</div>
+    </div>
+    
+    <hr>
+    
+    <div style="font-size:11px; text-align:center; color:#555;">
+      Thank you for ordering from MyInvitationCard. Please verify all items before packaging.<br>
+      For customer queries, contact support@myinvitationcard.com
+    </div>
+  `;
+}
+
+// Courier Carrier details submit
+const tab2TrackingForm = document.getElementById("tab2TrackingForm");
+if (tab2TrackingForm) {
+  tab2TrackingForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!hasPermission("orders.update")) {
       showToast("Permission denied", "error");
       return;
     }
 
-    const orderId = document.getElementById("deliveryOrderId").value;
-    const status = document.getElementById("deliveryStatus").value;
-    const carrier = document.getElementById("deliveryCarrier").value;
-    const trackingId = document.getElementById("deliveryTrackingId").value.trim();
-    const estimatedDelivery = document.getElementById("deliveryEstDate").value;
-    const notes = document.getElementById("deliveryNotes").value.trim();
+    const order = window.currentSelectedOrder;
+    if (!order) return;
+
+    const status = document.getElementById("tab2Status").value;
+    const carrier = document.getElementById("tab2Carrier").value;
+    const trackingId = document.getElementById("tab2TrackingId").value.trim();
+    const estimatedDelivery = document.getElementById("tab2EstDate").value;
+    const notes = document.getElementById("tab2Notes").value.trim();
 
     try {
-      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/status`, {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${order.orderId}/status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1260,13 +1667,206 @@ if (deliveryTrackingForm) {
       if (!res.ok) throw new Error(data.message);
 
       showToast("Order tracking details updated!", "success");
-      closeDeliveryModal();
+      openDeliveryModal(order.orderId);
       fetchOrders();
     } catch (err) {
       showToast(err.message, "error");
     }
   });
 }
+
+// Assign Delivery Partner
+window.saveDeliveryPartner = async function() {
+  if (!hasPermission("orders.update")) {
+    showToast("Permission denied", "error");
+    return;
+  }
+  const order = window.currentSelectedOrder;
+  if (!order) return;
+
+  const name = document.getElementById("partnerName").value.trim();
+  const phone = document.getElementById("partnerPhone").value.trim();
+  const vehicleNumber = document.getElementById("partnerVehicle").value.trim();
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${order.orderId}/delivery-partner`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone, vehicleNumber, adminUser: adminUser.username })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    showToast("Delivery partner assigned successfully!", "success");
+    openDeliveryModal(order.orderId);
+    fetchOrders();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+// Add Manual Checkpoint
+window.addTrackingCheckpoint = async function() {
+  if (!hasPermission("orders.update")) {
+    showToast("Permission denied", "error");
+    return;
+  }
+  const order = window.currentSelectedOrder;
+  if (!order) return;
+
+  const location = document.getElementById("checkpointLocation").value.trim();
+  const status = document.getElementById("checkpointStatus").value;
+  const description = document.getElementById("checkpointDesc").value.trim();
+
+  if (!location || !description) {
+    showToast("Location and Description are required", "error");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${order.orderId}/tracking`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status, location, description, adminUser: adminUser.username })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    showToast("Tracking checkpoint added successfully", "success");
+    openDeliveryModal(order.orderId);
+    fetchOrders();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+// Add Admin Comment
+window.addAdminComment = async function() {
+  const order = window.currentSelectedOrder;
+  if (!order) return;
+
+  const comment = document.getElementById("newAdminCommentInput").value.trim();
+  if (!comment) return;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${order.orderId}/comment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ comment, adminUser: adminUser.username })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    showToast("Comment added to thread", "success");
+    openDeliveryModal(order.orderId);
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+// Report Problem Issue
+window.reportProblemIssue = async function() {
+  const order = window.currentSelectedOrder;
+  if (!order) return;
+
+  const type = document.getElementById("problemType").value;
+  const description = document.getElementById("problemDescription").value.trim();
+
+  if (!description) {
+    showToast("Problem description is required", "error");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${order.orderId}/problem`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "report", type, description, adminUser: adminUser.username })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    showToast("Issue logged successfully", "success");
+    openDeliveryModal(order.orderId);
+    fetchOrders();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+// Resolve Problem Issue
+window.resolveProblem = async function(problemId) {
+  if (!hasPermission("orders.update")) {
+    showToast("Permission denied", "error");
+    return;
+  }
+  const order = window.currentSelectedOrder;
+  if (!order) return;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${order.orderId}/problem`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "resolve", problemId, adminUser: adminUser.username })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    showToast("Issue resolved successfully", "success");
+    openDeliveryModal(order.orderId);
+    fetchOrders();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+// Print Slip Button trigger
+window.printOrderSlipBtn = async function() {
+  const order = window.currentSelectedOrder;
+  if (!order) return;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${order.orderId}/slip-printed`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ adminUser: adminUser.username })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    const printContent = document.getElementById("printSlipDocPreview").innerHTML;
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Packing Slip - #${order.orderId}</title>
+          <style>
+            body { font-family: 'Courier New', Courier, monospace; padding: 40px; color: black; background: white; line-height: 1.4; }
+            hr { border: none; border-top: 1px dashed black; margin: 20px 0; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .logo { font-size: 20px; font-weight: bold; letter-spacing: 2px; }
+            .details-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            .details-table th, .details-table td { border: 1px solid black; padding: 10px; text-align: left; }
+            .pricing-summary { text-align: right; margin-top: 20px; }
+            @media print {
+              body { padding: 0; }
+            }
+          </style>
+        </head>
+        <body onload="window.print(); window.close();">
+          ${printContent}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+
+    showToast("Packing slip generated & printed!", "success");
+    openDeliveryModal(order.orderId);
+    fetchOrders();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
 
 // Export filtered orders database to CSV
 window.exportOrdersToCSV = function() {
@@ -1789,3 +2389,89 @@ async function fetchAuditLogs() {
     showToast(err.message, "error");
   }
 }
+
+// Auto-refresh active tab data and active order modal details every 10 seconds for real-time updates
+setInterval(() => {
+  if (window.currentActiveTabId) {
+    // Silently reload tab data (don't show table loading spinner spinner during silent update)
+    // We can fetch data in the background and update the display
+    if (window.currentActiveTabId === "overviewTab") {
+      fetchOverviewStats();
+    } else if (window.currentActiveTabId === "usersTab") {
+      fetch(`${BACKEND_URL}/api/admin/users`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            allUsers = data.users || [];
+            renderUsersTable(allUsers);
+          }
+        }).catch(err => console.error("Silent users refresh failed:", err));
+    } else if (window.currentActiveTabId === "ordersTab") {
+      fetch(`${BACKEND_URL}/api/admin/orders`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            allOrders = data.orders || [];
+            renderOrdersTable(allOrders);
+          }
+        }).catch(err => console.error("Silent orders refresh failed:", err));
+    } else if (window.currentActiveTabId === "paymentsTab") {
+      fetch(`${BACKEND_URL}/api/admin/payments`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const tableBody = document.getElementById("paymentsTableBody");
+            if (tableBody) {
+              tableBody.innerHTML = "";
+              data.payments.forEach(p => {
+                const tr = document.createElement("tr");
+                const amountText = `₹${p.amount.toFixed(2)}`;
+                const badgeClass = p.status === "Paid" ? "success-badge" : "danger-badge";
+                const refundBtn = p.status === "Paid" && hasPermission("payment.refund")
+                  ? `<button class="table-action-btn delete" onclick="triggerRefund('${p.razorpayPaymentId}', ${p.amount})">Refund</button>`
+                  : `<span style="color:var(--text-muted); font-size:12px;">No Actions</span>`;
+                tr.innerHTML = `
+                  <td>#${p.transactionId}</td>
+                  <td><code>${p.razorpayPaymentId}</code></td>
+                  <td><strong>${p.uid}</strong></td>
+                  <td>${amountText}</td>
+                  <td><span class="badge ${badgeClass}">${p.status}</span></td>
+                  <td>${refundBtn}</td>
+                `;
+                tableBody.appendChild(tr);
+              });
+            }
+          }
+        }).catch(err => console.error("Silent payments refresh failed:", err));
+    } else if (window.currentActiveTabId === "adminsTab") {
+      fetch(`${BACKEND_URL}/api/admin/accounts`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            renderAdminsTable(data.accounts);
+          }
+        }).catch(err => console.error("Silent admins refresh failed:", err));
+    }
+    
+    // Also if the order details modal is open, refresh the order details too!
+    const modal = document.getElementById("manageDeliveryModal");
+    if (modal && !modal.classList.contains("hidden") && window.currentSelectedOrder) {
+      fetch(`${BACKEND_URL}/api/admin/orders/${window.currentSelectedOrder.orderId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            window.currentSelectedOrder = data.order;
+            
+            // Re-render only dynamic components of the modal
+            updateTimelineUI(data.order);
+            renderTrackingHistoryLogs(data.order.trackingHistory || []);
+            renderAdminCommentsList(data.order.adminComments || []);
+            renderProblemsList(data.order.problems || []);
+            renderSlipDocPreview(data.order);
+          }
+        })
+        .catch(err => console.error("Real-time order modal refresh failed:", err));
+    }
+  }
+}, 10000);
+
