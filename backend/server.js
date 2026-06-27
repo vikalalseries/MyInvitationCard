@@ -7,17 +7,16 @@ const dotenv = require("dotenv");
 const { Resend } = require("resend");
 const admin = require("firebase-admin");
 const mongoose = require("mongoose");
+const { connectDB } = require("./db");
 const User = require("./models/User");
 
 dotenv.config();
 
-// Connect to MongoDB
-const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/myinvitationcard";
-mongoose.connect(mongoUri)
+// Connect to MongoDB and auto-seed templates if needed
+connectDB()
   .then(async () => {
     console.log("MongoDB connected successfully");
 
-    // Auto-seed templates if collection is empty
     try {
       const Template = require("./models/Template");
       const count = await Template.countDocuments();
@@ -30,7 +29,6 @@ mongoose.connect(mongoUri)
           const templatesData = JSON.parse(fs.readFileSync(templatesJsonPath, "utf-8"));
           const templatesToInsert = templatesData.map(t => {
             const isPremium = t.category === "premium";
-            // Pricing from Configure Print page (print.js): basePriceRate = ₹10.00/card
             return {
               templateId: String(t.id),
               name: t.title,
@@ -57,7 +55,10 @@ mongoose.connect(mongoUri)
       console.error("Failed to auto-seed templates:", seedErr);
     }
   })
-  .catch(err => console.error("MongoDB connection error:", err));
+  .catch(err => {
+    console.error("MongoDB connection error:", err);
+    console.warn("Backend will continue running, but DB-dependent endpoints may fail until MongoDB becomes available.");
+  });
 
 const app = express();
 
@@ -1677,6 +1678,15 @@ app.delete("/api/admin/accounts/:username", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log("Server running on port 5000");
-});
+function startServer() {
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
+
+if (mongoose.connection.readyState >= 1) {
+  startServer();
+} else {
+  mongoose.connection.once("connected", startServer);
+}
