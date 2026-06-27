@@ -1,17 +1,15 @@
 const dns = require("dns");
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
-const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
-require("dotenv").config();
+const { connectDB } = require("./db");
 
 const Template = require("./models/Template");
 
 async function run() {
   try {
-    const mongoUri = process.env.MONGODB_URI || "mongodb+srv://vikalal8756_db_user:vpxeBn4OHL8IVzNz@cluster0.ty5q9ii.mongodb.net/myinvitationcard?appName=Cluster0";
-    await mongoose.connect(mongoUri);
+    await connectDB();
     console.log("Connected to MongoDB successfully.");
 
     const count = await Template.countDocuments();
