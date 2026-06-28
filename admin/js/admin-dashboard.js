@@ -183,42 +183,51 @@ setInterval(updateClock, 1000);
 updateClock();
 
 // Central Data Loader based on tab selection
-function loadTabData(tabId) {
+function loadTabData(tabId, isBackground = false) {
   switch (tabId) {
     case "overviewTab":
-      fetchOverviewStats();
+      fetchOverviewStats(isBackground);
       break;
     case "usersTab":
-      fetchUsers();
+      fetchUsers(isBackground);
       break;
     case "credentialsTab":
-      fetchCredentials();
+      fetchCredentials(isBackground);
       break;
     case "adminsTab":
-      fetchAdmins();
+      fetchAdmins(isBackground);
       break;
     case "templatesTab":
-      fetchTemplates();
+      fetchTemplates(isBackground);
       break;
     case "ordersTab":
-      fetchOrders();
+      fetchOrders(isBackground);
       break;
     case "paymentsTab":
-      fetchPayments();
+      fetchPayments(isBackground);
       break;
     case "pricingTab":
-      fetchPricing();
+      fetchPricing(isBackground);
       break;
     case "auditTab":
-      fetchAuditLogs();
+      fetchAuditLogs(isBackground);
       break;
   }
 }
 
+// Auto-polling timer for live backend updates (polls active tab every 10 seconds silently)
+const AUTO_POLL_INTERVAL_MS = 10000;
+setInterval(() => {
+  const isModalOpen = !!document.querySelector(".modal-overlay.open, .modal-admin:not(.hidden), .modal:not(.hidden)");
+  if (currentActiveTabId && document.visibilityState === "visible" && !isModalOpen) {
+    loadTabData(currentActiveTabId, true);
+  }
+}, AUTO_POLL_INTERVAL_MS);
+
 // --- TAB DATA FETCHERS & ACTION HANDLERS ---
 
 // 1. Overview stats
-async function fetchOverviewStats() {
+async function fetchOverviewStats(isBackground = false) {
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/dashboard-stats`);
     const data = await res.json();
@@ -250,15 +259,17 @@ async function fetchOverviewStats() {
       });
     }
   } catch (err) {
-    console.error("Failed to load dashboard stats", err);
+    if (!isBackground) console.error("Failed to load dashboard stats", err);
   }
 }
 
 // 2. Users management
-async function fetchUsers() {
+async function fetchUsers(isBackground = false) {
   const tableBody = document.getElementById("usersTableBody");
   if (!tableBody) return;
-  tableBody.innerHTML = `<tr><td colspan="9" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  if (!isBackground) {
+    tableBody.innerHTML = `<tr><td colspan="9" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  }
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/users`);
@@ -268,7 +279,7 @@ async function fetchUsers() {
     allUsers = data.users || [];
     renderUsersTable(allUsers);
   } catch (err) {
-    showToast(err.message, "error");
+    if (!isBackground) showToast(err.message, "error");
   }
 }
 
@@ -993,10 +1004,12 @@ if (templateUploadForm) {
 }
 
 // 5. Orders management
-async function fetchOrders() {
+async function fetchOrders(isBackground = false) {
   const tableBody = document.getElementById("ordersTableBody");
   if (!tableBody) return;
-  tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  if (!isBackground) {
+    tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  }
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/orders`);
@@ -1006,7 +1019,7 @@ async function fetchOrders() {
     allOrders = data.orders || [];
     filterAndRenderOrders();
   } catch (err) {
-    showToast(err.message, "error");
+    if (!isBackground) showToast(err.message, "error");
   }
 }
 
@@ -2011,10 +2024,12 @@ if (orderDateFilter) {
 }
 
 // 6. Payments transactions
-async function fetchPayments() {
+async function fetchPayments(isBackground = false) {
   const tableBody = document.getElementById("paymentsTableBody");
   if (!tableBody) return;
-  tableBody.innerHTML = `<tr><td colspan="6" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  if (!isBackground) {
+    tableBody.innerHTML = `<tr><td colspan="6" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  }
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/payments`);
@@ -2047,7 +2062,7 @@ async function fetchPayments() {
       tableBody.appendChild(tr);
     });
   } catch (err) {
-    showToast(err.message, "error");
+    if (!isBackground) showToast(err.message, "error");
   }
 }
 
