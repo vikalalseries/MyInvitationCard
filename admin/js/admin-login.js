@@ -1,5 +1,7 @@
 // Admin login and password reset handler
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5000"
+  : "https://myinvitationcard.onrender.com";
 
 // Toast Notification helper
 function showToast(message, type = "success") {
