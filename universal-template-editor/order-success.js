@@ -25,10 +25,214 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // 3. Setup Iframe Preview & Sync Data
   setupIframePreview(orderDetails);
+  startLiveOrderSync(orderDetails);
   
   // 4. Setup Star Rating Component Interactivity
   setupStarRating();
 });
+
+const templatePreviewConfigCache = new Map();
+let liveOrderPollTimer = null;
+
+function resolveTemplateFolder(templateId) {
+  if (!templateId) return "card1";
+  const id = String(templateId).toLowerCase();
+  if (id === "card1" || id === "1" || id === "37" || id === "38" || id.startsWith("card")) {
+    return "card1";
+  }
+  return "card1";
+}
+
+async function loadTemplatePreviewConfig(templateId) {
+  const folder = resolveTemplateFolder(templateId);
+  if (templatePreviewConfigCache.has(folder)) {
+    return templatePreviewConfigCache.get(folder);
+  }
+
+  try {
+    const response = await fetch(`templates/${folder}/config.json`);
+    if (response.ok) {
+      const config = await response.json();
+      templatePreviewConfigCache.set(folder, config);
+      return config;
+    }
+  } catch (err) {
+    console.warn("Failed to load success-page preview config:", err);
+  }
+
+  templatePreviewConfigCache.set(folder, null);
+  return null;
+}
+
+function getOrderTemplateData(details) {
+  return details?.templateEditData || details?.data || {};
+}
+
+function resolveTemplateDataWithDefaults(details, config) {
+  const orderData = getOrderTemplateData(details);
+  const resolvedData = {
+    fields: {},
+    events: {},
+    styles: orderData.styles || {}
+  };
+
+  if (config && Array.isArray(config.fields)) {
+    config.fields.forEach((field) => {
+      const val = orderData.fields && orderData.fields[field.id];
+      resolvedData.fields[field.id] = (val === null || val === undefined) ? (field.default || "") : val;
+    });
+  } else {
+    resolvedData.fields = orderData.fields || {};
+  }
+
+  if (config && Array.isArray(config.events)) {
+    config.events.forEach((event) => {
+      const current = (orderData.events && orderData.events[event.id]) || {};
+      resolvedData.events[event.id] = {
+        name: current.name ?? event.defaultName ?? "",
+        date: current.date ?? event.defaultDate ?? "",
+        time: current.time || "",
+        venue: current.venue || "",
+        active: current.active !== false
+      };
+    });
+  } else {
+    resolvedData.events = orderData.events || {};
+  }
+
+  return resolvedData;
+}
+
+function applySuccessTrackerState(details) {
+  const status = details?.status || "Confirmed";
+  const statusSteps = ["Confirmed", "Printing", "Dispatched", "Out for Delivery", "Delivered"];
+  const progressMap = {
+    Pending: 15,
+    Confirmed: 25,
+    Processing: 45,
+    Printing: 45,
+    Dispatched: 70,
+    "Out for Delivery": 90,
+    Delivered: 100,
+    Cancelled: 0,
+    Returned: 0
+  };
+
+  const progress = progressMap[status] ?? 25;
+  const bar = document.querySelector(".tracker-line-progress");
+  if (bar) {
+    bar.style.width = `${progress}%`;
+  }
+
+  const stepElements = document.querySelectorAll(".tracker-step");
+  stepElements.forEach((stepEl) => {
+    stepEl.classList.remove("active");
+  });
+
+  const stepOrder = ["Order Confirmed", "Cards Printed", "Shipped", "Delivered"];
+  const activeCount = progress >= 100 ? 4 : progress >= 70 ? 3 : progress >= 45 ? 2 : 1;
+  stepElements.forEach((stepEl, index) => {
+    if (index < activeCount) {
+      stepEl.classList.add("active");
+    }
+  });
+
+  const deliveryText = details?.estimatedDelivery || details?.deliveryDate || "Pending";
+  const confirmDateEl = document.getElementById("track-confirm-date");
+  const deliveryDateEl = document.getElementById("track-delivery-date");
+  const orderPlacedAt = details?.orderDate || details?.createdAt || details?.updatedAt;
+  if (confirmDateEl && orderPlacedAt) {
+    confirmDateEl.textContent = new Date(orderPlacedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+  if (deliveryDateEl) {
+    deliveryDateEl.textContent = `Estimated: ${deliveryText}`;
+  }
+}
+
+async function renderSuccessPreview(details) {
+  const iframe = document.getElementById("iframe-checkout-preview");
+  if (!iframe) return;
+
+  const folder = resolveTemplateFolder(details.templateId);
+  const config = await loadTemplatePreviewConfig(details.templateId);
+  const resolvedData = resolveTemplateDataWithDefaults(details, config);
+  const container = iframe.parentElement;
+
+  iframe.src = `templates/${folder}/template.html`;
+  iframe.onload = () => {
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (doc) {
+      const existing = doc.getElementById("success-preview-style");
+      if (!existing) {
+        const style = doc.createElement("style");
+        style.id = "success-preview-style";
+        style.textContent = `
+          body { background: transparent !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; width: 100vw !important; height: 100vh !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+          .card { padding: 0 !important; margin: 0 !important; gap: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; width: 21.5cm !important; height: 8.5cm !important; min-height: 8.5cm !important; overflow: hidden !important; }
+          .sec2 { display: none !important; }
+          .sec1 { width: 21.5cm !important; height: 8.5cm !important; border: none !important; box-shadow: none !important; top: 0 !important; left: 0 !important; position: absolute !important; }
+        `;
+        doc.head.appendChild(style);
+      }
+    }
+
+    if (iframe.contentWindow) {
+      iframe.contentWindow.postMessage({
+        type: "UPDATE_TEMPLATE_DATA",
+        data: resolvedData
+      }, "*");
+    }
+
+    if (container) {
+      const scale = Math.min(container.clientWidth / 888, container.clientHeight / 718);
+      iframe.style.transformOrigin = "top left";
+      iframe.style.transform = `scale(${scale})`;
+    }
+
+    const placeholder = iframe.parentElement?.querySelector(".thumbnail-preview-placeholder");
+    if (placeholder) {
+      placeholder.style.display = "none";
+    }
+  };
+}
+
+async function refreshOrderFromBackend(orderId, currentSnapshot) {
+  try {
+    const res = await fetch(`http://localhost:5000/api/admin/orders/${orderId}`);
+    if (!res.ok) return currentSnapshot;
+    const json = await res.json();
+    if (!json.success || !json.order) return currentSnapshot;
+    const backendOrder = json.order;
+    const merged = {
+      ...currentSnapshot,
+      ...backendOrder,
+      paperStock: backendOrder.paperStock || backendOrder.stockOption || currentSnapshot.paperStock,
+      envelopeOption: backendOrder.envelopeOption || currentSnapshot.envelopeOption,
+      deliveryDate: backendOrder.estimatedDelivery || backendOrder.deliveryDate || currentSnapshot.deliveryDate,
+      grandTotal: backendOrder.grandTotal || backendOrder.pricing?.total || currentSnapshot.grandTotal,
+      data: backendOrder.data || backendOrder.templateEditData || currentSnapshot.data,
+      orderDate: backendOrder.createdAt || currentSnapshot.orderDate
+    };
+    localStorage.setItem("mic_last_order_details", JSON.stringify(merged));
+    return merged;
+  } catch (err) {
+    return currentSnapshot;
+  }
+}
+
+function startLiveOrderSync(initialDetails) {
+  if (!initialDetails?.orderId) return;
+
+  const syncNow = async () => {
+    const latest = await refreshOrderFromBackend(initialDetails.orderId, initialDetails);
+    populateUI(latest);
+    applySuccessTrackerState(latest);
+  };
+
+  syncNow();
+  if (liveOrderPollTimer) clearInterval(liveOrderPollTimer);
+  liveOrderPollTimer = setInterval(syncNow, 15000);
+}
 
 // Fallback mockup data when page is loaded directly
 function getFallbackMockupData() {
@@ -94,7 +298,8 @@ function populateUI(details) {
   
   const today = new Date();
   const options = { month: 'short', day: 'numeric', year: 'numeric' };
-  document.getElementById('track-confirm-date').textContent = today.toLocaleDateString('en-US', options);
+  const confirmedAt = details.orderDate || details.createdAt || today;
+  document.getElementById('track-confirm-date').textContent = new Date(confirmedAt).toLocaleDateString('en-US', options);
   
   const estDeliveryText = details.deliveryDate || 'Pending';
   document.getElementById('track-delivery-date').textContent = `Estimated: ${estDeliveryText}`;
@@ -137,76 +342,7 @@ function populateUI(details) {
 
 // Setup preview iframe and synchronize customized template data
 async function setupIframePreview(details) {
-  const iframe = document.getElementById('iframe-checkout-preview');
-  if (!iframe) return;
-  
-  const templateId = details.templateId || 'card1';
-  iframe.src = `templates/${templateId}/template.html`;
-  
-  // Fetch template configuration
-  let config = null;
-  try {
-    const response = await fetch(`templates/${templateId}/config.json`);
-    if (response.ok) {
-      config = await response.json();
-    }
-  } catch (err) {
-    console.error("Failed to load template config inside success page preview:", err);
-  }
-  
-  iframe.onload = () => {
-    // 1. Inject CSS stylesheet to isolate and scale Section 1 of the card layout
-    const doc = iframe.contentDocument || iframe.contentWindow.document;
-    const style = doc.createElement('style');
-    style.textContent = `
-      body { background: transparent !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; width: 100vw !important; height: 100vh !important; display: flex !important; align-items: center !important; justify-content: center !important; }
-      .card { padding: 0 !important; margin: 0 !important; gap: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; width: 21.5cm !important; height: 8.5cm !important; min-height: 8.5cm !important; overflow: hidden !important; }
-      .sec2 { display: none !important; }
-      .sec1 { width: 21.5cm !important; height: 8.5cm !important; border: none !important; box-shadow: none !important; top: 0 !important; left: 0 !important; position: absolute !important; }
-    `;
-    doc.head.appendChild(style);
-    
-    // 2. Resolve field values with config defaults and sync details to iframe
-    if (iframe.contentWindow) {
-      const orderData = details.data || {};
-      const resolvedData = {
-        fields: {},
-        events: {},
-        styles: orderData.styles || {}
-      };
-      
-      if (config) {
-        if (config.fields) {
-          config.fields.forEach(f => {
-            const val = (orderData.fields && orderData.fields[f.id]);
-            resolvedData.fields[f.id] = (val === null || val === undefined) ? (f.default || '') : val;
-          });
-        }
-        if (config.events) {
-          config.events.forEach(e => {
-            const currentEv = (orderData.events && orderData.events[e.id]) || {};
-            const nameVal = currentEv.name;
-            const dateVal = currentEv.date;
-            resolvedData.events[e.id] = {
-              name: (nameVal === null || nameVal === undefined) ? (e.defaultName || '') : nameVal,
-              date: (dateVal === null || dateVal === undefined) ? (e.defaultDate || '') : dateVal,
-              time: currentEv.time || '',
-              venue: currentEv.venue || '',
-              active: currentEv.active !== false
-            };
-          });
-        }
-      } else {
-        resolvedData.fields = orderData.fields || {};
-        resolvedData.events = orderData.events || {};
-      }
-      
-      iframe.contentWindow.postMessage({
-        type: 'UPDATE_TEMPLATE_DATA',
-        data: resolvedData
-      }, '*');
-    }
-  };
+  await renderSuccessPreview(details);
 }
 
 // Interactive Star Rating Component
