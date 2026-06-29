@@ -51,6 +51,8 @@ let currentUser = null;
 let selectedAvatarUrl = "";
 let customAvatarBase64 = "";
 let templates = [];
+let orderHistoryRefreshTimer = null;
+const templatePreviewConfigCache = new Map();
 
 // DOM Elements
 const guestProfileView = document.getElementById("guestProfileView");
@@ -165,6 +167,109 @@ async function loadTemplatesList() {
   }
 }
 
+function resolveTemplateFolder(templateId) {
+  if (!templateId) return "card1";
+  const id = String(templateId).toLowerCase();
+  if (id === "card1" || id === "1" || id === "37" || id === "38" || id.startsWith("card")) {
+    return "card1";
+  }
+  return "card1";
+}
+
+async function loadTemplatePreviewConfig(templateId) {
+  const folder = resolveTemplateFolder(templateId);
+  if (templatePreviewConfigCache.has(folder)) {
+    return templatePreviewConfigCache.get(folder);
+  }
+
+  try {
+    const res = await fetch(`universal-template-editor/templates/${folder}/config.json`);
+    if (res.ok) {
+      const config = await res.json();
+      templatePreviewConfigCache.set(folder, config);
+      return config;
+    }
+  } catch (err) {
+    console.warn("Failed to load order preview config:", err);
+  }
+
+  templatePreviewConfigCache.set(folder, null);
+  return null;
+}
+
+function getOrderTemplateData(order) {
+  return order?.templateEditData || order?.data || {};
+}
+
+function resolveTemplateDataWithDefaults(order, config) {
+  const data = getOrderTemplateData(order);
+  const resolved = {
+    fields: {},
+    events: {},
+    styles: data.styles || {}
+  };
+
+  if (config && Array.isArray(config.fields)) {
+    config.fields.forEach((field) => {
+      const val = data.fields && data.fields[field.id];
+      resolved.fields[field.id] = (val === null || val === undefined) ? (field.default || "") : val;
+    });
+  } else {
+    resolved.fields = data.fields || {};
+  }
+
+  if (config && Array.isArray(config.events)) {
+    config.events.forEach((event) => {
+      const current = (data.events && data.events[event.id]) || {};
+      resolved.events[event.id] = {
+        name: current.name ?? event.defaultName ?? "",
+        date: current.date ?? event.defaultDate ?? "",
+        time: current.time || "",
+        venue: current.venue || "",
+        active: current.active !== false
+      };
+    });
+  } else {
+    resolved.events = data.events || {};
+  }
+
+  return resolved;
+}
+
+async function loadOrderTemplatePreview(iframe, order) {
+  if (!iframe || !order) return;
+
+  const folder = resolveTemplateFolder(order.templateId);
+  const config = await loadTemplatePreviewConfig(order.templateId);
+  const resolvedData = resolveTemplateDataWithDefaults(order, config);
+  const baseWidth = 888;
+  const baseHeight = 718;
+  const container = iframe.parentElement;
+
+  iframe.src = `universal-template-editor/templates/${folder}/template.html`;
+  iframe.onload = () => {
+    if (iframe.contentWindow) {
+      iframe.contentWindow.postMessage({
+        type: "UPDATE_TEMPLATE_DATA",
+        data: resolvedData
+      }, "*");
+    }
+
+    const placeholder = iframe.parentElement?.querySelector(".fk-order-preview-placeholder");
+    if (placeholder) {
+      placeholder.style.display = "none";
+    }
+
+    if (container) {
+      const scale = Math.min(container.clientWidth / baseWidth, container.clientHeight / baseHeight);
+      iframe.style.transformOrigin = "top left";
+      iframe.style.transform = `scale(${scale})`;
+      iframe.style.width = `${baseWidth}px`;
+      iframe.style.height = `${baseHeight}px`;
+    }
+  };
+}
+
 // ── SET UP VIEWS ──
 async function setupAuthenticatedView(user) {
   guestProfileView.style.display = "none";
@@ -194,6 +299,15 @@ async function setupAuthenticatedView(user) {
   loadSavedDrafts(user.uid);
   loadFavorites(user.uid);
   loadOrderHistory(user.uid);
+
+  if (orderHistoryRefreshTimer) {
+    clearInterval(orderHistoryRefreshTimer);
+  }
+  orderHistoryRefreshTimer = setInterval(() => {
+    if (currentUser?.uid) {
+      loadOrderHistory(currentUser.uid);
+    }
+  }, 15000);
 
   // Fetch from MongoDB
   const profile = await fetchUserProfile(user.uid);
@@ -296,6 +410,11 @@ async function setupAuthenticatedView(user) {
 function setupGuestView() {
   guestProfileView.style.display = "block";
   authProfileView.style.display = "none";
+
+  if (orderHistoryRefreshTimer) {
+    clearInterval(orderHistoryRefreshTimer);
+    orderHistoryRefreshTimer = null;
+  }
 
   if (guestLoginBtn) {
     guestLoginBtn.onclick = () => {
@@ -1558,14 +1677,7 @@ async function loadOrderHistory(uid) {
         year: "numeric"
       });
 
-      const templateId = order.templateId || "card1";
-      let thumbnail = order.templatePreviewUrl || `universal-template-editor/templates/${templateId}/thumbnail.jpg`;
-      if (thumbnail.startsWith("storage/templates/")) {
-        thumbnail = thumbnail.replace("storage/", "universal-template-editor/");
-      }
-      if (thumbnail.startsWith("templates/")) {
-        thumbnail = "universal-template-editor/" + thumbnail;
-      }
+      const previewId = `order-preview-${order.orderId}`;
 
       let currentStatus = order.status || "Confirmed";
       let statusDetails = order.deliveryDate || order.estimatedDelivery || "Pending";
@@ -1581,7 +1693,14 @@ async function loadOrderHistory(uid) {
       return `
         <div class="fk-order-row" style="cursor: pointer;" onclick="openOrderTracking('${order.orderId}')">
           <div class="fk-order-thumb">
-            <img src="${thumbnail}" alt="Thumbnail" onerror="this.src='assets/templates/default-template.jpg'">
+            <iframe
+              id="${previewId}"
+              class="fk-order-preview-frame"
+              title="Edited template preview"
+              data-order-id="${order.orderId}"
+              src="about:blank"
+            ></iframe>
+            <div class="fk-order-preview-placeholder">Loading preview...</div>
           </div>
           
           <div class="fk-order-details">
@@ -1613,6 +1732,21 @@ async function loadOrderHistory(uid) {
       `;
     })
     .join("");
+
+  renderOrderPreviewFrames(orderHistory);
+}
+
+async function renderOrderPreviewFrames(orderHistory) {
+  const previewFrames = ordersListContainer.querySelectorAll(".fk-order-preview-frame");
+  previewFrames.forEach(async (iframe) => {
+    const orderId = iframe.dataset.orderId;
+    const order = orderHistory.find((o) => o.orderId === orderId);
+    if (!order) return;
+
+    await loadOrderTemplatePreview(iframe, order);
+    const placeholder = iframe.parentElement?.querySelector(".fk-order-preview-placeholder");
+    if (placeholder) placeholder.style.display = "none";
+  });
 }
 
 // ── LOGOUT MODAL CONTROLLER ──
