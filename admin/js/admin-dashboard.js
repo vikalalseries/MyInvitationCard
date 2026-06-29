@@ -1,5 +1,7 @@
 // Admin Dashboard Handler
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5000"
+  : "https://myinvitationcard.onrender.com";
 let allUsers = [];
 let allCredentials = [];
 let allOrders = [];
