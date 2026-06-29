@@ -2,6 +2,10 @@
    order-success.js - Order Success and Tracking Logic
    ════════════════════════════════════════════════════════════ */
 
+const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5000"
+  : "https://myinvitationcard.onrender.com";
+
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Load details from localStorage or use fallback mockup
   const savedDetailsStr = localStorage.getItem("mic_last_order_details");
@@ -198,7 +202,7 @@ async function renderSuccessPreview(details) {
 
 async function refreshOrderFromBackend(orderId, currentSnapshot) {
   try {
-    const res = await fetch(`http://localhost:5000/api/admin/orders/${orderId}`);
+    const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}`);
     if (!res.ok) return currentSnapshot;
     const json = await res.json();
     if (!json.success || !json.order) return currentSnapshot;
@@ -431,7 +435,7 @@ function submitFeedback(event) {
   }
   
   // Submit to backend Mongo database
-  fetch(`http://localhost:5000/api/orders/${orderId}/review`, {
+  fetch(`${BACKEND_URL}/api/orders/${orderId}/review`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
