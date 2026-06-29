@@ -315,7 +315,7 @@ function populateUI(details) {
   
   // Order Summary Card
   document.getElementById('summary-doc-title').textContent = details.documentTitle || 'Wedding Card';
-  document.getElementById('summary-qty').textContent = details.quantity || 0;
+  document.getElementById('summary-qty').textContent = `${details.quantity || 0} cards`;
   document.getElementById('summary-paper').textContent = paperNames[details.paperStock] || details.paperStock || 'Standard';
   document.getElementById('summary-envelope').textContent = envelopeNames[details.envelopeOption] || details.envelopeOption || 'No Envelope';
   
