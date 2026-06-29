@@ -2,6 +2,10 @@
    print.js - Print Configuration Logic
    ════════════════════════════════════════════════════════════ */
 
+const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5000"
+  : "https://myinvitationcard.onrender.com";
+
 // Global State
 let templateId = 'card1';
 let documentTitle = 'Wedding Card';
@@ -49,7 +53,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   // Fetch global pricing settings (min qty, volume tiers)
   try {
-    const gRes = await fetch('http://localhost:5000/api/pricing/global');
+    const gRes = await fetch(`${BACKEND_URL}/api/pricing/global`);
     if (gRes.ok) {
       const gData = await gRes.json();
       if (gData.success) globalPricingConfig = gData.config;
@@ -135,7 +139,7 @@ async function loadTemplateConfig() {
 // Load dynamic template settings from backend database
 async function loadTemplateDbConfig() {
   try {
-    const res = await fetch(`http://localhost:5000/api/templates/${templateId}`);
+    const res = await fetch(`${BACKEND_URL}/api/templates/${templateId}`);
     if (res.ok) {
       const data = await res.json();
       if (data.success && data.template) {
@@ -1298,7 +1302,7 @@ async function updateHeaderProfileUI(user) {
 
     // Async fetch from MongoDB
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${user.uid}`);
+      const res = await fetch(`${BACKEND_URL}/api/users/${user.uid}`);
       if (res.ok) {
         const json = await res.json();
         if (json && json.success && json.data && json.data.profileImage) {
