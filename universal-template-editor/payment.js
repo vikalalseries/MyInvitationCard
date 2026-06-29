@@ -358,96 +358,17 @@ function triggerRazorpayPayment() {
     payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Order...';
   }
 
-  const grandTotal = parseFloat(document.getElementById('bill-grand-total').textContent);
-  
-  // Call backend order creation API
-  fetch(`${API_BASE_URL}/create-order`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      amount: grandTotal,
-      receipt: `receipt_mic_${Math.floor(10000 + Math.random() * 90000)}`
-    })
-  })
-  .then(res => {
-    if (!res.ok) {
-      throw new Error(`Server returned status ${res.status}`);
-    }
-    return res.json();
-  })
-  .then(data => {
-    if (!data.success) {
-      throw new Error(data.message || "Failed to create order");
-    }
+  const fakePaymentId = `pay_FAKE_${Math.floor(100000 + Math.random() * 900000)}`;
 
+  setTimeout(() => {
     if (payBtn) {
       payBtn.disabled = false;
       payBtn.innerHTML = originalBtnText;
     }
+    showSuccess("Payment successful!");
+    showSuccessModal(null, fakePaymentId, "Instant Payment");
+  }, 700);
 
-    // Razorpay standard setup
-    const options = {
-      key: data.key_id,
-      amount: data.order.amount,
-      currency: data.order.currency,
-      name: "MyInvitationCard",
-      description: orderConfig.documentTitle || "Invitation Card Order",
-      image: "https://myinvitationcard.vercel.app/assets/images/logo.png",
-      order_id: data.order.id,
-      handler: async function (response) {
-        showLoading();
-        try {
-          const verifyRes = await fetch(`${API_BASE_URL}/verify-payment`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature
-            })
-          });
-
-          const verifyData = await verifyRes.json();
-          hideLoading();
-
-          if (verifyData.success) {
-            showSuccess("Payment successful & verified!");
-            showSuccessModal(response.razorpay_order_id, response.razorpay_payment_id, "Razorpay Online");
-          } else {
-            showError("Payment verification failed: " + verifyData.message);
-            showFailureSimulation("Verification failed: " + verifyData.message, response.razorpay_payment_id);
-          }
-        } catch (err) {
-          console.error("Signature verification error:", err);
-          hideLoading();
-          showError("Error verifying payment signature");
-          showFailureSimulation("Error verifying signature: " + err.message, response.razorpay_payment_id);
-        }
-      },
-      prefill: {
-        name: shippingAddress.fullName,
-        contact: shippingAddress.phone
-      },
-      theme: {
-        color: "#6366f1"
-      },
-      modal: {
-        ondismiss: function() {
-          toast("Payment cancelled by user", "i");
-        }
-      }
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.on('payment.failed', function (response) {
-      console.error("Payment failed event:", response.error);
-      showError("Payment failed: " + response.error.description);
-      showFailureSimulation(response.error.description, response.error.metadata.payment_id);
-    });
     rzp.open();
   })
   .catch(err => {
