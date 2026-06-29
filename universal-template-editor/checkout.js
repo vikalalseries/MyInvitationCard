@@ -492,7 +492,7 @@ function proceedToPaymentPage() {
     }
   }
   
-  // 2. Save shipping details to localStorage
+  // 2. Save current order and shipping details to localStorage
   const shippingDetails = {
     fullName,
     phone,
@@ -506,6 +506,7 @@ function proceedToPaymentPage() {
   
   localStorage.setItem("mic_shipping_address", JSON.stringify(shippingDetails));
   localStorage.setItem("mic_shipping_speed", shippingSpeed);
+  localStorage.setItem("mic_current_order_config", JSON.stringify(orderConfig));
   
   // 3. Redirect to payment summary page
   window.location.href = "payment.html";
