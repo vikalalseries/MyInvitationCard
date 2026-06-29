@@ -1131,7 +1131,10 @@ function loadSavedDrafts(uid) {
         minute: "2-digit"
       });
 
-      const cardThumbnail = project.thumbnail || `templates/${project.templateId}/thumbnail.jpg` || "assets/templates/default-template.jpg";
+      let cardThumbnail = project.thumbnail || `universal-template-editor/templates/${project.templateId}/thumbnail.jpg` || "assets/templates/default-template.jpg";
+      if (cardThumbnail.startsWith("templates/")) {
+        cardThumbnail = "universal-template-editor/" + cardThumbnail;
+      }
 
       return `
         <div class="draft-card" data-project-id="${project.id}">
@@ -1497,7 +1500,7 @@ function unstarTemplate(uid, templateId) {
 }
 
 // ── FLIPKART STYLE ORDERS GRID ──
-function loadOrderHistory(uid) {
+async function loadOrderHistory(uid) {
   if (!ordersListContainer) return;
 
   const orderHistoryKey = `mic_user_orders_${uid}`;
@@ -1526,6 +1529,24 @@ function loadOrderHistory(uid) {
     return;
   }
 
+  // Fetch real-time status updates from backend
+  const promises = orderHistory.map(async (order) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/orders/${order.orderId}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.order) {
+          return { ...order, ...json.order };
+        }
+      }
+    } catch(e) {
+      // Backend might be unavailable, ignore
+    }
+    return order;
+  });
+  orderHistory = await Promise.all(promises);
+  localStorage.setItem(orderHistoryKey, JSON.stringify(orderHistory));
+
   // Sort by date descending
   orderHistory.sort((a, b) => new Date(b.orderDate || 0) - new Date(a.orderDate || 0));
 
@@ -1538,10 +1559,27 @@ function loadOrderHistory(uid) {
       });
 
       const templateId = order.templateId || "card1";
-      const thumbnail = `templates/${templateId}/thumbnail.jpg` || "assets/templates/default-template.jpg";
+      let thumbnail = order.templatePreviewUrl || `universal-template-editor/templates/${templateId}/thumbnail.jpg`;
+      if (thumbnail.startsWith("storage/templates/")) {
+        thumbnail = thumbnail.replace("storage/", "universal-template-editor/");
+      }
+      if (thumbnail.startsWith("templates/")) {
+        thumbnail = "universal-template-editor/" + thumbnail;
+      }
+
+      let currentStatus = order.status || "Confirmed";
+      let statusDetails = order.deliveryDate || order.estimatedDelivery || "Pending";
+      let dotColor = "var(--fk-orange)";
+      
+      if (currentStatus === "Delivered") dotColor = "var(--fk-green)";
+      else if (currentStatus === "Cancelled" || currentStatus === "Returned") dotColor = "var(--primary-red)";
+
+      if (order.trackingHistory && order.trackingHistory.length > 0) {
+        currentStatus += " - " + order.trackingHistory[order.trackingHistory.length - 1].status;
+      }
 
       return `
-        <div class="fk-order-row">
+        <div class="fk-order-row" style="cursor: pointer;" onclick="openOrderTracking('${order.orderId}')">
           <div class="fk-order-thumb">
             <img src="${thumbnail}" alt="Thumbnail" onerror="this.src='assets/templates/default-template.jpg'">
           </div>
@@ -1550,22 +1588,23 @@ function loadOrderHistory(uid) {
             <h4>${order.documentTitle || "Custom Invitation Card"}</h4>
             <div class="fk-order-specs">
               <span>Qty: ${order.quantity}</span>
-              <span>Paper: ${order.paperStock}</span>
+              <span>Paper: ${order.paperStock || order.stockOption}</span>
               <span>Envelope: ${order.envelopeOption}</span>
             </div>
             <div class="fk-order-specs" style="margin-top: 4px; color: var(--fk-text-gray);">
-              Address: ${order.shippingAddress?.fullName}, ${order.shippingAddress?.address}, ${order.shippingAddress?.city}
+              Address: ${order.shippingAddress?.fullName || 'N/A'}, ${order.shippingAddress?.address || 'N/A'}, ${order.shippingAddress?.city || ''}
             </div>
           </div>
 
           <div class="fk-order-price">
-            ₹${parseFloat(order.grandTotal).toFixed(2)}
+            ₹${parseFloat(order.grandTotal || order.pricing?.total || 0).toFixed(2)}
           </div>
 
           <div class="fk-order-status-col">
-            <span class="status-dot"></span>
+            <span class="status-dot" style="background-color: ${dotColor}"></span>
             <div>
-              <strong>Delivered by ${order.deliveryDate}</strong>
+              <strong>${currentStatus}</strong>
+              <span class="status-txt-sub">Est. Delivery: ${statusDetails}</span>
               <span class="status-txt-sub">Order Reference: ${order.orderId}</span>
               <span class="status-txt-sub">Placed on: ${orderDate}</span>
             </div>
@@ -1611,3 +1650,22 @@ function bindLogoutModal() {
     });
   }
 }
+
+// ── GLOBAL ORDER TRACKING HELPER ──
+window.openOrderTracking = function(orderId) {
+  if (!currentUser) return;
+  const orderHistoryKey = `mic_user_orders_${currentUser.uid}`;
+  try {
+    const raw = localStorage.getItem(orderHistoryKey);
+    if (raw) {
+      const orderHistory = JSON.parse(raw);
+      const order = orderHistory.find(o => o.orderId === orderId);
+      if (order) {
+        localStorage.setItem("mic_last_order_details", JSON.stringify(order));
+        window.location.href = "universal-template-editor/order-success.html";
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
