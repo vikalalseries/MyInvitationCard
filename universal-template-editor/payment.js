@@ -153,21 +153,55 @@ document.addEventListener("DOMContentLoaded", async () => {
   const savedAddress = localStorage.getItem("mic_shipping_address");
   const savedSpeed = localStorage.getItem("mic_shipping_speed");
 
-  if (!savedConfig || !savedAddress) {
-    toast("Missing order or shipping details. Redirecting to checkout...", "e");
-    setTimeout(() => {
-      window.location.href = "checkout.html";
-    }, 2000);
-    return;
-  }
-
-  try {
-    orderConfig = JSON.parse(savedConfig);
-    shippingAddress = JSON.parse(savedAddress);
-  } catch (e) {
-    console.error("Error parsing localstorage data:", e);
-    toast("Error loading order configuration. Please try again.", "e");
-    return;
+  if (savedConfig && savedAddress) {
+    try {
+      orderConfig = JSON.parse(savedConfig);
+      shippingAddress = JSON.parse(savedAddress);
+    } catch (e) {
+      console.error("Error parsing localstorage data:", e);
+      toast("Error loading order configuration. Please try again.", "e");
+      return;
+    }
+  } else {
+    const lastOrder = localStorage.getItem("mic_last_order_details");
+    if (lastOrder) {
+      try {
+        const parsed = JSON.parse(lastOrder);
+        orderConfig = {
+          templateId: parsed.templateId || 'card1',
+          documentTitle: parsed.documentTitle || 'Wedding Card',
+          quantity: parsed.quantity || 100,
+          paperStock: parsed.paperStock || 'matte',
+          envelopeOption: parsed.envelopeOption || 'standard',
+          unitPrice: parsed.pricing?.baseRate || 10.00,
+          data: parsed.data || { fields: {}, events: {}, styles: {} }
+        };
+        shippingAddress = parsed.shippingAddress || {
+          fullName: '',
+          phone: '',
+          address: '',
+          address2: '',
+          city: '',
+          state: '',
+          pincode: '',
+          emergencyPhone: ''
+        };
+        shippingSpeed = parsed.deliveryMethod || 'standard';
+      } catch (e) {
+        console.error("Error parsing last order details:", e);
+        toast("Missing order or shipping details. Redirecting to checkout...", "e");
+        setTimeout(() => {
+          window.location.href = "checkout.html";
+        }, 2000);
+        return;
+      }
+    } else {
+      toast("Missing order or shipping details. Redirecting to checkout...", "e");
+      setTimeout(() => {
+        window.location.href = "checkout.html";
+      }, 2000);
+      return;
+    }
   }
 
   if (savedSpeed) {
@@ -368,17 +402,6 @@ function triggerRazorpayPayment() {
     showSuccess("Payment successful!");
     showSuccessModal(null, fakePaymentId, "Instant Payment");
   }, 700);
-
-    rzp.open();
-  })
-  .catch(err => {
-    console.error("Order creation error:", err);
-    if (payBtn) {
-      payBtn.disabled = false;
-      payBtn.innerHTML = originalBtnText;
-    }
-    showError(`Payment initialization failed: ${err.message}. Please make sure the payment server is running on port 5000.`);
-  });
 }
 
 // Redirect to order success page
@@ -402,6 +425,8 @@ function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
   const shippingCost = breakdown.shippingCost;
   const gstTax = breakdown.gstTax;
   const grandTotal = breakdown.grandTotal;
+  const paperUnitCost = breakdown.paperUnitCost;
+  const envelopeUnitCost = breakdown.envelopeUnitCost;
   
   const orderDetails = {
     orderId,
