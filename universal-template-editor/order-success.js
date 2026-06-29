@@ -507,3 +507,138 @@ function showToast(message, type = 'info') {
 window.submitFeedback = submitFeedback;
 window.printInvoice = printInvoice;
 window.showToast = showToast;
+
+// ── Firebase Modules Loader for Navbar Sync ──
+let firebaseAuth = null;
+let firebaseConfig = null;
+let currentUser = null;
+let userLoggedIn = false;
+
+Promise.all([
+  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+  import("../assets/js/firebase-config.js")
+]).then(([authMod, configMod]) => {
+  firebaseAuth = authMod;
+  firebaseConfig = configMod;
+
+  firebaseAuth.onAuthStateChanged(firebaseConfig.auth, (user) => {
+    if (user) {
+      const displayName = user.displayName?.trim() || localStorage.getItem("signupFullName")?.trim() || user.email.split('@')[0];
+      currentUser = {
+        name: displayName,
+        email: user.email,
+        photoURL: user.photoURL
+      };
+      userLoggedIn = true;
+    } else {
+      currentUser = null;
+      userLoggedIn = false;
+    }
+    updateHeaderProfileUI(user);
+  });
+}).catch(err => {
+  console.error("Failed to load Firebase modules in navbar:", err);
+});
+
+// Update profile avatar & button in header
+async function updateHeaderProfileUI(user) {
+  const avatarBtn = document.getElementById('builderUserMenuBtn');
+  const loginBtn = document.getElementById('builderHeaderLoginBtn');
+  const avatarSpan = document.getElementById('builderAvatar');
+  const popupAvatar = document.getElementById('builderPopupAvatar');
+  const popupName = document.getElementById('builderPopupUserName');
+  const popupEmail = document.getElementById('builderPopupUserEmail');
+
+  if (user) {
+    if (avatarBtn) avatarBtn.style.display = 'flex';
+    if (loginBtn) loginBtn.style.display = 'none';
+
+    const displayName = user.displayName || localStorage.getItem('signupFullName') || user.email?.split('@')[0] || 'User';
+    if (popupName) popupName.textContent = displayName;
+    if (popupEmail) popupEmail.textContent = user.email || 'No email';
+
+    let localAvatar = "";
+    // Fetch from MongoDB
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/users/${user.uid}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.success && json.data && json.data.profileImage) {
+          localAvatar = json.data.profileImage;
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch user avatar from MongoDB:", err);
+    }
+
+    let avatarUrl = localAvatar || user.photoURL;
+
+    // Fix relative path if subdirectory
+    if (avatarUrl) {
+      if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('data:') && !avatarUrl.startsWith('/')) {
+        avatarUrl = '../' + avatarUrl;
+      }
+      if (avatarSpan) avatarSpan.innerHTML = `<img src="${avatarUrl}" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+      if (popupAvatar) popupAvatar.innerHTML = `<img src="${avatarUrl}" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+    } else {
+      const initial = displayName.substring(0, 1).toUpperCase();
+      if (avatarSpan) avatarSpan.innerHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#f43f5e; color:#fff; font-weight:700; border-radius:50%;">${initial}</div>`;
+      if (popupAvatar) popupAvatar.innerHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#f43f5e; color:#fff; font-weight:700; border-radius:50%;">${initial}</div>`;
+    }
+  } else {
+    if (avatarBtn) avatarBtn.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'flex';
+  }
+}
+
+// Toggle Profile Popup
+window.addEventListener('DOMContentLoaded', () => {
+  const userMenuBtn = document.getElementById('builderUserMenuBtn');
+  const userPopup = document.getElementById('builderUserPopup');
+
+  if (userMenuBtn && userPopup) {
+    userMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userPopup.classList.toggle('show');
+    });
+
+    document.addEventListener('click', () => {
+      userPopup.classList.remove('show');
+    });
+  }
+
+  // Logout actions
+  const logoutBtn = document.getElementById('builderLogoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showLogoutConfirm();
+    });
+  }
+});
+
+// Logout Popups
+window.showLogoutConfirm = function() {
+  const popup = document.getElementById('logout-confirm-popup');
+  if (popup) popup.style.display = 'block';
+}
+
+window.closeLogoutConfirm = function() {
+  const popup = document.getElementById('logout-confirm-popup');
+  if (popup) popup.style.display = 'none';
+}
+
+window.executeLogout = function() {
+  closeLogoutConfirm();
+  if (firebaseAuth && firebaseConfig) {
+    firebaseAuth.signOut(firebaseConfig.auth).then(() => {
+      showToast("Logged out successfully", "success");
+      setTimeout(() => {
+        window.location.href = '../template-dashboard.html';
+      }, 1000);
+    }).catch(err => {
+      console.error("Signout error:", err);
+      showToast("Logout failed", "error");
+    });
+  }
+}

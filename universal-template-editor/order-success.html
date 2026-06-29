@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
   <link rel="stylesheet" href="order-success.css">
+  <link rel="stylesheet" href="auth-popup.css">
 </head>
 <body>
 
@@ -27,6 +28,38 @@
     </a>
     <div class="tb-sep"></div>
     <div class="page-title-header">Order Success</div>
+
+    <!-- Profile / Auth Area -->
+    <div class="user-profile-wrap" id="user-profile-wrap" style="margin-left: auto;">
+      <!-- If logged in, shows this avatar button -->
+      <button class="nav-avatar-btn" id="builderUserMenuBtn" style="display: none;">
+        <span class="nav-avatar" id="builderAvatar">
+          <i class="fa-solid fa-user"></i>
+        </span>
+      </button>
+      
+      <!-- If logged out, shows this login button instead -->
+      <button class="btn-login-header" id="builderHeaderLoginBtn" onclick="showLoginPopup(event)">
+        Login
+      </button>
+
+      <!-- Profile Popup Menu (same as index page) -->
+      <div class="nav-user-popup" id="builderUserPopup">
+        <div class="popup-user-header">
+          <div class="popup-avatar" id="builderPopupAvatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="popup-user-info">
+            <div class="popup-user-name" id="builderPopupUserName">Loading...</div>
+            <div class="popup-user-email" id="builderPopupUserEmail">Loading...</div>
+          </div>
+        </div>
+        <div class="popup-user-actions">
+          <a href="../profile.html" class="popup-action-btn"><i class="fa-solid fa-user-gear"></i> My Profile</a>
+          <button class="popup-action-btn logout" id="builderLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+        </div>
+      </div>
+    </div>
   </header>
 
   <!-- MAIN SCROLLABLE CONTAINER -->
@@ -195,6 +228,20 @@
 <!-- Toast Notifications -->
 <div class="toast-container" id="toast-container"></div>
 
+<!-- ══════════════════════════════════════════ CUSTOM LOGOUT CONFIRM POPUP -->
+<div class="login-popup" id="logout-confirm-popup" onclick="event.stopPropagation()" style="width: 380px; padding: 32px 24px; border-radius: 24px; display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000; background:white; box-shadow: 0 16px 48px rgba(0,0,0,0.2); border:1px solid #e2e8f0;">
+  <button class="lp-close" onclick="closeLogoutConfirm()" title="Close"><i class="fa-solid fa-xmark"></i></button>
+  <div style="margin-top: 10px; margin-bottom: 24px; text-align: center;">
+    <h3 style="font-size: 1.2rem; font-weight: 750; color: #0f172a; line-height: 1.4; margin-bottom: 8px;">Log Out</h3>
+    <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5; font-weight: 500;">Are you sure you want to log out of your account?</p>
+  </div>
+  <div style="display: flex; gap: 12px; justify-content: center;">
+    <button class="reset-confirm-btn" onclick="executeLogout()" style="background:var(--rose); color:white; border:none; padding:10px 24px; border-radius:10px; font-weight:600; cursor:pointer;">Yes</button>
+    <button class="reset-cancel-btn" onclick="closeLogoutConfirm()" style="background:#f1f5f9; color:#475569; border:none; padding:10px 24px; border-radius:10px; font-weight:600; cursor:pointer;">No</button>
+  </div>
+</div>
+
+<script src="auth-popup-helper.js"></script>
 <script src="order-success.js"></script>
 </body>
 </html>
