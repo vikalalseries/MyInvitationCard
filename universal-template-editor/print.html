@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 <link rel="stylesheet" href="print.css">
+<link rel="stylesheet" href="auth-popup.css">
 </head>
 <body>
 
@@ -65,7 +66,7 @@
         </button>
         
         <!-- If logged out, shows this login button instead -->
-        <button class="btn-login-header" id="builderHeaderLoginBtn" onclick="toast('Please login in editor page first.', 'i')">
+        <button class="btn-login-header" id="builderHeaderLoginBtn" onclick="showLoginPopup(event)">
           Login
         </button>
 
@@ -550,6 +551,7 @@
 <!-- Hidden iframe for home printing -->
 <iframe id="print-iframe-hidden" style="display:none; position:absolute; width:0; height:0; border:none;" src=""></iframe>
 
+<script src="auth-popup-helper.js"></script>
 <script src="print.js"></script>
 </body>
 </html>
