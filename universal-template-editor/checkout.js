@@ -2,6 +2,10 @@
    checkout.js - Checkout & Payment Page Logic
    ════════════════════════════════════════════════════════════ */
 
+const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5000"
+  : "https://myinvitationcard.onrender.com";
+
 // Order Configuration State (Default Fallback)
 let orderConfig = {
   templateId: 'card1',
@@ -36,7 +40,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   // Fetch dynamic template settings from backend
   try {
-    const dbRes = await fetch(`http://localhost:5000/api/templates/${orderConfig.templateId}`);
+    const dbRes = await fetch(`${BACKEND_URL}/api/templates/${orderConfig.templateId}`);
     if (dbRes.ok) {
       const dbData = await dbRes.json();
       if (dbData.success && dbData.template) {
@@ -648,7 +652,7 @@ async function updateHeaderProfileUI(user) {
     let localAvatar = "";
     // Fetch from MongoDB
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${user.uid}`);
+      const res = await fetch(`${BACKEND_URL}/api/users/${user.uid}`);
       if (res.ok) {
         const json = await res.json();
         if (json && json.success && json.data && json.data.profileImage) {
