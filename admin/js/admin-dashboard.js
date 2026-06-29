@@ -13,6 +13,9 @@ const TEMPLATE_FOLDER_MAP = {
   '37': 'card1',
   '38': 'card1'
 };
+
+const templatePreviewConfigCache = new Map();
+
 function resolveTemplateFolder(templateId) {
   if (!templateId) return 'card1';
   const id = String(templateId).toLowerCase();
@@ -26,6 +29,106 @@ function resolveTemplateFolder(templateId) {
   // Purely numeric → card1
   if (/^\d+$/.test(id)) return 'card1';
   return 'card1';
+}
+
+async function loadTemplatePreviewConfig(templateId) {
+  const folder = resolveTemplateFolder(templateId);
+  const cacheKey = folder;
+  if (templatePreviewConfigCache.has(cacheKey)) {
+    return templatePreviewConfigCache.get(cacheKey);
+  }
+
+  try {
+    const res = await fetch(`../universal-template-editor/templates/${folder}/config.json`);
+    if (res.ok) {
+      const config = await res.json();
+      templatePreviewConfigCache.set(cacheKey, config);
+      return config;
+    }
+  } catch (err) {
+    console.warn("Failed to load template preview config:", err);
+  }
+
+  templatePreviewConfigCache.set(cacheKey, null);
+  return null;
+}
+
+function getOrderTemplateData(order) {
+  return order?.templateEditData || order?.data || {};
+}
+
+function resolveTemplateDataWithDefaults(order, config) {
+  const orderData = getOrderTemplateData(order);
+  const resolvedData = {
+    fields: {},
+    events: {},
+    styles: orderData.styles || {}
+  };
+
+  if (config && Array.isArray(config.fields)) {
+    config.fields.forEach((field) => {
+      const val = orderData.fields && orderData.fields[field.id];
+      resolvedData.fields[field.id] = (val === null || val === undefined) ? (field.default || "") : val;
+    });
+  } else {
+    resolvedData.fields = orderData.fields || {};
+  }
+
+  if (config && Array.isArray(config.events)) {
+    config.events.forEach((event) => {
+      const current = (orderData.events && orderData.events[event.id]) || {};
+      const nameVal = current.name;
+      const dateVal = current.date;
+      resolvedData.events[event.id] = {
+        name: (nameVal === null || nameVal === undefined) ? (event.defaultName || "") : nameVal,
+        date: (dateVal === null || dateVal === undefined) ? (event.defaultDate || "") : dateVal,
+        time: current.time || "",
+        venue: current.venue || "",
+        active: current.active !== false
+      };
+    });
+  } else {
+    resolvedData.events = orderData.events || {};
+  }
+
+  return resolvedData;
+}
+
+async function loadOrderTemplatePreview(iframe, order, options = {}) {
+  if (!iframe || !order) return;
+
+  const placeholder = options.placeholder || null;
+  const fitContainer = options.fitContainer !== false;
+  const basePath = options.basePath || "../universal-template-editor/templates/";
+  const folder = resolveTemplateFolder(order.templateId);
+  const config = await loadTemplatePreviewConfig(order.templateId);
+  const resolvedData = resolveTemplateDataWithDefaults(order, config);
+
+  iframe.onload = null;
+  iframe.src = `${basePath}${folder}/template.html`;
+
+  iframe.onload = () => {
+    if (placeholder) placeholder.style.display = "none";
+
+    if (iframe.contentWindow) {
+      iframe.contentWindow.postMessage({
+        type: "UPDATE_TEMPLATE_DATA",
+        data: resolvedData
+      }, "*");
+    }
+
+    if (fitContainer) {
+      const container = iframe.parentElement;
+      if (container) {
+        const baseWidth = 888;
+        const baseHeight = 718;
+        const scale = Math.min(container.clientWidth / baseWidth, container.clientHeight / baseHeight);
+        iframe.style.transform = `scale(${scale})`;
+        iframe.style.width = `${baseWidth}px`;
+        iframe.style.height = `${baseHeight}px`;
+      }
+    }
+  };
 }
 
 // Toast Notification helper
@@ -1186,29 +1289,22 @@ window.openDeliveryModal = async function(orderId) {
     const iframe = document.getElementById("orderTemplateIframe");
     const placeholder = document.getElementById("orderTemplatePlaceholder");
     if (iframe) {
-      const templateFolder = resolveTemplateFolder(order.templateId);
-      iframe.src = `../universal-template-editor/templates/${templateFolder}/template.html`;
-      
-      // Pass the customized user fields to the preview iframe on load
-      iframe.onload = function() {
-        if (order.templateEditData) {
-          iframe.contentWindow.postMessage({
-            type: 'UPDATE_TEMPLATE_DATA',
-            data: order.templateEditData
-          }, '*');
-        }
-      };
-      
       iframe.style.display = "block";
       if (placeholder) placeholder.style.display = "none";
+      loadOrderTemplatePreview(iframe, order, {
+        placeholder,
+        basePath: "../universal-template-editor/templates/",
+        fitContainer: true
+      });
     }
     
     // User customizations list (key-value)
     const customizationsList = document.getElementById("orderCustomizationsList");
     if (customizationsList) {
       customizationsList.innerHTML = "";
-      if (order.templateEditData && order.templateEditData.fields) {
-        const fields = order.templateEditData.fields;
+      const orderTemplateData = getOrderTemplateData(order);
+      if (orderTemplateData && orderTemplateData.fields) {
+        const fields = orderTemplateData.fields;
         for (const [key, val] of Object.entries(fields)) {
           if (val && typeof val === "string") {
             const div = document.createElement("div");
@@ -2727,4 +2823,23 @@ function loadPrintCardIframe(order, hideBg) {
     }
   };
 }
+function loadPrintCardIframe(order, hideBg) {
+  const iframe = document.getElementById("printCardIframe");
+  if (!iframe) return;
 
+  const templateFolder = resolveTemplateFolder(order.templateId);
+  const templatePath = `../universal-template-editor/templates/${templateFolder}/template.html?hideBg=${hideBg}`;
+  const orderTemplateData = getOrderTemplateData(order);
+
+  iframe.src = templatePath;
+  iframe.onload = async function() {
+    const config = await loadTemplatePreviewConfig(order.templateId);
+    const resolvedData = resolveTemplateDataWithDefaults(order, config);
+    if (iframe.contentWindow) {
+      iframe.contentWindow.postMessage({
+        type: "UPDATE_TEMPLATE_DATA",
+        data: resolvedData
+      }, "*");
+    }
+  };
+}
