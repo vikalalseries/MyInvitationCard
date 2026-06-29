@@ -28,6 +28,7 @@ let standardDeliveryDate = "";
 let expressDeliveryDate = "";
 
 let templateDbConfig = null;
+let globalPricingConfig = null;
 
 async function loadTemplateDbConfig() {
   try {
@@ -56,8 +57,17 @@ function calculatePriceBreakdown(qty, paperStock, envelopeOption, shippingSpeed)
     }
   }
 
-  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
-  if (discountPercent < 0) discountPercent = 0;
+  let discountPercent = 0;
+  if (globalPricingConfig && globalPricingConfig.volume_discount_tiers && globalPricingConfig.volume_discount_tiers.length > 0) {
+    const tiers = globalPricingConfig.volume_discount_tiers.sort((a, b) => a.upTo - b.upTo);
+    for (const tier of tiers) {
+      if (qty <= tier.upTo) { discountPercent = tier.discount; break; }
+      discountPercent = tier.discount;
+    }
+  } else {
+    discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
+    if (discountPercent < 0) discountPercent = 0;
+  }
   let basePrice = basePriceRate * (1 - discountPercent / 100);
   const cardsTotal = qty * basePrice;
 
@@ -172,6 +182,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 4. Fetch dynamic template settings from backend DB
   await loadTemplateDbConfig();
+
+  // 4b. Fetch global pricing settings
+  try {
+    const gRes = await fetch('http://localhost:5000/api/pricing/global');
+    if (gRes.ok) {
+      const gData = await gRes.json();
+      if (gData.success) globalPricingConfig = gData.config;
+    }
+  } catch (e) { console.warn('Could not load global pricing config'); }
 
   // 5. Recalculate and render pricing summary
   recalculateBill();

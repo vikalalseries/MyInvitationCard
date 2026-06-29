@@ -8,6 +8,7 @@ let documentTitle = 'Wedding Card';
 let currentData = { fields: {}, events: {}, styles: {} };
 let config = null; // Template configuration definition
 let templateDbConfig = null; // Dynamic template settings from backend DB
+let globalPricingConfig = null; // Global pricing settings (min qty, volume tiers)
 
 // Print Options
 let quantity = 50;
@@ -46,8 +47,25 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Fetch dynamic template settings from backend
   await loadTemplateDbConfig();
   
+  // Fetch global pricing settings (min qty, volume tiers)
+  try {
+    const gRes = await fetch('http://localhost:5000/api/pricing/global');
+    if (gRes.ok) {
+      const gData = await gRes.json();
+      if (gData.success) globalPricingConfig = gData.config;
+    }
+  } catch (e) { console.warn('Could not load global pricing config'); }
+  
   // 2. Load print settings if saved previously
   loadSavedPrintConfig();
+  
+  // Enforce minimum order quantity
+  const minQty = (globalPricingConfig && globalPricingConfig.min_order_qty) || 50;
+  const qtyInput = document.getElementById('quantity-input');
+  if (qtyInput) {
+    qtyInput.min = minQty;
+    if (quantity < minQty) { quantity = minQty; qtyInput.value = minQty; }
+  }
   
   // Apply template-level envelope visibility
   if (templateDbConfig && templateDbConfig.hasEnvelope === false) {
@@ -1002,8 +1020,18 @@ function recalculatePricing() {
     }
   }
 
-  let discountPercent = Math.min(80, Math.floor(quantity / 50 - 1) * 10);
-  if (discountPercent < 0) discountPercent = 0;
+  // Volume discount — use admin-defined tiers if available, else fallback formula
+  let discountPercent = 0;
+  if (globalPricingConfig && globalPricingConfig.volume_discount_tiers && globalPricingConfig.volume_discount_tiers.length > 0) {
+    const tiers = globalPricingConfig.volume_discount_tiers.sort((a, b) => a.upTo - b.upTo);
+    for (const tier of tiers) {
+      if (quantity <= tier.upTo) { discountPercent = tier.discount; break; }
+      discountPercent = tier.discount; // use last tier if qty exceeds all
+    }
+  } else {
+    discountPercent = Math.min(80, Math.floor(quantity / 50 - 1) * 10);
+    if (discountPercent < 0) discountPercent = 0;
+  }
   
   let basePrice = basePriceRate * (1 - discountPercent / 100);
   

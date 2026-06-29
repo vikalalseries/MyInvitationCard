@@ -2120,9 +2120,40 @@ async function fetchPricing() {
     document.getElementById("printingPriceInput").value = config.printing_price_per_page || 20;
     document.getElementById("taxRateInput").value = config.tax_rate || 18;
     document.getElementById("shippingBaseInput").value = config.shipping_base || 40;
+    document.getElementById("minOrderQtyInput").value = config.min_order_qty || 50;
+
+    // Load volume discount tiers
+    const container = document.getElementById("volumeTiersContainer");
+    if (container) {
+      container.innerHTML = "";
+      const tiers = config.volume_discount_tiers || [{upTo:50,discount:0},{upTo:100,discount:5},{upTo:200,discount:10},{upTo:500,discount:15},{upTo:1000,discount:20}];
+      tiers.forEach(t => addVolumeTierRow(t.upTo, t.discount));
+    }
   } catch (err) {
     // Silent — global pricing failed but template grid may still work
   }
+}
+
+// Volume discount tier row helpers
+function addVolumeTierRow(upTo = '', discount = '') {
+  const container = document.getElementById("volumeTiersContainer");
+  if (!container) return;
+  const row = document.createElement("div");
+  row.className = "volume-tier-row";
+  row.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:6px;";
+  row.innerHTML = `
+    <label style="font-size:0.8rem;white-space:nowrap;">Up to</label>
+    <input type="number" class="tier-upto" min="1" value="${upTo}" placeholder="e.g. 100" style="width:80px;" required>
+    <label style="font-size:0.8rem;white-space:nowrap;">cards →</label>
+    <input type="number" class="tier-discount" min="0" max="100" value="${discount}" placeholder="%" style="width:70px;" required>
+    <label style="font-size:0.8rem;">% off</label>
+    <button type="button" onclick="removeVolumeTierRow(this)" style="background:none;border:none;color:#e11d48;cursor:pointer;font-size:1rem;"><i class="fa-solid fa-trash-can"></i></button>
+  `;
+  container.appendChild(row);
+}
+
+function removeVolumeTierRow(btn) {
+  btn.closest(".volume-tier-row").remove();
 }
 
 function renderPricingGrid(templates) {
@@ -2387,6 +2418,16 @@ if (pricingSettingsForm) {
       return;
     }
 
+    // Collect volume tiers
+    const tierRows = document.querySelectorAll(".volume-tier-row");
+    const tiers = [];
+    tierRows.forEach(row => {
+      const upTo = Number(row.querySelector(".tier-upto").value);
+      const discount = Number(row.querySelector(".tier-discount").value);
+      if (upTo > 0) tiers.push({ upTo, discount });
+    });
+    tiers.sort((a, b) => a.upTo - b.upTo);
+
     const config = {
       wedding_price: Number(document.getElementById("weddingPriceInput").value),
       birthday_price: Number(document.getElementById("birthdayPriceInput").value),
@@ -2394,7 +2435,9 @@ if (pricingSettingsForm) {
       premium_export_price: Number(document.getElementById("premiumExportInput").value),
       printing_price_per_page: Number(document.getElementById("printingPriceInput").value),
       tax_rate: Number(document.getElementById("taxRateInput").value),
-      shipping_base: Number(document.getElementById("shippingBaseInput").value)
+      shipping_base: Number(document.getElementById("shippingBaseInput").value),
+      min_order_qty: Number(document.getElementById("minOrderQtyInput").value),
+      volume_discount_tiers: tiers
     };
 
     try {

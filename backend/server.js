@@ -357,7 +357,9 @@ mongoose.connection.once("open", async () => {
         { key: "premium_export_price", value: 49 },
         { key: "printing_price_per_page", value: 20 },
         { key: "tax_rate", value: 18 },
-        { key: "shipping_base", value: 40 }
+        { key: "shipping_base", value: 40 },
+        { key: "min_order_qty", value: 50 },
+        { key: "volume_discount_tiers", value: [{upTo:50,discount:0},{upTo:100,discount:5},{upTo:200,discount:10},{upTo:500,discount:15},{upTo:1000,discount:20}] }
       ]);
       console.log("Default pricing settings seeded.");
     }
@@ -1050,6 +1052,20 @@ app.get("/api/templates/:templateId", async (req, res) => {
       return res.status(404).json({ success: false, message: "Template not found" });
     }
     res.json({ success: true, template });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Public: Fetch global pricing settings (min qty, volume tiers, tax rate)
+app.get("/api/pricing/global", async (req, res) => {
+  try {
+    const settings = await SystemSetting.find({
+      key: { $in: ["min_order_qty", "volume_discount_tiers", "tax_rate", "shipping_base"] }
+    });
+    const config = {};
+    settings.forEach(s => { config[s.key] = s.value; });
+    res.json({ success: true, config });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

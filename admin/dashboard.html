@@ -576,6 +576,28 @@
                     <label for="shippingBaseInput">Base Shipping Fee (INR)</label>
                     <input type="number" id="shippingBaseInput" min="0" required>
                   </div>
+
+                  <!-- Minimum Order Quantity -->
+                  <div class="pricing-section-divider" style="margin:18px 0 10px;padding:0;">
+                    <h4 style="font-size:0.95rem;"><i class="fa-solid fa-layer-group" style="margin-right:6px;color:var(--primary-color);"></i>Minimum Order Quantity</h4>
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="minOrderQtyInput">Minimum Cards Per Order</label>
+                    <input type="number" id="minOrderQtyInput" min="1" value="50" required>
+                    <small style="color:var(--text-secondary);font-size:0.78rem;">Customers cannot order fewer cards than this number.</small>
+                  </div>
+
+                  <!-- Volume Discount Tiers -->
+                  <div class="pricing-section-divider" style="margin:18px 0 10px;padding:0;">
+                    <h4 style="font-size:0.95rem;"><i class="fa-solid fa-percent" style="margin-right:6px;color:var(--primary-color);"></i>Volume Discount Tiers</h4>
+                  </div>
+                  <div id="volumeTiersContainer">
+                    <!-- Rows injected by JS -->
+                  </div>
+                  <button type="button" class="admin-btn-secondary" onclick="addVolumeTierRow()" style="margin:8px 0 16px;font-size:0.82rem;">
+                    <i class="fa-solid fa-plus"></i> Add Tier
+                  </button>
+
                   <button type="submit" class="admin-btn-primary">Save Configurations</button>
                 </form>
               </div>
