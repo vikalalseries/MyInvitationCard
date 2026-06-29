@@ -75,6 +75,10 @@ app.use(cors({
       "http://localhost:5501",
       "https://myinvitationcard.vercel.app"
     ];
+    if (process.env.ALLOWED_ORIGINS) {
+      const extraOrigins = process.env.ALLOWED_ORIGINS.split(",").map(o => o.trim());
+      allowed.push(...extraOrigins);
+    }
     if (allowed.indexOf(origin) !== -1 || origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
       return callback(null, true);
     }
@@ -93,7 +97,11 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 let serviceAccount;
 if (process.env.FIREBASE_ADMIN_JSON) {
-  serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON);
+  try {
+    serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON);
+  } catch (err) {
+    console.error("Failed to parse FIREBASE_ADMIN_JSON env variable:", err.message);
+  }
 } else {
   try {
     serviceAccount = require("./config/firebase-admin.json");
@@ -102,9 +110,18 @@ if (process.env.FIREBASE_ADMIN_JSON) {
   }
 }
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+if (serviceAccount) {
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+    console.log("✅ Firebase Admin initialized successfully");
+  } catch (err) {
+    console.error("❌ Failed to initialize Firebase Admin:", err.message);
+  }
+} else {
+  console.warn("⚠️ Firebase Admin credentials not found. Authentication/verification endpoints will fail.");
+}
 
 const otpStore = new Map();
 const OTP_EXPIRY_MS = 5 * 60 * 1000;
