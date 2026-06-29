@@ -1290,7 +1290,7 @@ window.openDeliveryModal = async function(orderId) {
     // TAB 1: ORDER DETAILS
     document.getElementById("specTemplateName").textContent = order.templateName || "N/A";
     document.getElementById("specTemplateId").textContent = order.templateId || "N/A";
-    document.getElementById("specQuantity").textContent = order.quantity || "N/A";
+    document.getElementById("specQuantity").textContent = order.quantity ? `${order.quantity} cards` : "N/A";
     document.getElementById("specPaperStock").textContent = formatValue(order.stockOption);
     document.getElementById("specPremiumPaper").textContent = order.premiumPaperStock ? formatValue(order.premiumPaperStock) : "None";
     document.getElementById("specEnvelope").textContent = formatValue(order.envelopeOption);

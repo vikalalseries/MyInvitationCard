@@ -873,12 +873,21 @@
                     <iframe id="orderTemplateIframe" style="width: 888px; height: 718px; border: none; transform-origin: top left; pointer-events: none; position: absolute; top: 0; left: 0;"></iframe>
                     <div id="orderTemplatePlaceholder" style="font-size: 11px; text-align: center; color: var(--text-muted); padding: 5px; z-index: 1;">No Preview Available</div>
                   </div>
-                  <div style="flex: 1; font-size: 14px; line-height: 1.5; color: var(--text-main);">
-                    <div><strong>Template Name:</strong> <span id="specTemplateName">N/A</span></div>
-                    <div><strong>Template ID:</strong> <span id="specTemplateId">N/A</span></div>
-                    <div><strong>Quantity:</strong> <span id="specQuantity">N/A</span></div>
-                    <div style="margin-top: 8px;">
-                      <a id="viewTemplateEditorBtn" href="#" target="_blank" class="table-action-btn edit" style="display: inline-block; padding: 5px 10px; border: 1px solid var(--border-color); border-radius: 6px; text-decoration: none; font-size: 12.5px;">
+                  <div style="flex: 1; font-size: 13.5px; line-height: 1.5; color: var(--text-main); display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 4px;">
+                      <span><i class="fa-solid fa-file-invoice" style="color: var(--primary-color); margin-right: 6px; width: 14px;"></i>Template Name</span>
+                      <span id="specTemplateName" style="font-weight: 600; color: var(--text-active);">N/A</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 4px;">
+                      <span><i class="fa-solid fa-fingerprint" style="color: var(--primary-color); margin-right: 6px; width: 14px;"></i>Template ID</span>
+                      <span id="specTemplateId" style="font-weight: 600; color: var(--text-active);">N/A</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 4px;">
+                      <span><i class="fa-solid fa-copy" style="color: var(--primary-color); margin-right: 6px; width: 14px;"></i>Quantity</span>
+                      <span id="specQuantity" style="font-weight: 600; color: var(--text-active);">N/A</span>
+                    </div>
+                    <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
+                      <a id="viewTemplateEditorBtn" href="#" target="_blank" class="table-action-btn edit" style="display: inline-block; padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">
                         <i class="fa-solid fa-pen-to-square"></i> Open in Editor
                       </a>
                     </div>
