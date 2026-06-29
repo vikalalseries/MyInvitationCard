@@ -1153,6 +1153,8 @@ app.get("/api/admin/orders", async (req, res) => {
       const customer = await User.findOne({ uid: order.uid });
       // Find matching payment if any
       const payment = await Payment.findOne({ uid: order.uid }).sort({ createdAt: -1 });
+      const paymentStatus = payment ? payment.status : (order.paymentId ? "Paid" : "Pending");
+      const amountPaid = payment ? payment.amount : (order.paymentId ? (order.pricing?.total || 0) : 0);
 
       ordersData.push({
         ...order.toObject(),
@@ -1164,8 +1166,8 @@ app.get("/api/admin/orders", async (req, res) => {
           : (customer && customer.addresses && customer.addresses.length > 0
             ? customer.addresses.find(a => a.isDefault) || customer.addresses[0]
             : null),
-        paymentStatus: payment ? payment.status : "Pending",
-        amountPaid: payment ? payment.amount : 0
+        paymentStatus,
+        amountPaid
       });
     }
 
@@ -1188,6 +1190,8 @@ app.get("/api/admin/orders/:orderId", async (req, res) => {
     const customer = await User.findOne({ uid: order.uid });
     // Find matching payment if any
     const payment = await Payment.findOne({ uid: order.uid }).sort({ createdAt: -1 });
+    const paymentStatus = payment ? payment.status : (order.paymentId ? "Paid" : "Pending");
+    const amountPaid = payment ? payment.amount : (order.paymentId ? (order.pricing?.total || 0) : 0);
 
     const orderData = {
       ...order.toObject(),
@@ -1199,8 +1203,8 @@ app.get("/api/admin/orders/:orderId", async (req, res) => {
         : (customer && customer.addresses && customer.addresses.length > 0
           ? customer.addresses.find(a => a.isDefault) || customer.addresses[0]
           : null),
-      paymentStatus: payment ? payment.status : "Pending",
-      amountPaid: payment ? payment.amount : 0
+      paymentStatus,
+      amountPaid
     };
 
     res.json({ success: true, order: orderData });
