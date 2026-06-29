@@ -18,7 +18,11 @@ Promise.all([
   console.error("Failed to load Firebase modules on payment page:", err);
 });
 
-const API_BASE_URL = "http://localhost:5000/api/payment";
+const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5000"
+  : "https://myinvitationcard.onrender.com";
+
+const API_BASE_URL = `${BACKEND_URL}/api/payment`;
 let orderConfig = null;
 let shippingAddress = null;
 let shippingSpeed = "standard";
@@ -32,7 +36,7 @@ let globalPricingConfig = null;
 
 async function loadTemplateDbConfig() {
   try {
-    const res = await fetch(`http://localhost:5000/api/templates/${orderConfig.templateId}`);
+    const res = await fetch(`${BACKEND_URL}/api/templates/${orderConfig.templateId}`);
     if (res.ok) {
       const data = await res.json();
       if (data.success && data.template) {
@@ -219,7 +223,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 4b. Fetch global pricing settings
   try {
-    const gRes = await fetch('http://localhost:5000/api/pricing/global');
+    const gRes = await fetch(`${BACKEND_URL}/api/pricing/global`);
     if (gRes.ok) {
       const gData = await gRes.json();
       if (gData.success) globalPricingConfig = gData.config;
@@ -497,7 +501,7 @@ function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
   };
   
   // Call backend API to persist the order
-  fetch(`http://localhost:5000/api/orders/create`, {
+  fetch(`${BACKEND_URL}/api/orders/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
