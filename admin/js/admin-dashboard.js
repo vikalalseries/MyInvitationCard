@@ -2085,6 +2085,11 @@ window.triggerRefund = async function(razorpayPaymentId, amount) {
 
 // 7. Pricing & Site settings — Template Pricing Management
 let allPricingTemplates = []; // cached template list for filtering
+let pricingRenderBatch = 9;
+let pricingRenderIndex = 0;
+let pricingRenderedTemplates = [];
+let pricingObserver = null;
+const pricingSentinelId = "pricingGridSentinel";
 
 async function fetchPricing() {
   const grid = document.getElementById("pricingTemplateGrid");
@@ -2156,92 +2161,155 @@ function removeVolumeTierRow(btn) {
   btn.closest(".volume-tier-row").remove();
 }
 
-function renderPricingGrid(templates) {
+function createPricingCard(t) {
+  const card = document.createElement("div");
+  card.className = "pricing-template-card";
+  card.setAttribute("data-category", t.category || "");
+  card.setAttribute("data-status", t.status || "active");
+  card.setAttribute("data-template-id", t.templateId);
+
+  let thumbUrl = t.thumbnail || "";
+  if (thumbUrl && !thumbUrl.startsWith("http") && !thumbUrl.startsWith("assets")) {
+    thumbUrl = `${BACKEND_URL}/${thumbUrl}`;
+  } else if (thumbUrl && thumbUrl.startsWith("assets")) {
+    thumbUrl = `../${thumbUrl}`;
+  }
+
+  const now = new Date();
+  const hasOffer = t.offerPrice != null && t.offerPrice > 0;
+  const offerActive = hasOffer && (
+    (!t.offerStartDate && !t.offerEndDate) ||
+    (t.offerStartDate && t.offerEndDate && new Date(t.offerStartDate) <= now && new Date(t.offerEndDate) >= now) ||
+    (t.offerStartDate && !t.offerEndDate && new Date(t.offerStartDate) <= now) ||
+    (!t.offerStartDate && t.offerEndDate && new Date(t.offerEndDate) >= now)
+  );
+
+  let badgesHtml = "";
+  if (offerActive && t.offerLabel) {
+    badgesHtml += `<span class="offer-badge">${t.offerLabel}</span>`;
+  }
+
+  let flagsHtml = "";
+  if (t.isFeatured) flagsHtml += `<span class="flag-icon featured" title="Featured"><i class="fa-solid fa-star"></i></span>`;
+  if (t.isPremium) flagsHtml += `<span class="flag-icon premium" title="Premium"><i class="fa-solid fa-crown"></i></span>`;
+
+  let priceHtml = "";
+  if (offerActive) {
+    priceHtml = `
+      <span class="current-price">₹${t.offerPrice}</span>
+      <span class="original-price">₹${t.price}</span>
+      ${t.offerLabel ? `<span class="offer-tag">${t.offerLabel}</span>` : ""}
+    `;
+  } else {
+    priceHtml = `<span class="current-price">₹${t.price}</span>`;
+    if (hasOffer) {
+      priceHtml += `<span class="offer-tag" style="background:var(--warning-bg);color:var(--warning-color);">Offer Scheduled</span>`;
+    }
+  }
+
+  card.innerHTML = `
+    <div class="pricing-card-thumb" style="background-image: url('${thumbUrl}')">
+      <div class="pricing-card-badges">${badgesHtml}</div>
+      ${flagsHtml ? `<div class="pricing-card-flags">${flagsHtml}</div>` : ""}
+    </div>
+    <div class="pricing-card-body">
+      <h4 title="${t.name}">${t.name}</h4>
+      <div class="pricing-card-price-row">${priceHtml}</div>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span class="pricing-card-id">ID: ${t.templateId}</span>
+        <span class="pricing-card-status ${t.status || 'active'}">${(t.status || "active").toUpperCase()}</span>
+      </div>
+      <div class="pricing-card-action">
+        <button class="btn-set-price" onclick="openPricingModal('${t.templateId}')">
+          <i class="fa-solid fa-pen-to-square"></i> Set Price & Offers
+        </button>
+      </div>
+    </div>
+  `;
+
+  return card;
+}
+
+function createPricingSentinel() {
+  let sentinel = document.getElementById(pricingSentinelId);
+  if (!sentinel) {
+    sentinel = document.createElement("div");
+    sentinel.id = pricingSentinelId;
+    sentinel.className = "pricing-load-sentinel";
+    sentinel.innerHTML = `<span class="pricing-load-more"><i class="fa-solid fa-spinner fa-spin"></i> Loading more templates...</span>`;
+    const grid = document.getElementById("pricingTemplateGrid");
+    if (grid) grid.insertAdjacentElement("afterend", sentinel);
+  }
+  return sentinel;
+}
+
+function removePricingSentinel() {
+  const sentinel = document.getElementById(pricingSentinelId);
+  if (sentinel) sentinel.remove();
+  if (pricingObserver) {
+    pricingObserver.disconnect();
+    pricingObserver = null;
+  }
+}
+
+function setupPricingObserver() {
+  if (!("IntersectionObserver" in window)) return;
+  const sentinel = document.getElementById(pricingSentinelId);
+  if (!sentinel) return;
+
+  pricingObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        loadMorePricingTemplates();
+      }
+    });
+  }, {
+    rootMargin: "200px"
+  });
+
+  pricingObserver.observe(sentinel);
+}
+
+function loadMorePricingTemplates() {
+  const grid = document.getElementById("pricingTemplateGrid");
+  if (!grid || pricingRenderIndex >= pricingRenderedTemplates.length) {
+    removePricingSentinel();
+    return;
+  }
+
+  const nextTemplates = pricingRenderedTemplates.slice(pricingRenderIndex, pricingRenderIndex + pricingRenderBatch);
+  nextTemplates.forEach(t => grid.appendChild(createPricingCard(t)));
+  pricingRenderIndex += nextTemplates.length;
+
+  if (pricingRenderIndex < pricingRenderedTemplates.length) {
+    createPricingSentinel();
+    if (!pricingObserver) setupPricingObserver();
+  } else {
+    removePricingSentinel();
+  }
+}
+
+function renderPricingGrid(templates, reset = true) {
   const grid = document.getElementById("pricingTemplateGrid");
   const countEl = document.getElementById("pricingResultsCount");
   if (!grid) return;
 
+  if (reset) {
+    pricingRenderedTemplates = templates;
+    pricingRenderIndex = 0;
+    grid.innerHTML = "";
+    removePricingSentinel();
+  }
+
   if (templates.length === 0) {
     grid.innerHTML = `<div class="pricing-empty-state"><i class="fa-solid fa-box-open"></i><p>No templates match your filters</p></div>`;
+    removePricingSentinel();
     if (countEl) countEl.textContent = "0 templates";
     return;
   }
 
   if (countEl) countEl.textContent = `${templates.length} template${templates.length !== 1 ? "s" : ""}`;
-  grid.innerHTML = "";
-
-  templates.forEach(t => {
-    const card = document.createElement("div");
-    card.className = "pricing-template-card";
-    card.setAttribute("data-category", t.category || "");
-    card.setAttribute("data-status", t.status || "active");
-    card.setAttribute("data-template-id", t.templateId);
-
-    // Compute thumbnail URL
-    let thumbUrl = t.thumbnail || "";
-    if (thumbUrl && !thumbUrl.startsWith("http") && !thumbUrl.startsWith("assets")) {
-      thumbUrl = `${BACKEND_URL}/${thumbUrl}`;
-    } else if (thumbUrl && thumbUrl.startsWith("assets")) {
-      thumbUrl = `../${thumbUrl}`;
-    }
-
-    // Determine if offer is currently active
-    const now = new Date();
-    const hasOffer = t.offerPrice != null && t.offerPrice > 0;
-    const offerActive = hasOffer && (
-      (!t.offerStartDate && !t.offerEndDate) ||
-      (t.offerStartDate && t.offerEndDate && new Date(t.offerStartDate) <= now && new Date(t.offerEndDate) >= now) ||
-      (t.offerStartDate && !t.offerEndDate && new Date(t.offerStartDate) <= now) ||
-      (!t.offerStartDate && t.offerEndDate && new Date(t.offerEndDate) >= now)
-    );
-
-    // Build badges HTML
-    let badgesHtml = "";
-    if (offerActive && t.offerLabel) {
-      badgesHtml += `<span class="offer-badge">${t.offerLabel}</span>`;
-    }
-
-    // Build flags HTML
-    let flagsHtml = "";
-    if (t.isFeatured) flagsHtml += `<span class="flag-icon featured" title="Featured"><i class="fa-solid fa-star"></i></span>`;
-    if (t.isPremium) flagsHtml += `<span class="flag-icon premium" title="Premium"><i class="fa-solid fa-crown"></i></span>`;
-
-    // Build price display
-    let priceHtml = "";
-    if (offerActive) {
-      priceHtml = `
-        <span class="current-price">₹${t.offerPrice}</span>
-        <span class="original-price">₹${t.price}</span>
-        ${t.offerLabel ? `<span class="offer-tag">${t.offerLabel}</span>` : ""}
-      `;
-    } else {
-      priceHtml = `<span class="current-price">₹${t.price}</span>`;
-      if (hasOffer) {
-        priceHtml += `<span class="offer-tag" style="background:var(--warning-bg);color:var(--warning-color);">Offer Scheduled</span>`;
-      }
-    }
-
-    card.innerHTML = `
-      <div class="pricing-card-thumb" style="background-image: url('${thumbUrl}')">
-        <div class="pricing-card-badges">${badgesHtml}</div>
-        ${flagsHtml ? `<div class="pricing-card-flags">${flagsHtml}</div>` : ""}
-      </div>
-      <div class="pricing-card-body">
-        <h4 title="${t.name}">${t.name}</h4>
-        <div class="pricing-card-price-row">${priceHtml}</div>
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <span class="pricing-card-id">ID: ${t.templateId}</span>
-          <span class="pricing-card-status ${t.status || 'active'}">${(t.status || "active").toUpperCase()}</span>
-        </div>
-        <div class="pricing-card-action">
-          <button class="btn-set-price" onclick="openPricingModal('${t.templateId}')">
-            <i class="fa-solid fa-pen-to-square"></i> Set Price & Offers
-          </button>
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
+  loadMorePricingTemplates();
 }
 
 // Filter pricing templates
