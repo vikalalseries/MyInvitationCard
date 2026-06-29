@@ -2196,7 +2196,7 @@ function renderPricingGrid(templates) {
     );
 
     // Build badges HTML
-    let badgesHtml = `<span class="cat-badge">${(t.category || "general").toUpperCase()}</span>`;
+    let badgesHtml = "";
     if (offerActive && t.offerLabel) {
       badgesHtml += `<span class="offer-badge">${t.offerLabel}</span>`;
     }
