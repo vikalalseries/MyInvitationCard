@@ -1041,16 +1041,57 @@ app.delete("/api/admin/templates/:templateId", async (req, res) => {
   }
 });
 
+// Fetch individual template by ID (public endpoint)
+app.get("/api/templates/:templateId", async (req, res) => {
+  try {
+    const { templateId } = req.params;
+    const template = await Template.findOne({ templateId });
+    if (!template) {
+      return res.status(404).json({ success: false, message: "Template not found" });
+    }
+    res.json({ success: true, template });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Update individual template pricing & offers
 app.patch("/api/admin/templates/:templateId/pricing", async (req, res) => {
   try {
     const { templateId } = req.params;
-    const { price, offerPrice, offerLabel, offerStartDate, offerEndDate, isFeatured, isPremium, adminUser } = req.body;
+    const {
+      price,
+      offerPrice,
+      offerLabel,
+      offerStartDate,
+      offerEndDate,
+      isFeatured,
+      isPremium,
+      expressDeliveryAvailable,
+      taxFree,
+      availableStates,
+      availableDistricts,
+      hasEnvelope,
+      hasPremiumPages,
+      allowedCardStocks,
+      premiumCardStocks,
+      adminUser
+    } = req.body;
 
     const template = await Template.findOne({ templateId });
     if (!template) {
       return res.status(404).json({ success: false, message: "Template not found" });
     }
+
+    const parseArrayField = (value) => {
+      if (Array.isArray(value)) {
+        return value.map(s => s.trim()).filter(Boolean);
+      }
+      if (typeof value === "string") {
+        return value.split(",").map(s => s.trim()).filter(Boolean);
+      }
+      return [];
+    };
 
     // Build update object with only provided fields
     const updateFields = {};
@@ -1061,17 +1102,25 @@ app.patch("/api/admin/templates/:templateId/pricing", async (req, res) => {
     if (offerEndDate !== undefined) updateFields.offerEndDate = offerEndDate || null;
     if (isFeatured !== undefined) updateFields.isFeatured = Boolean(isFeatured);
     if (isPremium !== undefined) updateFields.isPremium = Boolean(isPremium);
+    if (expressDeliveryAvailable !== undefined) updateFields.expressDeliveryAvailable = Boolean(expressDeliveryAvailable);
+    if (taxFree !== undefined) updateFields.taxFree = Boolean(taxFree);
+    if (availableStates !== undefined) updateFields.availableStates = parseArrayField(availableStates);
+    if (availableDistricts !== undefined) updateFields.availableDistricts = parseArrayField(availableDistricts);
+    if (hasEnvelope !== undefined) updateFields.hasEnvelope = Boolean(hasEnvelope);
+    if (hasPremiumPages !== undefined) updateFields.hasPremiumPages = Boolean(hasPremiumPages);
+    if (allowedCardStocks !== undefined) updateFields.allowedCardStocks = parseArrayField(allowedCardStocks);
+    if (premiumCardStocks !== undefined) updateFields.premiumCardStocks = parseArrayField(premiumCardStocks);
 
     await Template.findOneAndUpdate({ templateId }, updateFields);
 
     const audit = new AuditLog({
       username: adminUser || "admin",
       action: "pricing.template.edit",
-      details: `Updated pricing for template ${template.name} (ID: ${templateId}): ${JSON.stringify(updateFields)}`
+      details: `Updated pricing & configs for template ${template.name} (ID: ${templateId}): ${JSON.stringify(updateFields)}`
     });
     await audit.save();
 
-    res.json({ success: true, message: `Pricing updated for "${template.name}"` });
+    res.json({ success: true, message: `Pricing and configurations updated for "${template.name}"` });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

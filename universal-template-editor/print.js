@@ -7,6 +7,7 @@ let templateId = 'card1';
 let documentTitle = 'Wedding Card';
 let currentData = { fields: {}, events: {}, styles: {} };
 let config = null; // Template configuration definition
+let templateDbConfig = null; // Dynamic template settings from backend DB
 
 // Print Options
 let quantity = 50;
@@ -42,8 +43,30 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Load template config first to resolve fallbacks
   await loadTemplateConfig();
   
+  // Fetch dynamic template settings from backend
+  await loadTemplateDbConfig();
+  
   // 2. Load print settings if saved previously
   loadSavedPrintConfig();
+  
+  // Apply template-level envelope visibility
+  if (templateDbConfig && templateDbConfig.hasEnvelope === false) {
+    const envelopeSection = document.querySelector('.option-card-group');
+    // Find the envelope options section by checking for the envelope radio name
+    document.querySelectorAll('input[name="envelope"]').forEach(radio => {
+      const section = radio.closest('.config-field-group, .option-section, .field-group');
+      if (section) section.style.display = 'none';
+    });
+    // Also hide the envelope label field if it exists
+    const envLabel = document.querySelector('.field-label');
+    document.querySelectorAll('.field-label').forEach(lbl => {
+      if (lbl.textContent.trim() === 'Envelope Option') {
+        const parent = lbl.closest('.config-field-group, .option-section, .field-group');
+        if (parent) parent.style.display = 'none';
+      }
+    });
+    envelopeOption = 'none';
+  }
 
   // 3. Initialize UI Inputs
   const titleInput = document.getElementById('doc-title-input');
@@ -88,6 +111,21 @@ async function loadTemplateConfig() {
     }
   } catch (err) {
     console.error("Failed to load template config:", err);
+  }
+}
+
+// Load dynamic template settings from backend database
+async function loadTemplateDbConfig() {
+  try {
+    const res = await fetch(`http://localhost:5000/api/templates/${templateId}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.template) {
+        templateDbConfig = data.template;
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load template settings from backend:", err.message);
   }
 }
 
@@ -952,8 +990,18 @@ function updateEnvelopeSelection(el) {
 
 // Pricing calculation logic
 function recalculatePricing() {
-  // 1. Base card price tier brackets based on quantity (min 50, base ₹10.00)
-  let basePriceRate = 10.00;
+  // 1. Base card price — use dynamic DB price if available, else fallback to ₹10.00
+  let basePriceRate = (templateDbConfig && templateDbConfig.price) ? templateDbConfig.price : 10.00;
+  // If an active offer price exists and is within date range, use it
+  if (templateDbConfig && templateDbConfig.offerPrice != null && templateDbConfig.offerPrice > 0) {
+    const now = new Date();
+    const start = templateDbConfig.offerStartDate ? new Date(templateDbConfig.offerStartDate) : null;
+    const end = templateDbConfig.offerEndDate ? new Date(templateDbConfig.offerEndDate) : null;
+    if ((!start || now >= start) && (!end || now <= end)) {
+      basePriceRate = templateDbConfig.offerPrice;
+    }
+  }
+
   let discountPercent = Math.min(80, Math.floor(quantity / 50 - 1) * 10);
   if (discountPercent < 0) discountPercent = 0;
   
@@ -972,15 +1020,41 @@ function recalculatePricing() {
     case 'metallic': paperAddon = 8.00; break;
   }
   
-  // 3. Envelope upgrades add-on
+  // 3. Envelope upgrades add-on (skip if template has no envelope)
   let envelopeAddon = 0.00;
-  switch (envelopeOption) {
-    case 'velvet': envelopeAddon = 5.00; break;
-    case 'none': envelopeAddon = -2.00; break; // Discount if envelopes omitted
+  if (templateDbConfig && templateDbConfig.hasEnvelope === false) {
+    envelopeAddon = 0.00;
+  } else {
+    switch (envelopeOption) {
+      case 'velvet': envelopeAddon = 5.00; break;
+      case 'none': envelopeAddon = -2.00; break;
+    }
+  }
+  
+  // 4. Premium pages surcharge
+  let premiumPagesAddon = 0.00;
+  if (templateDbConfig && templateDbConfig.hasPremiumPages) {
+    premiumPagesAddon = 5.00;
+  }
+  
+  // 5. Premium card stock color surcharge
+  let premiumStockAddon = 0.00;
+  if (templateDbConfig && templateDbConfig.premiumCardStocks && templateDbConfig.premiumCardStocks.length > 0) {
+    // Check if user's current card stock color is in premium list
+    const savedData = localStorage.getItem('savedVlsData') || localStorage.getItem('mic_print_project_data');
+    if (savedData) {
+      try {
+        const project = JSON.parse(savedData);
+        const cardBg = project?.data?.styles?.cardBg;
+        if (cardBg && templateDbConfig.premiumCardStocks.map(c => c.toLowerCase()).includes(cardBg.toLowerCase())) {
+          premiumStockAddon = 3.00;
+        }
+      } catch (e) {}
+    }
   }
   
   // Total calculated price per unit
-  unitPrice = basePrice + paperAddon + envelopeAddon;
+  unitPrice = basePrice + paperAddon + envelopeAddon + premiumPagesAddon + premiumStockAddon;
   
   // Itemized calculations
   let volumeDiscount = basePriceRate - basePrice;
@@ -995,12 +1069,15 @@ function recalculatePricing() {
   
   const envelopeAddonEl = document.getElementById('envelope-addon-val');
   if (envelopeAddonEl) {
-    if (envelopeAddon >= 0) {
+    if (templateDbConfig && templateDbConfig.hasEnvelope === false) {
+      envelopeAddonEl.textContent = 'N/A';
+      envelopeAddonEl.style.color = 'var(--text-muted, #999)';
+    } else if (envelopeAddon >= 0) {
       envelopeAddonEl.textContent = `+₹${envelopeAddon.toFixed(2)}`;
       envelopeAddonEl.style.color = '';
     } else {
       envelopeAddonEl.textContent = `-₹${Math.abs(envelopeAddon).toFixed(2)}`;
-      envelopeAddonEl.style.color = '#e11d48'; // Highlight discount color
+      envelopeAddonEl.style.color = '#e11d48';
     }
   }
   

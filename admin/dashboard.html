@@ -680,6 +680,71 @@
                   <span class="toggle-slider"></span>
                 </label>
               </div>
+
+              <!-- Shipping & Customization Settings -->
+              <div class="pricing-modal-section-title">Shipping & Customization</div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label"><i class="fa-solid fa-truck-fast" style="color:var(--info-color); margin-right:6px;"></i>Express Delivery Available</div>
+                  <div class="toggle-desc">Customers can choose express shipping for this template</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="modalExpressDelivery">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label"><i class="fa-solid fa-percent" style="color:var(--success-color); margin-right:6px;"></i>Tax Free (0% GST)</div>
+                  <div class="toggle-desc">Exempt this template from the standard 18% GST rate</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="modalTaxFree">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label"><i class="fa-solid fa-envelope" style="color:var(--text-color); margin-right:6px;"></i>Includes Envelope</div>
+                  <div class="toggle-desc">Whether this card design template includes physical envelopes</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="modalHasEnvelope">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label"><i class="fa-solid fa-file-invoice" style="color:var(--warning-color); margin-right:6px;"></i>Premium Pages Surcharge</div>
+                  <div class="toggle-desc">Adds premium pages surcharge (+₹5.00/unit) to order pricing</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="modalHasPremiumPages">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="pricing-modal-row" style="margin-top: 15px;">
+                <div class="form-group-admin" style="flex: 1;">
+                  <label for="modalAllowedStates">Allowed States (comma-separated)</label>
+                  <input type="text" id="modalAllowedStates" placeholder="e.g. Uttar Pradesh, Delhi (leave blank for all)">
+                </div>
+                <div class="form-group-admin" style="flex: 1;">
+                  <label for="modalAllowedDistricts">Allowed Districts (comma-separated)</label>
+                  <input type="text" id="modalAllowedDistricts" placeholder="e.g. Varanasi, Noida (leave blank for all)">
+                </div>
+              </div>
+
+              <div class="pricing-modal-row" style="margin-top: 15px;">
+                <div class="form-group-admin" style="flex: 1;">
+                  <label for="modalAllowedCardStocks">Allowed Card Stock Colors (comma-separated hex codes)</label>
+                  <input type="text" id="modalAllowedCardStocks" placeholder="e.g. #f9f1d0, #fff5e1 (leave blank for all)">
+                </div>
+                <div class="form-group-admin" style="flex: 1;">
+                  <label for="modalPremiumCardStocks">Premium Stock Colors (surcharged hex codes)</label>
+                  <input type="text" id="modalPremiumCardStocks" placeholder="e.g. #f3d0a5, #f2aec8">
+                </div>
+              </div>
             </div>
             <div class="pricing-modal-footer">
               <button class="btn-cancel" id="pricingModalCancelBtn">Cancel</button>

@@ -14,6 +14,7 @@ let orderConfig = {
 };
 
 let config = null; // Config state for resolving template defaults
+let templateDbConfig = null; // Dynamic template settings from backend DB
 
 // Checkout state
 let shippingSpeed = 'standard';
@@ -32,6 +33,36 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   // Load template config first to resolve defaults
   await loadTemplateConfig();
+  
+  // Fetch dynamic template settings from backend
+  try {
+    const dbRes = await fetch(`http://localhost:5000/api/templates/${orderConfig.templateId}`);
+    if (dbRes.ok) {
+      const dbData = await dbRes.json();
+      if (dbData.success && dbData.template) {
+        templateDbConfig = dbData.template;
+        // Disable express delivery if template doesn't support it
+        if (templateDbConfig.expressDeliveryAvailable === false) {
+          const expressRadio = document.querySelector('input[name="shipping-speed"][value="express"]');
+          if (expressRadio) {
+            expressRadio.disabled = true;
+            const expressCard = expressRadio.closest('.ship-option-card');
+            if (expressCard) {
+              expressCard.style.opacity = '0.4';
+              expressCard.style.pointerEvents = 'none';
+              expressCard.title = 'Express delivery is not available for this template';
+            }
+          }
+          // Force standard shipping
+          shippingSpeed = 'standard';
+          const stdRadio = document.querySelector('input[name="shipping-speed"][value="standard"]');
+          if (stdRadio) stdRadio.checked = true;
+        }
+      }
+    }
+  } catch (dbErr) {
+    console.warn("Could not load template settings from backend:", dbErr.message);
+  }
   
   // 2. Initialize UI summary items
   initializeSummaryUI();
@@ -443,6 +474,22 @@ function proceedToPaymentPage() {
   if (pincode.length < 6) {
     showError("Please enter a valid 6-digit postal pincode");
     return;
+  }
+  
+  // Validate state/district availability against template restrictions
+  if (templateDbConfig) {
+    const allowedStates = templateDbConfig.availableStates || [];
+    const allowedDistricts = templateDbConfig.availableDistricts || [];
+    if (allowedStates.length > 0 && !allowedStates.map(s => s.toLowerCase()).includes(state.toLowerCase())) {
+      showError(`This design template is not available for delivery in ${state}. Available states: ${allowedStates.join(', ')}`);
+      document.getElementById('state-input').focus();
+      return;
+    }
+    if (allowedDistricts.length > 0 && !allowedDistricts.map(d => d.toLowerCase()).includes(city.toLowerCase())) {
+      showError(`This design template is not available for delivery in ${city}. Available districts: ${allowedDistricts.join(', ')}`);
+      document.getElementById('city-input').focus();
+      return;
+    }
   }
   
   // 2. Save shipping details to localStorage

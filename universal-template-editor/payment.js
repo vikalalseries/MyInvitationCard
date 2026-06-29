@@ -27,7 +27,117 @@ let shippingSpeed = "standard";
 let standardDeliveryDate = "";
 let expressDeliveryDate = "";
 
-document.addEventListener("DOMContentLoaded", () => {
+let templateDbConfig = null;
+
+async function loadTemplateDbConfig() {
+  try {
+    const res = await fetch(`http://localhost:5000/api/templates/${orderConfig.templateId}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.template) {
+        templateDbConfig = data.template;
+      }
+    }
+  } catch (err) {
+    console.warn("Could not load template settings from backend:", err.message);
+  }
+}
+
+function calculatePriceBreakdown(qty, paperStock, envelopeOption, shippingSpeed) {
+  // 1. Base card price — use dynamic DB price if available, else fallback to ₹10.00
+  let basePriceRate = (templateDbConfig && templateDbConfig.price) ? templateDbConfig.price : 10.00;
+  // If an active offer price exists and is within date range, use it
+  if (templateDbConfig && templateDbConfig.offerPrice != null && templateDbConfig.offerPrice > 0) {
+    const now = new Date();
+    const start = templateDbConfig.offerStartDate ? new Date(templateDbConfig.offerStartDate) : null;
+    const end = templateDbConfig.offerEndDate ? new Date(templateDbConfig.offerEndDate) : null;
+    if ((!start || now >= start) && (!end || now <= end)) {
+      basePriceRate = templateDbConfig.offerPrice;
+    }
+  }
+
+  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
+  if (discountPercent < 0) discountPercent = 0;
+  let basePrice = basePriceRate * (1 - discountPercent / 100);
+  const cardsTotal = qty * basePrice;
+
+  // 2. Paper stock addon
+  let paperUnitCost = 0.00;
+  let paperName = 'Matte';
+  switch (paperStock) {
+    case 'glossy': paperUnitCost = 2.00; paperName = 'Premium Glossy'; break;
+    case 'linen': paperUnitCost = 5.00; paperName = 'Textured Linen'; break;
+    case 'metallic': paperUnitCost = 8.00; paperName = 'Gold Foil Metallic'; break;
+  }
+  const paperTotal = qty * paperUnitCost;
+
+  // 3. Envelope option addon (skip if template has no envelope)
+  let envelopeUnitCost = 0.00;
+  let envelopeName = 'Standard Crimson';
+  if (templateDbConfig && templateDbConfig.hasEnvelope === false) {
+    envelopeUnitCost = 0.00;
+    envelopeName = 'No Envelopes Required';
+  } else {
+    switch (envelopeOption) {
+      case 'velvet': envelopeUnitCost = 5.00; envelopeName = 'Premium Velvet Silk'; break;
+      case 'none': envelopeUnitCost = -2.00; envelopeName = 'Omitted Envelopes'; break;
+    }
+  }
+  const envelopeTotal = qty * envelopeUnitCost;
+
+  // 4. Premium pages surcharge
+  let premiumPagesUnitCost = 0.00;
+  if (templateDbConfig && templateDbConfig.hasPremiumPages) {
+    premiumPagesUnitCost = 5.00;
+  }
+  const premiumPagesTotal = qty * premiumPagesUnitCost;
+
+  // 5. Premium card stock color surcharge
+  let premiumStockUnitCost = 0.00;
+  if (templateDbConfig && templateDbConfig.premiumCardStocks && templateDbConfig.premiumCardStocks.length > 0) {
+    const cardBg = orderConfig.data?.styles?.cardBg;
+    if (cardBg && templateDbConfig.premiumCardStocks.map(c => c.toLowerCase()).includes(cardBg.toLowerCase())) {
+      premiumStockUnitCost = 3.00;
+    }
+  }
+  const premiumStockTotal = qty * premiumStockUnitCost;
+
+  // Subtotal before shipping/tax
+  const subtotal = cardsTotal + paperTotal + envelopeTotal + premiumPagesTotal + premiumStockTotal;
+
+  // 6. Shipping
+  let shippingCost = shippingSpeed === "express" ? 350.00 : 0.00;
+
+  // 7. GST (18%, or 0% if taxFree)
+  const taxBase = subtotal + shippingCost;
+  const isTaxFree = !!(templateDbConfig && templateDbConfig.taxFree);
+  const gstTax = isTaxFree ? 0.00 : taxBase * 0.18;
+
+  // 8. Grand total
+  const grandTotal = subtotal + shippingCost + gstTax;
+
+  return {
+    basePriceRate,
+    basePrice,
+    cardsTotal,
+    paperUnitCost,
+    paperName,
+    paperTotal,
+    envelopeUnitCost,
+    envelopeName,
+    envelopeTotal,
+    premiumPagesUnitCost,
+    premiumPagesTotal,
+    premiumStockUnitCost,
+    premiumStockTotal,
+    subtotal,
+    shippingCost,
+    gstTax,
+    grandTotal
+  };
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
   // 1. Load details from localStorage
   const savedConfig = localStorage.getItem("mic_current_order_config");
   const savedAddress = localStorage.getItem("mic_shipping_address");
@@ -60,10 +170,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3. Render Shipping Summary
   renderShippingSummary();
 
-  // 4. Recalculate and render pricing summary
+  // 4. Fetch dynamic template settings from backend DB
+  await loadTemplateDbConfig();
+
+  // 5. Recalculate and render pricing summary
   recalculateBill();
 
-  // 5. Load Card design review preview
+  // 6. Load Card design review preview
   setupIframePreview();
 });
 
@@ -107,65 +220,27 @@ function renderShippingSummary() {
 // Recompute prices and update UI
 function recalculateBill() {
   const qty = orderConfig.quantity || 100;
-  
-  // 1. Base unit card price tier
-  let basePriceRate = 10.00;
-  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
-  if (discountPercent < 0) discountPercent = 0;
-  let basePrice = basePriceRate * (1 - discountPercent / 100);
-  const cardsTotal = qty * basePrice;
-  
-  // 2. Paperstock addons
-  let paperUnitCost = 0.00;
-  let paperName = 'Matte';
-  switch (orderConfig.paperStock) {
-    case 'glossy': paperUnitCost = 2.00; paperName = 'Premium Glossy'; break;
-    case 'linen': paperUnitCost = 5.00; paperName = 'Textured Linen'; break;
-    case 'metallic': paperUnitCost = 8.00; paperName = 'Gold Foil Metallic'; break;
-  }
-  const paperTotal = qty * paperUnitCost;
-  
-  // 3. Envelope option addons
-  let envelopeUnitCost = 0.00;
-  let envelopeName = 'Standard Crimson';
-  switch (orderConfig.envelopeOption) {
-    case 'velvet': envelopeUnitCost = 5.00; envelopeName = 'Premium Velvet Silk'; break;
-    case 'none': envelopeUnitCost = -2.00; envelopeName = 'Omitted Envelopes'; break;
-  }
-  const envelopeTotal = qty * envelopeUnitCost;
-  
-  // Subtotal before shipping/tax
-  const subtotal = cardsTotal + paperTotal + envelopeTotal;
-  
-  // 4. Shipping Calculation
-  let shippingCost = shippingSpeed === "express" ? 350.00 : 0.00;
-  
-  // 5. GST (18%)
-  const taxBase = subtotal + shippingCost;
-  const gstTax = taxBase * 0.18;
-  
-  // 6. Grand total
-  const grandTotal = subtotal + shippingCost + gstTax;
-  
+  const breakdown = calculatePriceBreakdown(qty, orderConfig.paperStock, orderConfig.envelopeOption, shippingSpeed);
+
   // Update bill UI Labels
   document.getElementById('bill-qty').textContent = qty;
-  document.getElementById('bill-base-price').textContent = basePrice.toFixed(2);
-  document.getElementById('bill-cards-total').textContent = cardsTotal.toFixed(2);
+  document.getElementById('bill-base-price').textContent = breakdown.basePrice.toFixed(2);
+  document.getElementById('bill-cards-total').textContent = breakdown.cardsTotal.toFixed(2);
   
-  document.getElementById('bill-paper-name').textContent = paperName;
-  document.getElementById('bill-paper-total').textContent = paperTotal.toFixed(2);
+  document.getElementById('bill-paper-name').textContent = breakdown.paperName;
+  document.getElementById('bill-paper-total').textContent = breakdown.paperTotal.toFixed(2);
   
-  document.getElementById('bill-envelope-name').textContent = envelopeName;
-  document.getElementById('bill-envelope-total').textContent = envelopeTotal.toFixed(2);
+  document.getElementById('bill-envelope-name').textContent = breakdown.envelopeName;
+  document.getElementById('bill-envelope-total').textContent = breakdown.envelopeTotal.toFixed(2);
   
-  document.getElementById('bill-shipping-val').textContent = shippingCost === 0 ? 'FREE' : `₹${shippingCost.toFixed(2)}`;
-  document.getElementById('bill-tax-val').textContent = gstTax.toFixed(2);
+  document.getElementById('bill-shipping-val').textContent = breakdown.shippingCost === 0 ? 'FREE' : `₹${breakdown.shippingCost.toFixed(2)}`;
+  document.getElementById('bill-tax-val').textContent = breakdown.gstTax.toFixed(2);
   
-  const grandTotalStr = grandTotal.toFixed(2);
+  const grandTotalStr = breakdown.grandTotal.toFixed(2);
   document.getElementById('bill-grand-total').textContent = grandTotalStr;
   
   // Update Payment button label
-  document.getElementById('btn-pay-total').textContent = grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  document.getElementById('btn-pay-total').textContent = breakdown.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 // Setup preview iframe card layout
@@ -377,33 +452,16 @@ function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
   }
   
   const qty = orderConfig.quantity || 100;
+  const breakdown = calculatePriceBreakdown(qty, orderConfig.paperStock, orderConfig.envelopeOption, shippingSpeed);
   
-  let basePriceRate = 10.00;
-  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
-  if (discountPercent < 0) discountPercent = 0;
-  let basePrice = basePriceRate * (1 - discountPercent / 100);
-  const cardsTotal = qty * basePrice;
-  
-  let paperUnitCost = 0.00;
-  switch (orderConfig.paperStock) {
-    case 'glossy': paperUnitCost = 2.00; break;
-    case 'linen': paperUnitCost = 5.00; break;
-    case 'metallic': paperUnitCost = 8.00; break;
-  }
-  const paperTotal = qty * paperUnitCost;
-  
-  let envelopeUnitCost = 0.00;
-  switch (orderConfig.envelopeOption) {
-    case 'velvet': envelopeUnitCost = 5.00; break;
-    case 'none': envelopeUnitCost = -2.00; break;
-  }
-  const envelopeTotal = qty * envelopeUnitCost;
-  const subtotal = cardsTotal + paperTotal + envelopeTotal;
-  
-  let shippingCost = shippingSpeed === 'express' ? 350.00 : 0.00;
-  const taxBase = subtotal + shippingCost;
-  const gstTax = taxBase * 0.18;
-  const grandTotal = subtotal + shippingCost + gstTax;
+  const basePrice = breakdown.basePrice;
+  const cardsTotal = breakdown.cardsTotal;
+  const paperTotal = breakdown.paperTotal;
+  const envelopeTotal = breakdown.envelopeTotal;
+  const subtotal = breakdown.subtotal;
+  const shippingCost = breakdown.shippingCost;
+  const gstTax = breakdown.gstTax;
+  const grandTotal = breakdown.grandTotal;
   
   const orderDetails = {
     orderId,
@@ -521,33 +579,9 @@ function showFailureSimulation(customReason, customTxnId) {
   const randNum = Math.floor(10000 + Math.random() * 90000);
   const failureRef = customTxnId || `TXN-REF-${randNum}-2026`;
   const qty = orderConfig.quantity || 100;
+  const breakdown = calculatePriceBreakdown(qty, orderConfig.paperStock, orderConfig.envelopeOption, shippingSpeed);
   
-  let basePriceRate = 10.00;
-  let discountPercent = Math.min(80, Math.floor(qty / 50 - 1) * 10);
-  if (discountPercent < 0) discountPercent = 0;
-  let basePrice = basePriceRate * (1 - discountPercent / 100);
-  const cardsTotal = qty * basePrice;
-  
-  let paperUnitCost = 0.00;
-  switch (orderConfig.paperStock) {
-    case 'glossy': paperUnitCost = 2.00; break;
-    case 'linen': paperUnitCost = 5.00; break;
-    case 'metallic': paperUnitCost = 8.00; break;
-  }
-  const paperTotal = qty * paperUnitCost;
-  
-  let envelopeUnitCost = 0.00;
-  switch (orderConfig.envelopeOption) {
-    case 'velvet': envelopeUnitCost = 5.00; break;
-    case 'none': envelopeUnitCost = -2.00; break;
-  }
-  const envelopeTotal = qty * envelopeUnitCost;
-  const subtotal = cardsTotal + paperTotal + envelopeTotal;
-  
-  let shippingCost = shippingSpeed === 'express' ? 350.00 : 0.00;
-  const taxBase = subtotal + shippingCost;
-  const gstTax = taxBase * 0.18;
-  const grandTotal = subtotal + shippingCost + gstTax;
+  const grandTotal = breakdown.grandTotal;
   
   const failedDetails = {
     orderId: `MIC-${randNum}-2026`,

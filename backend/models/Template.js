@@ -15,7 +15,15 @@ const TemplateSchema = new mongoose.Schema(
     isPremium: { type: Boolean, default: false },
     status: { type: String, default: "active" }, // "active", "draft", "hidden"
     files: [{ type: String }],
-    version: { type: Number, default: 1 }
+    version: { type: Number, default: 1 },
+    expressDeliveryAvailable: { type: Boolean, default: true },
+    taxFree: { type: Boolean, default: false },
+    availableStates: [{ type: String }],
+    availableDistricts: [{ type: String }],
+    hasEnvelope: { type: Boolean, default: true },
+    hasPremiumPages: { type: Boolean, default: false },
+    allowedCardStocks: [{ type: String }],
+    premiumCardStocks: [{ type: String }]
   },
   { timestamps: true }
 );

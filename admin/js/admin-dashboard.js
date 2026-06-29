@@ -2284,6 +2284,14 @@ window.openPricingModal = function(templateId) {
   document.getElementById("modalOfferEnd").value = t.offerEndDate ? new Date(t.offerEndDate).toISOString().split("T")[0] : "";
   document.getElementById("modalIsFeatured").checked = !!t.isFeatured;
   document.getElementById("modalIsPremium").checked = !!t.isPremium;
+  document.getElementById("modalExpressDelivery").checked = t.expressDeliveryAvailable !== false;
+  document.getElementById("modalTaxFree").checked = !!t.taxFree;
+  document.getElementById("modalHasEnvelope").checked = t.hasEnvelope !== false;
+  document.getElementById("modalHasPremiumPages").checked = !!t.hasPremiumPages;
+  document.getElementById("modalAllowedStates").value = t.availableStates ? t.availableStates.join(", ") : "";
+  document.getElementById("modalAllowedDistricts").value = t.availableDistricts ? t.availableDistricts.join(", ") : "";
+  document.getElementById("modalAllowedCardStocks").value = t.allowedCardStocks ? t.allowedCardStocks.join(", ") : "";
+  document.getElementById("modalPremiumCardStocks").value = t.premiumCardStocks ? t.premiumCardStocks.join(", ") : "";
 
   // Open modal
   document.getElementById("pricingModalOverlay").classList.add("open");
@@ -2332,6 +2340,14 @@ if (pricingModalSaveBtn) {
       offerEndDate: document.getElementById("modalOfferEnd").value || null,
       isFeatured: document.getElementById("modalIsFeatured").checked,
       isPremium: document.getElementById("modalIsPremium").checked,
+      expressDeliveryAvailable: document.getElementById("modalExpressDelivery").checked,
+      taxFree: document.getElementById("modalTaxFree").checked,
+      hasEnvelope: document.getElementById("modalHasEnvelope").checked,
+      hasPremiumPages: document.getElementById("modalHasPremiumPages").checked,
+      availableStates: document.getElementById("modalAllowedStates").value.trim(),
+      availableDistricts: document.getElementById("modalAllowedDistricts").value.trim(),
+      allowedCardStocks: document.getElementById("modalAllowedCardStocks").value.trim(),
+      premiumCardStocks: document.getElementById("modalPremiumCardStocks").value.trim(),
       adminUser: adminUser.username
     };
 

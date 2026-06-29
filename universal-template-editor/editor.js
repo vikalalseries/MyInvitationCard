@@ -466,6 +466,21 @@ async function loadTemplate(templateId) {
     // Initialize data state from config defaults
     initializeDataState();
     
+    // Fetch dynamic template settings from backend DB
+    try {
+      const dbRes = await fetch(`http://localhost:5000/api/templates/${templateId}`);
+      if (dbRes.ok) {
+        const dbData = await dbRes.json();
+        if (dbData.success && dbData.template) {
+          window._templateDbConfig = dbData.template;
+          // Filter card stock dropdown based on allowed colors
+          filterCardStockDropdown(dbData.template);
+        }
+      }
+    } catch (dbErr) {
+      console.warn("Could not load template settings from backend:", dbErr.message);
+    }
+    
     // Check if there is imported VLS data in localStorage
     const savedVlsStr = localStorage.getItem("savedVlsData");
     if (savedVlsStr) {
@@ -526,6 +541,45 @@ async function loadTemplate(templateId) {
   } catch (error) {
     console.error("Failed to load template configuration:", error);
     toast(`Error loading template configuration.`, 'e');
+  }
+}
+
+// Filter the card stock color dropdown based on backend template settings
+function filterCardStockDropdown(templateSettings) {
+  const stockSelect = document.getElementById('card-stock-select');
+  if (!stockSelect) return;
+
+  const allowed = templateSettings.allowedCardStocks || [];
+  const premium = templateSettings.premiumCardStocks || [];
+
+  // If no allowed stocks configured, show all options (default behavior)
+  if (allowed.length === 0) return;
+
+  const allOptions = stockSelect.querySelectorAll('option');
+  allOptions.forEach(opt => {
+    const hex = opt.value.toLowerCase();
+    if (!allowed.map(c => c.toLowerCase()).includes(hex)) {
+      opt.style.display = 'none';
+      opt.disabled = true;
+    } else {
+      opt.style.display = '';
+      opt.disabled = false;
+      // Mark premium stocks with a label
+      if (premium.map(c => c.toLowerCase()).includes(hex)) {
+        if (!opt.textContent.includes('(Premium')) {
+          opt.textContent = opt.textContent + ' (Premium +₹3.00)';
+        }
+      }
+    }
+  });
+
+  // If the currently selected option is hidden, select the first visible one
+  if (stockSelect.selectedOptions[0] && stockSelect.selectedOptions[0].disabled) {
+    const firstVisible = [...allOptions].find(o => !o.disabled);
+    if (firstVisible) {
+      stockSelect.value = firstVisible.value;
+      handleCardStockChange(stockSelect);
+    }
   }
 }
 
