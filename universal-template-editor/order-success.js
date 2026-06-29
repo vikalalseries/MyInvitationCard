@@ -188,9 +188,14 @@ async function renderSuccessPreview(details) {
     }
 
     if (container) {
-      const scale = Math.min(container.clientWidth / 888, container.clientHeight / 718);
+      // 21.5cm and 8.5cm correspond to 812.5px and 321.3px (assuming 96 DPI)
+      const baseWidth = 812.5;
+      const baseHeight = 321.3;
+      const scale = Math.min(container.clientWidth / baseWidth, container.clientHeight / baseHeight);
       iframe.style.transformOrigin = "top left";
       iframe.style.transform = `scale(${scale})`;
+      iframe.style.width = `${baseWidth}px`;
+      iframe.style.height = `${baseHeight}px`;
     }
 
     const placeholder = iframe.parentElement?.querySelector(".thumbnail-preview-placeholder");

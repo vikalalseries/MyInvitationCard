@@ -401,12 +401,14 @@ body {
 /* Column 1: Order summary content */
 .review-body {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 16px;
   align-items: flex-start;
 }
 
 .thumbnail-wrapper {
-  width: min(100%, 220px);
+  width: 100%;
+  max-width: 320px;
   aspect-ratio: 21.5 / 8.5;
   border-radius: var(--r-sm);
   overflow: hidden;
