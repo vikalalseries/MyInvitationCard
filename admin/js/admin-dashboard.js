@@ -122,12 +122,27 @@ async function loadOrderTemplatePreview(iframe, order, options = {}) {
     if (fitContainer) {
       const container = iframe.parentElement;
       if (container) {
+        // Clear any previous inline styles to allow correct calculation
+        container.style.width = "";
+        container.style.height = "";
+        container.style.aspectRatio = "";
+
+        // Standard max bounds based on container design
+        const maxWidth = 360;
+        const maxHeight = 142;
+
         const baseWidth = 888;
         const baseHeight = 718;
-        const scale = Math.min(container.clientWidth / baseWidth, container.clientHeight / baseHeight);
+        const scale = Math.min(maxWidth / baseWidth, maxHeight / baseHeight);
+
         iframe.style.transform = `scale(${scale})`;
         iframe.style.width = `${baseWidth}px`;
         iframe.style.height = `${baseHeight}px`;
+
+        // Wrap the container border tightly around the scaled iframe
+        container.style.width = `${baseWidth * scale}px`;
+        container.style.height = `${baseHeight * scale}px`;
+        container.style.aspectRatio = "auto";
       }
     }
   };
