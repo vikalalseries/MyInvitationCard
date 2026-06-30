@@ -4223,6 +4223,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
+const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5000"
+  : "https://myinvitationcard.onrender.com";
+
 // ── Auth state tracking ──
 let isLoggedIn = false;
 
@@ -4328,9 +4332,6 @@ async function updateHeaderProfileUI(user) {
     let localAvatar = "";
     // Fetch from MongoDB
     try {
-      const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-        ? "http://localhost:5000"
-        : "https://myinvitationcard.onrender.com";
       const res = await fetch(`${BACKEND_URL}/api/users/${user.uid}`);
       if (res.ok) {
         const json = await res.json();
@@ -4609,7 +4610,7 @@ document.getElementById('lp-signup-action-btn').addEventListener('click', async 
 
   try {
     if (typeof toast === 'function') toast('Sending verification code...', 'i');
-    const response = await fetch("https://myinvitationcard-backend.onrender.com/send-otp", {
+    const response = await fetch(`${BACKEND_URL}/send-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -4640,7 +4641,7 @@ document.getElementById('lp-resend-btn').addEventListener('click', async (e) => 
   const fullName = document.getElementById('lp-signup-name').value.trim();
   try {
     if (typeof toast === 'function') toast('Resending verification code...', 'i');
-    const response = await fetch("https://myinvitationcard-backend.onrender.com/send-otp", {
+    const response = await fetch(`${BACKEND_URL}/send-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -4677,7 +4678,7 @@ document.getElementById('lp-otp-action-btn').addEventListener('click', async (e)
 
   try {
     if (typeof toast === 'function') toast('Verifying code...', 'i');
-    const response = await fetch("https://myinvitationcard-backend.onrender.com/verify-otp", {
+    const response = await fetch(`${BACKEND_URL}/verify-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
