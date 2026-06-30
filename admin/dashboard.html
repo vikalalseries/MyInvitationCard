@@ -323,6 +323,13 @@
                     <input type="password" id="newAdminPassword" placeholder="Strong password" required>
                   </div>
                   <div class="form-group-admin">
+                    <label for="newAdminConfirmPassword">Confirm Password</label>
+                    <div class="input-right-icon-wrap">
+                      <input type="password" id="newAdminConfirmPassword" placeholder="Confirm password" required>
+                      <i class="fa-regular fa-eye-slash toggle-password" data-target="newAdminConfirmPassword"></i>
+                    </div>
+                  </div>
+                  <div class="form-group-admin">
                     <label for="newAdminRole">Department Role</label>
                     <select id="newAdminRole" required>
                       <option value="Template Manager">Template Manager</option>
@@ -1246,6 +1253,13 @@
         <div class="form-group-admin">
           <label for="editAdminPassword">New Password (Optional)</label>
           <input type="password" id="editAdminPassword" placeholder="Leave blank to keep current">
+        </div>
+        <div class="form-group-admin">
+          <label for="editAdminConfirmPassword">Confirm New Password</label>
+          <div class="input-right-icon-wrap">
+            <input type="password" id="editAdminConfirmPassword" placeholder="Confirm new password">
+            <i class="fa-regular fa-eye-slash toggle-password" data-target="editAdminConfirmPassword"></i>
+          </div>
         </div>
         <div class="form-group-admin" id="editAdminRoleGroup">
           <label for="editAdminRole">Department Role</label>
