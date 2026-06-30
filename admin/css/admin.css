@@ -2146,4 +2146,29 @@ body {
   color: #9ca3af !important;
 }
 
+.input-right-icon-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.input-right-icon-wrap input {
+  padding-right: 45px;
+}
+
+.input-right-icon-wrap .toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.input-right-icon-wrap .toggle-password:hover {
+  color: var(--primary-color);
+}
+
 
