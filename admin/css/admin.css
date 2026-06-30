@@ -2171,4 +2171,10 @@ body {
   color: var(--primary-color);
 }
 
+/* Hide default browser password reveal and clear buttons */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
 
