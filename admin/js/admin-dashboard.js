@@ -1166,7 +1166,7 @@ async function fetchOrders(isBackground = false) {
   const tableBody = document.getElementById("ordersTableBody");
   if (!tableBody) return;
   if (!isBackground) {
-    tableBody.innerHTML = getTableSkeletonHtml(7, 5);
+    tableBody.innerHTML = getTableSkeletonHtml(9, 5);
   }
 
   try {
@@ -1271,7 +1271,6 @@ function renderOrdersTable(orders) {
       <td><span class="badge ${badgeClass}">${order.status}</span></td>
       <td>${order.orderType || 'normal'}</td>
       <td><button class="table-action-btn edit" onclick="openPrintCardModal('${order.orderId}')"><i class="fa-solid fa-eye"></i> View Design</button></td>
-      <td><button class="table-action-btn edit" onclick="window.open('${BACKEND_URL}/api/admin/orders/${order._id}/slip', '_blank')"><i class="fa-solid fa-print"></i> Print Slip</button></td>
       <td>${actionBtn}</td>
     `;
     tableBody.appendChild(tr);
