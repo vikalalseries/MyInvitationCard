@@ -1181,10 +1181,11 @@ async function fetchOrders(isBackground = false) {
   }
 }
 
-// Filter and render orders dynamically based on search query and date scope (Day/Week/Month/Year)
+// Filter and render orders dynamically based on search query and date scope (Day/Week/Month/Year/Custom)
 function filterAndRenderOrders() {
   const query = document.getElementById("orderSearchInput")?.value.toLowerCase().trim() || "";
   const dateFilter = document.getElementById("orderDateFilter")?.value || "all";
+  const specificDate = document.getElementById("orderSpecificDateFilter")?.value || "";
   
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -1200,6 +1201,13 @@ function filterAndRenderOrders() {
       if (dateFilter === "week" && orderDate < startOfWeek) return false;
       if (dateFilter === "month" && orderDate < startOfMonth) return false;
       if (dateFilter === "year" && orderDate < startOfYear) return false;
+      if (dateFilter === "custom" && specificDate) {
+        const localYear = orderDate.getFullYear();
+        const localMonth = String(orderDate.getMonth() + 1).padStart(2, '0');
+        const localDay = String(orderDate.getDate()).padStart(2, '0');
+        const orderLocalDateStr = `${localYear}-${localMonth}-${localDay}`;
+        if (orderLocalDateStr !== specificDate) return false;
+      }
     } else if (dateFilter !== "all") {
       return false; // exclude if no timestamp and filtering is active
     }
@@ -2169,8 +2177,24 @@ if (orderSearchInput) {
 }
 
 const orderDateFilter = document.getElementById("orderDateFilter");
+const orderSpecificDateFilter = document.getElementById("orderSpecificDateFilter");
+
 if (orderDateFilter) {
-  orderDateFilter.addEventListener("change", filterAndRenderOrders);
+  orderDateFilter.addEventListener("change", () => {
+    if (orderDateFilter.value !== "custom" && orderSpecificDateFilter) {
+      orderSpecificDateFilter.value = "";
+    }
+    filterAndRenderOrders();
+  });
+}
+
+if (orderSpecificDateFilter) {
+  orderSpecificDateFilter.addEventListener("change", () => {
+    if (orderSpecificDateFilter.value && orderDateFilter) {
+      orderDateFilter.value = "custom";
+    }
+    filterAndRenderOrders();
+  });
 }
 
 // 6. Payments transactions
