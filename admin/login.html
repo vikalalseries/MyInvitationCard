@@ -111,8 +111,9 @@
             <a href="#" id="forgotPasswordLink" class="forgot-link">Forgot?</a>
           </div>
           <div class="input-icon-wrap">
-            <i class="fa-regular fa-lock"></i>
-            <input type="password" id="adminPassword" placeholder="••••••••" required autocomplete="current-password">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="adminPassword" class="password-input" placeholder="••••••••" required autocomplete="current-password">
+            <i class="fa-regular fa-eye-slash toggle-password" data-target="adminPassword"></i>
           </div>
         </div>
 
@@ -192,8 +193,9 @@
           <div class="form-group-admin">
             <label for="newPassword">New Password</label>
             <div class="input-icon-wrap">
-              <i class="fa-regular fa-lock"></i>
-              <input type="password" id="newPassword" placeholder="••••••••" required>
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" id="newPassword" class="password-input" placeholder="••••••••" required>
+              <i class="fa-regular fa-eye-slash toggle-password" data-target="newPassword"></i>
             </div>
           </div>
 
@@ -201,7 +203,8 @@
             <label for="confirmNewPassword">Confirm New Password</label>
             <div class="input-icon-wrap">
               <i class="fa-solid fa-lock"></i>
-              <input type="password" id="confirmNewPassword" placeholder="••••••••" required>
+              <input type="password" id="confirmNewPassword" class="password-input" placeholder="••••••••" required>
+              <i class="fa-regular fa-eye-slash toggle-password" data-target="confirmNewPassword"></i>
             </div>
           </div>
           <button type="submit" class="admin-btn-primary" id="completeResetBtn">Reset Password</button>
