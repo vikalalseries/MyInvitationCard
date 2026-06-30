@@ -9,6 +9,10 @@ import {
   signInWithCustomToken
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5000"
+  : "https://myinvitationcard.onrender.com";
+
 const toastMessage = document.getElementById("toastMessage");
 
 function showToast(message, type = "success") {
@@ -289,7 +293,7 @@ if (signupEmailBtn) {
     }
 
     try {
-      const response = await fetch("https://myinvitationcard-backend.onrender.com/send-otp", {
+      const response = await fetch(`${BACKEND_URL}/send-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -326,7 +330,7 @@ if (resendOtpBtn) {
     try {
       const fullName = document.getElementById("signupName").value.trim();
 
-      const response = await fetch("https://myinvitationcard-backend.onrender.com/send-otp", {
+      const response = await fetch(`${BACKEND_URL}/send-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -365,7 +369,7 @@ if (verifyOtpBtn) {
     }
 
     try {
-      const response = await fetch("https://myinvitationcard-backend.onrender.com/verify-otp", {
+      const response = await fetch(`${BACKEND_URL}/verify-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
