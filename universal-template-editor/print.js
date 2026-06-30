@@ -1169,15 +1169,111 @@ function triggerSaving() {
 }
 
 function saveDraft() {
-  const config = {
+  if (!userLoggedIn || !currentUser || !currentUser.uid) {
+    const config = {
+      quantity,
+      paperStock,
+      envelopeOption
+    };
+    localStorage.setItem("mic_saved_print_config", JSON.stringify(config));
+    
+    makeSaveButtonColorful();
+    triggerSaving();
+    toast("Print customization saved locally!", "s");
+    return;
+  }
+
+  const projectKey = `mic_user_projects_${currentUser.uid}`;
+  let userProjects = [];
+  try {
+    const raw = localStorage.getItem(projectKey);
+    if (raw) userProjects = JSON.parse(raw);
+  } catch (e) {
+    console.error("Error reading projects:", e);
+  }
+
+  // Find if there is already an existing draft for this templateId
+  const existingIndex = userProjects.findIndex(p => p.templateId === templateId);
+  
+  let targetProjectId = null;
+  let targetDocTitle = documentTitle || "Wedding Card";
+
+  if (existingIndex > -1) {
+    // Draft already exists! Ask user if they want to overwrite or create new
+    const saveAsNew = confirm(
+      "You have already saved a draft for this template.\n\n" +
+      "Click 'OK' to save it as a NEW draft.\n" +
+      "Click 'Cancel' to UPDATE the existing draft."
+    );
+
+    if (saveAsNew) {
+      // Save as a NEW draft
+      targetProjectId = 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      targetDocTitle = getUniqueDraftTitle(userProjects, targetDocTitle);
+    } else {
+      // UPDATE existing draft
+      targetProjectId = userProjects[existingIndex].id;
+      targetDocTitle = userProjects[existingIndex].documentTitle;
+    }
+  } else {
+    // No draft exists yet, create new project ID
+    targetProjectId = 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  const projectData = {
+    id: targetProjectId,
+    templateId: templateId,
+    documentTitle: targetDocTitle,
+    lastSaved: new Date().toISOString(),
+    thumbnail: `templates/${templateId}/thumbnail.jpg`,
+    data: currentData || { fields: {}, events: {}, styles: {} },
+    printConfig: {
+      quantity,
+      paperStock,
+      envelopeOption
+    }
+  };
+
+  const finalIndex = userProjects.findIndex(p => p.id === targetProjectId);
+  if (finalIndex > -1) {
+    userProjects[finalIndex] = projectData;
+  } else {
+    userProjects.push(projectData);
+  }
+
+  localStorage.setItem(projectKey, JSON.stringify(userProjects));
+
+  // Save the print config locally too for compatibility
+  localStorage.setItem("mic_saved_print_config", JSON.stringify({
     quantity,
     paperStock,
     envelopeOption
-  };
-  localStorage.setItem("mic_saved_print_config", JSON.stringify(config));
-  
+  }));
+
+  // Make button colorful
+  makeSaveButtonColorful();
   triggerSaving();
-  toast("Print customization saved to draft successfully!", "s");
+  toast(`Draft "${targetDocTitle}" saved successfully!`, "s");
+}
+
+function getUniqueDraftTitle(projects, baseTitle) {
+  let candidate = baseTitle;
+  let counter = 1;
+  while (projects.some(p => p.documentTitle === candidate)) {
+    candidate = `${baseTitle} (${counter})`;
+    counter++;
+  }
+  return candidate;
+}
+
+function makeSaveButtonColorful() {
+  const btn = document.querySelector('button[onclick="saveDraft()"]');
+  if (btn) {
+    btn.style.background = "var(--primary-color, #6366f1)";
+    btn.style.color = "#ffffff";
+    btn.style.borderColor = "var(--primary-hover, #4f46e5)";
+    btn.innerHTML = `<i class="fa-solid fa-bookmark"></i> Draft Saved`;
+  }
 }
 
 // ── CHECKOUT NAVIGATION ──
@@ -1259,6 +1355,7 @@ Promise.all([
     if (user) {
       const displayName = user.displayName?.trim() || localStorage.getItem("signupFullName")?.trim() || user.email.split('@')[0];
       currentUser = {
+        uid: user.uid,
         name: displayName,
         email: user.email,
         photoURL: user.photoURL
