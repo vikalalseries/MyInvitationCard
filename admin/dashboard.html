@@ -1298,6 +1298,21 @@
     </div>
   </div>
 
+  <!-- LOGOUT CONFIRMATION MODAL -->
+  <div id="logoutConfirmModal" class="modal-overlay-admin hidden">
+    <div class="modal-card-admin" style="max-width: 400px; width: 90%; text-align: center; padding: 30px;">
+      <div style="font-size: 50px; color: #ef4444; margin-bottom: 20px;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      </div>
+      <h3 style="margin-bottom: 10px; font-family: var(--font-title); font-size: 22px; font-weight: 700; color: var(--text-active);">Confirm Logout</h3>
+      <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 25px; line-height: 1.5;">Are you sure you want to log out of the admin portal?</p>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button id="cancelLogoutBtn" class="admin-btn-secondary" style="flex: 1; justify-content: center;">Cancel</button>
+        <button id="confirmLogoutBtn" class="admin-btn-danger" style="flex: 1; justify-content: center;">Logout</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="toast-container-admin"></div>
 
