@@ -331,6 +331,49 @@ body {
   text-decoration: underline;
 }
 
+.admin-btn-secondary {
+  background: var(--bg-soft);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 20px;
+  color: var(--text-active);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.admin-btn-secondary:hover {
+  background: var(--border-color);
+}
+
+.admin-btn-danger {
+  background: #ef4444;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.admin-btn-danger:hover {
+  background: #dc2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
 /* OTP Instruction UI */
 .otp-instruction {
   text-align: center;
