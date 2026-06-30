@@ -1736,12 +1736,6 @@ function autoSaveUserProject() {
   
   const docTitle = document.getElementById('doc-title-input')?.value.trim() || 'Untitled Invitation';
   
-  if (!activeProjectId) {
-    activeProjectId = 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?templateId=' + activeTemplateId + '&projectId=' + activeProjectId;
-    window.history.replaceState({ path: newUrl }, '', newUrl);
-  }
-  
   const projectKey = `mic_user_projects_${currentUser.uid}`;
   let userProjects = [];
   try {
@@ -1749,6 +1743,17 @@ function autoSaveUserProject() {
     if (raw) userProjects = JSON.parse(raw);
   } catch (e) {
     console.error("Error reading saved projects:", e);
+  }
+  
+  if (!activeProjectId) {
+    const sameTemplateProject = userProjects.find(p => p.templateId === activeTemplateId);
+    if (sameTemplateProject) {
+      activeProjectId = sameTemplateProject.id;
+    } else {
+      activeProjectId = 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?templateId=' + activeTemplateId + '&projectId=' + activeProjectId;
+    window.history.replaceState({ path: newUrl }, '', newUrl);
   }
   
   const existingIndex = userProjects.findIndex(p => p.id === activeProjectId);
