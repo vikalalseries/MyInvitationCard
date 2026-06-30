@@ -275,14 +275,45 @@ document.querySelectorAll(".nav-item").forEach(btn => {
   });
 });
 
-// Logout Button
+// Logout Button (Two-step confirmation)
+const logoutConfirmModal = document.getElementById("logoutConfirmModal");
+const cancelLogoutBtn = document.getElementById("cancelLogoutBtn");
+const confirmLogoutBtn = document.getElementById("confirmLogoutBtn");
+
 document.getElementById("adminLogoutBtn").addEventListener("click", () => {
-  localStorage.removeItem("mic_admin_session");
-  showToast("Logging out...", "success");
-  setTimeout(() => {
-    window.location.href = "login.html";
-  }, 800);
+  if (logoutConfirmModal) {
+    logoutConfirmModal.classList.remove("hidden");
+  }
 });
+
+if (cancelLogoutBtn) {
+  cancelLogoutBtn.addEventListener("click", () => {
+    if (logoutConfirmModal) {
+      logoutConfirmModal.classList.add("hidden");
+    }
+  });
+}
+
+if (confirmLogoutBtn) {
+  confirmLogoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("mic_admin_session");
+    if (logoutConfirmModal) {
+      logoutConfirmModal.classList.add("hidden");
+    }
+    showToast("Logging out...", "success");
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 800);
+  });
+}
+
+if (logoutConfirmModal) {
+  logoutConfirmModal.addEventListener("click", (e) => {
+    if (e.target === logoutConfirmModal) {
+      logoutConfirmModal.classList.add("hidden");
+    }
+  });
+}
 
 // System Clock
 function updateClock() {
