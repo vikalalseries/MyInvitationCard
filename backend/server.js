@@ -779,6 +779,31 @@ app.get("/api/admin/users", async (req, res) => {
     const UserCollection = require("./models/User");
     const OrderCollection = require("./models/Order");
 
+    // 1. Fetch all users from Firebase Auth
+    let firebaseUsers = [];
+    try {
+      const listUsersResult = await admin.auth().listUsers(100);
+      firebaseUsers = listUsersResult.users || [];
+    } catch (fbErr) {
+      console.error("Failed to list Firebase users:", fbErr);
+    }
+
+    // 2. Synchronize Firebase users to MongoDB User collection if they are missing
+    for (const fbUser of firebaseUsers) {
+      let mongoUser = await UserCollection.findOne({ uid: fbUser.uid });
+      if (!mongoUser) {
+        mongoUser = new UserCollection({
+          uid: fbUser.uid,
+          name: fbUser.displayName || "",
+          email: fbUser.email || "",
+          phone: fbUser.phoneNumber || "",
+          createdAt: fbUser.metadata.creationTime ? new Date(fbUser.metadata.creationTime) : new Date()
+        });
+        await mongoUser.save();
+      }
+    }
+
+    // 3. Query the MongoDB User collection
     const users = await UserCollection.find().limit(200);
     const usersData = [];
 
@@ -788,11 +813,16 @@ app.get("/api/admin/users", async (req, res) => {
 
       // Get user metadata from Firebase to check if user is active/disabled
       let status = "active";
-      try {
-        const firebaseUser = await admin.auth().getUser(user.uid);
-        status = firebaseUser.disabled ? "disabled" : "active";
-      } catch (err) {
-        // Fallback if not found in Firebase auth
+      const fbUser = firebaseUsers.find(u => u.uid === user.uid);
+      if (fbUser) {
+        status = fbUser.disabled ? "disabled" : "active";
+      } else {
+        try {
+          const fetchedFbUser = await admin.auth().getUser(user.uid);
+          status = fetchedFbUser.disabled ? "disabled" : "active";
+        } catch (err) {
+          // Fallback if not found in Firebase auth
+        }
       }
 
       usersData.push({
