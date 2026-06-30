@@ -1138,6 +1138,7 @@ app.patch("/api/admin/templates/:templateId/pricing", async (req, res) => {
       hasPremiumPages,
       allowedCardStocks,
       premiumCardStocks,
+      uploadedImagePrice,
       adminUser
     } = req.body;
 
@@ -1173,6 +1174,7 @@ app.patch("/api/admin/templates/:templateId/pricing", async (req, res) => {
     if (hasPremiumPages !== undefined) updateFields.hasPremiumPages = Boolean(hasPremiumPages);
     if (allowedCardStocks !== undefined) updateFields.allowedCardStocks = parseArrayField(allowedCardStocks);
     if (premiumCardStocks !== undefined) updateFields.premiumCardStocks = parseArrayField(premiumCardStocks);
+    if (uploadedImagePrice !== undefined) updateFields.uploadedImagePrice = Number(uploadedImagePrice);
 
     await Template.findOneAndUpdate({ templateId }, updateFields);
 

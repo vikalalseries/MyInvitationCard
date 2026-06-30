@@ -2292,14 +2292,29 @@ async function fetchPricing() {
     if (!res.ok) throw new Error(data.message);
 
     const config = data.config;
-    document.getElementById("weddingPriceInput").value = config.wedding_price || 149;
-    document.getElementById("birthdayPriceInput").value = config.birthday_price || 79;
-    document.getElementById("nikahPriceInput").value = config.nikah_price || 99;
-    document.getElementById("premiumExportInput").value = config.premium_export_price || 49;
-    document.getElementById("printingPriceInput").value = config.printing_price_per_page || 20;
-    document.getElementById("taxRateInput").value = config.tax_rate || 18;
-    document.getElementById("shippingBaseInput").value = config.shipping_base || 40;
-    document.getElementById("minOrderQtyInput").value = config.min_order_qty || 50;
+    const weddingPriceEl = document.getElementById("weddingPriceInput");
+    if (weddingPriceEl) weddingPriceEl.value = config.wedding_price || 149;
+    
+    const birthdayPriceEl = document.getElementById("birthdayPriceInput");
+    if (birthdayPriceEl) birthdayPriceEl.value = config.birthday_price || 79;
+    
+    const nikahPriceEl = document.getElementById("nikahPriceInput");
+    if (nikahPriceEl) nikahPriceEl.value = config.nikah_price || 99;
+    
+    const premiumExportEl = document.getElementById("premiumExportInput");
+    if (premiumExportEl) premiumExportEl.value = config.premium_export_price || 49;
+    
+    const printingPriceEl = document.getElementById("printingPriceInput");
+    if (printingPriceEl) printingPriceEl.value = config.printing_price_per_page || 20;
+    
+    const taxRateEl = document.getElementById("taxRateInput");
+    if (taxRateEl) taxRateEl.value = config.tax_rate || 18;
+    
+    const shippingBaseEl = document.getElementById("shippingBaseInput");
+    if (shippingBaseEl) shippingBaseEl.value = config.shipping_base || 40;
+    
+    const minOrderQtyEl = document.getElementById("minOrderQtyInput");
+    if (minOrderQtyEl) minOrderQtyEl.value = config.min_order_qty || 50;
 
     // Load volume discount tiers
     const container = document.getElementById("volumeTiersContainer");
@@ -2552,6 +2567,7 @@ window.openPricingModal = function(templateId) {
   // Populate form fields
   document.getElementById("modalBasePrice").value = t.price || 0;
   document.getElementById("modalOfferPrice").value = (t.offerPrice != null && t.offerPrice > 0) ? t.offerPrice : "";
+  document.getElementById("modalUploadedImagePrice").value = t.uploadedImagePrice || 0;
   document.getElementById("modalOfferLabel").value = t.offerLabel || "";
   document.getElementById("modalOfferStart").value = t.offerStartDate ? new Date(t.offerStartDate).toISOString().split("T")[0] : "";
   document.getElementById("modalOfferEnd").value = t.offerEndDate ? new Date(t.offerEndDate).toISOString().split("T")[0] : "";
@@ -2608,6 +2624,7 @@ if (pricingModalSaveBtn) {
     const payload = {
       price: Number(document.getElementById("modalBasePrice").value) || 0,
       offerPrice: document.getElementById("modalOfferPrice").value ? Number(document.getElementById("modalOfferPrice").value) : null,
+      uploadedImagePrice: Number(document.getElementById("modalUploadedImagePrice").value) || 0,
       offerLabel: document.getElementById("modalOfferLabel").value.trim(),
       offerStartDate: document.getElementById("modalOfferStart").value || null,
       offerEndDate: document.getElementById("modalOfferEnd").value || null,

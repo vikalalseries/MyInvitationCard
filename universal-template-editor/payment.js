@@ -48,6 +48,20 @@ async function loadTemplateDbConfig() {
   }
 }
 
+function countUploadedImages() {
+  if (!orderConfig) return 0;
+  const fields = orderConfig.data?.fields || {};
+  let count = 0;
+  Object.values(fields).forEach(val => {
+    if (val && typeof val === "string") {
+      if (val.startsWith("data:image/") || (val.includes("http") && (val.includes(".png") || val.includes(".jpg") || val.includes(".jpeg") || val.includes("/uploads/")))) {
+        count++;
+      }
+    }
+  });
+  return count;
+}
+
 function calculatePriceBreakdown(qty, paperStock, envelopeOption, shippingSpeed) {
   // 1. Base card price — use dynamic DB price if available, else fallback to ₹10.00
   let basePriceRate = (templateDbConfig && templateDbConfig.price) ? templateDbConfig.price : 10.00;
@@ -116,8 +130,16 @@ function calculatePriceBreakdown(qty, paperStock, envelopeOption, shippingSpeed)
   }
   const premiumStockTotal = qty * premiumStockUnitCost;
 
+  // 6. User Uploaded Images surcharge
+  let uploadedImageUnitCost = 0.00;
+  const imageCount = countUploadedImages();
+  if (templateDbConfig && templateDbConfig.uploadedImagePrice && templateDbConfig.uploadedImagePrice > 0) {
+    uploadedImageUnitCost = templateDbConfig.uploadedImagePrice;
+  }
+  const uploadedImageTotal = qty * (uploadedImageUnitCost * imageCount);
+
   // Subtotal before shipping/tax
-  const subtotal = cardsTotal + paperTotal + envelopeTotal + premiumPagesTotal + premiumStockTotal;
+  const subtotal = cardsTotal + paperTotal + envelopeTotal + premiumPagesTotal + premiumStockTotal + uploadedImageTotal;
 
   // 6. Shipping
   let shippingCost = shippingSpeed === "express" ? 350.00 : 0.00;
@@ -144,6 +166,9 @@ function calculatePriceBreakdown(qty, paperStock, envelopeOption, shippingSpeed)
     premiumPagesTotal,
     premiumStockUnitCost,
     premiumStockTotal,
+    uploadedImageUnitCost,
+    uploadedImageCount: imageCount,
+    uploadedImageTotal,
     subtotal,
     shippingCost,
     gstTax,
@@ -290,6 +315,18 @@ function recalculateBill() {
   document.getElementById('bill-envelope-name').textContent = breakdown.envelopeName;
   document.getElementById('bill-envelope-total').textContent = breakdown.envelopeTotal.toFixed(2);
   
+  const imgRow = document.getElementById('bill-item-uploaded-images');
+  if (imgRow) {
+    if (breakdown.uploadedImageTotal > 0) {
+      document.getElementById('bill-image-count').textContent = breakdown.uploadedImageCount;
+      document.getElementById('bill-image-price').textContent = breakdown.uploadedImageUnitCost.toFixed(2);
+      document.getElementById('bill-image-total').textContent = breakdown.uploadedImageTotal.toFixed(2);
+      imgRow.style.display = 'flex';
+    } else {
+      imgRow.style.display = 'none';
+    }
+  }
+  
   document.getElementById('bill-shipping-val').textContent = breakdown.shippingCost === 0 ? 'FREE' : `₹${breakdown.shippingCost.toFixed(2)}`;
   document.getElementById('bill-tax-val').textContent = breakdown.gstTax.toFixed(2);
   
@@ -425,6 +462,9 @@ function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
   const cardsTotal = breakdown.cardsTotal;
   const paperTotal = breakdown.paperTotal;
   const envelopeTotal = breakdown.envelopeTotal;
+  const premiumPagesTotal = breakdown.premiumPagesTotal;
+  const premiumStockTotal = breakdown.premiumStockTotal;
+  const uploadedImageTotal = breakdown.uploadedImageTotal;
   const subtotal = breakdown.subtotal;
   const shippingCost = breakdown.shippingCost;
   const gstTax = breakdown.gstTax;
@@ -443,6 +483,9 @@ function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
     cardsTotal,
     paperTotal,
     envelopeTotal,
+    premiumPagesTotal,
+    premiumStockTotal,
+    uploadedImageTotal,
     subtotal,
     shippingCost,
     gstTax,
@@ -478,11 +521,14 @@ function showSuccessModal(razorpayOrderId, razorpayPaymentId, methodUsed) {
     pricing: {
       baseRate: basePrice,
       stockPrice: paperUnitCost,
-      premiumStockPrice: 0,
+      premiumStockPrice: breakdown.premiumStockUnitCost,
+      premiumPagesPrice: breakdown.premiumPagesUnitCost,
       envelopePrice: envelopeUnitCost,
       deliveryPrice: shippingCost,
+      uploadedImagePrice: breakdown.uploadedImageUnitCost,
+      uploadedImageCount: breakdown.uploadedImageCount,
       baseTotal: cardsTotal,
-      addonsTotal: paperTotal + envelopeTotal,
+      addonsTotal: paperTotal + envelopeTotal + premiumPagesTotal + premiumStockTotal + uploadedImageTotal,
       subtotal: subtotal,
       tax: gstTax,
       total: grandTotal

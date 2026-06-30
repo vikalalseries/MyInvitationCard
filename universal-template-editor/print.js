@@ -1011,6 +1011,26 @@ function updateEnvelopeSelection(el) {
 }
 
 // Pricing calculation logic
+function countUploadedImages() {
+  const savedData = localStorage.getItem('savedVlsData') || localStorage.getItem('mic_print_project_data');
+  if (!savedData) return 0;
+  try {
+    const project = JSON.parse(savedData);
+    const fields = project?.data?.fields || {};
+    let count = 0;
+    Object.values(fields).forEach(val => {
+      if (val && typeof val === "string") {
+        if (val.startsWith("data:image/") || (val.includes("http") && (val.includes(".png") || val.includes(".jpg") || val.includes(".jpeg") || val.includes("/uploads/")))) {
+          count++;
+        }
+      }
+    });
+    return count;
+  } catch (e) {
+    return 0;
+  }
+}
+
 function recalculatePricing() {
   // 1. Base card price — use dynamic DB price if available, else fallback to ₹10.00
   let basePriceRate = (templateDbConfig && templateDbConfig.price) ? templateDbConfig.price : 10.00;
@@ -1085,8 +1105,15 @@ function recalculatePricing() {
     }
   }
   
+  // 6. User Uploaded Images surcharge
+  let uploadedImageAddon = 0.00;
+  const imageCount = countUploadedImages();
+  if (templateDbConfig && templateDbConfig.uploadedImagePrice && templateDbConfig.uploadedImagePrice > 0) {
+    uploadedImageAddon = templateDbConfig.uploadedImagePrice * imageCount;
+  }
+  
   // Total calculated price per unit
-  unitPrice = basePrice + paperAddon + envelopeAddon + premiumPagesAddon + premiumStockAddon;
+  unitPrice = basePrice + paperAddon + envelopeAddon + premiumPagesAddon + premiumStockAddon + uploadedImageAddon;
   
   // Itemized calculations
   let volumeDiscount = basePriceRate - basePrice;
@@ -1110,6 +1137,17 @@ function recalculatePricing() {
     } else {
       envelopeAddonEl.textContent = `-₹${Math.abs(envelopeAddon).toFixed(2)}`;
       envelopeAddonEl.style.color = '#e11d48';
+    }
+  }
+
+  const uploadedImageRow = document.getElementById('uploaded-image-breakdown-row');
+  const uploadedImageAddonEl = document.getElementById('uploaded-image-addon-val');
+  if (uploadedImageRow && uploadedImageAddonEl) {
+    if (uploadedImageAddon > 0) {
+      uploadedImageAddonEl.textContent = `+₹${uploadedImageAddon.toFixed(2)} (${imageCount} × ₹${(templateDbConfig.uploadedImagePrice || 0).toFixed(2)})`;
+      uploadedImageRow.style.display = 'flex';
+    } else {
+      uploadedImageRow.style.display = 'none';
     }
   }
   

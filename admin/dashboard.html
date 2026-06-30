@@ -544,100 +544,7 @@
             </div>
           </div>
 
-          <!-- GLOBAL SETTINGS SECTION (below template grid) -->
-          <div class="pricing-section-divider">
-            <h3><i class="fa-solid fa-sliders" style="margin-right:8px; color:var(--primary-color);"></i>Global Pricing & Site Settings</h3>
-          </div>
 
-          <div class="dashboard-row">
-            <div class="dashboard-col flex-1">
-              <div class="card-admin">
-                <div class="card-admin-header">
-                  <h3>Pricing Configurations</h3>
-                </div>
-                <form id="pricingSettingsForm" class="card-form-admin">
-                  <div class="form-group-admin">
-                    <label for="weddingPriceInput">Wedding Card Base (INR)</label>
-                    <input type="number" id="weddingPriceInput" min="0" required>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="birthdayPriceInput">Birthday Card Base (INR)</label>
-                    <input type="number" id="birthdayPriceInput" min="0" required>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="nikahPriceInput">Nikah Card Base (INR)</label>
-                    <input type="number" id="nikahPriceInput" min="0" required>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="premiumExportInput">Premium PDF Export (INR)</label>
-                    <input type="number" id="premiumExportInput" min="0" required>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="printingPriceInput">Printing (INR per page)</label>
-                    <input type="number" id="printingPriceInput" min="0" required>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="taxRateInput">GST/Tax Rate (%)</label>
-                    <input type="number" id="taxRateInput" min="0" max="100" required>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="shippingBaseInput">Base Shipping Fee (INR)</label>
-                    <input type="number" id="shippingBaseInput" min="0" required>
-                  </div>
-
-                  <!-- Minimum Order Quantity -->
-                  <div class="pricing-section-divider" style="margin:18px 0 10px;padding:0;">
-                    <h4 style="font-size:0.95rem;"><i class="fa-solid fa-layer-group" style="margin-right:6px;color:var(--primary-color);"></i>Minimum Order Quantity</h4>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="minOrderQtyInput">Minimum Cards Per Order</label>
-                    <input type="number" id="minOrderQtyInput" min="1" value="50" required>
-                    <small style="color:var(--text-secondary);font-size:0.78rem;">Customers cannot order fewer cards than this number.</small>
-                  </div>
-
-                  <!-- Volume Discount Tiers -->
-                  <div class="pricing-section-divider" style="margin:18px 0 10px;padding:0;">
-                    <h4 style="font-size:0.95rem;"><i class="fa-solid fa-percent" style="margin-right:6px;color:var(--primary-color);"></i>Volume Discount Tiers</h4>
-                  </div>
-                  <div id="volumeTiersContainer">
-                    <!-- Rows injected by JS -->
-                  </div>
-                  <button type="button" class="admin-btn-secondary" onclick="addVolumeTierRow()" style="margin:8px 0 16px;font-size:0.82rem;">
-                    <i class="fa-solid fa-plus"></i> Add Tier
-                  </button>
-
-                  <button type="submit" class="admin-btn-primary">Save Configurations</button>
-                </form>
-              </div>
-            </div>
-
-            <div class="dashboard-col flex-1">
-              <div class="card-admin">
-                <div class="card-admin-header">
-                  <h3>Website Metadata & Site Settings</h3>
-                </div>
-                <form id="siteSettingsForm" class="card-form-admin" onsubmit="event.preventDefault(); showToast('Metadata settings updated!', 'success');">
-                  <div class="form-group-admin">
-                    <label for="siteName">Website Title</label>
-                    <input type="text" id="siteName" value="MyInvitationCard" required>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="supportEmail">Customer Support Email</label>
-                    <input type="email" id="supportEmail" value="support@myinvitationcard.com" required>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="supportWhatsapp">Customer Support WhatsApp</label>
-                    <input type="text" id="supportWhatsapp" value="+919876543210" required>
-                  </div>
-                  <div class="form-group-admin">
-                    <label for="upiMerchant">Merchant UPI Address</label>
-                    <input type="text" id="upiMerchant" value="myinvitationcard@upi" required>
-                  </div>
-                  <button type="submit" class="admin-btn-primary">Update Settings</button>
-                </form>
-              </div>
-            </div>
-          </div>
         </section>
 
         <!-- PRICING EDIT MODAL (appended outside sections) -->
@@ -668,6 +575,15 @@
                 <div class="form-group-admin">
                   <label for="modalOfferPrice">Offer / Discount Price (₹)</label>
                   <input type="number" id="modalOfferPrice" min="0" placeholder="Leave empty if no offer">
+                </div>
+              </div>
+              <div class="pricing-modal-row" style="margin-top: 10px;">
+                <div class="form-group-admin">
+                  <label for="modalUploadedImagePrice">Price per Uploaded Image (₹)</label>
+                  <input type="number" id="modalUploadedImagePrice" min="0" placeholder="e.g. 10">
+                </div>
+                <div class="form-group-admin">
+                  <!-- Empty group to align grid columns nicely -->
                 </div>
               </div>
 

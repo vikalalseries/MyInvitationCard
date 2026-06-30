@@ -23,7 +23,8 @@ const TemplateSchema = new mongoose.Schema(
     hasEnvelope: { type: Boolean, default: true },
     hasPremiumPages: { type: Boolean, default: false },
     allowedCardStocks: [{ type: String }],
-    premiumCardStocks: [{ type: String }]
+    premiumCardStocks: [{ type: String }],
+    uploadedImagePrice: { type: Number, default: 0 }
   },
   { timestamps: true }
 );
