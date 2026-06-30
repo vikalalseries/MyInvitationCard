@@ -795,6 +795,8 @@ window.openEditAdminModal = function(username, email, phone, role) {
   }
   
   document.getElementById("editAdminPassword").value = "";
+  const editConfirmPass = document.getElementById("editAdminConfirmPassword");
+  if (editConfirmPass) editConfirmPass.value = "";
   modal.classList.remove("hidden");
 };
 
@@ -836,7 +838,18 @@ if (createAdminForm) {
     const email = document.getElementById("newAdminEmail").value.trim();
     const phone = document.getElementById("newAdminPhone").value.trim();
     const password = document.getElementById("newAdminPassword").value;
+    const confirmPassword = document.getElementById("newAdminConfirmPassword").value;
     const role = document.getElementById("newAdminRole").value;
+
+    if (password !== confirmPassword) {
+      showToast("Passwords do not match!", "error");
+      return;
+    }
+
+    if (!isStrongPassword(password)) {
+      showToast("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#).", "error");
+      return;
+    }
 
     // Define permissions mapping based on role selection
     let permissions = [];
@@ -884,7 +897,20 @@ if (editAdminForm) {
     const email = document.getElementById("editAdminEmail").value.trim();
     const phone = document.getElementById("editAdminPhone").value.trim();
     const password = document.getElementById("editAdminPassword").value;
+    const confirmPassword = document.getElementById("editAdminConfirmPassword").value;
     const role = document.getElementById("editAdminRole").value;
+
+    if (password) {
+      if (password !== confirmPassword) {
+        showToast("Passwords do not match!", "error");
+        return;
+      }
+
+      if (!isStrongPassword(password)) {
+        showToast("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#).", "error");
+        return;
+      }
+    }
 
     // Define permissions mapping based on role selection
     let permissions = [];
@@ -2891,3 +2917,31 @@ function loadPrintCardIframe(order, hideBg) {
     }
   };
 }
+
+// Strong password check
+function isStrongPassword(password) {
+  // At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+  const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+  return strongRegex.test(password);
+}
+
+// Delegate toggle password behavior
+document.addEventListener("click", (e) => {
+  const toggle = e.target.closest(".toggle-password");
+  if (!toggle) return;
+  
+  const targetId = toggle.getAttribute("data-target");
+  const passwordInput = document.getElementById(targetId);
+  if (!passwordInput) return;
+
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggle.classList.remove("fa-eye-slash");
+    toggle.classList.add("fa-eye");
+  } else {
+    passwordInput.type = "password";
+    toggle.classList.remove("fa-eye");
+    toggle.classList.add("fa-eye-slash");
+  }
+});
+
