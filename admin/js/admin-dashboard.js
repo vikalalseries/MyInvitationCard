@@ -419,7 +419,7 @@ async function fetchUsers(isBackground = false) {
   const tableBody = document.getElementById("usersTableBody");
   if (!tableBody) return;
   if (!isBackground) {
-    tableBody.innerHTML = `<tr><td colspan="9" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+    tableBody.innerHTML = getTableSkeletonHtml(9, 5);
   }
 
   try {
@@ -599,7 +599,7 @@ window.exportUsersToCSV = function() {
 async function fetchCredentials() {
   const tableBody = document.getElementById("credentialsTableBody");
   if (!tableBody) return;
-  tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  tableBody.innerHTML = getTableSkeletonHtml(7, 3);
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/users/credentials?adminUser=${encodeURIComponent(adminUser.username)}`);
@@ -702,7 +702,7 @@ if (credentialSearchInputEl) {
 async function fetchAdmins() {
   const tableBody = document.getElementById("adminsTableBody");
   if (!tableBody) return;
-  tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  tableBody.innerHTML = getTableSkeletonHtml(7, 4);
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/accounts`);
@@ -987,7 +987,13 @@ if (closeEditModalBtn) {
 async function fetchTemplates() {
   const grid = document.getElementById("templatesGrid");
   if (!grid) return;
-  grid.innerHTML = `<div class="loading-cell" style="grid-column: 1/-1;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>`;
+  
+  if (templatesObserver) {
+    templatesObserver.disconnect();
+    templatesObserver = null;
+  }
+  
+  grid.innerHTML = getTemplatesSkeletonHtml(6);
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/templates`);
@@ -995,44 +1001,19 @@ async function fetchTemplates() {
     if (!res.ok) throw new Error(data.message);
 
     grid.innerHTML = "";
-    if (data.templates.length === 0) {
+    allTemplatesData = data.templates || [];
+    renderedTemplatesCount = 0;
+
+    if (allTemplatesData.length === 0) {
       grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted)">No card templates uploaded yet. Use the upload panel on the right.</div>`;
       return;
     }
 
-    data.templates.forEach(t => {
-      const card = document.createElement("div");
-      card.className = "template-cms-card";
-      
-      // Compute correct thumbnail path
-      let thumbUrl = t.thumbnail;
-      if (!thumbUrl.startsWith("http") && !thumbUrl.startsWith("assets")) {
-        thumbUrl = `${BACKEND_URL}/${thumbUrl}`;
-      } else if (thumbUrl.startsWith("assets")) {
-        thumbUrl = `../${thumbUrl}`;
-      }
-
-      card.innerHTML = `
-        <div class="template-cms-thumb" style="background-image: url('${thumbUrl}')">
-          <span class="template-cms-category">${t.category.toUpperCase()}</span>
-        </div>
-        <div class="template-cms-details">
-          <h4>${t.name}</h4>
-          <div class="template-cms-meta">
-            <span class="price-lbl">₹${t.price}</span>
-            <span class="id-lbl">ID: ${t.templateId}</span>
-          </div>
-          <div class="template-cms-actions">
-            ${hasPermission("template.delete") ? `<button class="table-action-btn delete btn-block" onclick="deleteTemplate('${t.templateId}')"><i class="fa-regular fa-trash-can"></i> Delete Template</button>` : `<span class="badge info-badge">No delete permission</span>`}
-          </div>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
+    renderTemplatesBatch();
   } catch (err) {
-    showToast(err.message, "error");
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--danger-color)">Failed to load templates: ${err.message}</div>`;
   }
-}
+};
 
 window.deleteTemplate = async function(templateId) {
   if (!confirm(`Are you sure you want to delete template ${templateId}? This will remove extracted code files.`)) return;
@@ -1185,7 +1166,7 @@ async function fetchOrders(isBackground = false) {
   const tableBody = document.getElementById("ordersTableBody");
   if (!tableBody) return;
   if (!isBackground) {
-    tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+    tableBody.innerHTML = getTableSkeletonHtml(7, 5);
   }
 
   try {
@@ -2198,7 +2179,7 @@ async function fetchPayments(isBackground = false) {
   const tableBody = document.getElementById("paymentsTableBody");
   if (!tableBody) return;
   if (!isBackground) {
-    tableBody.innerHTML = `<tr><td colspan="6" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+    tableBody.innerHTML = getTableSkeletonHtml(6, 5);
   }
 
   try {
@@ -2697,7 +2678,7 @@ if (pricingSettingsForm) {
 async function fetchAuditLogs() {
   const tableBody = document.getElementById("auditTableBody");
   if (!tableBody) return;
-  tableBody.innerHTML = `<tr><td colspan="4" class="loading-cell"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>`;
+  tableBody.innerHTML = getTableSkeletonHtml(4, 8);
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/admin/audit-logs`);
@@ -2944,4 +2925,116 @@ document.addEventListener("click", (e) => {
     toggle.classList.add("fa-eye-slash");
   }
 });
+
+// Helper: Get HTML for table skeleton screens
+function getTableSkeletonHtml(cols, rows = 5) {
+  let html = "";
+  for (let r = 0; r < rows; r++) {
+    html += "<tr>";
+    for (let c = 0; c < cols; c++) {
+      const width = 40 + Math.floor(Math.random() * 45); // between 40% and 85%
+      html += `<td><span class="skeleton-loader" style="width: ${width}%; height: 16px;"></span></td>`;
+    }
+    html += "</tr>";
+  }
+  return html;
+}
+
+// Helper: Get HTML for templates CMS grid skeleton loader
+function getTemplatesSkeletonHtml(count = 8) {
+  let html = "";
+  for (let i = 0; i < count; i++) {
+    html += `
+      <div class="template-cms-card">
+        <div class="template-cms-thumb skeleton-loader" style="height: 150px; border-radius: 12px 12px 0 0;"></div>
+        <div class="template-cms-details">
+          <h4 style="margin: 0 0 10px 0;"><span class="skeleton-loader" style="width: 70%; height: 16px;"></span></h4>
+          <div class="template-cms-meta">
+            <span class="skeleton-loader" style="width: 40px; height: 14px;"></span>
+            <span class="skeleton-loader" style="width: 50px; height: 14px;"></span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  return html;
+}
+
+// Variables for lazy loading/rendering templates
+let allTemplatesData = [];
+let renderedTemplatesCount = 0;
+const TEMPLATE_BATCH_SIZE = 8;
+let templatesObserver = null;
+
+function renderTemplatesBatch() {
+  const grid = document.getElementById("templatesGrid");
+  if (!grid) return;
+
+  // Remove old sentry if any
+  const oldSentry = document.getElementById("templatesSentry");
+  if (oldSentry) oldSentry.remove();
+
+  const batch = allTemplatesData.slice(renderedTemplatesCount, renderedTemplatesCount + TEMPLATE_BATCH_SIZE);
+  
+  batch.forEach(t => {
+    const card = document.createElement("div");
+    card.className = "template-cms-card";
+    
+    let thumbUrl = t.thumbnail;
+    if (!thumbUrl.startsWith("http") && !thumbUrl.startsWith("assets")) {
+      thumbUrl = `${BACKEND_URL}/${thumbUrl}`;
+    } else if (thumbUrl.startsWith("assets")) {
+      thumbUrl = `../${thumbUrl}`;
+    }
+
+    card.innerHTML = `
+      <div class="template-cms-thumb" style="height: 150px; position: relative; overflow: hidden; background: var(--bg-soft);">
+        <img src="${thumbUrl}" alt="${t.name}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px 12px 0 0; display: block;">
+        <span class="template-cms-category" style="position: absolute; top: 10px; left: 10px; z-index: 2;">${t.category.toUpperCase()}</span>
+      </div>
+      <div class="template-cms-details">
+        <h4>${t.name}</h4>
+        <div class="template-cms-meta">
+          <span class="price-lbl">₹${t.price}</span>
+          <span class="id-lbl">ID: ${t.templateId}</span>
+        </div>
+        <div class="template-cms-actions">
+          ${hasPermission("template.delete") ? `<button class="table-action-btn delete btn-block" onclick="deleteTemplate('${t.templateId}')"><i class="fa-regular fa-trash-can"></i> Delete Template</button>` : `<span class="badge info-badge">No delete permission</span>`}
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  renderedTemplatesCount += batch.length;
+
+  // If there are still more templates to load, add a sentry element
+  if (renderedTemplatesCount < allTemplatesData.length) {
+    const sentry = document.createElement("div");
+    sentry.id = "templatesSentry";
+    sentry.style.gridColumn = "1 / -1";
+    sentry.style.height = "20px";
+    grid.appendChild(sentry);
+
+    setupTemplatesIntersectionObserver();
+  }
+}
+
+function setupTemplatesIntersectionObserver() {
+  if (templatesObserver) {
+    templatesObserver.disconnect();
+  }
+
+  const sentry = document.getElementById("templatesSentry");
+  if (!sentry) return;
+
+  templatesObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      templatesObserver.disconnect();
+      renderTemplatesBatch();
+    }
+  }, { rootMargin: "100px" });
+
+  templatesObserver.observe(sentry);
+}
 
