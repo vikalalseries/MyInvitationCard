@@ -255,6 +255,21 @@ body {
   padding-left: 45px;
 }
 
+.input-icon-wrap input.password-input {
+  padding-right: 45px;
+}
+
+.input-icon-wrap .toggle-password {
+  left: auto;
+  right: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.input-icon-wrap .toggle-password:hover {
+  color: var(--primary-color);
+}
+
 .form-group-admin select {
   cursor: pointer;
   appearance: none;
