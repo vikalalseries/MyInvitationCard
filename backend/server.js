@@ -8,6 +8,8 @@ const { Resend } = require("resend");
 const admin = require("firebase-admin");
 const mongoose = require("mongoose");
 const { connectDB } = require("./db");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET || "my_super_secret_admin_jwt_key_12345";
 const User = require("./models/User");
 
 dotenv.config();
@@ -452,11 +454,98 @@ app.post("/api/admin/login", async (req, res) => {
     console.log(`[ADMIN OTP CODE] for ${username} is ${otp}`);
 
     try {
+      const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin Security Verification Code</title>
+</head>
+<body style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f9fafb; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card Container -->
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 500px; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid #e5e7eb; overflow: hidden;">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%); padding: 32px 24px;">
+              <table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center" style="background-color: rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 10px;">
+                    <span style="font-size: 28px; line-height: 1;">✉️</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding-top: 12px;">
+                    <h1 style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0; letter-spacing: 0.5px;">MyInvitationCard</h1>
+                    <p style="color: #c084fc; font-size: 11px; font-weight: 600; text-transform: uppercase; margin: 4px 0 0 0; letter-spacing: 1px;">Admin Security Portal</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Content Body -->
+          <tr>
+            <td style="padding: 40px 32px; color: #1f2937;">
+              <h2 style="font-size: 18px; font-weight: 600; margin-top: 0; margin-bottom: 12px; color: #111827; text-align: center;">One-Time Verification Code</h2>
+              <p style="font-size: 14px; line-height: 1.6; color: #4b5563; margin-bottom: 24px; text-align: center;">
+                A sign-in attempt was detected for your administrator account. Please use the verification code below to authorize this login.
+              </p>
+              
+              <!-- OTP Box -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
+                <tr>
+                  <td align="center">
+                    <div style="background-color: #f3f4f6; border: 2px dashed #d1d5db; border-radius: 12px; padding: 18px 24px; display: inline-block;">
+                      <span style="font-family: 'Courier New', Courier, monospace; font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #111827; margin-left: 8px;">${otp}</span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size: 12px; line-height: 1.5; color: #ef4444; font-weight: 600; text-align: center; margin-bottom: 24px;">
+                ⚠️ This code will expire in 5 minutes.
+              </p>
+              
+              <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; font-size: 13px; line-height: 1.6; color: #6b7280;">
+                <p style="margin: 0 0 8px 0; font-weight: 600;">Security Notice:</p>
+                <ul style="margin: 0; padding-left: 20px; color: #6b7280;">
+                  <li>Only share this code with authorized administrators.</li>
+                  <li>Our support team will never ask you for this code.</li>
+                  <li>If you did not attempt to log in, please secure your password immediately.</li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background-color: #f9fafb; padding: 24px 32px; border-top: 1px solid #e5e7eb;">
+              <p style="font-size: 11px; line-height: 1.5; color: #9ca3af; margin: 0 0 8px 0;">
+                This is an automated notification from the MyInvitationCard identity verification system.
+              </p>
+              <p style="font-size: 11px; line-height: 1.5; color: #9ca3af; margin: 0;">
+                &copy; 2026 MyInvitationCard. All rights reserved. <br>
+                Mumbai, Maharashtra, India.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+      `;
+
       await resend.emails.send({
         from: "MyInvitationCard <onboarding@resend.dev>",
         to: adminUser.email,
         subject: "Your Admin Portal OTP Code",
-        html: `<h3>Your verification code is: ${otp}</h3><p>Expires in 5 minutes.</p>`
+        html: emailHtml
       });
     } catch (e) {
       console.warn("Resend email failed, OTP logged to console instead:", e.message);
@@ -465,8 +554,7 @@ app.post("/api/admin/login", async (req, res) => {
     res.json({
       success: true,
       message: "OTP sent to registered email",
-      otpRequired: true,
-      devOtp: otp
+      otpRequired: true
     });
   } catch (error) {
     console.error("Admin login error:", error);
@@ -506,8 +594,20 @@ app.post("/api/admin/verify-otp", async (req, res) => {
     });
     await audit.save();
 
+    const token = jwt.sign(
+      {
+        username: adminUser.username,
+        email: adminUser.email,
+        role: adminUser.role,
+        permissions: adminUser.permissions
+      },
+      JWT_SECRET,
+      { expiresIn: "8h" }
+    );
+
     res.json({
       success: true,
+      token,
       admin: {
         username: adminUser.username,
         email: adminUser.email,
@@ -521,6 +621,36 @@ app.post("/api/admin/verify-otp", async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
+// Admin Authentication Middleware
+const authenticateAdmin = (req, res, next) => {
+  const fullPath = req.originalUrl.split("?")[0];
+  const publicPaths = [
+    "/api/admin/login",
+    "/api/admin/verify-otp",
+    "/api/admin/reset-password/request",
+    "/api/admin/reset-password/verify",
+    "/api/admin/reset-password/complete"
+  ];
+  if (publicPaths.includes(fullPath)) {
+    return next();
+  }
+
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ success: false, message: "Access denied. No authentication token provided." });
+    }
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.admin = decoded;
+    next();
+  } catch (error) {
+    console.error("JWT Verification failed:", error.message);
+    return res.status(401).json({ success: false, message: "Session expired or invalid token. Please log in again." });
+  }
+};
+app.use("/api/admin", authenticateAdmin);
 
 // Password Reset Request
 app.post("/api/admin/reset-password/request", async (req, res) => {
