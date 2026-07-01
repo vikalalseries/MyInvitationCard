@@ -500,15 +500,26 @@ function proceedToPaymentPage() {
     }
   }
 
-  // Trigger Phone Verification if not already verified for this exact number
-  if (isPhoneVerified && verifiedPhoneNumber === phone) {
-    completeCheckoutRedirect(fullName, phone, emergencyPhone, address, address2, city, state, pincode);
-  } else {
-    sendShippingPhoneOtp(phone);
+  // Enforce Phone Verification
+  if (!isPhoneVerified || verifiedPhoneNumber !== phone) {
+    showError("Please verify your mobile number via OTP first.");
+    return;
   }
+
+  completeCheckoutRedirect(fullName, phone, emergencyPhone, address, address2, city, state, pincode);
 }
 
-async function sendShippingPhoneOtp(phone) {
+window.triggerShippingOtpSend = async function() {
+  const phone = document.getElementById("phone-num").value.trim();
+  if (!phone || phone.length < 10) {
+    showError("Please enter a valid 10-digit mobile number first.");
+    return;
+  }
+
+  const btn = document.getElementById("btn-send-shipping-otp");
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+
   try {
     const res = await fetch(`${BACKEND_URL}/api/shipping/send-otp`, {
       method: "POST",
@@ -518,30 +529,30 @@ async function sendShippingPhoneOtp(phone) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
-    // Open verification modal
-    document.getElementById("verifyPhoneDisplay").textContent = phone;
-    const devText = document.getElementById("devShippingPhoneOtpText");
+    document.getElementById("checkout-otp-container").style.display = "block";
+    const devText = document.getElementById("checkout-dev-otp-text");
     if (data.devOtp) {
       devText.style.display = "block";
       devText.textContent = `Dev OTP Code: ${data.devOtp}`;
     } else {
       devText.style.display = "none";
     }
-
-    document.getElementById("phoneVerificationModal").style.display = "flex";
+    showToast("OTP code sent successfully.", "success");
   } catch (err) {
     showError(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send OTP";
   }
-}
-
-window.closePhoneVerificationModal = function() {
-  document.getElementById("phoneVerificationModal").style.display = "none";
 };
 
-window.submitPhoneVerificationForm = async function(e) {
-  e.preventDefault();
+window.triggerShippingOtpVerify = async function() {
   const phone = document.getElementById("phone-num").value.trim();
-  const otp = document.getElementById("shippingPhoneOtp").value.trim();
+  const otp = document.getElementById("checkout-otp-input").value.trim();
+  if (!otp) {
+    showError("Please enter the verification OTP code.");
+    return;
+  }
 
   try {
     const res = await fetch(`${BACKEND_URL}/api/shipping/verify-otp`, {
@@ -552,17 +563,30 @@ window.submitPhoneVerificationForm = async function(e) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
-    // Mark as verified
     isPhoneVerified = true;
     verifiedPhoneNumber = phone;
-    document.getElementById("phoneVerificationModal").style.display = "none";
-
-    // Call proceed again to redirect
-    proceedToPaymentPage();
+    document.getElementById("checkout-otp-container").style.display = "none";
+    document.getElementById("btn-send-shipping-otp").style.display = "none";
+    document.getElementById("checkout-verified-badge").style.display = "block";
+    showToast("Mobile number verified successfully!", "success");
   } catch (err) {
     showError(err.message);
   }
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+  const phoneNumInput = document.getElementById("phone-num");
+  if (phoneNumInput) {
+    phoneNumInput.addEventListener("input", (e) => {
+      const val = e.target.value.trim();
+      if (val !== verifiedPhoneNumber) {
+        isPhoneVerified = false;
+        document.getElementById("btn-send-shipping-otp").style.display = "block";
+        document.getElementById("checkout-verified-badge").style.display = "none";
+      }
+    });
+  }
+});
 
 function completeCheckoutRedirect(fullName, phone, emergencyPhone, address, address2, city, state, pincode) {
   const shippingDetails = {

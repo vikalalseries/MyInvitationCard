@@ -813,6 +813,20 @@ window.openEditAdminModal = function(username, email, phone, role) {
   document.getElementById("editAdminUsernameDisplay").value = username;
   document.getElementById("editAdminEmail").value = email;
   document.getElementById("editAdminPhone").value = phone;
+
+  // Initialize edit verification values
+  editEmailVal = email;
+  editPhoneVal = phone;
+  editEmailVerified = true;
+  editPhoneVerified = true;
+  
+  document.getElementById("btn-send-edit-email-otp").style.display = "none";
+  document.getElementById("edit-email-verified-badge").style.display = "block";
+  document.getElementById("edit-email-otp-container").style.display = "none";
+
+  document.getElementById("btn-send-edit-phone-otp").style.display = "none";
+  document.getElementById("edit-phone-verified-badge").style.display = "block";
+  document.getElementById("edit-phone-otp-container").style.display = "none";
   
   const roleGroup = document.getElementById("editAdminRoleGroup");
   const roleSelect = document.getElementById("editAdminRole");
@@ -880,6 +894,15 @@ if (createAdminForm) {
       return;
     }
 
+    if (!createEmailVerified || createEmailVal !== email) {
+      showToast("Please verify the email address via OTP first.", "error");
+      return;
+    }
+    if (!createPhoneVerified || createPhoneVal !== phone) {
+      showToast("Please verify the phone number via OTP first.", "error");
+      return;
+    }
+
     if (!isStrongPassword(password)) {
       showToast("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#).", "error");
       return;
@@ -937,6 +960,15 @@ if (editAdminForm) {
     const password = document.getElementById("editAdminPassword").value;
     const confirmPassword = document.getElementById("editAdminConfirmPassword").value;
     const role = document.getElementById("editAdminRole").value;
+
+    if (!editEmailVerified || editEmailVal !== email) {
+      showToast("Please verify the new email address via OTP first.", "error");
+      return;
+    }
+    if (!editPhoneVerified || editPhoneVal !== phone) {
+      showToast("Please verify the new phone number via OTP first.", "error");
+      return;
+    }
 
     if (password) {
       if (password !== confirmPassword) {
@@ -3124,113 +3156,236 @@ function setupTemplatesIntersectionObserver() {
   templatesObserver.observe(sentry);
 }
 
-// Verification Modal Handlers
-window.openAdminVerificationModal = function(username, type, emailOtp, phoneOtp, emailChanged = true, phoneChanged = true) {
-  document.getElementById("adminVerifyUsername").value = username;
-  document.getElementById("adminVerifyType").value = type;
-  
-  const emailGroup = document.getElementById("adminVerifyEmailGroup");
-  const phoneGroup = document.getElementById("adminVerifyPhoneGroup");
-  
-  const emailInput = document.getElementById("adminVerifyEmailOtp");
-  const phoneInput = document.getElementById("adminVerifyPhoneOtp");
-  
-  emailInput.value = "";
-  phoneInput.value = "";
-  
-  if (emailChanged) {
-    emailGroup.style.display = "block";
-    emailInput.setAttribute("required", "required");
-  } else {
-    emailGroup.style.display = "none";
-    emailInput.removeAttribute("required");
+// Inline Admin OTP Verification Handlers
+let createEmailVerified = false;
+let createEmailVal = "";
+let createPhoneVerified = false;
+let createPhoneVal = "";
+
+let editEmailVerified = true;
+let editEmailVal = "";
+let editPhoneVerified = true;
+let editPhoneVal = "";
+
+window.sendCreateAdminOtp = async function(type) {
+  const inputId = type === 'email' ? 'newAdminEmail' : 'newAdminPhone';
+  const val = document.getElementById(inputId).value.trim();
+  if (!val) {
+    showToast(`Please enter a valid ${type} first.`, "error");
+    return;
   }
   
-  if (phoneChanged) {
-    phoneGroup.style.display = "block";
-    phoneInput.setAttribute("required", "required");
-  } else {
-    phoneGroup.style.display = "none";
-    phoneInput.removeAttribute("required");
+  const btnId = type === 'email' ? 'btn-send-create-email-otp' : 'btn-send-create-phone-otp';
+  const btn = document.getElementById(btnId);
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  
+  const endpoint = type === 'email' ? '/api/admin/verify-email/send' : '/api/admin/verify-phone/send';
+  try {
+    const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [type]: val, isCreate: true })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+    
+    const containerId = type === 'email' ? 'create-email-otp-container' : 'create-phone-otp-container';
+    document.getElementById(containerId).style.display = "block";
+    
+    const devId = type === 'email' ? 'create-email-dev-text' : 'create-phone-dev-text';
+    const devText = document.getElementById(devId);
+    if (data.devOtp) {
+      devText.style.display = "block";
+      devText.textContent = `Dev OTP: ${data.devOtp}`;
+    } else {
+      devText.style.display = "none";
+    }
+    showToast("Verification code sent successfully.", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send OTP";
   }
-  
-  // Show dev OTPs in UI
-  const devEmailText = document.getElementById("devAdminEmailOtpText");
-  const devPhoneText = document.getElementById("devAdminPhoneOtpText");
-  
-  if (emailOtp) {
-    devEmailText.style.display = "block";
-    devEmailText.textContent = `Dev Email OTP: ${emailOtp}`;
-  } else {
-    devEmailText.style.display = "none";
-  }
-  
-  if (phoneOtp) {
-    devPhoneText.style.display = "block";
-    devPhoneText.textContent = `Dev Phone OTP: ${phoneOtp}`;
-  } else {
-    devPhoneText.style.display = "none";
-  }
-  
-  document.getElementById("adminVerificationModal").classList.remove("hidden");
 };
 
-const closeAdminVerificationModalBtn = document.getElementById("closeAdminVerificationModalBtn");
-if (closeAdminVerificationModalBtn) {
-  closeAdminVerificationModalBtn.addEventListener("click", () => {
-    document.getElementById("adminVerificationModal").classList.add("hidden");
-  });
-}
-
-const adminVerificationForm = document.getElementById("adminVerificationForm");
-if (adminVerificationForm) {
-  adminVerificationForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const username = document.getElementById("adminVerifyUsername").value;
-    const type = document.getElementById("adminVerifyType").value;
-    const emailOtp = document.getElementById("adminVerifyEmailOtp").value.trim();
-    const phoneOtp = document.getElementById("adminVerifyPhoneOtp").value.trim();
+window.verifyCreateAdminOtp = async function(type) {
+  const inputId = type === 'email' ? 'newAdminEmail' : 'newAdminPhone';
+  const val = document.getElementById(inputId).value.trim();
+  const otpInputId = type === 'email' ? 'create-email-otp-input' : 'create-phone-otp-input';
+  const otp = document.getElementById(otpInputId).value.trim();
+  if (!otp) {
+    showToast("Please enter the 6-digit OTP code.", "error");
+    return;
+  }
+  
+  const endpoint = type === 'email' ? '/api/admin/verify-email/verify' : '/api/admin/verify-phone/verify';
+  try {
+    const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [type]: val, otp })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
     
-    const endpoint = type === "create" ? "/api/admin/accounts/verify-create" : "/api/admin/accounts/verify-update";
-    
-    try {
-      const res = await fetch(`${BACKEND_URL}${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, emailOtp, phoneOtp })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      
-      showToast(data.message, "success");
-      document.getElementById("adminVerificationModal").classList.add("hidden");
-      
-      if (type === "create") {
-        const createAdminForm = document.getElementById("createAdminForm");
-        if (createAdminForm) createAdminForm.reset();
-      } else {
-        document.getElementById("editAdminModal").classList.add("hidden");
-        // If editing my own profile, update local storage session and badge info
-        if (username === adminUser.username) {
-          const updatedSession = {
-            ...data.admin,
-            token: adminUser.token
-          };
-          localStorage.setItem("mic_admin_session", JSON.stringify(updatedSession));
-          adminUser.username = data.admin.username;
-          adminUser.email = data.admin.email;
-          adminUser.phone = data.admin.phone;
-          adminUser.role = data.admin.role;
-          adminUser.permissions = data.admin.permissions;
-          document.getElementById("adminUsernameBadge").textContent = data.admin.username;
-          document.getElementById("adminUserAvatar").textContent = data.admin.username.substring(0, 2).toUpperCase();
-        }
-      }
-      
-      fetchAdmins();
-    } catch (err) {
-      showToast(err.message, "error");
+    if (type === 'email') {
+      createEmailVerified = true;
+      createEmailVal = val;
+      document.getElementById("create-email-otp-container").style.display = "none";
+      document.getElementById("btn-send-create-email-otp").style.display = "none";
+      document.getElementById("create-email-verified-badge").style.display = "block";
+    } else {
+      createPhoneVerified = true;
+      createPhoneVal = val;
+      document.getElementById("create-phone-otp-container").style.display = "none";
+      document.getElementById("btn-send-create-phone-otp").style.display = "none";
+      document.getElementById("create-phone-verified-badge").style.display = "block";
     }
-  });
-}
+    showToast(`${type === 'email' ? 'Email' : 'Phone'} verified successfully!`, "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+window.sendEditAdminOtp = async function(type) {
+  const inputId = type === 'email' ? 'editAdminEmail' : 'editAdminPhone';
+  const val = document.getElementById(inputId).value.trim();
+  if (!val) {
+    showToast(`Please enter a valid ${type} first.`, "error");
+    return;
+  }
+  
+  const btnId = type === 'email' ? 'btn-send-edit-email-otp' : 'btn-send-edit-phone-otp';
+  const btn = document.getElementById(btnId);
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  
+  const endpoint = type === 'email' ? '/api/admin/verify-email/send' : '/api/admin/verify-phone/send';
+  try {
+    const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [type]: val, isCreate: false })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+    
+    const containerId = type === 'email' ? 'edit-email-otp-container' : 'edit-phone-otp-container';
+    document.getElementById(containerId).style.display = "block";
+    
+    const devId = type === 'email' ? 'edit-email-dev-text' : 'edit-phone-dev-text';
+    const devText = document.getElementById(devId);
+    if (data.devOtp) {
+      devText.style.display = "block";
+      devText.textContent = `Dev OTP: ${data.devOtp}`;
+    } else {
+      devText.style.display = "none";
+    }
+    showToast("Verification code sent successfully.", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send OTP";
+  }
+};
+
+window.verifyEditAdminOtp = async function(type) {
+  const inputId = type === 'email' ? 'editAdminEmail' : 'editAdminPhone';
+  const val = document.getElementById(inputId).value.trim();
+  const otpInputId = type === 'email' ? 'edit-email-otp-input' : 'edit-phone-otp-input';
+  const otp = document.getElementById(otpInputId).value.trim();
+  if (!otp) {
+    showToast("Please enter the 6-digit OTP code.", "error");
+    return;
+  }
+  
+  const endpoint = type === 'email' ? '/api/admin/verify-email/verify' : '/api/admin/verify-phone/verify';
+  try {
+    const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [type]: val, otp })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+    
+    if (type === 'email') {
+      editEmailVerified = true;
+      editEmailVal = val;
+      document.getElementById("edit-email-otp-container").style.display = "none";
+      document.getElementById("btn-send-edit-email-otp").style.display = "none";
+      document.getElementById("edit-email-verified-badge").style.display = "block";
+    } else {
+      editPhoneVerified = true;
+      editPhoneVal = val;
+      document.getElementById("edit-phone-otp-container").style.display = "none";
+      document.getElementById("btn-send-edit-phone-otp").style.display = "none";
+      document.getElementById("edit-phone-verified-badge").style.display = "block";
+    }
+    showToast(`${type === 'email' ? 'Email' : 'Phone'} verified successfully!`, "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const newEmail = document.getElementById("newAdminEmail");
+  const newPhone = document.getElementById("newAdminPhone");
+  
+  if (newEmail) {
+    newEmail.addEventListener("input", (e) => {
+      const val = e.target.value.trim();
+      if (val !== createEmailVal) {
+        createEmailVerified = false;
+        document.getElementById("btn-send-create-email-otp").style.display = "block";
+        document.getElementById("create-email-verified-badge").style.display = "none";
+      }
+    });
+  }
+  if (newPhone) {
+    newPhone.addEventListener("input", (e) => {
+      const val = e.target.value.trim();
+      if (val !== createPhoneVal) {
+        createPhoneVerified = false;
+        document.getElementById("btn-send-create-phone-otp").style.display = "block";
+        document.getElementById("create-phone-verified-badge").style.display = "none";
+      }
+    });
+  }
+
+  const editEmail = document.getElementById("editAdminEmail");
+  const editPhone = document.getElementById("editAdminPhone");
+  
+  if (editEmail) {
+    editEmail.addEventListener("input", (e) => {
+      const val = e.target.value.trim();
+      if (val !== editEmailVal) {
+        editEmailVerified = false;
+        document.getElementById("btn-send-edit-email-otp").style.display = "block";
+        document.getElementById("edit-email-verified-badge").style.display = "none";
+      } else {
+        editEmailVerified = true;
+        document.getElementById("btn-send-edit-email-otp").style.display = "none";
+        document.getElementById("edit-email-verified-badge").style.display = "block";
+      }
+    });
+  }
+  if (editPhone) {
+    editPhone.addEventListener("input", (e) => {
+      const val = e.target.value.trim();
+      if (val !== editPhoneVal) {
+        editPhoneVerified = false;
+        document.getElementById("btn-send-edit-phone-otp").style.display = "block";
+        document.getElementById("edit-phone-verified-badge").style.display = "none";
+      } else {
+        editPhoneVerified = true;
+        document.getElementById("btn-send-edit-phone-otp").style.display = "none";
+        document.getElementById("edit-phone-verified-badge").style.display = "block";
+      }
+    });
+  }
+});
 

@@ -755,11 +755,25 @@ function openAddressForm(idx = -1) {
       addressCity.value = addr.city || "";
       addressState.value = addr.state || "";
       addressDefaultCheckbox.checked = !!addr.isDefault;
+
+      // Edit verified state
+      isProfilePhoneVerified = true;
+      verifiedProfilePhoneNumber = addr.phone || "";
+      document.getElementById("btn-send-profile-otp").style.display = "none";
+      document.getElementById("profile-verified-badge").style.display = "block";
+      document.getElementById("profile-otp-container").style.display = "none";
     }
   } else {
     // Add new address
     editAddressIndex.value = "";
     addressFormTitle.textContent = "Add New Address";
+
+    // Create verified state
+    isProfilePhoneVerified = false;
+    verifiedProfilePhoneNumber = "";
+    document.getElementById("btn-send-profile-otp").style.display = "block";
+    document.getElementById("profile-verified-badge").style.display = "none";
+    document.getElementById("profile-otp-container").style.display = "none";
     
     const addresses = getSavedAddresses();
     if (addresses.length === 0) {
@@ -886,6 +900,11 @@ function bindFormSubmissions() {
 
       if (!name || !phone || !pin || !line1 || !city || !state) {
         window.showToast("Please fill all required address fields.", "error");
+        return;
+      }
+
+      if (!isProfilePhoneVerified || verifiedProfilePhoneNumber !== phone) {
+        window.showToast("Please verify your mobile number via OTP first.", "error");
         return;
       }
 
@@ -1805,3 +1824,95 @@ window.openOrderTracking = function(orderId) {
     console.error(e);
   }
 };
+
+// Profile Shipping Address OTP Verification
+let isProfilePhoneVerified = false;
+let verifiedProfilePhoneNumber = "";
+
+window.triggerProfileOtpSend = async function() {
+  const phone = document.getElementById("phone-num").value.trim();
+  if (!phone || phone.length < 10) {
+    window.showToast("Please enter a valid 10-digit mobile number first.", "error");
+    return;
+  }
+  const sendBtn = document.getElementById("btn-send-profile-otp");
+  sendBtn.disabled = true;
+  sendBtn.textContent = "Sending...";
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/shipping/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    document.getElementById("profile-otp-container").style.display = "block";
+    const devText = document.getElementById("profile-dev-otp-text");
+    if (data.devOtp) {
+      devText.style.display = "block";
+      devText.textContent = `Dev OTP Code: ${data.devOtp}`;
+    } else {
+      devText.style.display = "none";
+    }
+    window.showToast("OTP code sent to mobile number.", "success");
+  } catch (err) {
+    window.showToast(err.message, "error");
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = "Send OTP";
+  }
+};
+
+window.triggerProfileOtpVerify = async function() {
+  const phone = document.getElementById("phone-num").value.trim();
+  const otp = document.getElementById("profile-otp-input").value.trim();
+  if (!otp) {
+    window.showToast("Please enter the verification code.", "error");
+    return;
+  }
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/shipping/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, otp })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    isProfilePhoneVerified = true;
+    verifiedProfilePhoneNumber = phone;
+    document.getElementById("profile-otp-container").style.display = "none";
+    document.getElementById("btn-send-profile-otp").style.display = "none";
+    document.getElementById("profile-verified-badge").style.display = "block";
+    window.showToast("Mobile number verified successfully!", "success");
+  } catch (err) {
+    window.showToast(err.message, "error");
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const phoneInput = document.getElementById("phone-num");
+  const editIdxInput = document.getElementById("edit-address-index");
+  
+  if (phoneInput) {
+    phoneInput.addEventListener("input", (e) => {
+      const val = e.target.value.trim();
+      const addresses = typeof getSavedAddresses === "function" ? getSavedAddresses() : [];
+      const editIdxStr = editIdxInput ? editIdxInput.value : "";
+      const origVal = editIdxStr !== "" ? addresses[parseInt(editIdxStr)]?.phone : "";
+      
+      if (val && val === origVal) {
+        isProfilePhoneVerified = true;
+        verifiedProfilePhoneNumber = val;
+        document.getElementById("btn-send-profile-otp").style.display = "none";
+        document.getElementById("profile-verified-badge").style.display = "block";
+        document.getElementById("profile-otp-container").style.display = "none";
+      } else {
+        isProfilePhoneVerified = false;
+        document.getElementById("btn-send-profile-otp").style.display = "block";
+        document.getElementById("profile-verified-badge").style.display = "none";
+      }
+    });
+  }
+});

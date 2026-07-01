@@ -312,11 +312,33 @@
                   </div>
                   <div class="form-group-admin">
                     <label for="newAdminEmail">Email</label>
-                    <input type="email" id="newAdminEmail" placeholder="support@website.com" required>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="email" id="newAdminEmail" placeholder="support@website.com" required style="flex: 1;">
+                      <button type="button" id="btn-send-create-email-otp" onclick="sendCreateAdminOtp('email')" style="padding: 0 15px; background: var(--primary-color, #6366f1); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">Send OTP</button>
+                    </div>
+                    <div id="create-email-otp-container" style="display: none; margin-top: 8px;">
+                      <div style="display: flex; gap: 8px;">
+                        <input type="text" id="create-email-otp-input" placeholder="6-digit code" maxlength="6" style="flex: 1; text-align: center;">
+                        <button type="button" onclick="verifyCreateAdminOtp('email')" style="padding: 0 15px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">Verify</button>
+                      </div>
+                      <span id="create-email-dev-text" style="display: none; font-size: 11px; color: #10b981; margin-top: 4px; font-weight: 600;"></span>
+                    </div>
+                    <span id="create-email-verified-badge" style="display: none; font-size: 12px; color: #10b981; font-weight: 600; margin-top: 4px;"><i class="fa-solid fa-circle-check"></i> Email verified</span>
                   </div>
                   <div class="form-group-admin">
                     <label for="newAdminPhone">Phone Number</label>
-                    <input type="text" id="newAdminPhone" placeholder="+919876543210" required>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="text" id="newAdminPhone" placeholder="+919876543210" required style="flex: 1;">
+                      <button type="button" id="btn-send-create-phone-otp" onclick="sendCreateAdminOtp('phone')" style="padding: 0 15px; background: var(--primary-color, #6366f1); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">Send OTP</button>
+                    </div>
+                    <div id="create-phone-otp-container" style="display: none; margin-top: 8px;">
+                      <div style="display: flex; gap: 8px;">
+                        <input type="text" id="create-phone-otp-input" placeholder="6-digit code" maxlength="6" style="flex: 1; text-align: center;">
+                        <button type="button" onclick="verifyCreateAdminOtp('phone')" style="padding: 0 15px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">Verify</button>
+                      </div>
+                      <span id="create-phone-dev-text" style="display: none; font-size: 11px; color: #10b981; margin-top: 4px; font-weight: 600;"></span>
+                    </div>
+                    <span id="create-phone-verified-badge" style="display: none; font-size: 12px; color: #10b981; font-weight: 600; margin-top: 4px;"><i class="fa-solid fa-circle-check"></i> Phone verified</span>
                   </div>
                   <div class="form-group-admin">
                     <label for="newAdminPassword">Password</label>
@@ -1161,11 +1183,33 @@
         </div>
         <div class="form-group-admin">
           <label for="editAdminEmail">Email</label>
-          <input type="email" id="editAdminEmail" required>
+          <div style="display: flex; gap: 8px;">
+            <input type="email" id="editAdminEmail" required style="flex: 1;">
+            <button type="button" id="btn-send-edit-email-otp" onclick="sendEditAdminOtp('email')" style="padding: 0 15px; background: var(--primary-color, #6366f1); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">Send OTP</button>
+          </div>
+          <div id="edit-email-otp-container" style="display: none; margin-top: 8px;">
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="edit-email-otp-input" placeholder="6-digit code" maxlength="6" style="flex: 1; text-align: center;">
+              <button type="button" onclick="verifyEditAdminOtp('email')" style="padding: 0 15px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">Verify</button>
+            </div>
+            <span id="edit-email-dev-text" style="display: none; font-size: 11px; color: #10b981; margin-top: 4px; font-weight: 600;"></span>
+          </div>
+          <span id="edit-email-verified-badge" style="display: none; font-size: 12px; color: #10b981; font-weight: 600; margin-top: 4px;"><i class="fa-solid fa-circle-check"></i> Email verified</span>
         </div>
         <div class="form-group-admin">
           <label for="editAdminPhone">Phone Number</label>
-          <input type="text" id="editAdminPhone" required>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="editAdminPhone" required style="flex: 1;">
+            <button type="button" id="btn-send-edit-phone-otp" onclick="sendEditAdminOtp('phone')" style="padding: 0 15px; background: var(--primary-color, #6366f1); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">Send OTP</button>
+          </div>
+          <div id="edit-phone-otp-container" style="display: none; margin-top: 8px;">
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="edit-phone-otp-input" placeholder="6-digit code" maxlength="6" style="flex: 1; text-align: center;">
+              <button type="button" onclick="verifyEditAdminOtp('phone')" style="padding: 0 15px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">Verify</button>
+            </div>
+            <span id="edit-phone-dev-text" style="display: none; font-size: 11px; color: #10b981; margin-top: 4px; font-weight: 600;"></span>
+          </div>
+          <span id="edit-phone-verified-badge" style="display: none; font-size: 12px; color: #10b981; font-weight: 600; margin-top: 4px;"><i class="fa-solid fa-circle-check"></i> Phone verified</span>
         </div>
         <div class="form-group-admin">
           <label for="editAdminPassword">New Password (Optional)</label>
@@ -1191,37 +1235,6 @@
         <button type="submit" class="admin-btn-primary" style="margin-top:15px;">Save Changes</button>
       </form>
     </div>
-  <!-- ADMIN VERIFICATION MODAL -->
-  <div id="adminVerificationModal" class="modal-overlay-admin hidden">
-    <div class="modal-card-admin" style="max-width: 400px;">
-      <div class="modal-card-header">
-        <h3>Verify Security Codes</h3>
-        <button id="closeAdminVerificationModalBtn" class="close-modal-btn"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="otp-instruction" style="text-align: center; margin-bottom: 20px; padding: 10px;">
-        <i class="fa-solid fa-shield-halved" style="font-size: 32px; color: var(--primary-color); margin-bottom: 10px;"></i>
-        <p style="font-size: 13px; color: var(--text-muted);">Please enter the verification codes sent to the registered email/phone.</p>
-      </div>
-      <form id="adminVerificationForm" class="card-form-admin">
-        <input type="hidden" id="adminVerifyUsername">
-        <input type="hidden" id="adminVerifyType"> <!-- "create" or "update" -->
-        
-        <div class="form-group-admin" id="adminVerifyEmailGroup">
-          <label for="adminVerifyEmailOtp">Email Verification Code</label>
-          <input type="text" id="adminVerifyEmailOtp" placeholder="6-digit email code" maxlength="6">
-          <span class="dev-otp-indicator" id="devAdminEmailOtpText" style="display:none; font-size:11px; color:#10b981; margin-top:2px;"></span>
-        </div>
-        
-        <div class="form-group-admin" id="adminVerifyPhoneGroup">
-          <label for="adminVerifyPhoneOtp">Mobile Verification Code</label>
-          <input type="text" id="adminVerifyPhoneOtp" placeholder="6-digit mobile code" maxlength="6">
-          <span class="dev-otp-indicator" id="devAdminPhoneOtpText" style="display:none; font-size:11px; color:#10b981; margin-top:2px;"></span>
-        </div>
-        
-        <button type="submit" class="admin-btn-primary" style="margin-top:15px;">Verify & Commit</button>
-      </form>
-    </div>
-  </div>
 
   <!-- PRINT CARD MODAL -->
   <div id="printCardModal" class="modal-overlay-admin hidden">
