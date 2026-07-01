@@ -468,6 +468,9 @@ const upload = multer({ storage: storageUpload });
 
 const adminOtpStore = new Map();
 const passwordResetStore = new Map();
+const pendingAdminCreations = new Map();
+const pendingAdminUpdates = new Map();
+const shippingOtpStore = new Map();
 
 // Admin Login
 app.post("/api/admin/login", adminLoginLimiter, async (req, res) => {
@@ -1212,6 +1215,85 @@ app.post("/api/admin/accounts", async (req, res) => {
       return res.status(400).json({ success: false, message: "Username, Email or Phone already registered as admin" });
     }
 
+    // Generate security OTPs
+    const emailOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const phoneOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    pendingAdminCreations.set(username, {
+      username,
+      email,
+      phone,
+      password,
+      role,
+      permissions: permissions || [],
+      emailOtp,
+      phoneOtp,
+      adminUser,
+      expiresAt: Date.now() + 10 * 60 * 1000
+    });
+
+    console.log(`[CREATE ADMIN OTP] Username: ${username}, Email OTP: ${emailOtp}, Phone OTP: ${phoneOtp}`);
+
+    // Send email OTP via Resend
+    try {
+      await resend.emails.send({
+        from: "MyInvitationCard <onboarding@resend.dev>",
+        to: email,
+        subject: "Verify Your Admin Account Creation",
+        html: `
+          <div style="font-family:Arial;padding:20px;">
+            <h2>Verify New Admin Account</h2>
+            <p>You are creating a new admin account: <strong>${username}</strong>.</p>
+            <p>Your email verification code is:</p>
+            <h1 style="letter-spacing:6px;">${emailOtp}</h1>
+            <p>This code expires in 10 minutes.</p>
+          </div>
+        `
+      });
+    } catch (e) {
+      console.warn("Resend email failed:", e.message);
+    }
+
+    res.json({
+      success: true,
+      verificationRequired: true,
+      username,
+      emailOtp,
+      phoneOtp
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Verify and Commit Admin Creation
+app.post("/api/admin/accounts/verify-create", async (req, res) => {
+  try {
+    const { username, emailOtp, phoneOtp } = req.body;
+    const pending = pendingAdminCreations.get(username);
+
+    if (!pending) {
+      return res.status(400).json({ success: false, message: "Verification request expired or not found" });
+    }
+
+    if (Date.now() > pending.expiresAt) {
+      pendingAdminCreations.delete(username);
+      return res.status(400).json({ success: false, message: "Verification request has expired" });
+    }
+
+    if (pending.emailOtp !== emailOtp || pending.phoneOtp !== phoneOtp) {
+      return res.status(400).json({ success: false, message: "Invalid verification codes" });
+    }
+
+    const { email, phone, password, role, permissions, adminUser } = pending;
+    
+    // Check again to prevent race conditions
+    const existing = await Admin.findOne({ $or: [{ username }, { email }, { phone }] });
+    if (existing) {
+      pendingAdminCreations.delete(username);
+      return res.status(400).json({ success: false, message: "Username, Email or Phone already registered as admin" });
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
     const newAdmin = new Admin({
       username,
@@ -1224,6 +1306,8 @@ app.post("/api/admin/accounts", async (req, res) => {
     });
     await newAdmin.save();
 
+    pendingAdminCreations.delete(username);
+
     const audit = new AuditLog({
       username: adminUser || "admin",
       action: "admins.create",
@@ -1231,7 +1315,7 @@ app.post("/api/admin/accounts", async (req, res) => {
     });
     await audit.save();
 
-    res.json({ success: true, message: "Admin account created successfully", data: newAdmin });
+    res.json({ success: true, message: "Admin account created and verified successfully", data: newAdmin });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -1916,7 +2000,72 @@ app.put("/api/admin/accounts/:username", async (req, res) => {
       return res.status(404).json({ success: false, message: "Admin account not found" });
     }
 
-    // Support updating username
+    const emailChanging = email && email.trim() !== targetAdmin.email;
+    const phoneChanging = phone && phone.trim() !== targetAdmin.phone;
+
+    if (emailChanging || phoneChanging) {
+      if (emailChanging) {
+        const dupEmail = await Admin.findOne({ email: email.trim() });
+        if (dupEmail) return res.status(400).json({ success: false, message: "Email is already taken by another administrator" });
+      }
+      if (phoneChanging) {
+        const dupPhone = await Admin.findOne({ phone: phone.trim() });
+        if (dupPhone) return res.status(400).json({ success: false, message: "Phone number is already taken by another administrator" });
+      }
+
+      // Generate OTPs
+      const emailOtp = emailChanging ? Math.floor(100000 + Math.random() * 900000).toString() : null;
+      const phoneOtp = phoneChanging ? Math.floor(100000 + Math.random() * 900000).toString() : null;
+
+      pendingAdminUpdates.set(username, {
+        username,
+        newUsername: newUsername ? newUsername.trim() : targetAdmin.username,
+        email: email ? email.trim() : targetAdmin.email,
+        phone: phone ? phone.trim() : targetAdmin.phone,
+        role,
+        password,
+        permissions,
+        emailOtp,
+        phoneOtp,
+        adminUser,
+        expiresAt: Date.now() + 10 * 60 * 1000
+      });
+
+      console.log(`[UPDATE ADMIN OTP] Username: ${username}, Email OTP: ${emailOtp || "N/A"}, Phone OTP: ${phoneOtp || "N/A"}`);
+
+      if (emailChanging && emailOtp) {
+        try {
+          await resend.emails.send({
+            from: "MyInvitationCard <onboarding@resend.dev>",
+            to: email.trim(),
+            subject: "Verify Your Admin Profile Update",
+            html: `
+              <div style="font-family:Arial;padding:20px;">
+                <h2>Verify Email Update</h2>
+                <p>An update has been requested for the admin account: <strong>${username}</strong>.</p>
+                <p>Your email verification code is:</p>
+                <h1 style="letter-spacing:6px;">${emailOtp}</h1>
+                <p>This code expires in 10 minutes.</p>
+              </div>
+            `
+          });
+        } catch (e) {
+          console.warn("Resend email failed:", e.message);
+        }
+      }
+
+      return res.json({
+        success: true,
+        verificationRequired: true,
+        username,
+        emailOtp,
+        phoneOtp,
+        emailChanged: emailChanging,
+        phoneChanged: phoneChanging
+      });
+    }
+
+    // Support updating username (no OTP verification needed for username/password/role changes)
     if (newUsername && newUsername.trim() !== username) {
       const duplicate = await Admin.findOne({ username: newUsername.trim() });
       if (duplicate) {
@@ -1925,11 +2074,6 @@ app.put("/api/admin/accounts/:username", async (req, res) => {
       targetAdmin.username = newUsername.trim();
     }
 
-    // Update fields if provided
-    if (email) targetAdmin.email = email;
-    if (phone) targetAdmin.phone = phone;
-
-    // Role protection (Master Owner role and permissions are locked and cannot be changed)
     if (targetAdmin.role !== "Master Owner") {
       if (role) targetAdmin.role = role;
       if (permissions) targetAdmin.permissions = permissions;
@@ -1939,7 +2083,6 @@ app.put("/api/admin/accounts/:username", async (req, res) => {
       targetAdmin.passwordHash = await bcrypt.hash(password, 10);
     }
 
-    // Reset failed login attempts and lockouts when edited
     targetAdmin.failedLoginAttempts = 0;
     targetAdmin.lockUntil = null;
 
@@ -1952,16 +2095,94 @@ app.put("/api/admin/accounts/:username", async (req, res) => {
     });
     await audit.save();
 
-    // Prepare updated user object for the response
-    const updatedAdmin = {
-      username: targetAdmin.username,
-      email: targetAdmin.email,
-      phone: targetAdmin.phone,
-      role: targetAdmin.role,
-      permissions: targetAdmin.permissions
-    };
+    res.json({
+      success: true,
+      message: "Admin account updated successfully",
+      admin: {
+        username: targetAdmin.username,
+        email: targetAdmin.email,
+        phone: targetAdmin.phone,
+        role: targetAdmin.role,
+        permissions: targetAdmin.permissions
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
-    res.json({ success: true, message: "Admin account updated successfully", admin: updatedAdmin });
+// Verify and Commit Admin Update
+app.post("/api/admin/accounts/verify-update", async (req, res) => {
+  try {
+    const { username, emailOtp, phoneOtp } = req.body;
+    const pending = pendingAdminUpdates.get(username);
+
+    if (!pending) {
+      return res.status(400).json({ success: false, message: "Verification request expired or not found" });
+    }
+
+    if (Date.now() > pending.expiresAt) {
+      pendingAdminUpdates.delete(username);
+      return res.status(400).json({ success: false, message: "Verification request has expired" });
+    }
+
+    if (pending.emailOtp && pending.emailOtp !== emailOtp) {
+      return res.status(400).json({ success: false, message: "Invalid email verification code" });
+    }
+    if (pending.phoneOtp && pending.phoneOtp !== phoneOtp) {
+      return res.status(400).json({ success: false, message: "Invalid phone verification code" });
+    }
+
+    const targetAdmin = await Admin.findOne({ username });
+    if (!targetAdmin) {
+      pendingAdminUpdates.delete(username);
+      return res.status(404).json({ success: false, message: "Admin account not found" });
+    }
+
+    const { newUsername, email, phone, role, password, permissions, adminUser } = pending;
+
+    if (newUsername && newUsername.trim() !== username) {
+      const duplicate = await Admin.findOne({ username: newUsername.trim() });
+      if (duplicate) return res.status(400).json({ success: false, message: "New username is already taken" });
+      targetAdmin.username = newUsername.trim();
+    }
+
+    targetAdmin.email = email;
+    targetAdmin.phone = phone;
+
+    if (targetAdmin.role !== "Master Owner") {
+      if (role) targetAdmin.role = role;
+      if (permissions) targetAdmin.permissions = permissions;
+    }
+
+    if (password) {
+      targetAdmin.passwordHash = await bcrypt.hash(password, 10);
+    }
+
+    targetAdmin.failedLoginAttempts = 0;
+    targetAdmin.lockUntil = null;
+
+    await targetAdmin.save();
+    pendingAdminUpdates.delete(username);
+
+    const audit = new AuditLog({
+      username: adminUser || "admin",
+      action: "admins.edit",
+      details: `Updated admin account: ${username}${newUsername && newUsername !== username ? ` (New username: ${newUsername})` : ""}`
+    });
+    await audit.save();
+
+    res.json({
+      success: true,
+      message: "Admin account updated and verified successfully",
+      admin: {
+        username: targetAdmin.username,
+        email: targetAdmin.email,
+        phone: targetAdmin.phone,
+        role: targetAdmin.role,
+        permissions: targetAdmin.permissions
+      }
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -2032,6 +2253,58 @@ app.delete("/api/admin/accounts/:username", async (req, res) => {
     await audit.save();
 
     res.json({ success: true, message: "Admin account deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Shipping Mobile OTP Send
+app.post("/api/shipping/send-otp", async (req, res) => {
+  try {
+    const { phone } = req.body;
+    if (!phone) {
+      return res.status(400).json({ success: false, message: "Mobile phone number is required" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    shippingOtpStore.set(phone, {
+      otp,
+      expiresAt: Date.now() + 5 * 60 * 1000
+    });
+
+    console.log(`[SHIPPING PHONE OTP] for ${phone} is ${otp}`);
+
+    res.json({
+      success: true,
+      message: "Verification code sent to mobile number",
+      devOtp: otp
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Shipping Mobile OTP Verify
+app.post("/api/shipping/verify-otp", async (req, res) => {
+  try {
+    const { phone, otp } = req.body;
+    const record = shippingOtpStore.get(phone);
+
+    if (!record) {
+      return res.status(400).json({ success: false, message: "No active verification request found" });
+    }
+
+    if (Date.now() > record.expiresAt) {
+      shippingOtpStore.delete(phone);
+      return res.status(400).json({ success: false, message: "Verification code has expired" });
+    }
+
+    if (record.otp !== otp) {
+      return res.status(400).json({ success: false, message: "Invalid verification code" });
+    }
+
+    shippingOtpStore.delete(phone);
+    res.json({ success: true, message: "Mobile number verified successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
