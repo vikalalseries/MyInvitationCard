@@ -1191,6 +1191,36 @@
         <button type="submit" class="admin-btn-primary" style="margin-top:15px;">Save Changes</button>
       </form>
     </div>
+  <!-- ADMIN VERIFICATION MODAL -->
+  <div id="adminVerificationModal" class="modal-overlay-admin hidden">
+    <div class="modal-card-admin" style="max-width: 400px;">
+      <div class="modal-card-header">
+        <h3>Verify Security Codes</h3>
+        <button id="closeAdminVerificationModalBtn" class="close-modal-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="otp-instruction" style="text-align: center; margin-bottom: 20px; padding: 10px;">
+        <i class="fa-solid fa-shield-halved" style="font-size: 32px; color: var(--primary-color); margin-bottom: 10px;"></i>
+        <p style="font-size: 13px; color: var(--text-muted);">Please enter the verification codes sent to the registered email/phone.</p>
+      </div>
+      <form id="adminVerificationForm" class="card-form-admin">
+        <input type="hidden" id="adminVerifyUsername">
+        <input type="hidden" id="adminVerifyType"> <!-- "create" or "update" -->
+        
+        <div class="form-group-admin" id="adminVerifyEmailGroup">
+          <label for="adminVerifyEmailOtp">Email Verification Code</label>
+          <input type="text" id="adminVerifyEmailOtp" placeholder="6-digit email code" maxlength="6">
+          <span class="dev-otp-indicator" id="devAdminEmailOtpText" style="display:none; font-size:11px; color:#10b981; margin-top:2px;"></span>
+        </div>
+        
+        <div class="form-group-admin" id="adminVerifyPhoneGroup">
+          <label for="adminVerifyPhoneOtp">Mobile Verification Code</label>
+          <input type="text" id="adminVerifyPhoneOtp" placeholder="6-digit mobile code" maxlength="6">
+          <span class="dev-otp-indicator" id="devAdminPhoneOtpText" style="display:none; font-size:11px; color:#10b981; margin-top:2px;"></span>
+        </div>
+        
+        <button type="submit" class="admin-btn-primary" style="margin-top:15px;">Verify & Commit</button>
+      </form>
+    </div>
   </div>
 
   <!-- PRINT CARD MODAL -->

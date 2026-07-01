@@ -903,9 +903,13 @@ if (createAdminForm) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       
-      showToast(data.message, "success");
-      createAdminForm.reset();
-      fetchAdmins();
+      if (data.verificationRequired) {
+        openAdminVerificationModal(username, "create", data.emailOtp, data.phoneOtp);
+      } else {
+        showToast(data.message, "success");
+        createAdminForm.reset();
+        fetchAdmins();
+      }
     } catch (err) {
       showToast(err.message, "error");
     }
@@ -975,26 +979,30 @@ if (editAdminForm) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       
-      showToast(data.message, "success");
-      document.getElementById("editAdminModal").classList.add("hidden");
+      if (data.verificationRequired) {
+        openAdminVerificationModal(oldUsername, "update", data.emailOtp, data.phoneOtp, data.emailChanged, data.phoneChanged);
+      } else {
+        showToast(data.message, "success");
+        document.getElementById("editAdminModal").classList.add("hidden");
 
-      // If editing my own profile, update local storage session and badge info
-      if (oldUsername === adminUser.username) {
-        localStorage.setItem("mic_admin_session", JSON.stringify(data.admin));
-        
-        // Update in-memory values
-        adminUser.username = data.admin.username;
-        adminUser.email = data.admin.email;
-        adminUser.phone = data.admin.phone;
-        adminUser.role = data.admin.role;
-        adminUser.permissions = data.admin.permissions;
+        // If editing my own profile, update local storage session and badge info
+        if (oldUsername === adminUser.username) {
+          localStorage.setItem("mic_admin_session", JSON.stringify(data.admin));
+          
+          // Update in-memory values
+          adminUser.username = data.admin.username;
+          adminUser.email = data.admin.email;
+          adminUser.phone = data.admin.phone;
+          adminUser.role = data.admin.role;
+          adminUser.permissions = data.admin.permissions;
 
-        // Update badges
-        document.getElementById("adminUsernameBadge").textContent = data.admin.username;
-        document.getElementById("adminUserAvatar").textContent = data.admin.username.substring(0, 2).toUpperCase();
+          // Update badges
+          document.getElementById("adminUsernameBadge").textContent = data.admin.username;
+          document.getElementById("adminUserAvatar").textContent = data.admin.username.substring(0, 2).toUpperCase();
+        }
+
+        fetchAdmins();
       }
-
-      fetchAdmins();
     } catch (err) {
       showToast(err.message, "error");
     }
@@ -3102,5 +3110,111 @@ function setupTemplatesIntersectionObserver() {
   }, { rootMargin: "100px" });
 
   templatesObserver.observe(sentry);
+}
+
+// Verification Modal Handlers
+window.openAdminVerificationModal = function(username, type, emailOtp, phoneOtp, emailChanged = true, phoneChanged = true) {
+  document.getElementById("adminVerifyUsername").value = username;
+  document.getElementById("adminVerifyType").value = type;
+  
+  const emailGroup = document.getElementById("adminVerifyEmailGroup");
+  const phoneGroup = document.getElementById("adminVerifyPhoneGroup");
+  
+  const emailInput = document.getElementById("adminVerifyEmailOtp");
+  const phoneInput = document.getElementById("adminVerifyPhoneOtp");
+  
+  emailInput.value = "";
+  phoneInput.value = "";
+  
+  if (emailChanged) {
+    emailGroup.style.display = "block";
+    emailInput.setAttribute("required", "required");
+  } else {
+    emailGroup.style.display = "none";
+    emailInput.removeAttribute("required");
+  }
+  
+  if (phoneChanged) {
+    phoneGroup.style.display = "block";
+    phoneInput.setAttribute("required", "required");
+  } else {
+    phoneGroup.style.display = "none";
+    phoneInput.removeAttribute("required");
+  }
+  
+  // Show dev OTPs in UI
+  const devEmailText = document.getElementById("devAdminEmailOtpText");
+  const devPhoneText = document.getElementById("devAdminPhoneOtpText");
+  
+  if (emailOtp) {
+    devEmailText.style.display = "block";
+    devEmailText.textContent = `Dev Email OTP: ${emailOtp}`;
+  } else {
+    devEmailText.style.display = "none";
+  }
+  
+  if (phoneOtp) {
+    devPhoneText.style.display = "block";
+    devPhoneText.textContent = `Dev Phone OTP: ${phoneOtp}`;
+  } else {
+    devPhoneText.style.display = "none";
+  }
+  
+  document.getElementById("adminVerificationModal").classList.remove("hidden");
+};
+
+const closeAdminVerificationModalBtn = document.getElementById("closeAdminVerificationModalBtn");
+if (closeAdminVerificationModalBtn) {
+  closeAdminVerificationModalBtn.addEventListener("click", () => {
+    document.getElementById("adminVerificationModal").classList.add("hidden");
+  });
+}
+
+const adminVerificationForm = document.getElementById("adminVerificationForm");
+if (adminVerificationForm) {
+  adminVerificationForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = document.getElementById("adminVerifyUsername").value;
+    const type = document.getElementById("adminVerifyType").value;
+    const emailOtp = document.getElementById("adminVerifyEmailOtp").value.trim();
+    const phoneOtp = document.getElementById("adminVerifyPhoneOtp").value.trim();
+    
+    const endpoint = type === "create" ? "/api/admin/accounts/verify-create" : "/api/admin/accounts/verify-update";
+    
+    try {
+      const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, emailOtp, phoneOtp })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      
+      showToast(data.message, "success");
+      document.getElementById("adminVerificationModal").classList.add("hidden");
+      
+      if (type === "create") {
+        const createAdminForm = document.getElementById("createAdminForm");
+        if (createAdminForm) createAdminForm.reset();
+      } else {
+        document.getElementById("editAdminModal").classList.add("hidden");
+        // If editing my own profile, update local storage session and badge info
+        if (username === adminUser.username) {
+          localStorage.setItem("mic_admin_session", JSON.stringify(data.admin));
+          adminUser.username = data.admin.username;
+          adminUser.email = data.admin.email;
+          adminUser.phone = data.admin.phone;
+          adminUser.role = data.admin.role;
+          adminUser.permissions = data.admin.permissions;
+          document.getElementById("adminUsernameBadge").textContent = data.admin.username;
+          document.getElementById("adminUserAvatar").textContent = data.admin.username.substring(0, 2).toUpperCase();
+        }
+      }
+      
+      fetchAdmins();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  });
 }
 
