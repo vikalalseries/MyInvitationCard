@@ -178,6 +178,37 @@ if (!sessionData) {
 }
 
 const adminUser = JSON.parse(sessionData);
+const adminToken = localStorage.getItem("mic_admin_token");
+
+// Override global fetch to automatically include Authorization header for BACKEND_URL requests
+const originalFetch = window.fetch;
+window.fetch = async function (resource, options = {}) {
+  const url = typeof resource === 'string' ? resource : (resource instanceof Request ? resource.url : '');
+  
+  if (url.includes(BACKEND_URL)) {
+    options.headers = options.headers || {};
+    if (adminToken) {
+      if (options.headers instanceof Headers) {
+        options.headers.set("Authorization", `Bearer ${adminToken}`);
+      } else if (Array.isArray(options.headers)) {
+        options.headers.push(["Authorization", `Bearer ${adminToken}`]);
+      } else {
+        options.headers["Authorization"] = `Bearer ${adminToken}`;
+      }
+    }
+  }
+  
+  const response = await originalFetch(resource, options);
+  
+  // If unauthorized, redirect to login and clear session
+  if (response.status === 401 && url.includes("/api/admin/") && !url.includes("/api/admin/login") && !url.includes("/api/admin/verify-otp")) {
+    localStorage.removeItem("mic_admin_session");
+    localStorage.removeItem("mic_admin_token");
+    window.location.href = "login.html";
+  }
+  
+  return response;
+};
 
 // Set Admin Sidebar details
 document.getElementById("adminUsernameBadge").textContent = adminUser.username;
@@ -297,6 +328,7 @@ if (cancelLogoutBtn) {
 if (confirmLogoutBtn) {
   confirmLogoutBtn.addEventListener("click", () => {
     localStorage.removeItem("mic_admin_session");
+    localStorage.removeItem("mic_admin_token");
     if (logoutConfirmModal) {
       logoutConfirmModal.classList.add("hidden");
     }
