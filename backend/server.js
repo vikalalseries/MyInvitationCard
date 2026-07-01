@@ -9,10 +9,19 @@ const admin = require("firebase-admin");
 const mongoose = require("mongoose");
 const { connectDB } = require("./db");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET || "my_super_secret_admin_jwt_key_12345";
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const cookieParser = require("cookie-parser");
+const rateLimit = require("express-rate-limit");
 const User = require("./models/User");
 
 dotenv.config();
+
+if (!process.env.JWT_SECRET) {
+  console.error("❌ CRITICAL ERROR: JWT_SECRET environment variable is missing!");
+  process.exit(1);
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Connect to MongoDB and auto-seed templates if needed
 connectDB()
@@ -89,6 +98,43 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true
 }));
+app.use(helmet());
+app.use(mongoSanitize());
+app.use(cookieParser());
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200,
+  message: { success: false, message: "Too many requests. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+app.use(globalLimiter);
+
+const adminLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: "Too many login attempts. Please try again after 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const adminOtpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: "Too many verification attempts. Please try again after 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const adminResetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: "Too many password recovery attempts. Please try again after 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
 app.use(express.json());
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
@@ -424,7 +470,7 @@ const adminOtpStore = new Map();
 const passwordResetStore = new Map();
 
 // Admin Login
-app.post("/api/admin/login", async (req, res) => {
+app.post("/api/admin/login", adminLoginLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -440,9 +486,36 @@ app.post("/api/admin/login", async (req, res) => {
       return res.status(403).json({ success: false, message: "This account has been suspended" });
     }
 
+    // Check account lockout status
+    if (adminUser.lockUntil && adminUser.lockUntil > Date.now()) {
+      const remainingTime = Math.ceil((adminUser.lockUntil - Date.now()) / (60 * 1000));
+      return res.status(403).json({
+        success: false,
+        message: `This account is temporarily locked. Please try again in ${remainingTime} minutes.`
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, adminUser.passwordHash);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: "Invalid credentials" });
+      adminUser.failedLoginAttempts = (adminUser.failedLoginAttempts || 0) + 1;
+      let msg = "Invalid credentials";
+      if (adminUser.failedLoginAttempts >= 5) {
+        adminUser.lockUntil = new Date(Date.now() + 30 * 60 * 1000); // 30 mins lock
+        adminUser.failedLoginAttempts = 0; // Reset counter for next cycle
+        msg = "Invalid credentials. This account has been locked for 30 minutes due to consecutive failed attempts.";
+      } else {
+        const remaining = 5 - adminUser.failedLoginAttempts;
+        msg = `Invalid credentials. You have ${remaining} attempts remaining before account lockout.`;
+      }
+      await adminUser.save();
+      return res.status(400).json({ success: false, message: msg });
+    }
+
+    // Reset failed counter
+    if (adminUser.failedLoginAttempts > 0 || adminUser.lockUntil) {
+      adminUser.failedLoginAttempts = 0;
+      adminUser.lockUntil = null;
+      await adminUser.save();
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -563,7 +636,7 @@ app.post("/api/admin/login", async (req, res) => {
 });
 
 // Admin OTP Verification
-app.post("/api/admin/verify-otp", async (req, res) => {
+app.post("/api/admin/verify-otp", adminOtpLimiter, async (req, res) => {
   try {
     const { username, otp } = req.body;
     const record = adminOtpStore.get(username);
@@ -605,9 +678,16 @@ app.post("/api/admin/verify-otp", async (req, res) => {
       { expiresIn: "8h" }
     );
 
+    // Set secure HttpOnly cookie for session token
+    res.cookie("admin_token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 8 * 60 * 60 * 1000 // 8 hours
+    });
+
     res.json({
       success: true,
-      token,
       admin: {
         username: adminUser.username,
         email: adminUser.email,
@@ -622,12 +702,23 @@ app.post("/api/admin/verify-otp", async (req, res) => {
   }
 });
 
+// Admin Logout
+app.post("/api/admin/logout", (req, res) => {
+  res.clearCookie("admin_token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none"
+  });
+  res.json({ success: true, message: "Logged out successfully" });
+});
+
 // Admin Authentication Middleware
 const authenticateAdmin = (req, res, next) => {
   const fullPath = req.originalUrl.split("?")[0];
   const publicPaths = [
     "/api/admin/login",
     "/api/admin/verify-otp",
+    "/api/admin/logout",
     "/api/admin/reset-password/request",
     "/api/admin/reset-password/verify",
     "/api/admin/reset-password/complete"
@@ -637,11 +728,18 @@ const authenticateAdmin = (req, res, next) => {
   }
 
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    let token = req.cookies && req.cookies.admin_token;
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
+      }
+    }
+
+    if (!token) {
       return res.status(401).json({ success: false, message: "Access denied. No authentication token provided." });
     }
-    const token = authHeader.split(" ")[1];
+
     const decoded = jwt.verify(token, JWT_SECRET);
     req.admin = decoded;
     next();
@@ -653,7 +751,7 @@ const authenticateAdmin = (req, res, next) => {
 app.use("/api/admin", authenticateAdmin);
 
 // Password Reset Request
-app.post("/api/admin/reset-password/request", async (req, res) => {
+app.post("/api/admin/reset-password/request", adminResetLimiter, async (req, res) => {
   try {
     const { username } = req.body;
     const adminUser = await Admin.findOne({ username });
