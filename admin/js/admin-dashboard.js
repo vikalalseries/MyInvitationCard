@@ -178,7 +178,6 @@ if (!sessionData) {
 }
 
 const adminUser = JSON.parse(sessionData);
-const adminToken = localStorage.getItem("mic_admin_token");
 
 // Override global fetch to automatically include Authorization header for BACKEND_URL requests
 const originalFetch = window.fetch;
@@ -186,14 +185,15 @@ window.fetch = async function (resource, options = {}) {
   const url = typeof resource === 'string' ? resource : (resource instanceof Request ? resource.url : '');
   
   if (url.includes(BACKEND_URL)) {
-    options.headers = options.headers || {};
-    if (adminToken) {
+    const currentToken = localStorage.getItem("mic_admin_token");
+    if (currentToken) {
+      options.headers = options.headers || {};
       if (options.headers instanceof Headers) {
-        options.headers.set("Authorization", `Bearer ${adminToken}`);
+        options.headers.set("Authorization", `Bearer ${currentToken}`);
       } else if (Array.isArray(options.headers)) {
-        options.headers.push(["Authorization", `Bearer ${adminToken}`]);
+        options.headers.push(["Authorization", `Bearer ${currentToken}`]);
       } else {
-        options.headers["Authorization"] = `Bearer ${adminToken}`;
+        options.headers["Authorization"] = `Bearer ${currentToken}`;
       }
     }
   }
