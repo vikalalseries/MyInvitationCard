@@ -125,8 +125,12 @@ otpVerificationForm.addEventListener("submit", async (e) => {
       throw new Error(data.message || "Invalid OTP code");
     }
 
-    // Save admin details (token is securely stored in HttpOnly cookie)
-    localStorage.setItem("mic_admin_session", JSON.stringify(data.admin));
+    // Save admin details with token as fallback
+    const adminSession = {
+      ...data.admin,
+      token: data.token
+    };
+    localStorage.setItem("mic_admin_session", JSON.stringify(adminSession));
     showToast("Login verified! Redirecting...", "success");
 
     setTimeout(() => {
