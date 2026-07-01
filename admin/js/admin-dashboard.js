@@ -179,13 +179,21 @@ if (!sessionData) {
 
 const adminUser = JSON.parse(sessionData);
 
-// Override global fetch to automatically include credentials: 'include' for BACKEND_URL requests
+// Override global fetch to automatically include credentials: 'include' and Authorization header for BACKEND_URL requests
 const originalFetch = window.fetch;
 window.fetch = async function (resource, options = {}) {
   const url = typeof resource === 'string' ? resource : (resource instanceof Request ? resource.url : '');
   
   if (url.includes(BACKEND_URL)) {
     options.credentials = "include";
+    
+    // Add Authorization header fallback if token exists in session
+    if (adminUser && adminUser.token) {
+      if (!options.headers) {
+        options.headers = {};
+      }
+      options.headers["Authorization"] = `Bearer ${adminUser.token}`;
+    }
   }
   
   const response = await originalFetch(resource, options);
@@ -987,7 +995,11 @@ if (editAdminForm) {
 
         // If editing my own profile, update local storage session and badge info
         if (oldUsername === adminUser.username) {
-          localStorage.setItem("mic_admin_session", JSON.stringify(data.admin));
+          const updatedSession = {
+            ...data.admin,
+            token: adminUser.token
+          };
+          localStorage.setItem("mic_admin_session", JSON.stringify(updatedSession));
           
           // Update in-memory values
           adminUser.username = data.admin.username;
@@ -3200,7 +3212,11 @@ if (adminVerificationForm) {
         document.getElementById("editAdminModal").classList.add("hidden");
         // If editing my own profile, update local storage session and badge info
         if (username === adminUser.username) {
-          localStorage.setItem("mic_admin_session", JSON.stringify(data.admin));
+          const updatedSession = {
+            ...data.admin,
+            token: adminUser.token
+          };
+          localStorage.setItem("mic_admin_session", JSON.stringify(updatedSession));
           adminUser.username = data.admin.username;
           adminUser.email = data.admin.email;
           adminUser.phone = data.admin.phone;
