@@ -447,6 +447,10 @@ function setupCardFormatters() {
 }
 
 // ── PROCEED TO PAYMENT SUMMARY PAGE ──
+// State to track if current phone number is verified
+let isPhoneVerified = false;
+let verifiedPhoneNumber = "";
+
 function proceedToPaymentPage() {
   // 1. Verify Shipping fields are completely filled
   const fullName = document.getElementById('full-name').value.trim();
@@ -495,8 +499,72 @@ function proceedToPaymentPage() {
       return;
     }
   }
-  
-  // 2. Save current order and shipping details to localStorage
+
+  // Trigger Phone Verification if not already verified for this exact number
+  if (isPhoneVerified && verifiedPhoneNumber === phone) {
+    completeCheckoutRedirect(fullName, phone, emergencyPhone, address, address2, city, state, pincode);
+  } else {
+    sendShippingPhoneOtp(phone);
+  }
+}
+
+async function sendShippingPhoneOtp(phone) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/shipping/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    // Open verification modal
+    document.getElementById("verifyPhoneDisplay").textContent = phone;
+    const devText = document.getElementById("devShippingPhoneOtpText");
+    if (data.devOtp) {
+      devText.style.display = "block";
+      devText.textContent = `Dev OTP Code: ${data.devOtp}`;
+    } else {
+      devText.style.display = "none";
+    }
+
+    document.getElementById("phoneVerificationModal").style.display = "flex";
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
+window.closePhoneVerificationModal = function() {
+  document.getElementById("phoneVerificationModal").style.display = "none";
+};
+
+window.submitPhoneVerificationForm = async function(e) {
+  e.preventDefault();
+  const phone = document.getElementById("phone-num").value.trim();
+  const otp = document.getElementById("shippingPhoneOtp").value.trim();
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/shipping/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, otp })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    // Mark as verified
+    isPhoneVerified = true;
+    verifiedPhoneNumber = phone;
+    document.getElementById("phoneVerificationModal").style.display = "none";
+
+    // Call proceed again to redirect
+    proceedToPaymentPage();
+  } catch (err) {
+    showError(err.message);
+  }
+};
+
+function completeCheckoutRedirect(fullName, phone, emergencyPhone, address, address2, city, state, pincode) {
   const shippingDetails = {
     fullName,
     phone,
@@ -512,7 +580,6 @@ function proceedToPaymentPage() {
   localStorage.setItem("mic_shipping_speed", shippingSpeed);
   localStorage.setItem("mic_current_order_config", JSON.stringify(orderConfig));
   
-  // 3. Redirect to payment summary page
   window.location.href = "payment.html";
 }
 
