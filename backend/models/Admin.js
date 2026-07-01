@@ -9,7 +9,9 @@ const AdminSchema = new mongoose.Schema(
     role: { type: String, required: true, default: "Staff" }, // e.g. "Master Owner", "Template Manager", "Pricing Manager", "Order Manager", "Payment Manager", "Customer Support"
     permissions: [{ type: String }],
     status: { type: String, default: "active" }, // "active", "suspended"
-    lastLogin: { type: Date }
+    lastLogin: { type: Date },
+    failedLoginAttempts: { type: Number, required: true, default: 0 },
+    lockUntil: { type: Date }
   },
   { timestamps: true }
 );
