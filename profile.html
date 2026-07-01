@@ -549,17 +549,18 @@
                   <div class="form-group">
                     <label for="phone-num" class="input-label">Mobile Number *</label>
                     <div style="display: flex; gap: 8px;">
-                      <input type="tel" id="phone-num" required pattern="[0-9]{10}" placeholder="10-digit Mobile Number" style="flex: 1;">
-                      <button type="button" id="btn-send-profile-otp" onclick="triggerProfileOtpSend()" style="padding: 0 15px; background: #6366f1; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; height: 40px;">Send OTP</button>
+                      <input type="tel" id="phone-num" required pattern="[0-9]{10}" placeholder="10-digit Mobile Number" style="flex: 1; transition: border-color 0.2s;">
+                      <button type="button" id="btn-send-profile-otp" onclick="triggerProfileOtpSend()" style="padding: 0 16px; background: #6366f1; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; height: 38px;">Send OTP</button>
                     </div>
-                    <div id="profile-otp-container" style="display: none; margin-top: 8px;">
+                    <div id="profile-otp-container" style="display: none; margin-top: 10px; padding: 12px; border: 1px dashed #e2e8f0; border-radius: 8px; background: #f8fafc; animation: slideDown 0.3s ease;">
+                      <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #64748b; margin-bottom: 6px; letter-spacing: 0.5px;">Enter Verification OTP</label>
                       <div style="display: flex; gap: 8px; align-items: center;">
-                        <input type="text" id="profile-otp-input" placeholder="6-digit OTP" maxlength="6" style="flex: 1; text-align: center; font-weight: 600; letter-spacing: 2px; height: 40px; border: 1px solid #cbd5e1; border-radius: 8px;">
-                        <button type="button" id="btn-verify-profile-otp" onclick="triggerProfileOtpVerify()" style="padding: 0 15px; height: 40px; background: #10b981; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">Verify</button>
+                        <input type="text" id="profile-otp-input" placeholder="••••••" maxlength="6" style="flex: 1; text-align: center; font-weight: 700; letter-spacing: 4px; font-size: 15px; height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; background: white; color: black;" onfocus="this.style.borderColor='var(--primary-color)'" onblur="this.style.borderColor='#cbd5e1'">
+                        <button type="button" id="btn-verify-profile-otp" onclick="triggerProfileOtpVerify()" style="padding: 0 16px; height: 38px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">Verify Code</button>
                       </div>
-                      <span id="profile-dev-otp-text" style="display: none; font-size: 11px; color: #10b981; margin-top: 4px; font-weight: 600;"></span>
+                      <span id="profile-dev-otp-text" style="display: none; font-size: 11px; color: #10b981; margin-top: 6px; font-weight: 600; display: block;"></span>
                     </div>
-                    <span id="profile-verified-badge" style="display: none; font-size: 12px; color: #10b981; font-weight: 600; margin-top: 4px;"><i class="fa-solid fa-circle-check"></i> Mobile verified</span>
+                    <span id="profile-verified-badge" style="display: none; font-size: 12px; color: #10b981; font-weight: 600; margin-top: 6px; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Mobile number verified successfully!</span>
                   </div>
                   <div class="form-group">
                     <label for="emergency-phone-num" class="input-label">Emergency Mobile No.</label>

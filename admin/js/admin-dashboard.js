@@ -821,12 +821,14 @@ window.openEditAdminModal = function(username, email, phone, role) {
   editPhoneVerified = true;
   
   document.getElementById("btn-send-edit-email-otp").style.display = "none";
-  document.getElementById("edit-email-verified-badge").style.display = "block";
+  document.getElementById("edit-email-verified-badge").style.display = "flex";
   document.getElementById("edit-email-otp-container").style.display = "none";
+  document.getElementById("editAdminEmailError").style.display = "none";
 
   document.getElementById("btn-send-edit-phone-otp").style.display = "none";
-  document.getElementById("edit-phone-verified-badge").style.display = "block";
+  document.getElementById("edit-phone-verified-badge").style.display = "flex";
   document.getElementById("edit-phone-otp-container").style.display = "none";
+  document.getElementById("editAdminPhoneError").style.display = "none";
   
   const roleGroup = document.getElementById("editAdminRoleGroup");
   const roleSelect = document.getElementById("editAdminRole");
@@ -3167,13 +3169,75 @@ let editEmailVal = "";
 let editPhoneVerified = true;
 let editPhoneVal = "";
 
+window.validateEmailField = function(prefix) {
+  const input = document.getElementById(prefix === 'new' ? 'newAdminEmail' : 'editAdminEmail');
+  const error = document.getElementById(prefix === 'new' ? 'newAdminEmailError' : 'editAdminEmailError');
+  const btn = document.getElementById(prefix === 'new' ? 'btn-send-create-email-otp' : 'btn-send-edit-email-otp');
+  
+  if (!input) return;
+  const val = input.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  if (val && !emailRegex.test(val)) {
+    error.style.display = 'flex';
+    error.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Entered email is wrong or invalid`;
+    input.style.borderColor = '#ef4444';
+    if (btn) btn.disabled = true;
+  } else {
+    error.style.display = 'none';
+    input.style.borderColor = '';
+    if (btn) btn.disabled = false;
+  }
+};
+
+window.validatePhoneField = function(prefix) {
+  const input = document.getElementById(prefix === 'new' ? 'newAdminPhone' : 'editAdminPhone');
+  const error = document.getElementById(prefix === 'new' ? 'newAdminPhoneError' : 'editAdminPhoneError');
+  const btn = document.getElementById(prefix === 'new' ? 'btn-send-create-phone-otp' : 'btn-send-edit-phone-otp');
+  
+  if (!input) return;
+  const val = input.value.trim();
+  const phoneRegex = /^(\+?\d{1,4})?\d{10}$/;
+  
+  if (val && !phoneRegex.test(val)) {
+    error.style.display = 'flex';
+    error.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Entered phone number is invalid or wrong`;
+    input.style.borderColor = '#ef4444';
+    if (btn) btn.disabled = true;
+  } else {
+    error.style.display = 'none';
+    input.style.borderColor = '';
+    if (btn) btn.disabled = false;
+  }
+};
+
 window.sendCreateAdminOtp = async function(type) {
   const inputId = type === 'email' ? 'newAdminEmail' : 'newAdminPhone';
   const val = document.getElementById(inputId).value.trim();
-  if (!val) {
-    showToast(`Please enter a valid ${type} first.`, "error");
-    return;
+  const errorId = type === 'email' ? 'newAdminEmailError' : 'newAdminPhoneError';
+  const errorSpan = document.getElementById(errorId);
+  const inputEl = document.getElementById(inputId);
+
+  if (type === 'email') {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!val || !emailRegex.test(val)) {
+      errorSpan.style.display = 'flex';
+      errorSpan.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Entered email is wrong or invalid`;
+      inputEl.style.borderColor = '#ef4444';
+      return;
+    }
+  } else {
+    const phoneRegex = /^(\+?\d{1,4})?\d{10}$/;
+    if (!val || !phoneRegex.test(val)) {
+      errorSpan.style.display = 'flex';
+      errorSpan.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Entered phone number is invalid or wrong`;
+      inputEl.style.borderColor = '#ef4444';
+      return;
+    }
   }
+
+  errorSpan.style.display = 'none';
+  inputEl.style.borderColor = '';
   
   const btnId = type === 'email' ? 'btn-send-create-email-otp' : 'btn-send-create-phone-otp';
   const btn = document.getElementById(btnId);
@@ -3203,7 +3267,9 @@ window.sendCreateAdminOtp = async function(type) {
     }
     showToast("Verification code sent successfully.", "success");
   } catch (err) {
-    showToast(err.message, "error");
+    errorSpan.style.display = 'flex';
+    errorSpan.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${err.message}`;
+    inputEl.style.borderColor = '#ef4444';
   } finally {
     btn.disabled = false;
     btn.textContent = "Send OTP";
@@ -3235,13 +3301,15 @@ window.verifyCreateAdminOtp = async function(type) {
       createEmailVal = val;
       document.getElementById("create-email-otp-container").style.display = "none";
       document.getElementById("btn-send-create-email-otp").style.display = "none";
-      document.getElementById("create-email-verified-badge").style.display = "block";
+      document.getElementById("create-email-verified-badge").style.display = "flex";
+      document.getElementById("newAdminEmailError").style.display = "none";
     } else {
       createPhoneVerified = true;
       createPhoneVal = val;
       document.getElementById("create-phone-otp-container").style.display = "none";
       document.getElementById("btn-send-create-phone-otp").style.display = "none";
-      document.getElementById("create-phone-verified-badge").style.display = "block";
+      document.getElementById("create-phone-verified-badge").style.display = "flex";
+      document.getElementById("newAdminPhoneError").style.display = "none";
     }
     showToast(`${type === 'email' ? 'Email' : 'Phone'} verified successfully!`, "success");
   } catch (err) {
@@ -3252,10 +3320,30 @@ window.verifyCreateAdminOtp = async function(type) {
 window.sendEditAdminOtp = async function(type) {
   const inputId = type === 'email' ? 'editAdminEmail' : 'editAdminPhone';
   const val = document.getElementById(inputId).value.trim();
-  if (!val) {
-    showToast(`Please enter a valid ${type} first.`, "error");
-    return;
+  const errorId = type === 'email' ? 'editAdminEmailError' : 'editAdminPhoneError';
+  const errorSpan = document.getElementById(errorId);
+  const inputEl = document.getElementById(inputId);
+
+  if (type === 'email') {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!val || !emailRegex.test(val)) {
+      errorSpan.style.display = 'flex';
+      errorSpan.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Entered email is wrong or invalid`;
+      inputEl.style.borderColor = '#ef4444';
+      return;
+    }
+  } else {
+    const phoneRegex = /^(\+?\d{1,4})?\d{10}$/;
+    if (!val || !phoneRegex.test(val)) {
+      errorSpan.style.display = 'flex';
+      errorSpan.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Entered phone number is invalid or wrong`;
+      inputEl.style.borderColor = '#ef4444';
+      return;
+    }
   }
+
+  errorSpan.style.display = 'none';
+  inputEl.style.borderColor = '';
   
   const btnId = type === 'email' ? 'btn-send-edit-email-otp' : 'btn-send-edit-phone-otp';
   const btn = document.getElementById(btnId);
@@ -3285,7 +3373,9 @@ window.sendEditAdminOtp = async function(type) {
     }
     showToast("Verification code sent successfully.", "success");
   } catch (err) {
-    showToast(err.message, "error");
+    errorSpan.style.display = 'flex';
+    errorSpan.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${err.message}`;
+    inputEl.style.borderColor = '#ef4444';
   } finally {
     btn.disabled = false;
     btn.textContent = "Send OTP";
@@ -3317,13 +3407,15 @@ window.verifyEditAdminOtp = async function(type) {
       editEmailVal = val;
       document.getElementById("edit-email-otp-container").style.display = "none";
       document.getElementById("btn-send-edit-email-otp").style.display = "none";
-      document.getElementById("edit-email-verified-badge").style.display = "block";
+      document.getElementById("edit-email-verified-badge").style.display = "flex";
+      document.getElementById("editAdminEmailError").style.display = "none";
     } else {
       editPhoneVerified = true;
       editPhoneVal = val;
       document.getElementById("edit-phone-otp-container").style.display = "none";
       document.getElementById("btn-send-edit-phone-otp").style.display = "none";
-      document.getElementById("edit-phone-verified-badge").style.display = "block";
+      document.getElementById("edit-phone-verified-badge").style.display = "flex";
+      document.getElementById("editAdminPhoneError").style.display = "none";
     }
     showToast(`${type === 'email' ? 'Email' : 'Phone'} verified successfully!`, "success");
   } catch (err) {
@@ -3369,7 +3461,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         editEmailVerified = true;
         document.getElementById("btn-send-edit-email-otp").style.display = "none";
-        document.getElementById("edit-email-verified-badge").style.display = "block";
+        document.getElementById("edit-email-verified-badge").style.display = "flex";
       }
     });
   }
@@ -3383,7 +3475,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         editPhoneVerified = true;
         document.getElementById("btn-send-edit-phone-otp").style.display = "none";
-        document.getElementById("edit-phone-verified-badge").style.display = "block";
+        document.getElementById("edit-phone-verified-badge").style.display = "flex";
       }
     });
   }

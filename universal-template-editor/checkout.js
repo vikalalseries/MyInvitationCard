@@ -567,7 +567,7 @@ window.triggerShippingOtpVerify = async function() {
     verifiedPhoneNumber = phone;
     document.getElementById("checkout-otp-container").style.display = "none";
     document.getElementById("btn-send-shipping-otp").style.display = "none";
-    document.getElementById("checkout-verified-badge").style.display = "block";
+    document.getElementById("checkout-verified-badge").style.display = "flex";
     showToast("Mobile number verified successfully!", "success");
   } catch (err) {
     showError(err.message);

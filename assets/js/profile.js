@@ -760,7 +760,7 @@ function openAddressForm(idx = -1) {
       isProfilePhoneVerified = true;
       verifiedProfilePhoneNumber = addr.phone || "";
       document.getElementById("btn-send-profile-otp").style.display = "none";
-      document.getElementById("profile-verified-badge").style.display = "block";
+      document.getElementById("profile-verified-badge").style.display = "flex";
       document.getElementById("profile-otp-container").style.display = "none";
     }
   } else {
@@ -1884,7 +1884,7 @@ window.triggerProfileOtpVerify = async function() {
     verifiedProfilePhoneNumber = phone;
     document.getElementById("profile-otp-container").style.display = "none";
     document.getElementById("btn-send-profile-otp").style.display = "none";
-    document.getElementById("profile-verified-badge").style.display = "block";
+    document.getElementById("profile-verified-badge").style.display = "flex";
     window.showToast("Mobile number verified successfully!", "success");
   } catch (err) {
     window.showToast(err.message, "error");
@@ -1906,7 +1906,7 @@ document.addEventListener("DOMContentLoaded", () => {
         isProfilePhoneVerified = true;
         verifiedProfilePhoneNumber = val;
         document.getElementById("btn-send-profile-otp").style.display = "none";
-        document.getElementById("profile-verified-badge").style.display = "block";
+        document.getElementById("profile-verified-badge").style.display = "flex";
         document.getElementById("profile-otp-container").style.display = "none";
       } else {
         isProfilePhoneVerified = false;
