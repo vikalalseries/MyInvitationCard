@@ -691,6 +691,7 @@ app.post("/api/admin/verify-otp", adminOtpLimiter, async (req, res) => {
 
     res.json({
       success: true,
+      token,
       admin: {
         username: adminUser.username,
         email: adminUser.email,
