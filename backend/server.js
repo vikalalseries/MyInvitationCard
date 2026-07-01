@@ -821,6 +821,8 @@ app.post("/api/admin/reset-password/complete", async (req, res) => {
 
     const adminUser = await Admin.findOne({ username });
     adminUser.passwordHash = await bcrypt.hash(newPassword, 10);
+    adminUser.failedLoginAttempts = 0;
+    adminUser.lockUntil = null;
     await adminUser.save();
 
     passwordResetStore.delete(username);
@@ -1937,6 +1939,10 @@ app.put("/api/admin/accounts/:username", async (req, res) => {
       targetAdmin.passwordHash = await bcrypt.hash(password, 10);
     }
 
+    // Reset failed login attempts and lockouts when edited
+    targetAdmin.failedLoginAttempts = 0;
+    targetAdmin.lockUntil = null;
+
     await targetAdmin.save();
 
     const audit = new AuditLog({
@@ -1980,6 +1986,9 @@ app.patch("/api/admin/accounts/:username/status", async (req, res) => {
     }
 
     targetAdmin.status = status; // "active" or "inactive"
+    // Reset failed login attempts and lockouts when status is toggled
+    targetAdmin.failedLoginAttempts = 0;
+    targetAdmin.lockUntil = null;
     await targetAdmin.save();
 
     const audit = new AuditLog({
