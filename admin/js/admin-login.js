@@ -84,12 +84,6 @@ credentialsForm.addEventListener("submit", async (e) => {
     currentUsername = username;
     credentialsForm.classList.add("hidden");
     otpVerificationForm.classList.remove("hidden");
-    
-    // Help developer log in by revealing the OTP code
-    if (data.devOtp) {
-      devOtpText.style.display = "block";
-      devOtpText.textContent = `Dev OTP: ${data.devOtp} (Use this to log in)`;
-    }
 
     showToast("OTP sent to your email!", "success");
   } catch (err) {
@@ -121,8 +115,9 @@ otpVerificationForm.addEventListener("submit", async (e) => {
       throw new Error(data.message || "Invalid OTP code");
     }
 
-    // Save admin details
+    // Save admin details and token
     localStorage.setItem("mic_admin_session", JSON.stringify(data.admin));
+    localStorage.setItem("mic_admin_token", data.token);
     showToast("Login verified! Redirecting...", "success");
 
     setTimeout(() => {
@@ -140,7 +135,7 @@ otpVerificationForm.addEventListener("submit", async (e) => {
 backToCredentialsBtn.addEventListener("click", () => {
   otpVerificationForm.classList.add("hidden");
   credentialsForm.classList.remove("hidden");
-  devOtpText.style.display = "none";
+  if (devOtpText) devOtpText.style.display = "none";
 });
 
 forgotPasswordLink.addEventListener("click", (e) => {
