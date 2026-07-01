@@ -3,6 +3,16 @@ const BACKEND_URL = window.location.hostname === "localhost" || window.location.
   ? "http://localhost:5000"
   : "https://myinvitationcard.onrender.com";
 
+// Override global fetch to automatically include credentials: 'include' for BACKEND_URL
+const originalFetch = window.fetch;
+window.fetch = async function (resource, options = {}) {
+  const url = typeof resource === 'string' ? resource : (resource instanceof Request ? resource.url : '');
+  if (url.includes(BACKEND_URL)) {
+    options.credentials = 'include';
+  }
+  return originalFetch(resource, options);
+};
+
 // Toast Notification helper
 function showToast(message, type = "success") {
   const container = document.getElementById("toastContainer");
@@ -115,9 +125,8 @@ otpVerificationForm.addEventListener("submit", async (e) => {
       throw new Error(data.message || "Invalid OTP code");
     }
 
-    // Save admin details and token
+    // Save admin details (token is securely stored in HttpOnly cookie)
     localStorage.setItem("mic_admin_session", JSON.stringify(data.admin));
-    localStorage.setItem("mic_admin_token", data.token);
     showToast("Login verified! Redirecting...", "success");
 
     setTimeout(() => {

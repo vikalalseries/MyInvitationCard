@@ -179,31 +179,20 @@ if (!sessionData) {
 
 const adminUser = JSON.parse(sessionData);
 
-// Override global fetch to automatically include Authorization header for BACKEND_URL requests
+// Override global fetch to automatically include credentials: 'include' for BACKEND_URL requests
 const originalFetch = window.fetch;
 window.fetch = async function (resource, options = {}) {
   const url = typeof resource === 'string' ? resource : (resource instanceof Request ? resource.url : '');
   
   if (url.includes(BACKEND_URL)) {
-    const currentToken = localStorage.getItem("mic_admin_token");
-    if (currentToken) {
-      options.headers = options.headers || {};
-      if (options.headers instanceof Headers) {
-        options.headers.set("Authorization", `Bearer ${currentToken}`);
-      } else if (Array.isArray(options.headers)) {
-        options.headers.push(["Authorization", `Bearer ${currentToken}`]);
-      } else {
-        options.headers["Authorization"] = `Bearer ${currentToken}`;
-      }
-    }
+    options.credentials = "include";
   }
   
   const response = await originalFetch(resource, options);
   
   // If unauthorized, redirect to login and clear session
-  if (response.status === 401 && url.includes("/api/admin/") && !url.includes("/api/admin/login") && !url.includes("/api/admin/verify-otp")) {
+  if (response.status === 401 && url.includes("/api/admin/") && !url.includes("/api/admin/login") && !url.includes("/api/admin/verify-otp") && !url.includes("/api/admin/logout")) {
     localStorage.removeItem("mic_admin_session");
-    localStorage.removeItem("mic_admin_token");
     window.location.href = "login.html";
   }
   
@@ -326,7 +315,12 @@ if (cancelLogoutBtn) {
 }
 
 if (confirmLogoutBtn) {
-  confirmLogoutBtn.addEventListener("click", () => {
+  confirmLogoutBtn.addEventListener("click", async () => {
+    try {
+      await fetch(`${BACKEND_URL}/api/admin/logout`, { method: "POST" });
+    } catch (err) {
+      console.warn("Logout request failed:", err);
+    }
     localStorage.removeItem("mic_admin_session");
     localStorage.removeItem("mic_admin_token");
     if (logoutConfirmModal) {
