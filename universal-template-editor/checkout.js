@@ -2,7 +2,14 @@
    checkout.js - Checkout & Payment Page Logic
    ════════════════════════════════════════════════════════════ */
 
-const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+const isLocal = window.location.hostname === "localhost" || 
+                window.location.hostname === "127.0.0.1" || 
+                window.location.hostname === "" || 
+                window.location.protocol === "file:" ||
+                window.location.hostname.startsWith("192.168.") ||
+                window.location.hostname.startsWith("10.") ||
+                window.location.hostname.startsWith("172.");
+const BACKEND_URL = isLocal
   ? "http://localhost:5000"
   : "https://myinvitationcard.onrender.com";
 
@@ -446,11 +453,6 @@ function setupCardFormatters() {
   }
 }
 
-// ── PROCEED TO PAYMENT SUMMARY PAGE ──
-// State to track if current phone number is verified
-let isPhoneVerified = false;
-let verifiedPhoneNumber = "";
-
 function proceedToPaymentPage() {
   // 1. Verify Shipping fields are completely filled
   const fullName = document.getElementById('full-name').value.trim();
@@ -500,93 +502,8 @@ function proceedToPaymentPage() {
     }
   }
 
-  // Enforce Phone Verification
-  if (!isPhoneVerified || verifiedPhoneNumber !== phone) {
-    showError("Please verify your mobile number via OTP first.");
-    return;
-  }
-
   completeCheckoutRedirect(fullName, phone, emergencyPhone, address, address2, city, state, pincode);
 }
-
-window.triggerShippingOtpSend = async function() {
-  const phone = document.getElementById("phone-num").value.trim();
-  if (!phone || phone.length < 10) {
-    showError("Please enter a valid 10-digit mobile number first.");
-    return;
-  }
-
-  const btn = document.getElementById("btn-send-shipping-otp");
-  btn.disabled = true;
-  btn.textContent = "Sending...";
-
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/shipping/send-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message);
-
-    document.getElementById("checkout-otp-container").style.display = "block";
-    const devText = document.getElementById("checkout-dev-otp-text");
-    if (data.devOtp) {
-      devText.style.display = "block";
-      devText.textContent = `Dev OTP Code: ${data.devOtp}`;
-    } else {
-      devText.style.display = "none";
-    }
-    showToast("OTP code sent successfully.", "success");
-  } catch (err) {
-    showError(err.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Send OTP";
-  }
-};
-
-window.triggerShippingOtpVerify = async function() {
-  const phone = document.getElementById("phone-num").value.trim();
-  const otp = document.getElementById("checkout-otp-input").value.trim();
-  if (!otp) {
-    showError("Please enter the verification OTP code.");
-    return;
-  }
-
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/shipping/verify-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, otp })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message);
-
-    isPhoneVerified = true;
-    verifiedPhoneNumber = phone;
-    document.getElementById("checkout-otp-container").style.display = "none";
-    document.getElementById("btn-send-shipping-otp").style.display = "none";
-    document.getElementById("checkout-verified-badge").style.display = "flex";
-    showToast("Mobile number verified successfully!", "success");
-  } catch (err) {
-    showError(err.message);
-  }
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-  const phoneNumInput = document.getElementById("phone-num");
-  if (phoneNumInput) {
-    phoneNumInput.addEventListener("input", (e) => {
-      const val = e.target.value.trim();
-      if (val !== verifiedPhoneNumber) {
-        isPhoneVerified = false;
-        document.getElementById("btn-send-shipping-otp").style.display = "block";
-        document.getElementById("checkout-verified-badge").style.display = "none";
-      }
-    });
-  }
-});
 
 function completeCheckoutRedirect(fullName, phone, emergencyPhone, address, address2, city, state, pincode) {
   const shippingDetails = {
@@ -662,6 +579,11 @@ function showError(message) {
   toast(message, 'e');
 }
 
+function showToast(message, type = 'info') {
+  const map = { success: 's', error: 'e', info: 'i' };
+  toast(message, map[type] || 'i');
+}
+
 function showLoading() {
   const modal = document.getElementById('modal-processing');
   const progress = document.getElementById('auth-progress-bar');
@@ -691,7 +613,6 @@ function hideLoading() {
   }
 }
 
-// ── Firebase Modules Loader for Navbar Sync ──
 let firebaseAuth = null;
 let firebaseConfig = null;
 let currentUser = null;
