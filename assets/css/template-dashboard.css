@@ -571,6 +571,11 @@ body.bride-theme .main-content {
   cursor: pointer;
   font-weight: 600;
   white-space: nowrap;
+  border: none;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .quick-filters {

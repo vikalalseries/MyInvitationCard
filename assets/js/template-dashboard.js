@@ -422,6 +422,13 @@ if (importJson) {
   importJson.addEventListener("change", handleImportJSON);
 }
 
+const importJsonBtn = document.getElementById("importJsonBtn");
+if (importJsonBtn && importJson) {
+  importJsonBtn.addEventListener("click", () => {
+    importJson.click();
+  });
+}
+
 if (mobileMenuBtn) {
   mobileMenuBtn.addEventListener("click", openSidebar);
 }
