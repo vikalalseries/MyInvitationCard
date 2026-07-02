@@ -676,7 +676,7 @@
                 <strong>Import .vls Project File</strong>
                 <span>Upload a previously saved invitation project file (.vls) to restore and edit it.</span>
               </div>
-              <button type="button" class="btn-secondary importer-btn" id="vlsImportBtn">
+              <button type="button" class="btn-secondary importer-btn" id="vlsImportBtn" onclick="document.getElementById('vlsImportFile').click()">
                 <i class="fa-solid fa-file-import"></i> Choose .vls File
               </button>
               <input type="file" id="vlsImportFile" accept=".vls" style="display:none;">
@@ -787,6 +787,19 @@
   <script src="js/main.js"></script>
   <script type="module" src="assets/js/auth.js"></script>
   <script type="module" src="assets/js/profile.js"></script>
+
+  <!-- Standalone VLS import failsafe - runs even if module scripts fail -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('vlsImportBtn');
+      var input = document.getElementById('vlsImportFile');
+      if (btn && input) {
+        btn.addEventListener('click', function() {
+          input.click();
+        });
+      }
+    });
+  </script>
 
 </body>
 </html>
