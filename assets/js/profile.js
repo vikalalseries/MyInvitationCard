@@ -1480,11 +1480,16 @@ function deleteDraft(uid, projId) {
 
 // ── VLS IMPORT ACTIONS ──
 function bindVlsImporter() {
-  if (!vlsImportFile) return;
+  const fileInput = document.getElementById("vlsImportFile");
+  if (!fileInput) return;
 
-  vlsImportFile.addEventListener("change", (e) => {
+  fileInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
-    if (!file || !currentUser) return;
+    if (!file) return;
+    if (!currentUser) {
+      window.showToast("Please log in first to import a VLS file.", "error");
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -1528,7 +1533,7 @@ function bindVlsImporter() {
         console.error(err);
         window.showToast("Failed to parse VLS file structure.", "error");
       } finally {
-        vlsImportFile.value = "";
+        fileInput.value = "";
       }
     };
     reader.readAsText(file);
