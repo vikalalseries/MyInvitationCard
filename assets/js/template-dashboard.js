@@ -420,6 +420,15 @@ if (closeModal) {
 
 if (importJson) {
   importJson.addEventListener("change", handleImportJSON);
+  
+  // Programmatically trigger input click when label is clicked to guarantee file browser opening
+  const label = document.querySelector('label[for="importJson"]');
+  if (label) {
+    label.addEventListener("click", (e) => {
+      e.preventDefault();
+      importJson.click();
+    });
+  }
 }
 
 if (mobileMenuBtn) {
