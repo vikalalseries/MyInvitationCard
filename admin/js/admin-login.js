@@ -3,6 +3,8 @@ const BACKEND_URL = window.location.hostname === "localhost" || window.location.
   ? "http://localhost:5000"
   : "https://myinvitationcard.onrender.com";
 
+
+
 // Override global fetch to automatically include credentials: 'include' for BACKEND_URL
 const originalFetch = window.fetch;
 window.fetch = async function (resource, options = {}) {
@@ -62,12 +64,10 @@ const resetCompleteForm = document.getElementById("resetCompleteForm");
 
 const resetUsernameInput = document.getElementById("resetUsername");
 const resetEmailOtpInput = document.getElementById("resetEmailOtp");
-const resetPhoneOtpInput = document.getElementById("resetPhoneOtp");
 const newPasswordInput = document.getElementById("newPassword");
 const confirmNewPasswordInput = document.getElementById("confirmNewPassword");
 
 const devEmailOtpText = document.getElementById("devEmailOtpText");
-const devPhoneOtpText = document.getElementById("devPhoneOtpText");
 
 // 1. Submit Credentials
 credentialsForm.addEventListener("submit", async (e) => {
@@ -167,7 +167,6 @@ closeResetBtn.addEventListener("click", () => {
   passwordResetWrapper.classList.add("hidden");
   credentialsForm.classList.remove("hidden");
   devEmailOtpText.style.display = "none";
-  devPhoneOtpText.style.display = "none";
 });
 
 // PASSWORD RESET FLOW
@@ -193,31 +192,31 @@ resetRequestForm.addEventListener("submit", async (e) => {
     }
 
     currentUsername = username;
+    
     resetRequestForm.classList.add("hidden");
     resetVerifyForm.classList.remove("hidden");
-    resetSubtext.textContent = "Verify the secure codes sent to your email & mobile";
+    resetSubtext.textContent = "Verify the secure code sent to your email";
 
-    if (data.devEmailOtp && data.devPhoneOtp) {
+    if (data.devEmailOtp) {
       devEmailOtpText.style.display = "block";
       devEmailOtpText.textContent = `Dev Email OTP: ${data.devEmailOtp}`;
-      devPhoneOtpText.style.display = "block";
-      devPhoneOtpText.textContent = `Dev Phone OTP: ${data.devPhoneOtp}`;
+    } else {
+      devEmailOtpText.style.display = "none";
     }
-
-    showToast("Verification codes dispatched!", "success");
+    
+    showToast("Verification code dispatched!", "success");
   } catch (err) {
     showToast(err.message, "error");
   } finally {
     reqBtn.disabled = false;
-    reqBtn.textContent = "Send Verification Codes";
+    reqBtn.textContent = "Send Verification Code";
   }
 });
 
-// Step 2: Verify 2FA OTP Codes
+// Step 2: Verify OTP Code
 resetVerifyForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const emailOtp = resetEmailOtpInput.value.trim();
-  const phoneOtp = resetPhoneOtpInput.value.trim();
 
   const verifyBtn = document.getElementById("verifyResetOtpsBtn");
   verifyBtn.disabled = true;
@@ -227,7 +226,10 @@ resetVerifyForm.addEventListener("submit", async (e) => {
     const res = await fetch(`${BACKEND_URL}/api/admin/reset-password/verify`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: currentUsername, emailOtp, phoneOtp })
+      body: JSON.stringify({ 
+        username: currentUsername, 
+        emailOtp
+      })
     });
 
     const data = await res.json();
@@ -240,13 +242,12 @@ resetVerifyForm.addEventListener("submit", async (e) => {
     resetSubtext.textContent = "Create a secure new password for your account";
 
     devEmailOtpText.style.display = "none";
-    devPhoneOtpText.style.display = "none";
     showToast("Identity verified! Set your new password.", "success");
   } catch (err) {
-    showToast(err.message, "error");
+    showToast(err.message || "Verification failed. Please check your code.", "error");
   } finally {
     verifyBtn.disabled = false;
-    verifyBtn.textContent = "Verify Codes";
+    verifyBtn.textContent = "Verify Code";
   }
 });
 

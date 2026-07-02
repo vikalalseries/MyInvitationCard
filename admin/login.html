@@ -165,7 +165,7 @@
           <button type="submit" class="admin-btn-primary" id="sendResetOtpsBtn">Send Verification Codes</button>
         </form>
 
-        <!-- RESET STEP 2: OTP CODES -->
+        <!-- RESET STEP 2: OTP CODE -->
         <form id="resetVerifyForm" class="hidden">
           <div class="form-group-admin">
             <label for="resetEmailOtp">Email OTP</label>
@@ -175,16 +175,7 @@
             </div>
             <span class="dev-otp-indicator" id="devEmailOtpText" style="display:none; font-size:11px; color:#10b981; margin-top:2px;"></span>
           </div>
-
-          <div class="form-group-admin">
-            <label for="resetPhoneOtp">Mobile OTP</label>
-            <div class="input-icon-wrap">
-              <i class="fa-solid fa-mobile-screen"></i>
-              <input type="text" id="resetPhoneOtp" placeholder="Enter mobile code" maxlength="6" required>
-            </div>
-            <span class="dev-otp-indicator" id="devPhoneOtpText" style="display:none; font-size:11px; color:#10b981; margin-top:2px;"></span>
-          </div>
-          <button type="submit" class="admin-btn-primary" id="verifyResetOtpsBtn">Verify Codes</button>
+          <button type="submit" class="admin-btn-primary" id="verifyResetOtpsBtn">Verify Code</button>
         </form>
 
         <!-- RESET STEP 3: NEW PASSWORD -->
@@ -215,6 +206,9 @@
 
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="toast-container-admin"></div>
+
+  <!-- Firebase reCAPTCHA Container -->
+  <div id="recaptcha-container"></div>
 
   <!-- SCRIPTS -->
   <script src="js/admin-login.js"></script>
