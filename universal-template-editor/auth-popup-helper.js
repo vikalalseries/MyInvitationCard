@@ -2,9 +2,15 @@
    auth-popup-helper.js - Shared Authentication Modal Logic
    ════════════════════════════════════════════════════════════ */
 
-// Make sure BACKEND_URL is defined on page
 if (typeof BACKEND_URL === 'undefined' || !BACKEND_URL) {
-  window.BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  const isLocal = window.location.hostname === "localhost" || 
+                  window.location.hostname === "127.0.0.1" || 
+                  window.location.hostname === "" || 
+                  window.location.protocol === "file:" ||
+                  window.location.hostname.startsWith("192.168.") ||
+                  window.location.hostname.startsWith("10.") ||
+                  window.location.hostname.startsWith("172.");
+  window.BACKEND_URL = isLocal
     ? "http://localhost:5000"
     : "https://myinvitationcard.onrender.com";
 }

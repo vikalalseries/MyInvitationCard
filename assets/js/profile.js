@@ -1672,7 +1672,7 @@ async function loadOrderHistory(uid) {
   // Fetch real-time status updates from backend
   const promises = orderHistory.map(async (order) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/orders/${order.orderId}`);
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${order.orderId}`);
       if (res.ok) {
         const json = await res.json();
         if (json.success && json.order) {
