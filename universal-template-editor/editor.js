@@ -14,6 +14,7 @@ let activeTemplateId = templateParam;
 let activeProjectId = urlParams.get('projectId') || null;
 
 let config = null;
+let isProjectLoaded = false;
 let currentData = {
   fields: {},
   events: {},
@@ -42,6 +43,62 @@ Promise.all([
         photoURL: user.photoURL
       };
       userLoggedIn = true;
+
+      // Load project from user's drafts if they open it via url parameter or if they have an existing draft for this template and isProjectLoaded is false
+      if (!isProjectLoaded && currentUser) {
+        const projectKey = `mic_user_projects_${currentUser.uid}`;
+        try {
+          const raw = localStorage.getItem(projectKey);
+          if (raw) {
+            const userProjects = JSON.parse(raw);
+            const proj = activeProjectId 
+              ? userProjects.find(p => p.id === activeProjectId)
+              : userProjects.find(p => p.templateId === activeTemplateId);
+            
+            if (proj && proj.data) {
+              currentData = proj.data;
+              isProjectLoaded = true;
+              activeProjectId = proj.id;
+              
+              // Ensure all events are active and null values are preserved/set
+              if (currentData.events) {
+                Object.keys(currentData.events).forEach(key => {
+                  currentData.events[key].active = true;
+                  if (currentData.events[key].name === undefined) currentData.events[key].name = null;
+                  if (currentData.events[key].date === undefined) currentData.events[key].date = null;
+                });
+              }
+              
+              if (!currentData.styles) {
+                currentData.styles = JSON.parse(JSON.stringify(DEFAULT_STYLE));
+              }
+              
+              // Restore document title
+              if (proj.documentTitle) {
+                const titleInput = document.getElementById('doc-title-input');
+                if (titleInput) titleInput.value = proj.documentTitle;
+              }
+              
+              // Update URL to include the projectId if it wasn't there
+              const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?templateId=' + activeTemplateId + '&projectId=' + activeProjectId;
+              window.history.replaceState({ path: newUrl }, '', newUrl);
+              
+              // Regenerate forms to show the loaded project data
+              generateContentForm();
+              generateCeremoniesForm();
+              generateStylesForm();
+              
+              // Update preview iframe
+              sendUpdate();
+              
+              toast('Project loaded from saved draft!', 's');
+            }
+          }
+        } catch (e) {
+          console.error("Error loading project from localStorage on auth change:", e);
+        }
+      }
+
       // Auto save the project under the logged-in user so it shows up in their profile drafts!
       setTimeout(() => {
         autoSaveUserProject();
@@ -492,6 +549,7 @@ async function loadTemplate(templateId) {
         const vlsData = JSON.parse(savedVlsStr);
         if (vlsData && vlsData.data) {
           currentData = vlsData.data;
+          isProjectLoaded = true;
           
           // Ensure all events are active and null values are preserved/set
           if (currentData.events) {
