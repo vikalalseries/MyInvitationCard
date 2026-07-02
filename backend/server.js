@@ -481,9 +481,7 @@ const pendingAdminCreations = new Map();
 const pendingAdminUpdates = new Map();
 const shippingOtpStore = new Map();
 const adminEmailVerificationStore = new Map();
-const adminPhoneVerificationStore = new Map();
 const verifiedAdminEmails = new Map();
-const verifiedAdminPhones = new Map();
 
 // Admin Login
 app.post("/api/admin/login", adminLoginLimiter, async (req, res) => {
@@ -777,23 +775,40 @@ app.post("/api/admin/reset-password/request", adminResetLimiter, async (req, res
     }
 
     const emailOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const phoneOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
     passwordResetStore.set(username, {
       emailOtp,
-      phoneOtp,
       verifiedEmail: false,
-      verifiedPhone: false,
       expiresAt: Date.now() + 10 * 60 * 1000
     });
 
-    console.log(`[PASSWORD RESET OTP] Email OTP: ${emailOtp}, Phone OTP: ${phoneOtp}`);
+    console.log(`[PASSWORD RESET OTP] Username: ${username}, Email OTP: ${emailOtp}`);
+
+    try {
+      await resend.emails.send({
+        from: "MyInvitationCard <onboarding@resend.dev>",
+        to: adminUser.email,
+        subject: "Password Reset Verification Code",
+        html: `
+          <div style="font-family:Arial;padding:20px;">
+            <h2>Password Reset Code</h2>
+            <p>You requested a password reset for your administrator account: <strong>${username}</strong>.</p>
+            <p>Your email verification code is:</p>
+            <h1 style="letter-spacing:6px;">${emailOtp}</h1>
+            <p>This code expires in 10 minutes.</p>
+          </div>
+        `
+      });
+    } catch (e) {
+      console.warn("Resend email failed:", e.message);
+    }
+
+    const devEmailOtpEnabled = !process.env.RESEND_API_KEY;
 
     res.json({
       success: true,
-      message: "Reset OTP codes sent.",
-      devEmailOtp: emailOtp,
-      devPhoneOtp: phoneOtp
+      message: "Reset verification code dispatched.",
+      devEmailOtp: devEmailOtpEnabled ? emailOtp : undefined
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -803,7 +818,7 @@ app.post("/api/admin/reset-password/request", adminResetLimiter, async (req, res
 // Verify Password Reset OTPs
 app.post("/api/admin/reset-password/verify", async (req, res) => {
   try {
-    const { username, emailOtp, phoneOtp } = req.body;
+    const { username, emailOtp } = req.body;
     const record = passwordResetStore.get(username);
 
     if (!record) {
@@ -811,16 +826,15 @@ app.post("/api/admin/reset-password/verify", async (req, res) => {
     }
 
     if (emailOtp === record.emailOtp) record.verifiedEmail = true;
-    if (phoneOtp === record.phoneOtp) record.verifiedPhone = true;
 
-    if (!record.verifiedEmail || !record.verifiedPhone) {
+    if (!record.verifiedEmail) {
       return res.status(400).json({
         success: false,
-        message: `Verification incomplete. Email: ${record.verifiedEmail ? "Verified" : "Pending"}, Phone: ${record.verifiedPhone ? "Verified" : "Pending"}`
+        message: "Email verification pending or incorrect"
       });
     }
 
-    res.json({ success: true, message: "Both OTP codes verified successfully. Proceed to reset password." });
+    res.json({ success: true, message: "OTP code verified successfully. Proceed to reset password." });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -832,7 +846,7 @@ app.post("/api/admin/reset-password/complete", async (req, res) => {
     const { username, newPassword } = req.body;
     const record = passwordResetStore.get(username);
 
-    if (!record || !record.verifiedEmail || !record.verifiedPhone) {
+    if (!record || !record.verifiedEmail) {
       return res.status(400).json({ success: false, message: "Reset authorization has expired or not verified" });
     }
 
@@ -1239,7 +1253,12 @@ app.post("/api/admin/verify-email/send", async (req, res) => {
       console.warn("Resend email failed:", e.message);
     }
 
-    res.json({ success: true, message: "OTP sent to email successfully", devOtp: otp });
+    const devOtpEnabled = !process.env.RESEND_API_KEY;
+    res.json({ 
+      success: true, 
+      message: "OTP sent to email successfully", 
+      devOtp: devOtpEnabled ? otp : undefined 
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -1266,47 +1285,7 @@ app.post("/api/admin/verify-email/verify", async (req, res) => {
   }
 });
 
-// Verify Admin Phone (Send OTP)
-app.post("/api/admin/verify-phone/send", async (req, res) => {
-  try {
-    const { phone, isCreate } = req.body;
-    if (!phone) return res.status(400).json({ success: false, message: "Phone is required" });
 
-    if (isCreate) {
-      const dup = await Admin.findOne({ phone: phone.trim() });
-      if (dup) return res.status(400).json({ success: false, message: "Phone number is already taken by another admin" });
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    adminPhoneVerificationStore.set(phone.trim(), { otp, expiresAt: Date.now() + 10 * 60 * 1000 });
-    console.log(`[ADMIN PHONE OTP] for ${phone.trim()} is ${otp}`);
-
-    res.json({ success: true, message: "OTP sent to phone successfully", devOtp: otp });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// Verify Admin Phone (Verify OTP)
-app.post("/api/admin/verify-phone/verify", async (req, res) => {
-  try {
-    const { phone, otp } = req.body;
-    const key = phone.trim();
-    const record = adminPhoneVerificationStore.get(key);
-    if (!record) return res.status(400).json({ success: false, message: "Verification request not found" });
-    if (Date.now() > record.expiresAt) {
-      adminPhoneVerificationStore.delete(key);
-      return res.status(400).json({ success: false, message: "OTP code has expired" });
-    }
-    if (record.otp !== otp) return res.status(400).json({ success: false, message: "Invalid OTP code" });
-
-    adminPhoneVerificationStore.delete(key);
-    verifiedAdminPhones.set(key, Date.now() + 15 * 60 * 1000);
-    res.json({ success: true, message: "Phone verified successfully" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
 
 // Fetch Admin Accounts
 app.get("/api/admin/accounts", async (req, res) => {
@@ -1337,12 +1316,6 @@ app.post("/api/admin/accounts", async (req, res) => {
       return res.status(400).json({ success: false, message: "Please verify the email address via OTP first." });
     }
 
-    // Verify OTP validation status for phone
-    const phoneVerifiedAt = verifiedAdminPhones.get(phone.trim());
-    if (!phoneVerifiedAt || Date.now() > phoneVerifiedAt) {
-      return res.status(400).json({ success: false, message: "Please verify the phone number via OTP first." });
-    }
-
     const passwordHash = await bcrypt.hash(password, 10);
     const newAdmin = new Admin({
       username: username.trim(),
@@ -1357,7 +1330,6 @@ app.post("/api/admin/accounts", async (req, res) => {
 
     // Consume verifications
     verifiedAdminEmails.delete(email.trim());
-    verifiedAdminPhones.delete(phone.trim());
 
     const audit = new AuditLog({
       username: adminUser || "admin",
@@ -2067,11 +2039,6 @@ app.put("/api/admin/accounts/:username", async (req, res) => {
     if (phoneChanging) {
       const dupPhone = await Admin.findOne({ phone: phone.trim() });
       if (dupPhone) return res.status(400).json({ success: false, message: "Phone number is already taken by another administrator" });
-
-      const phoneVerifiedAt = verifiedAdminPhones.get(phone.trim());
-      if (!phoneVerifiedAt || Date.now() > phoneVerifiedAt) {
-        return res.status(400).json({ success: false, message: "Please verify the new phone number via OTP first." });
-      }
     }
 
     // Support updating username
@@ -2089,7 +2056,6 @@ app.put("/api/admin/accounts/:username", async (req, res) => {
     }
     if (phoneChanging) {
       targetAdmin.phone = phone.trim();
-      verifiedAdminPhones.delete(phone.trim());
     }
 
     if (targetAdmin.role !== "Master Owner") {
