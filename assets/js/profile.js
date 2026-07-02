@@ -1483,6 +1483,15 @@ function bindVlsImporter() {
   const fileInput = document.getElementById("vlsImportFile");
   if (!fileInput) return;
 
+  // Programmatically trigger input click when label is clicked to guarantee file browser opening
+  const label = document.querySelector('label[for="vlsImportFile"]');
+  if (label) {
+    label.addEventListener("click", (e) => {
+      e.preventDefault();
+      fileInput.click();
+    });
+  }
+
   fileInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
