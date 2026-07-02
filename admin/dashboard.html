@@ -331,22 +331,7 @@
                   </div>
                   <div class="form-group-admin">
                     <label for="newAdminPhone">Phone Number</label>
-                    <div style="display: flex; gap: 8px;">
-                      <input type="text" id="newAdminPhone" placeholder="+919876543210" required style="flex: 1; transition: border-color 0.2s;" oninput="validatePhoneField('new')">
-                      <button type="button" id="btn-send-create-phone-otp" onclick="sendCreateAdminOtp('phone')" style="padding: 0 16px; background: var(--primary-color, #6366f1); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">Send OTP</button>
-                    </div>
-                    <span id="newAdminPhoneError" style="display: none; color: #ef4444; font-size: 12px; margin-top: 5px; font-weight: 500; align-items: center; gap: 4px;">
-                      <i class="fa-solid fa-circle-exclamation"></i> Entered phone number is invalid or wrong
-                    </span>
-                    <div id="create-phone-otp-container" style="display: none; margin-top: 10px; padding: 12px; border: 1px dashed var(--border-color, #e2e8f0); border-radius: 8px; background: var(--bg-soft, #f8fafc); animation: slideDown 0.3s ease;">
-                      <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted, #64748b); margin-bottom: 6px;">Enter Phone Verification Code</label>
-                      <div style="display: flex; gap: 8px;">
-                        <input type="text" id="create-phone-otp-input" placeholder="••••••" maxlength="6" style="flex: 1; text-align: center; font-weight: 700; letter-spacing: 4px; font-size: 15px; height: 38px; border: 1px solid var(--border-color, #cbd5e1); border-radius: 6px; outline: none; background: white; color: black;" onfocus="this.style.borderColor='var(--primary-color)'" onblur="this.style.borderColor='var(--border-color)'">
-                        <button type="button" onclick="verifyCreateAdminOtp('phone')" style="padding: 0 16px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">Verify Code</button>
-                      </div>
-                      <span id="create-phone-dev-text" style="display: none; font-size: 11px; color: #10b981; margin-top: 6px; font-weight: 600; display: block;"></span>
-                    </div>
-                    <span id="create-phone-verified-badge" style="display: none; font-size: 12px; color: #10b981; font-weight: 600; margin-top: 6px; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Phone number verified successfully!</span>
+                    <input type="text" id="newAdminPhone" placeholder="+919876543210" required>
                   </div>
                   <div class="form-group-admin">
                     <label for="newAdminPassword">Password</label>
@@ -1210,22 +1195,7 @@
         </div>
         <div class="form-group-admin">
           <label for="editAdminPhone">Phone Number</label>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="editAdminPhone" required style="flex: 1; transition: border-color 0.2s;" oninput="validatePhoneField('edit')">
-            <button type="button" id="btn-send-edit-phone-otp" onclick="sendEditAdminOtp('phone')" style="padding: 0 16px; background: var(--primary-color, #6366f1); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">Send OTP</button>
-          </div>
-          <span id="editAdminPhoneError" style="display: none; color: #ef4444; font-size: 12px; margin-top: 5px; font-weight: 500; align-items: center; gap: 4px;">
-            <i class="fa-solid fa-circle-exclamation"></i> Entered phone number is invalid or wrong
-          </span>
-          <div id="edit-phone-otp-container" style="display: none; margin-top: 10px; padding: 12px; border: 1px dashed var(--border-color, #e2e8f0); border-radius: 8px; background: var(--bg-soft, #f8fafc); animation: slideDown 0.3s ease;">
-            <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted, #64748b); margin-bottom: 6px;">Enter Phone Verification Code</label>
-            <div style="display: flex; gap: 8px;">
-              <input type="text" id="edit-phone-otp-input" placeholder="••••••" maxlength="6" style="flex: 1; text-align: center; font-weight: 700; letter-spacing: 4px; font-size: 15px; height: 38px; border: 1px solid var(--border-color, #cbd5e1); border-radius: 6px; outline: none; background: white; color: black;" onfocus="this.style.borderColor='var(--primary-color)'" onblur="this.style.borderColor='var(--border-color)'">
-              <button type="button" onclick="verifyEditAdminOtp('phone')" style="padding: 0 16px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">Verify Code</button>
-            </div>
-            <span id="edit-phone-dev-text" style="display: none; font-size: 11px; color: #10b981; margin-top: 6px; font-weight: 600; display: block;"></span>
-          </div>
-          <span id="edit-phone-verified-badge" style="display: none; font-size: 12px; color: #10b981; font-weight: 600; margin-top: 6px; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Phone number verified successfully!</span>
+          <input type="text" id="editAdminPhone" required>
         </div>
         <div class="form-group-admin">
           <label for="editAdminPassword">New Password (Optional)</label>
@@ -1305,6 +1275,9 @@
 
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="toast-container-admin"></div>
+
+  <!-- Firebase reCAPTCHA Container -->
+  <div id="recaptcha-container"></div>
 
   <!-- SCRIPTS -->
   <script src="js/admin-dashboard.js"></script>
