@@ -420,7 +420,7 @@ async function fetchOverviewStats(isBackground = false) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
     
-    document.getElementById("statRevenue").textContent = `₹${data.stats.totalRevenue.toLocaleString("en-IN")}`;
+    document.getElementById("statRevenue").textContent = `₹${(data.stats.todayRevenue || 0).toLocaleString("en-IN")}`;
     document.getElementById("statOrders").textContent = data.stats.totalOrders;
     document.getElementById("statUsers").textContent = data.stats.totalUsers;
     document.getElementById("statTemplates").textContent = data.stats.templatesCount;
@@ -3343,7 +3343,72 @@ window.verifyEditAdminOtp = async function(type) {
   }
 };
 
+let liveStatsSource = null;
+
+function initLiveUpdates() {
+  if (liveStatsSource) {
+    liveStatsSource.close();
+  }
+
+  console.log("Initializing live stats updates...");
+  const tokenQuery = adminUser && adminUser.token ? `?token=${encodeURIComponent(adminUser.token)}` : "";
+  liveStatsSource = new EventSource(`${BACKEND_URL}/api/admin/live-stats${tokenQuery}`);
+
+  liveStatsSource.addEventListener("message", (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === "statsUpdate" && data.stats) {
+        updateStatsUI(data.stats);
+      }
+    } catch (err) {
+      console.error("Error parsing live stats update:", err);
+    }
+  });
+
+  liveStatsSource.addEventListener("error", (err) => {
+    console.error("SSE connection error. Reconnecting in 5s...", err);
+    if (liveStatsSource) {
+      liveStatsSource.close();
+    }
+    setTimeout(initLiveUpdates, 5000);
+  });
+}
+
+function updateStatsUI(stats) {
+  const statRevenue = document.getElementById("statRevenue");
+  const statOrders = document.getElementById("statOrders");
+  const statUsers = document.getElementById("statUsers");
+  const statTemplates = document.getElementById("statTemplates");
+
+  const pulseEffect = (el, newVal) => {
+    if (el) {
+      const currentVal = el.textContent.trim();
+      if (currentVal !== newVal) {
+        el.textContent = newVal;
+        el.classList.remove("stat-pulse");
+        void el.offsetWidth; // trigger reflow
+        el.classList.add("stat-pulse");
+      }
+    }
+  };
+
+  if (statRevenue && stats.todayRevenue !== undefined) {
+    pulseEffect(statRevenue, `₹${stats.todayRevenue.toLocaleString("en-IN")}`);
+  }
+  if (statOrders && stats.totalOrders !== undefined) {
+    pulseEffect(statOrders, String(stats.totalOrders));
+  }
+  if (statUsers && stats.totalUsers !== undefined) {
+    pulseEffect(statUsers, String(stats.totalUsers));
+  }
+  if (statTemplates && stats.templatesCount !== undefined) {
+    pulseEffect(statTemplates, String(stats.templatesCount));
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  initLiveUpdates();
+
   const editEmail = document.getElementById("editAdminEmail");
   if (editEmail) {
     editEmail.addEventListener("input", (e) => {

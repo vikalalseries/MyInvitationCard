@@ -15,6 +15,8 @@ const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const User = require("./models/User");
 
+let sseClients = [];
+
 dotenv.config();
 
 if (!process.env.JWT_SECRET) {
@@ -365,8 +367,10 @@ app.post("/api/users/:uid", async (req, res) => {
     const { name, email, phone, gender, dob, language, profileImage, addresses } = req.body;
 
     let user = await User.findOne({ uid });
+    let isNewUser = false;
     if (!user) {
       user = new User({ uid });
+      isNewUser = true;
     }
 
     if (name !== undefined) user.name = name;
@@ -379,6 +383,10 @@ app.post("/api/users/:uid", async (req, res) => {
     if (addresses !== undefined) user.addresses = addresses;
 
     await user.save();
+
+    if (isNewUser) {
+      broadcastStatsUpdate();
+    }
     res.json({ success: true, data: user });
   } catch (error) {
     console.error("Error saving user:", error);
@@ -750,6 +758,9 @@ const authenticateAdmin = (req, res, next) => {
         token = authHeader.split(" ")[1];
       }
     }
+    if (!token && req.query.token) {
+      token = req.query.token;
+    }
 
     if (!token) {
       return res.status(401).json({ success: false, message: "Access denied. No authentication token provided." });
@@ -871,6 +882,76 @@ app.post("/api/admin/reset-password/complete", async (req, res) => {
   }
 });
 
+// Broadcast updated stats to all connected SSE clients
+async function broadcastStatsUpdate() {
+  try {
+    const UserCollection = require("./models/User");
+    const OrderCollection = require("./models/Order");
+    const PaymentCollection = require("./models/Payment");
+    const TemplateCollection = require("./models/Template");
+
+    const totalUsers = await UserCollection.countDocuments();
+    const templatesCount = await TemplateCollection.countDocuments();
+    const totalOrders = await OrderCollection.countDocuments();
+
+    const payments = await PaymentCollection.find({ status: "Paid" });
+    const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(todayStart);
+    todayEnd.setDate(todayEnd.getDate() + 1);
+
+    const todayPayments = await PaymentCollection.find({
+      status: "Paid",
+      createdAt: { $gte: todayStart, $lt: todayEnd }
+    });
+    const todayRevenue = todayPayments.reduce((sum, p) => sum + p.amount, 0);
+
+    const dataToSend = {
+      type: "statsUpdate",
+      stats: {
+        totalUsers,
+        templatesCount,
+        totalOrders,
+        totalRevenue,
+        todayRevenue
+      }
+    };
+
+    const payload = `data: ${JSON.stringify(dataToSend)}\n\n`;
+    sseClients.forEach(client => {
+      try {
+        client.write(payload);
+      } catch (err) {
+        console.error("Failed to write to SSE client:", err);
+      }
+    });
+  } catch (err) {
+    console.error("Error broadcasting stats update:", err);
+  }
+}
+
+// Live Stats SSE endpoint
+app.get("/api/admin/live-stats", (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  // Send connected event
+  res.write(`data: ${JSON.stringify({ type: "connected" })}\n\n`);
+
+  sseClients.push(res);
+
+  // Send initial stats on connect
+  broadcastStatsUpdate();
+
+  req.on("close", () => {
+    sseClients = sseClients.filter(client => client !== res);
+  });
+});
+
 // Get Dashboard Stats
 app.get("/api/admin/dashboard-stats", async (req, res) => {
   try {
@@ -886,6 +967,18 @@ app.get("/api/admin/dashboard-stats", async (req, res) => {
     // Total revenue sum
     const payments = await PaymentCollection.find({ status: "Paid" });
     const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
+
+    // Today's Sales
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(todayStart);
+    todayEnd.setDate(todayEnd.getDate() + 1);
+
+    const todayPayments = await PaymentCollection.find({
+      status: "Paid",
+      createdAt: { $gte: todayStart, $lt: todayEnd }
+    });
+    const todayRevenue = todayPayments.reduce((sum, p) => sum + p.amount, 0);
 
     // Popular template aggregation
     const popular = await OrderCollection.aggregate([
@@ -924,6 +1017,7 @@ app.get("/api/admin/dashboard-stats", async (req, res) => {
         totalUsers: totalUsers || 0,
         totalOrders: totalOrders || 0,
         totalRevenue: totalRevenue || 0,
+        todayRevenue: todayRevenue || 0,
         templatesCount: templatesCount || 0,
         popularTemplate,
         conversionRate,
@@ -1639,6 +1733,25 @@ app.post("/api/orders/create", async (req, res) => {
     });
     await audit.save();
 
+    // If paymentId is present, save the payment record to update dashboard statistics
+    if (orderData.paymentId) {
+      const existingPayment = await Payment.findOne({ razorpayPaymentId: orderData.paymentId });
+      if (!existingPayment) {
+        const payment = new Payment({
+          transactionId: `TXN-${Math.floor(100000 + Math.random() * 900000)}`,
+          razorpayPaymentId: orderData.paymentId,
+          uid: orderData.uid,
+          amount: orderData.pricing?.total || 0,
+          status: "Paid",
+          createdAt: new Date()
+        });
+        await payment.save();
+      }
+    }
+
+    // Broadcast stats update to connected admin SSE clients
+    broadcastStatsUpdate();
+
     res.status(201).json({ success: true, message: "Order created successfully", data: order });
   } catch (error) {
     console.error("Error creating order:", error);
@@ -1980,6 +2093,9 @@ app.post("/api/admin/payments/refund", async (req, res) => {
     });
     await audit.save();
 
+    // Broadcast live stats updates after refund
+    broadcastStatsUpdate();
+
     res.json({ success: true, message: "Refund processed successfully", data: payment });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -2005,6 +2121,9 @@ app.delete("/api/admin/users/:uid", async (req, res) => {
       details: `Deleted customer account: ${user.name || user.email} (UID: ${uid})`
     });
     await audit.save();
+
+    // Broadcast live stats updates after user deletion
+    broadcastStatsUpdate();
 
     res.json({ success: true, message: "Customer account deleted successfully" });
   } catch (error) {
