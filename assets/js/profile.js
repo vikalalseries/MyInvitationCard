@@ -1481,7 +1481,15 @@ function deleteDraft(uid, projId) {
 // ── VLS IMPORT ACTIONS ──
 function bindVlsImporter() {
   const fileInput = document.getElementById("vlsImportFile");
+  const importBtn = document.getElementById("vlsImportBtn");
   if (!fileInput) return;
+
+  // Button click opens the native file browser
+  if (importBtn) {
+    importBtn.addEventListener("click", () => {
+      fileInput.click();
+    });
+  }
 
   fileInput.addEventListener("change", (e) => {
     const file = e.target.files[0];

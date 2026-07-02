@@ -959,6 +959,12 @@ html.site-theme-dark .btn-danger-border:hover {
   border: 1px solid var(--fk-border-dark);
   cursor: pointer;
   white-space: nowrap;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  font-family: inherit;
 }
 
 /* Guest Gateway View */
