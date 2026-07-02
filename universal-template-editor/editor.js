@@ -1278,9 +1278,7 @@ window.applyColorPreset = function(presetIndex, element) {
   setField('styles.borderColor', preset.accent);
   setField('styles.textColor', preset.text);
   setField('styles.headingColor', preset.heading);
-  if (preset.iconReplacements) {
-    setField('styles.iconReplacements', preset.iconReplacements);
-  }
+  // Do not overwrite iconReplacements when applying a color preset to keep customized icons stable
 
   // Sync visual inputs
   syncCustomizerInputs();
