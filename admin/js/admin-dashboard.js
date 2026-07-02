@@ -124,20 +124,16 @@ async function loadOrderTemplatePreview(iframe, order, options = {}) {
     if (fitContainer) {
       const container = iframe.parentElement;
       if (container) {
-        // Clear any previous inline styles to allow correct calculation
-        container.style.width = "";
-        container.style.height = "";
-        container.style.aspectRatio = "";
-
-        // Standard max bounds based on container design
-        const maxWidth = 360;
-        const maxHeight = 142;
-
         const baseWidth = 888;
         const baseHeight = 718;
-        const scale = Math.min(maxWidth / baseWidth, maxHeight / baseHeight);
+
+        // Use the container's actual rendered size for the scale calculation
+        const containerWidth = container.clientWidth || 360;
+        const containerHeight = container.clientHeight || 290;
+        const scale = Math.min(containerWidth / baseWidth, containerHeight / baseHeight);
 
         iframe.style.transform = `scale(${scale})`;
+        iframe.style.transformOrigin = "top left";
         iframe.style.width = `${baseWidth}px`;
         iframe.style.height = `${baseHeight}px`;
 
@@ -2978,28 +2974,8 @@ function loadPrintCardIframe(order, hideBg) {
   const iframe = document.getElementById("printCardIframe");
   if (!iframe) return;
 
-  // Resolve the actual folder (card101 → card1 etc.)
-  const templateFolder = resolveTemplateFolder(order.templateId);
-  // Load the template HTML file with hideBg parameter
-  const templatePath = `../universal-template-editor/templates/${templateFolder}/template.html?hideBg=${hideBg}`;
-  iframe.src = templatePath;
-
-  iframe.onload = function() {
-    if (order.templateEditData) {
-      iframe.contentWindow.postMessage({
-        type: 'UPDATE_TEMPLATE_DATA',
-        data: order.templateEditData
-      }, '*');
-    }
-  };
-}
-function loadPrintCardIframe(order, hideBg) {
-  const iframe = document.getElementById("printCardIframe");
-  if (!iframe) return;
-
   const templateFolder = resolveTemplateFolder(order.templateId);
   const templatePath = `../universal-template-editor/templates/${templateFolder}/template.html?hideBg=${hideBg}`;
-  const orderTemplateData = getOrderTemplateData(order);
 
   iframe.src = templatePath;
   iframe.onload = async function() {
