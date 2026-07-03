@@ -5,7 +5,14 @@
       "name": "Ganesh Classic",
       "category": "religious",
       "subcategory": "ganesh",
-      "keywords": ["ganesh", "ganpati", "lord ganesha", "wedding", "invitation", "hindu"],
+      "keywords": [
+        "ganesh",
+        "ganpati",
+        "lord ganesha",
+        "wedding",
+        "invitation",
+        "hindu"
+      ],
       "file": "/assets/icons/religious/ganesh/ganesh-classic-001.svg"
     },
     {
@@ -13,7 +20,13 @@
       "name": "Ganesh Line Art",
       "category": "religious",
       "subcategory": "ganesh",
-      "keywords": ["ganesh", "line art", "minimal", "hindu", "invitation"],
+      "keywords": [
+        "ganesh",
+        "line art",
+        "minimal",
+        "hindu",
+        "invitation"
+      ],
       "file": "/assets/icons/religious/ganesh/ganesh-line-art-002.svg"
     },
     {
@@ -21,7 +34,13 @@
       "name": "Ganesh Modern",
       "category": "religious",
       "subcategory": "ganesh",
-      "keywords": ["ganesh", "modern", "decorative", "hindu", "festival"],
+      "keywords": [
+        "ganesh",
+        "modern",
+        "decorative",
+        "hindu",
+        "festival"
+      ],
       "file": "/assets/icons/religious/ganesh/ganesh-modern-003.svg"
     },
     {
@@ -29,7 +48,13 @@
       "name": "Om Simple",
       "category": "religious",
       "subcategory": "om",
-      "keywords": ["om", "aum", "spiritual", "hindu", "wedding"],
+      "keywords": [
+        "om",
+        "aum",
+        "spiritual",
+        "hindu",
+        "wedding"
+      ],
       "file": "/assets/icons/religious/om/om-simple-001.svg"
     },
     {
@@ -37,7 +62,13 @@
       "name": "Swastik",
       "category": "religious",
       "subcategory": "swastik",
-      "keywords": ["swastik", "manglik", "hindu", "auspicious", "invitation"],
+      "keywords": [
+        "swastik",
+        "manglik",
+        "hindu",
+        "auspicious",
+        "invitation"
+      ],
       "file": "/assets/icons/religious/swastik/swastik-001.svg"
     },
     {
@@ -45,7 +76,13 @@
       "name": "Kalash Gold",
       "category": "religious",
       "subcategory": "kalash",
-      "keywords": ["kalash", "ghat", "gold", "hindu", "auspicious"],
+      "keywords": [
+        "kalash",
+        "ghat",
+        "gold",
+        "hindu",
+        "auspicious"
+      ],
       "file": "/assets/icons/religious/kalash/kalash-gold-001.svg"
     },
     {
@@ -53,7 +90,13 @@
       "name": "Kalash Traditional",
       "category": "religious",
       "subcategory": "kalash",
-      "keywords": ["kalash", "traditional", "hindu", "puja", "invitation"],
+      "keywords": [
+        "kalash",
+        "traditional",
+        "hindu",
+        "puja",
+        "invitation"
+      ],
       "file": "/assets/icons/religious/kalash/kalash-traditional-002.svg"
     },
     {
@@ -61,7 +104,13 @@
       "name": "Bride Groom Classic",
       "category": "wedding",
       "subcategory": "bride-groom",
-      "keywords": ["bride", "groom", "couple", "wedding", "invitation"],
+      "keywords": [
+        "bride",
+        "groom",
+        "couple",
+        "wedding",
+        "invitation"
+      ],
       "file": "/assets/icons/wedding/bride-groom/bride-groom-classic-001.svg"
     },
     {
@@ -69,7 +118,13 @@
       "name": "Mandap Traditional",
       "category": "wedding",
       "subcategory": "mandap",
-      "keywords": ["mandap", "wedding", "stage", "ceremony", "traditional"],
+      "keywords": [
+        "mandap",
+        "wedding",
+        "stage",
+        "ceremony",
+        "traditional"
+      ],
       "file": "/assets/icons/wedding/mandap/mandap-traditional-001.svg"
     },
     {
@@ -77,7 +132,13 @@
       "name": "Varmala",
       "category": "wedding",
       "subcategory": "varmala",
-      "keywords": ["varmala", "garland", "wedding", "couple", "ritual"],
+      "keywords": [
+        "varmala",
+        "garland",
+        "wedding",
+        "couple",
+        "ritual"
+      ],
       "file": "/assets/icons/wedding/varmala/varmala-001.svg"
     },
     {
@@ -85,7 +146,13 @@
       "name": "Border Floral",
       "category": "borders",
       "subcategory": "floral",
-      "keywords": ["border", "floral", "frame", "ornament", "wedding"],
+      "keywords": [
+        "border",
+        "floral",
+        "frame",
+        "ornament",
+        "wedding"
+      ],
       "file": "/assets/icons/borders/floral/border-floral-001.svg"
     },
     {
@@ -93,7 +160,13 @@
       "name": "Border Corner",
       "category": "borders",
       "subcategory": "corner",
-      "keywords": ["border", "corner", "frame", "ornament", "luxury"],
+      "keywords": [
+        "border",
+        "corner",
+        "frame",
+        "ornament",
+        "luxury"
+      ],
       "file": "/assets/icons/borders/corner/border-corner-002.svg"
     },
     {
@@ -101,7 +174,13 @@
       "name": "Rose Stem",
       "category": "floral",
       "subcategory": "rose",
-      "keywords": ["rose", "flower", "floral", "decorative", "invitation"],
+      "keywords": [
+        "rose",
+        "flower",
+        "floral",
+        "decorative",
+        "invitation"
+      ],
       "file": "/assets/icons/floral/rose/rose-001.svg"
     },
     {
@@ -109,7 +188,13 @@
       "name": "Lotus Bloom",
       "category": "floral",
       "subcategory": "lotus",
-      "keywords": ["lotus", "flower", "floral", "hindu", "decorative"],
+      "keywords": [
+        "lotus",
+        "flower",
+        "floral",
+        "hindu",
+        "decorative"
+      ],
       "file": "/assets/icons/floral/lotus/lotus-001.svg"
     },
     {
@@ -117,7 +202,13 @@
       "name": "Divider Simple",
       "category": "decorative",
       "subcategory": "dividers",
-      "keywords": ["divider", "line", "separator", "decorative", "ornament"],
+      "keywords": [
+        "divider",
+        "line",
+        "separator",
+        "decorative",
+        "ornament"
+      ],
       "file": "/assets/icons/decorative/dividers/divider-001.svg"
     },
     {
@@ -125,7 +216,13 @@
       "name": "Mandala Classic",
       "category": "decorative",
       "subcategory": "mandala",
-      "keywords": ["mandala", "pattern", "decorative", "circle", "ornament"],
+      "keywords": [
+        "mandala",
+        "pattern",
+        "decorative",
+        "circle",
+        "ornament"
+      ],
       "file": "/assets/icons/decorative/mandala/mandala-001.svg"
     },
     {
@@ -133,8 +230,542 @@
       "name": "Diya Light",
       "category": "festival",
       "subcategory": "diwali",
-      "keywords": ["diwali", "diya", "festival", "light", "celebration"],
+      "keywords": [
+        "diwali",
+        "diya",
+        "festival",
+        "light",
+        "celebration"
+      ],
       "file": "/assets/icons/festival/diwali/diya-001.svg"
+    },
+    {
+      "id": "hindu-wedding-ganesh-ganesh001",
+      "name": "Hindu Wedding Ganesh 001",
+      "category": "hindu",
+      "subcategory": "ganesh",
+      "keywords": [
+        "hindu",
+        "wedding",
+        "ganesh",
+        "ganesh001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/hindu/wedding/ganesh/ganesh001.png"
+    },
+    {
+      "id": "hindu-wedding-ganesh-ganesh002",
+      "name": "Hindu Wedding Ganesh 002",
+      "category": "hindu",
+      "subcategory": "ganesh",
+      "keywords": [
+        "hindu",
+        "wedding",
+        "ganesh",
+        "ganesh002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/hindu/wedding/ganesh/ganesh002.png"
+    },
+    {
+      "id": "hindu-wedding-mandap-mandap001",
+      "name": "Hindu Wedding Mandap 001",
+      "category": "hindu",
+      "subcategory": "mandap",
+      "keywords": [
+        "hindu",
+        "wedding",
+        "mandap",
+        "mandap001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/hindu/wedding/mandap/mandap001.png"
+    },
+    {
+      "id": "hindu-wedding-mandap-mandap002",
+      "name": "Hindu Wedding Mandap 002",
+      "category": "hindu",
+      "subcategory": "mandap",
+      "keywords": [
+        "hindu",
+        "wedding",
+        "mandap",
+        "mandap002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/hindu/wedding/mandap/mandap002.png"
+    },
+    {
+      "id": "hindu-wedding-border-border001",
+      "name": "Hindu Wedding Border 001",
+      "category": "hindu",
+      "subcategory": "border",
+      "keywords": [
+        "hindu",
+        "wedding",
+        "border",
+        "border001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/hindu/wedding/border/border001.png"
+    },
+    {
+      "id": "hindu-wedding-border-border002",
+      "name": "Hindu Wedding Border 002",
+      "category": "hindu",
+      "subcategory": "border",
+      "keywords": [
+        "hindu",
+        "wedding",
+        "border",
+        "border002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/hindu/wedding/border/border002.png"
+    },
+    {
+      "id": "hindu-wedding-kalash-kalash001",
+      "name": "Hindu Wedding Kalash 001",
+      "category": "hindu",
+      "subcategory": "kalash",
+      "keywords": [
+        "hindu",
+        "wedding",
+        "kalash",
+        "kalash001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/hindu/wedding/kalash/kalash001.png"
+    },
+    {
+      "id": "hindu-wedding-om-om001",
+      "name": "Hindu Wedding Om 001",
+      "category": "hindu",
+      "subcategory": "om",
+      "keywords": [
+        "hindu",
+        "wedding",
+        "om",
+        "om001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/hindu/wedding/om/om001.png"
+    },
+    {
+      "id": "muslim-wedding-crescent-crescent001",
+      "name": "Muslim Wedding Crescent 001",
+      "category": "muslim",
+      "subcategory": "crescent",
+      "keywords": [
+        "muslim",
+        "wedding",
+        "crescent",
+        "crescent001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/muslim/wedding/crescent/crescent001.png"
+    },
+    {
+      "id": "muslim-wedding-crescent-crescent002",
+      "name": "Muslim Wedding Crescent 002",
+      "category": "muslim",
+      "subcategory": "crescent",
+      "keywords": [
+        "muslim",
+        "wedding",
+        "crescent",
+        "crescent002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/muslim/wedding/crescent/crescent002.png"
+    },
+    {
+      "id": "muslim-wedding-bismillah-bismillah001",
+      "name": "Muslim Wedding Bismillah 001",
+      "category": "muslim",
+      "subcategory": "bismillah",
+      "keywords": [
+        "muslim",
+        "wedding",
+        "bismillah",
+        "bismillah001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/muslim/wedding/bismillah/bismillah001.png"
+    },
+    {
+      "id": "muslim-wedding-dome-dome001",
+      "name": "Muslim Wedding Dome 001",
+      "category": "muslim",
+      "subcategory": "dome",
+      "keywords": [
+        "muslim",
+        "wedding",
+        "dome",
+        "dome001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/muslim/wedding/dome/dome001.png"
+    },
+    {
+      "id": "muslim-wedding-border-border001",
+      "name": "Muslim Wedding Border 001",
+      "category": "muslim",
+      "subcategory": "border",
+      "keywords": [
+        "muslim",
+        "wedding",
+        "border",
+        "border001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/muslim/wedding/border/border001.png"
+    },
+    {
+      "id": "muslim-wedding-border-border002",
+      "name": "Muslim Wedding Border 002",
+      "category": "muslim",
+      "subcategory": "border",
+      "keywords": [
+        "muslim",
+        "wedding",
+        "border",
+        "border002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/muslim/wedding/border/border002.png"
+    },
+    {
+      "id": "sikh-wedding-khanda-khanda001",
+      "name": "Sikh Wedding Khanda 001",
+      "category": "sikh",
+      "subcategory": "khanda",
+      "keywords": [
+        "sikh",
+        "wedding",
+        "khanda",
+        "khanda001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/sikh/wedding/khanda/khanda001.png"
+    },
+    {
+      "id": "sikh-wedding-khanda-khanda002",
+      "name": "Sikh Wedding Khanda 002",
+      "category": "sikh",
+      "subcategory": "khanda",
+      "keywords": [
+        "sikh",
+        "wedding",
+        "khanda",
+        "khanda002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/sikh/wedding/khanda/khanda002.png"
+    },
+    {
+      "id": "sikh-wedding-ek-onkar-ek-onkar001",
+      "name": "Sikh Wedding Ek Onkar 001",
+      "category": "sikh",
+      "subcategory": "ek-onkar",
+      "keywords": [
+        "sikh",
+        "wedding",
+        "ek-onkar",
+        "ek-onkar001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/sikh/wedding/ek-onkar/ek-onkar001.png"
+    },
+    {
+      "id": "sikh-wedding-border-border001",
+      "name": "Sikh Wedding Border 001",
+      "category": "sikh",
+      "subcategory": "border",
+      "keywords": [
+        "sikh",
+        "wedding",
+        "border",
+        "border001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/sikh/wedding/border/border001.png"
+    },
+    {
+      "id": "sikh-wedding-border-border002",
+      "name": "Sikh Wedding Border 002",
+      "category": "sikh",
+      "subcategory": "border",
+      "keywords": [
+        "sikh",
+        "wedding",
+        "border",
+        "border002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/sikh/wedding/border/border002.png"
+    },
+    {
+      "id": "christian-wedding-cross-cross001",
+      "name": "Christian Wedding Cross 001",
+      "category": "christian",
+      "subcategory": "cross",
+      "keywords": [
+        "christian",
+        "wedding",
+        "cross",
+        "cross001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/christian/wedding/cross/cross001.png"
+    },
+    {
+      "id": "christian-wedding-cross-cross002",
+      "name": "Christian Wedding Cross 002",
+      "category": "christian",
+      "subcategory": "cross",
+      "keywords": [
+        "christian",
+        "wedding",
+        "cross",
+        "cross002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/christian/wedding/cross/cross002.png"
+    },
+    {
+      "id": "christian-wedding-dove-dove001",
+      "name": "Christian Wedding Dove 001",
+      "category": "christian",
+      "subcategory": "dove",
+      "keywords": [
+        "christian",
+        "wedding",
+        "dove",
+        "dove001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/christian/wedding/dove/dove001.png"
+    },
+    {
+      "id": "christian-wedding-border-border001",
+      "name": "Christian Wedding Border 001",
+      "category": "christian",
+      "subcategory": "border",
+      "keywords": [
+        "christian",
+        "wedding",
+        "border",
+        "border001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/christian/wedding/border/border001.png"
+    },
+    {
+      "id": "christian-wedding-border-border002",
+      "name": "Christian Wedding Border 002",
+      "category": "christian",
+      "subcategory": "border",
+      "keywords": [
+        "christian",
+        "wedding",
+        "border",
+        "border002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/christian/wedding/border/border002.png"
+    },
+    {
+      "id": "jain-wedding-jain-symbol-jain-symbol001",
+      "name": "Jain Wedding Jain Symbol 001",
+      "category": "jain",
+      "subcategory": "jain-symbol",
+      "keywords": [
+        "jain",
+        "wedding",
+        "jain-symbol",
+        "jain-symbol001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/jain/wedding/jain-symbol/jain-symbol001.png"
+    },
+    {
+      "id": "jain-wedding-swastik-swastik001",
+      "name": "Jain Wedding Swastik 001",
+      "category": "jain",
+      "subcategory": "swastik",
+      "keywords": [
+        "jain",
+        "wedding",
+        "swastik",
+        "swastik001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/jain/wedding/swastik/swastik001.png"
+    },
+    {
+      "id": "jain-wedding-border-border001",
+      "name": "Jain Wedding Border 001",
+      "category": "jain",
+      "subcategory": "border",
+      "keywords": [
+        "jain",
+        "wedding",
+        "border",
+        "border001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/jain/wedding/border/border001.png"
+    },
+    {
+      "id": "jain-wedding-border-border002",
+      "name": "Jain Wedding Border 002",
+      "category": "jain",
+      "subcategory": "border",
+      "keywords": [
+        "jain",
+        "wedding",
+        "border",
+        "border002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/jain/wedding/border/border002.png"
+    },
+    {
+      "id": "buddhist-wedding-buddha-buddha001",
+      "name": "Buddhist Wedding Buddha 001",
+      "category": "buddhist",
+      "subcategory": "buddha",
+      "keywords": [
+        "buddhist",
+        "wedding",
+        "buddha",
+        "buddha001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/buddhist/wedding/buddha/buddha001.png"
+    },
+    {
+      "id": "buddhist-wedding-buddha-buddha002",
+      "name": "Buddhist Wedding Buddha 002",
+      "category": "buddhist",
+      "subcategory": "buddha",
+      "keywords": [
+        "buddhist",
+        "wedding",
+        "buddha",
+        "buddha002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/buddhist/wedding/buddha/buddha002.png"
+    },
+    {
+      "id": "buddhist-wedding-dharma-wheel-dharma-wheel001",
+      "name": "Buddhist Wedding Dharma Wheel 001",
+      "category": "buddhist",
+      "subcategory": "dharma-wheel",
+      "keywords": [
+        "buddhist",
+        "wedding",
+        "dharma-wheel",
+        "dharma-wheel001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/buddhist/wedding/dharma-wheel/dharma-wheel001.png"
+    },
+    {
+      "id": "buddhist-wedding-border-border001",
+      "name": "Buddhist Wedding Border 001",
+      "category": "buddhist",
+      "subcategory": "border",
+      "keywords": [
+        "buddhist",
+        "wedding",
+        "border",
+        "border001",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/buddhist/wedding/border/border001.png"
+    },
+    {
+      "id": "buddhist-wedding-border-border002",
+      "name": "Buddhist Wedding Border 002",
+      "category": "buddhist",
+      "subcategory": "border",
+      "keywords": [
+        "buddhist",
+        "wedding",
+        "border",
+        "border002",
+        "invitation",
+        "marriage",
+        "icon"
+      ],
+      "file": "/assets/icons/buddhist/wedding/border/border002.png"
     }
   ]
 }
