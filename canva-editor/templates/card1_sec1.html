@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>विवाह निमंत्रण - भाग 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background:#c8829a;
+  display:flex;
+  justify-content:center;
+  padding:0;
+  margin:0;
+  font-family:'Noto Serif Devanagari', serif;
+}
+
+/* ── CARD: 23.5 × 10.5 cm with 1cm padding ── */
+.card {
+  width:23.5cm;
+  min-height:10.5cm;
+  background:#f2aec8;
+  padding:1cm;
+  display:flex;
+  flex-direction:column;
+  gap:0.3cm;
+}
+
+/* ── EACH SECTION: 21.5 × 8.5 cm ── */
+.sec {
+  width:21.5cm;
+  height:8.5cm;
+  position:relative;
+  border:0.07cm solid #8b0040;
+  box-shadow:inset 0 0 0 0.13cm #f2aec8, inset 0 0 0 0.20cm #8b0040;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(255,255,255,0.52) 0%, transparent 28%),
+    radial-gradient(ellipse at 80% 75%, rgba(255,255,255,0.4)  0%, transparent 32%),
+    linear-gradient(140deg,#fce4ef 0%,#f9d5e8 45%,#f6cde1 75%,#fad8eb 100%);
+}
+.sec::before {
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:radial-gradient(rgba(160,0,60,0.06) 1px, transparent 1px);
+  background-size:5px 5px;
+}
+
+/* 4 corner flowers — exactly one each */
+.fl { position:absolute; color:#8b0040; font-size:1.2cm; line-height:1; z-index:10; }
+.tl { top:0.4cm;  left:0.2cm; }
+.tr { top:0.4cm;  right:0.2cm; }
+.bl { bottom:-0.07cm; left:0.2cm; }
+.br { bottom:-0.07cm; right:0.2cm; }
+
+/* ════════════════════════════════════════
+   SECTION 1  — Top card (Flattened Absolute Layout)
+   ════════════════════════════════════════ */
+.s1-wrap {
+  position:relative; z-index:1;
+  width:100%; height:100%;
+}
+
+.s1-mantras {
+  position: absolute;
+  top: 0.35cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12cm;
+  text-align: center;
+  z-index: 5;
+}
+.s1-mantras p { font-size:0.39cm; color:#6e0035; line-height:1.4; }
+.s1-mantras p:first-child { font-size:0.4cm; font-weight:600; }
+
+.swirl {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color:#9b1050;
+  font-size:0.27cm;
+  letter-spacing:0.04cm;
+  width: 12cm;
+  text-align: center;
+  z-index: 5;
+}
+.swirl-top { top: 1.25cm; }
+.swirl-mid { top: 2.15cm; }
+
+.s1-heading {
+  position: absolute;
+  top: 1.55cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8cm;
+  text-align: center;
+  font-size:0.5cm;
+  font-weight:700;
+  color:#6e0035;
+  z-index: 5;
+}
+
+.s1-haldi {
+  position: absolute;
+  top: 2.45cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8cm;
+  text-align: center;
+  z-index: 5;
+}
+.s1-haldi-t { font-size:0.60cm; font-weight:700; color:#6e0035; }
+.s1-haldi-d { font-size:0.47cm; color:#6e0035; margin-top: -0.05cm; }
+
+.vivah-box {
+  position: absolute;
+  top: 3.75cm;
+  left: 3.8cm;
+  width: 5.0cm;
+  text-align: center;
+  z-index: 5;
+}
+.vidai-box {
+  position: absolute;
+  top: 3.75cm;
+  right: 3.8cm;
+  width: 5.0cm;
+  text-align: center;
+  z-index: 5;
+}
+.s1-ev-t { font-size:0.70cm; font-weight:700; color:#6e0035; line-height:1.2; }
+.s1-ev-d { font-size:0.5cm; color:#6e0035; margin-top:0.04cm; }
+
+.couple-box {
+  position: absolute;
+  top: 3.55cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3cm;
+  height: 2.4cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+.couple-box img {
+  width: 3cm;
+  height: auto;
+  display: block;
+}
+
+.s1-bal {
+  position: absolute;
+  bottom: 0.3cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 17cm;
+  text-align: center;
+  font-size:0.4cm;
+  color:#6e0035;
+  line-height: 1.5;
+  z-index: 5;
+}
+.s1-bal-n { font-weight:700; font-size:0.4cm; }
+
+/* Absolute positioned icons */
+.ganesh-icon img {
+  width: 3.5cm;
+  height: auto;
+  position: absolute;
+  top: 0.2cm;
+  left: 1.3cm;
+  display: block;
+  z-index: 6;
+}
+.sun-icon img {
+  width: 3cm;
+  height: auto;
+  position: absolute;
+  top: 0.1cm;
+  right: 1.3cm;
+  display: block;
+  z-index: 6;
+}
+.chainleft img {
+  width: 1.8cm;
+  height: auto;
+  position: absolute;
+  top: 1.25cm;
+  left: 0.2cm;
+  display: block;
+  z-index: 6;
+}
+.chainright img {
+  width: 1.8cm;
+  height: auto;
+  position: absolute;
+  top: 1.25cm;
+  right: 0.2cm;
+  display: block;
+  z-index: 6;
+}
+.top-icon img {
+  width: 3.4cm;
+  height: auto;
+  position: absolute;
+  top: 2.75cm;
+  left: 0.85cm;
+  display: block;
+  z-index: 6;
+}
+.bottom-icon img {
+  width: 3.4cm;
+  height: auto;
+  position: absolute;
+  top: 4.8cm;
+  left: 0.85cm;
+  display: block;
+  z-index: 6;
+}
+.top1-icon img {
+  width: 3.4cm;
+  height: auto;
+  position: absolute;
+  top: 2.75cm;
+  right: 0.85cm;
+  display: block;
+  z-index: 6;
+}
+.mid-icon img {
+  width: 2.5cm;
+  height: auto;
+  position: absolute;
+  top: 4.8cm;
+  right: 1.3cm;
+  display: block;
+  z-index: 6;
+}
+
+@page { size:23.5cm 10.5cm; margin:0; }
+@media print { body { background:none; padding:0; } }
+</style>
+</head>
+<body>
+<div class="card">
+
+<!-- ══════════════════════════════
+     SECTION 1
+     ══════════════════════════════ -->
+<div class="sec">
+  <div class="fl tl">✿</div>
+  <div class="fl tr">✿</div>
+  <div class="fl bl">✿</div>
+  <div class="fl br">✿</div>
+
+  <div class="s1-wrap">
+    <!-- Mantras -->
+    <div class="s1-mantras">
+      <p>।। श्री गणेशाय नमः ।।</p>
+      <p>वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</p>
+    </div>
+
+    <div class="swirl swirl-top">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
+    <!-- मांगलिक -->
+    <div class="s1-heading">।। मांगलिक क्षणिकायें ।।</div>
+    <div class="swirl swirl-mid">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
+
+    <!-- हल्दी -->
+    <div class="s1-haldi">
+      <div class="s1-haldi-t">हल्दी व मेहन्दी</div>
+      <div class="s1-haldi-d">दिनांक - 30 मई 2026, शनिवार</div>
+    </div>
+
+    <!-- शुभ विवाह -->
+    <div class="s1-ev vivah-box">
+      <div class="s1-ev-t">शुभ विवाह</div>
+      <div class="s1-ev-d">दिनांक - 31 मई 2026, रविवार</div>
+    </div>
+
+    <!-- विदाई -->
+    <div class="s1-ev vidai-box">
+      <div class="s1-ev-t">विदाई</div>
+      <div class="s1-ev-d">दिनांक - 01 जून 2026, सोमवार</div>
+    </div>
+
+    <!-- Hanging Side Chains -->
+    <div class="chainleft">
+      <img src="../../builder1/assets/icons/side.png" alt="">
+    </div> 
+
+    <div class="chainright">
+      <img src="../../builder1/assets/icons/side.png" alt="">
+    </div> 
+    
+    <!-- Ganesh & Om -->
+    <div class="ganesh-icon">
+      <img src="../../builder1/assets/icons/ganesh.png" alt="Ganesh">
+    </div>
+
+    <div class="sun-icon">
+      <img src="../../builder1/assets/icons/om.png" alt="Om">
+    </div>
+
+    <!-- Jhumka Bells left & right -->
+    <div class="top-icon">
+      <img src="../../builder1/assets/icons/top2.png" alt="Top">
+    </div>
+
+    <div class="bottom-icon">
+      <img src="../../builder1/assets/icons/top2.png" alt="Top">
+    </div>
+
+    <div class="top1-icon">
+      <img src="../../builder1/assets/icons/top2.png" alt="Top">
+    </div>
+
+    <div class="mid-icon">
+      <img src="../../builder1/assets/icons/mid.png" alt="Top">
+    </div>
+
+
+    <!-- बाल आग्रह -->
+    <div class="s1-bal">
+      बाल आग्रह- गाना होगा, बजाना होगा, मिलकर धूम मचाना होगा, मेरी दीदी की शादी है आप सभी को आना होगा -<br>
+      <span class="s1-bal-n">जानकी, जान, अनन्या, अनाया (डोडो)</span>
+    </div>
+  </div><!-- s1-wrap -->
+</div><!-- sec 1 -->
+
+</div><!-- card -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  BUILDER ↔ CARD1 LIVE SYNC  (postMessage receiver)
+// ══════════════════════════════════════════════════════
+window.addEventListener('message', function(e) {
+  const d = e.data;
+  if (!d || d.type !== 'MIC_CARD_UPDATE') return;
+  const c = d.card;
+  if (!c) return;
+  syncCard(c);
+});
+
+function syncCard(c) {
+  // ── SECTION 1: Opening Shloka ────────────────────────
+  setTxt('.s1-mantras p:first-child', c.shloka && c.shloka.line1 ? c.shloka.line1 : '।। श्री गणेशाय नमः ।।');
+  setTxt('.s1-mantras p:last-child',  c.shloka && c.shloka.line2 ? c.shloka.line2 : 'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥');
+
+  // ── SECTION 1: Haldi ────────────────────────────────
+  if (c.haldi) {
+    setTxt('.s1-haldi-t', c.haldi.name || 'हल्दी व मेहन्दी');
+    setTxt('.s1-haldi-d', 'दिनांक - ' + fmtHi(c.haldi.date));
+  }
+
+  // ── SECTION 1: Vivah & Vidai ─────────────────────────
+  const evEls = document.querySelectorAll('.s1-ev');
+  if (evEls[0] && c.vivah) {
+    setTxtEl(evEls[0].querySelector('.s1-ev-t'), c.vivah.name || 'शुभ विवाह');
+    setTxtEl(evEls[0].querySelector('.s1-ev-d'), 'दिनांक - ' + fmtHi(c.vivah.date));
+  }
+  if (evEls[1] && c.vidai) {
+    setTxtEl(evEls[1].querySelector('.s1-ev-t'), c.vidai.name || 'विदाई');
+    setTxtEl(evEls[1].querySelector('.s1-ev-d'), 'दिनांक - ' + fmtHi(c.vidai.date));
+  }
+
+  // ── SECTION 1: Bal Aagrah ───────────────────────────
+  if (c.balAagrah) {
+    const balEl = document.querySelector('.s1-bal');
+    if (balEl) {
+      const nameSpan = balEl.querySelector('.s1-bal-n');
+      const textNode = Array.from(balEl.childNodes).find(n => n.nodeType === 3);
+      if (textNode) textNode.textContent = (c.balAagrah.text || '') + '\n';
+      if (nameSpan)  nameSpan.textContent = c.balAagrah.names || '';
+    }
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────
+const _HI_MONTHS = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+const _HI_DAYS   = ['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+
+function fmtHi(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.getDate() + ' ' + _HI_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + _HI_DAYS[d.getDay()];
+  } catch(e) { return dateStr; }
+}
+
+function setTxt(sel, txt) {
+  const el = document.querySelector(sel);
+  if (el) el.textContent = txt;
+}
+
+function setTxtEl(el, txt) {
+  if (el) el.textContent = txt;
+}
+</script>
+</body>
+</html>

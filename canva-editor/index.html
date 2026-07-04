@@ -2491,14 +2491,14 @@
       applyZoomScale();
     }
 
-    function fitToScreen() {
-      const vp = document.querySelector('.preview-vp');
-      if (!vp || !canvas) return;
-      const scaleX = (vp.clientWidth - 80) / canvas.getWidth();
-      const scaleY = (vp.clientHeight - 80) / canvas.getHeight();
-      zoomLevel = Math.min(scaleX, scaleY, 1.2);
-      applyZoomScale();
-    }
+      function fitToScreen() {
+        const vp = document.querySelector('.preview-vp');
+        if (!vp || !canvas) return;
+        const scaleX = (vp.clientWidth - 80) / canvas.getWidth();
+        const scaleY = (vp.clientHeight - 80) / canvas.getHeight();
+        zoomLevel = Math.max(0.2, Math.min(scaleX, scaleY, 1.2));
+        applyZoomScale();
+      }
 
     function applyZoomScale() {
       const containerBox = document.getElementById('canvas-container-box');
@@ -2704,12 +2704,19 @@
           refreshLayersList();
         });
       } else {
-        // Generate page dynamically from iframe
-        const iframe = document.getElementById('bg-template-frame');
-        parseHtmlToFabric(iframe, canvas, activePage - 1).then(() => {
+        if (activeTemplateId === 'card1') {
+          // Generate page dynamically from iframe
+          const iframe = document.getElementById('bg-template-frame');
+          parseHtmlToFabric(iframe, canvas, activePage - 1).then(() => {
+            isSavingHistory = true;
+            refreshLayersList();
+          });
+        } else {
+          // Render programmatically for other templates
+          renderCanvasFromTemplateData(activeTemplateData, activeTemplateId, false);
           isSavingHistory = true;
           refreshLayersList();
-        });
+        }
       }
     }
 
@@ -3358,19 +3365,23 @@
       
       // Load HTML Template into iframe and parse it
       const iframe = document.getElementById('bg-template-frame');
-      iframe.src = 'templates/' + currentId + '_canva.html';
-      
-      iframe.onload = async () => {
-        const pageIndex = (window.currentPage || 1) - 1;
-        await parseHtmlToFabric(iframe, canvas, pageIndex);
-        
-        setTimeout(() => {
-          isSavingHistory = true;
-          canvas.discardActiveObject();
-          canvas.requestRenderAll();
-          saveHistory();
-        }, 400);
-      };
+      if (currentId === 'card1') {
+        iframe.src = 'templates/' + currentId + '.html';
+        iframe.onload = async () => {
+          const pageIndex = (window.currentPage || 1) - 1;
+          await parseHtmlToFabric(iframe, canvas, pageIndex);
+          
+          setTimeout(() => {
+            isSavingHistory = true;
+            canvas.discardActiveObject();
+            canvas.requestRenderAll();
+            saveHistory();
+          }, 400);
+        };
+      } else {
+        iframe.src = 'about:blank';
+        iframe.onload = null;
+      }
       
       // Render suggestions of the same category
       renderSuggestions(type);
