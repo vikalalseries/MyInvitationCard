@@ -1,122 +1,14 @@
 {
   "iconCategories": [
     {
-      "id": "religious",
-      "label": "Religious",
-      "path": "/assets/icons/religious",
+      "id": "buddhist",
+      "label": "Buddhist",
+      "path": "/assets/icons/buddhist",
       "subcategories": [
-        "ganesh",
-        "om",
-        "swastik",
-        "kalash",
-        "shubh-labh",
-        "mangal-symbols",
-        "hindu-motifs"
-      ]
-    },
-    {
-      "id": "wedding",
-      "label": "Wedding",
-      "path": "/assets/icons/wedding",
-      "subcategories": [
-        "bride-groom",
-        "baraat",
-        "varmala",
-        "mandap",
-        "mehndi",
-        "haldi",
-        "engagement",
-        "reception"
-      ]
-    },
-    {
-      "id": "borders",
-      "label": "Borders",
-      "path": "/assets/icons/borders",
-      "subcategories": [
-        "floral",
-        "traditional",
-        "modern",
-        "corner",
-        "frame",
-        "luxury"
-      ]
-    },
-    {
-      "id": "floral",
-      "label": "Floral",
-      "path": "/assets/icons/floral",
-      "subcategories": [
-        "rose",
-        "lotus",
-        "marigold",
-        "leaves",
-        "vines",
-        "bouquets"
-      ]
-    },
-    {
-      "id": "decorative",
-      "label": "Decorative",
-      "path": "/assets/icons/decorative",
-      "subcategories": [
-        "dividers",
-        "ornaments",
-        "mandala",
-        "patterns",
-        "ribbons",
-        "seals"
-      ]
-    },
-    {
-      "id": "festival",
-      "label": "Festival",
-      "path": "/assets/icons/festival",
-      "subcategories": [
-        "diwali",
-        "holi",
-        "rakhi",
-        "navratri",
-        "ganesh-chaturthi"
-      ]
-    },
-    {
-      "id": "misc",
-      "label": "Misc",
-      "path": "/assets/icons/misc",
-      "subcategories": []
-    },
-    {
-      "id": "hindu",
-      "label": "Hindu",
-      "path": "/assets/icons/hindu",
-      "subcategories": [
-        "ganesh",
-        "mandap",
         "border",
-        "kalash",
-        "om"
-      ]
-    },
-    {
-      "id": "muslim",
-      "label": "Muslim",
-      "path": "/assets/icons/muslim",
-      "subcategories": [
-        "crescent",
-        "bismillah",
-        "dome",
-        "border"
-      ]
-    },
-    {
-      "id": "sikh",
-      "label": "Sikh",
-      "path": "/assets/icons/sikh",
-      "subcategories": [
-        "khanda",
-        "ek-onkar",
-        "border"
+        "buddha",
+        "dharma-wheel",
+        "mandala"
       ]
     },
     {
@@ -124,9 +16,27 @@
       "label": "Christian",
       "path": "/assets/icons/christian",
       "subcategories": [
+        "border",
         "cross",
-        "dove",
-        "border"
+        "dove"
+      ]
+    },
+    {
+      "id": "hindu",
+      "label": "Hindu",
+      "path": "/assets/icons/hindu",
+      "subcategories": [
+        "barat-vector",
+        "border",
+        "bride",
+        "bride-groom",
+        "ganesh",
+        "groom",
+        "kalash",
+        "mandap",
+        "mandap-silhouette",
+        "om",
+        "swastik"
       ]
     },
     {
@@ -134,19 +44,38 @@
       "label": "Jain",
       "path": "/assets/icons/jain",
       "subcategories": [
+        "border",
         "jain-symbol",
-        "swastik",
-        "border"
+        "swastik"
       ]
     },
     {
-      "id": "buddhist",
-      "label": "Buddhist",
-      "path": "/assets/icons/buddhist",
+      "id": "muslim",
+      "label": "Muslim",
+      "path": "/assets/icons/muslim",
       "subcategories": [
-        "buddha",
-        "dharma-wheel",
-        "border"
+        "bismillah",
+        "border",
+        "crescent",
+        "dome"
+      ]
+    },
+    {
+      "id": "sikh",
+      "label": "Sikh",
+      "path": "/assets/icons/sikh",
+      "subcategories": [
+        "border",
+        "ek-onkar",
+        "khanda"
+      ]
+    },
+    {
+      "id": "vertical_hanging_ornament",
+      "label": "Vertical Hanging Ornament",
+      "path": "/assets/icons/vertical_hanging_ornament",
+      "subcategories": [
+        "general"
       ]
     }
   ]

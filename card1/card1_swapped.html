@@ -549,12 +549,34 @@ function applyIconReplacements(style) {
   const replacements = (style && style.iconReplacements) || {};
   ICON_REPLACEMENT_MAP.forEach(item => {
     const value = replacements[item.key];
-    const src = typeof value === 'string' ? value : value && value.file ? value.file : item.defaultSrc;
+    let src = typeof value === 'string' ? value : value && value.file ? value.file : item.defaultSrc;
+    if (src && src.startsWith('/assets/')) {
+      src = '../' + src.substring(1);
+    }
     document.querySelectorAll(item.selector).forEach(img => {
       if (!img.dataset.defaultSrc) {
         img.dataset.defaultSrc = img.getAttribute('src') || item.defaultSrc;
       }
-      img.src = src || img.dataset.defaultSrc;
+      const finalSrc = src || img.dataset.defaultSrc;
+      img.src = finalSrc;
+      
+      // Apply color overlay using CSS mask
+      const color = style.iconColors && style.iconColors[item.key];
+      if (color) {
+        img.style.webkitMaskImage = `url("${finalSrc}")`;
+        img.style.maskImage = `url("${finalSrc}")`;
+        img.style.webkitMaskSize = 'contain';
+        img.style.maskSize = 'contain';
+        img.style.webkitMaskRepeat = 'no-repeat';
+        img.style.maskRepeat = 'no-repeat';
+        img.style.backgroundColor = color;
+        img.style.objectPosition = '-99999px';
+      } else {
+        img.style.webkitMaskImage = '';
+        img.style.maskImage = '';
+        img.style.backgroundColor = '';
+        img.style.objectPosition = '';
+      }
     });
   });
 }
@@ -696,9 +718,7 @@ function applyCustomStyles(style) {
     return `translate(${x}cm, ${y}cm)`;
   };
   const iconColorStyle = (key) => {
-    const color = style.iconColors && style.iconColors[key];
-    if (!color) return '';
-    return `filter: brightness(0) saturate(100%) drop-shadow(0 0 0 ${color});`;
+    return '';
   };
   const cornerShift = (key) => {
     const x = Number(style[key + 'OffsetX'] || 0);

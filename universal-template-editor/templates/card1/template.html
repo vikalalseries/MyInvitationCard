@@ -443,25 +443,28 @@ body {
       </div>
 
       <div class="swirl swirl-top">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
-      <div class="s1-heading" data-field="headingText">।। मांगलिक क्षणिकायें ।।</div>
-      <div class="swirl swirl-mid">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
+      <!-- Ceremonies Group Wrapper -->
+      <div class="s1-ceremonies-wrap">
+        <div class="s1-heading" data-field="headingText">।। मांगलिक क्षणिकायें ।।</div>
+        <div class="swirl swirl-mid">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
 
-      <!-- Haldi Event Container -->
-      <div class="s1-haldi" data-event-container="haldi">
-        <div class="s1-haldi-t" data-field="event.haldi.name">हल्दी व मेहन्दी</div>
-        <div class="s1-haldi-d">दिनांक - <span data-field="event.haldi.date" data-field-format="hindi-date">30 मई 2026, शनिवार</span></div>
-      </div>
+        <!-- Haldi Event Container -->
+        <div class="s1-haldi" data-event-container="haldi">
+          <div class="s1-haldi-t" data-field="event.haldi.name">हल्दी व मेहन्दी</div>
+          <div class="s1-haldi-d">दिनांक - <span data-field="event.haldi.date" data-field-format="hindi-date">30 मई 2026, शनिवार</span></div>
+        </div>
 
-      <!-- Vivah Event Container -->
-      <div class="s1-ev vivah-box" data-event-container="vivah">
-        <div class="s1-ev-t" data-field="event.vivah.name">शुभ विवाह</div>
-        <div class="s1-ev-d">दिनांक - <span data-field="event.vivah.date" data-field-format="hindi-date">31 मई 2026, रविवार</span></div>
-      </div>
+        <!-- Vivah Event Container -->
+        <div class="s1-ev vivah-box" data-event-container="vivah">
+          <div class="s1-ev-t" data-field="event.vivah.name">शुभ विवाह</div>
+          <div class="s1-ev-d">दिनांक - <span data-field="event.vivah.date" data-field-format="hindi-date">31 मई 2026, रविवार</span></div>
+        </div>
 
-      <!-- Vidai Event Container -->
-      <div class="s1-ev vidai-box" data-event-container="vidai">
-        <div class="s1-ev-t" data-field="event.vidai.name">विदाई</div>
-        <div class="s1-ev-d">दिनांक - <span data-field="event.vidai.date" data-field-format="hindi-date">01 जून 2026, सोमवार</span></div>
+        <!-- Vidai Event Container -->
+        <div class="s1-ev vidai-box" data-event-container="vidai">
+          <div class="s1-ev-t" data-field="event.vidai.name">विदाई</div>
+          <div class="s1-ev-d">दिनांक - <span data-field="event.vidai.date" data-field-format="hindi-date">01 जून 2026, सोमवार</span></div>
+        </div>
       </div>
 
       <!-- Hanging Side Chains -->
@@ -650,6 +653,25 @@ const DEFAULT_CARD_STYLE = {
   showCorners: true,
   cornerSymbol: '✿',
   cornerSize: 100,
+  balAagrahSize: 100,
+  balAagrahOffsetX: 0,
+  balAagrahOffsetY: 0,
+  ceremoniesSize: 100,
+  ceremoniesOffsetX: 0,
+  ceremoniesOffsetY: 0,
+  invitationDetailsSize: 100,
+  invitationDetailsOffsetX: 0,
+  invitationDetailsOffsetY: 0,
+  shlokaOffsetX: 0,
+  shlokaOffsetY: 0,
+  headingOffsetX: 0,
+  headingOffsetY: 0,
+  ganeshOffsetX: 0,
+  ganeshOffsetY: 0,
+  omOffsetX: 0,
+  omOffsetY: 0,
+  coupleOffsetX: 0,
+  coupleOffsetY: 0,
   cardPadding: 1.0,
   sectionGap: 0.3,
   showBorder: true,
@@ -763,8 +785,9 @@ function applyCustomStyles(style) {
   const chainsSizeVal = 1.8 * (style.chainsSize / 100);
 
   const iconShift = (key) => {
-    const x = Number(style[key + 'OffsetX'] || 0);
-    const y = Number(style[key + 'OffsetY'] || 0);
+    const offsetKey = (key === 'couple1' || key === 'couple2') ? 'couple' : key;
+    const x = Number(style[offsetKey + 'OffsetX'] || 0);
+    const y = Number(style[offsetKey + 'OffsetY'] || 0);
     return `translate(${x}cm, ${y}cm)`;
   };
   const iconColorStyle = (key) => {
@@ -806,6 +829,24 @@ function applyCustomStyles(style) {
     .tr { transform: ${cornerShift('cornerTr')} !important; }
     .bl { transform: ${cornerShift('cornerBl')} !important; }
     .br { transform: ${cornerShift('cornerBr')} !important; }
+    .s1-ceremonies-wrap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transform: translate(${style.ceremoniesOffsetX || 0}cm, ${style.ceremoniesOffsetY || 0}cm) !important;
+    }
+    .s1-ceremonies-wrap > * {
+      pointer-events: auto;
+    }
+    .s2-wrap {
+      transform: translate(${style.invitationDetailsOffsetX || 0}cm, ${style.invitationDetailsOffsetY || 0}cm) !important;
+    }
+    .s1-mantras {
+      transform: translateX(-50%) translate(${style.shlokaOffsetX || 0}cm, ${style.shlokaOffsetY || 0}cm) !important;
+    }
     .s1-mantras p {
       color: ${style.textColor || '#6e0035'};
     }
@@ -817,70 +858,75 @@ function applyCustomStyles(style) {
     }
     .s1-heading {
       color: ${style.headingColor || '#6e0035'};
-      font-size: ${headingSizeVal}cm;
+      font-size: ${headingSizeVal * (style.ceremoniesSize || 100) / 100}cm !important;
+      transform: translateX(-50%) translate(${style.headingOffsetX || 0}cm, ${style.headingOffsetY || 0}cm) !important;
     }
     .swirl {
       color: ${style.accentColor || '#9b1050'};
     }
     .s1-haldi-t {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${eventSizeVal * 1.25}cm;
+      font-size: ${eventSizeVal * 1.25 * (style.ceremoniesSize || 100) / 100}cm !important;
     }
     .s1-haldi-d {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${eventSizeVal * 1.0}cm;
+      font-size: ${eventSizeVal * 1.0 * (style.ceremoniesSize || 100) / 100}cm !important;
     }
     .s1-ev-t {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${eventSizeVal * 1.4}cm;
+      font-size: ${eventSizeVal * 1.4 * (style.ceremoniesSize || 100) / 100}cm !important;
     }
     .s1-ev-d {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${eventSizeVal}cm;
+      font-size: ${eventSizeVal * (style.ceremoniesSize || 100) / 100}cm !important;
     }
     .s1-bal {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${shlokaSizeVal * 1.02}cm;
+      font-size: ${shlokaSizeVal * 1.02 * (style.balAagrahSize || 100) / 100}cm !important;
+      transform: translateX(-50%) translate(${style.balAagrahOffsetX || 0}cm, ${style.balAagrahOffsetY || 0}cm) !important;
+    }
+    .s1-bal-n {
+      font-size: ${shlokaSizeVal * 1.02 * (style.balAagrahSize || 100) / 100}cm !important;
     }
     .s2-snehi {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${shlokaSizeVal * 0.97}cm;
+      font-size: ${shlokaSizeVal * 0.97 * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     .s2-vm {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${shlokaSizeVal * 1.02}cm;
+      font-size: ${shlokaSizeVal * 1.02 * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     .s2-vs {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${shlokaSizeVal * 0.97}cm;
+      font-size: ${shlokaSizeVal * 0.97 * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     .s2-bride, .s2-groom {
       color: ${style.headingColor || '#6e0035'};
-      font-size: ${namesSizeVal}cm;
+      font-size: ${namesSizeVal * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     .s2-fam, .s2-fam-r {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${footerSizeVal}cm;
+      font-size: ${footerSizeVal * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     .s2-damp-t {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${footerSizeVal * 1.05}cm;
+      font-size: ${footerSizeVal * 1.05 * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     .s2-damp-d {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${footerSizeVal * 0.97}cm;
+      font-size: ${footerSizeVal * 0.97 * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     .f-label {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${footerSizeVal * 1.12}cm;
+      font-size: ${footerSizeVal * 1.12 * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     .f-name {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${footerSizeVal * 1.07}cm;
+      font-size: ${footerSizeVal * 1.07 * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     .f-addr {
       color: ${style.textColor || '#6e0035'};
-      font-size: ${footerSizeVal * 0.95}cm;
+      font-size: ${footerSizeVal * 0.95 * (style.invitationDetailsSize || 100) / 100}cm !important;
     }
     
     .ganesh-icon img {

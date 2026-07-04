@@ -66,6 +66,7 @@
         </span>
         AI Tools
       </button>
+
     </nav>
 
     <!-- Toolbar Right (Saves, Downloads, Profile Actions) -->
@@ -596,6 +597,221 @@
                   <div class="range-container">
                     <input type="range" class="range-slider" min="10" max="150" value="30" step="5" data-style-key="sectionGap" oninput="handleSpacingInput(this)">
                     <span class="range-value" id="val-sectionGap">0.3cm</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="customizer-card" style="margin-top: 15px;">
+                <div class="customizer-card-title">Section Sizing & Positioning</div>
+                <div class="customizer-group-desc" style="margin-bottom: 12px;">Scale and nudge entire layout sections to customize the spacing.</div>
+
+                <!-- Ceremonies Section -->
+                <div class="section-adjust-group" style="margin-bottom: 20px; border-bottom: 1px solid var(--g200); padding-bottom: 15px;">
+                  <div class="customizer-label" style="font-weight: 600; margin-bottom: 8px;">Ceremonies Section</div>
+                  <div class="customizer-field" style="margin-bottom: 10px;">
+                    <span class="customizer-label-sub">Size</span>
+                    <div class="range-container">
+                      <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="ceremoniesSize" oninput="handleSliderInput(this)">
+                      <span class="range-value" id="val-ceremoniesSize">100%</span>
+                    </div>
+                  </div>
+                  <div class="customizer-field-row" style="align-items: center; justify-content: space-between;">
+                    <span class="customizer-label-sub">Position</span>
+                    <div class="nudge-pad" style="transform: scale(0.9); margin-right: -10px;">
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('ceremonies', 0, -0.05)" title="Move up">▲</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('ceremonies', -0.05, 0)" title="Move left">◀</button>
+                      <button class="nudge-btn center" type="button" onclick="resetSectionOffset('ceremonies')" title="Reset">0</button>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('ceremonies', 0.05, 0)" title="Move right">▶</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('ceremonies', 0, 0.05)" title="Move down">▼</button>
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="nudge-meta" style="margin-top: 5px; justify-content: flex-end;">
+                    <span style="margin-right: 10px;">X <code id="nudge-ceremonies-x">0.00cm</code></span>
+                    <span>Y <code id="nudge-ceremonies-y">0.00cm</code></span>
+                  </div>
+                </div>
+
+                <!-- Bal Aagrah Section -->
+                <div class="section-adjust-group" style="margin-bottom: 20px; border-bottom: 1px solid var(--g200); padding-bottom: 15px;">
+                  <div class="customizer-label" style="font-weight: 600; margin-bottom: 8px;">Bal Aagrah Section</div>
+                  <div class="customizer-field" style="margin-bottom: 10px;">
+                    <span class="customizer-label-sub">Size</span>
+                    <div class="range-container">
+                      <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="balAagrahSize" oninput="handleSliderInput(this)">
+                      <span class="range-value" id="val-balAagrahSize">100%</span>
+                    </div>
+                  </div>
+                  <div class="customizer-field-row" style="align-items: center; justify-content: space-between;">
+                    <span class="customizer-label-sub">Position</span>
+                    <div class="nudge-pad" style="transform: scale(0.9); margin-right: -10px;">
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('balAagrah', 0, -0.05)" title="Move up">▲</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('balAagrah', -0.05, 0)" title="Move left">◀</button>
+                      <button class="nudge-btn center" type="button" onclick="resetSectionOffset('balAagrah')" title="Reset">0</button>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('balAagrah', 0.05, 0)" title="Move right">▶</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('balAagrah', 0, 0.05)" title="Move down">▼</button>
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="nudge-meta" style="margin-top: 5px; justify-content: flex-end;">
+                    <span style="margin-right: 10px;">X <code id="nudge-balAagrah-x">0.00cm</code></span>
+                    <span>Y <code id="nudge-balAagrah-y">0.00cm</code></span>
+                  </div>
+                </div>
+
+                <!-- Invitation Details Section -->
+                <div class="section-adjust-group" style="padding-bottom: 5px;">
+                  <div class="customizer-label" style="font-weight: 600; margin-bottom: 8px;">Invitation Details Section</div>
+                  <div class="customizer-field" style="margin-bottom: 10px;">
+                    <span class="customizer-label-sub">Size</span>
+                    <div class="range-container">
+                      <input type="range" class="range-slider" min="50" max="150" value="100" data-style-key="invitationDetailsSize" oninput="handleSliderInput(this)">
+                      <span class="range-value" id="val-invitationDetailsSize">100%</span>
+                    </div>
+                  </div>
+                  <div class="customizer-field-row" style="align-items: center; justify-content: space-between;">
+                    <span class="customizer-label-sub">Position</span>
+                    <div class="nudge-pad" style="transform: scale(0.9); margin-right: -10px;">
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('invitationDetails', 0, -0.05)" title="Move up">▲</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('invitationDetails', -0.05, 0)" title="Move left">◀</button>
+                      <button class="nudge-btn center" type="button" onclick="resetSectionOffset('invitationDetails')" title="Reset">0</button>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('invitationDetails', 0.05, 0)" title="Move right">▶</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('invitationDetails', 0, 0.05)" title="Move down">▼</button>
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="nudge-meta" style="margin-top: 5px; justify-content: flex-end;">
+                    <span style="margin-right: 10px;">X <code id="nudge-invitationDetails-x">0.00cm</code></span>
+                    <span>Y <code id="nudge-invitationDetails-y">0.00cm</code></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="customizer-card" style="margin-top: 15px;">
+                <div class="customizer-card-title">Individual Element Nudging</div>
+                <div class="customizer-group-desc" style="margin-bottom: 12px;">Fine-tune position offsets for specific text and icon elements.</div>
+
+                <!-- Shloka (Mantras) -->
+                <div class="section-adjust-group" style="margin-bottom: 20px; border-bottom: 1px solid var(--g200); padding-bottom: 15px;">
+                  <div class="customizer-label" style="font-weight: 600; margin-bottom: 8px;">Shloka (Mantras) Position</div>
+                  <div class="customizer-field-row" style="align-items: center; justify-content: space-between;">
+                    <span class="customizer-label-sub">Nudge</span>
+                    <div class="nudge-pad" style="transform: scale(0.9); margin-right: -10px;">
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('shloka', 0, -0.05)" title="Move up">▲</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('shloka', -0.05, 0)" title="Move left">◀</button>
+                      <button class="nudge-btn center" type="button" onclick="resetSectionOffset('shloka')" title="Reset">0</button>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('shloka', 0.05, 0)" title="Move right">▶</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('shloka', 0, 0.05)" title="Move down">▼</button>
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="nudge-meta" style="margin-top: 5px; justify-content: flex-end;">
+                    <span style="margin-right: 10px;">X <code id="nudge-shloka-x">0.00cm</code></span>
+                    <span>Y <code id="nudge-shloka-y">0.00cm</code></span>
+                  </div>
+                </div>
+
+                <!-- Ceremony Heading -->
+                <div class="section-adjust-group" style="margin-bottom: 20px; border-bottom: 1px solid var(--g200); padding-bottom: 15px;">
+                  <div class="customizer-label" style="font-weight: 600; margin-bottom: 8px;">Ceremony Heading Position</div>
+                  <div class="customizer-field-row" style="align-items: center; justify-content: space-between;">
+                    <span class="customizer-label-sub">Nudge</span>
+                    <div class="nudge-pad" style="transform: scale(0.9); margin-right: -10px;">
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('heading', 0, -0.05)" title="Move up">▲</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('heading', -0.05, 0)" title="Move left">◀</button>
+                      <button class="nudge-btn center" type="button" onclick="resetSectionOffset('heading')" title="Reset">0</button>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('heading', 0.05, 0)" title="Move right">▶</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('heading', 0, 0.05)" title="Move down">▼</button>
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="nudge-meta" style="margin-top: 5px; justify-content: flex-end;">
+                    <span style="margin-right: 10px;">X <code id="nudge-heading-x">0.00cm</code></span>
+                    <span>Y <code id="nudge-heading-y">0.00cm</code></span>
+                  </div>
+                </div>
+
+                <!-- Ganesh Icon -->
+                <div class="section-adjust-group" style="margin-bottom: 20px; border-bottom: 1px solid var(--g200); padding-bottom: 15px;">
+                  <div class="customizer-label" style="font-weight: 600; margin-bottom: 8px;">Ganesh Icon Position</div>
+                  <div class="customizer-field-row" style="align-items: center; justify-content: space-between;">
+                    <span class="customizer-label-sub">Nudge</span>
+                    <div class="nudge-pad" style="transform: scale(0.9); margin-right: -10px;">
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('ganesh', 0, -0.05)" title="Move up">▲</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('ganesh', -0.05, 0)" title="Move left">◀</button>
+                      <button class="nudge-btn center" type="button" onclick="resetSectionOffset('ganesh')" title="Reset">0</button>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('ganesh', 0.05, 0)" title="Move right">▶</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('ganesh', 0, 0.05)" title="Move down">▼</button>
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="nudge-meta" style="margin-top: 5px; justify-content: flex-end;">
+                    <span style="margin-right: 10px;">X <code id="nudge-ganesh-x">0.00cm</code></span>
+                    <span>Y <code id="nudge-ganesh-y">0.00cm</code></span>
+                  </div>
+                </div>
+
+                <!-- Om Icon -->
+                <div class="section-adjust-group" style="margin-bottom: 20px; border-bottom: 1px solid var(--g200); padding-bottom: 15px;">
+                  <div class="customizer-label" style="font-weight: 600; margin-bottom: 8px;">Om Icon Position</div>
+                  <div class="customizer-field-row" style="align-items: center; justify-content: space-between;">
+                    <span class="customizer-label-sub">Nudge</span>
+                    <div class="nudge-pad" style="transform: scale(0.9); margin-right: -10px;">
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('om', 0, -0.05)" title="Move up">▲</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('om', -0.05, 0)" title="Move left">◀</button>
+                      <button class="nudge-btn center" type="button" onclick="resetSectionOffset('om')" title="Reset">0</button>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('om', 0.05, 0)" title="Move right">▶</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('om', 0, 0.05)" title="Move down">▼</button>
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="nudge-meta" style="margin-top: 5px; justify-content: flex-end;">
+                    <span style="margin-right: 10px;">X <code id="nudge-om-x">0.00cm</code></span>
+                    <span>Y <code id="nudge-om-y">0.00cm</code></span>
+                  </div>
+                </div>
+
+                <!-- Couple Icon -->
+                <div class="section-adjust-group" style="padding-bottom: 5px;">
+                  <div class="customizer-label" style="font-weight: 600; margin-bottom: 8px;">Couple Icon Position</div>
+                  <div class="customizer-field-row" style="align-items: center; justify-content: space-between;">
+                    <span class="customizer-label-sub">Nudge</span>
+                    <div class="nudge-pad" style="transform: scale(0.9); margin-right: -10px;">
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('couple', 0, -0.05)" title="Move up">▲</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('couple', -0.05, 0)" title="Move left">◀</button>
+                      <button class="nudge-btn center" type="button" onclick="resetSectionOffset('couple')" title="Reset">0</button>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('couple', 0.05, 0)" title="Move right">▶</button>
+                      <span></span>
+                      <button class="nudge-btn" type="button" onclick="adjustSectionOffset('couple', 0, 0.05)" title="Move down">▼</button>
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="nudge-meta" style="margin-top: 5px; justify-content: flex-end;">
+                    <span style="margin-right: 10px;">X <code id="nudge-couple-x">0.00cm</code></span>
+                    <span>Y <code id="nudge-couple-y">0.00cm</code></span>
                   </div>
                 </div>
               </div>

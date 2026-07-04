@@ -178,6 +178,25 @@ const DEFAULT_STYLE = {
   showCorners: true,
   cornerSymbol: '✿',
   cornerSize: 100,
+  balAagrahSize: 100,
+  balAagrahOffsetX: 0,
+  balAagrahOffsetY: 0,
+  ceremoniesSize: 100,
+  ceremoniesOffsetX: 0,
+  ceremoniesOffsetY: 0,
+  invitationDetailsSize: 100,
+  invitationDetailsOffsetX: 0,
+  invitationDetailsOffsetY: 0,
+  shlokaOffsetX: 0,
+  shlokaOffsetY: 0,
+  headingOffsetX: 0,
+  headingOffsetY: 0,
+  ganeshOffsetX: 0,
+  ganeshOffsetY: 0,
+  omOffsetX: 0,
+  omOffsetY: 0,
+  coupleOffsetX: 0,
+  coupleOffsetY: 0,
   cardPadding: 1.0,
   sectionGap: 0.3,
   showBorder: true,
@@ -517,6 +536,27 @@ window.addEventListener('DOMContentLoaded', () => {
 // Load template configuration
 async function loadTemplate(templateId) {
   activeTemplateId = templateId;
+  
+  // Update Canva Mode Link & Add transfer listener
+  const canvaLink = document.getElementById('canva-mode-link');
+  if (canvaLink) {
+    let url = 'canva-editor.html?templateId=' + templateId;
+    if (window.activeProjectId) {
+      url += '&projectId=' + window.activeProjectId;
+    }
+    canvaLink.href = url;
+    
+    // Add click listener to save active draft data state before redirecting
+    canvaLink.addEventListener('click', () => {
+      const stateToTransfer = {
+        templateId: activeTemplateId,
+        projectId: window.activeProjectId,
+        documentTitle: document.getElementById('doc-title-input')?.value || '',
+        data: JSON.parse(JSON.stringify(currentData))
+      };
+      localStorage.setItem('mic_canva_editor_transfer', JSON.stringify(stateToTransfer));
+    });
+  }
   
   try {
     const response = await fetch(`templates/${templateId}/config.json`);
@@ -1491,6 +1531,23 @@ window.resetCornerOffset = function(cornerKey) {
   syncCustomizerInputs();
 };
 
+window.adjustSectionOffset = function(sectionKey, dx, dy) {
+  const st = ensureCardStyle();
+  const keys = { x: sectionKey + 'OffsetX', y: sectionKey + 'OffsetY' };
+  const nextX = Math.max(-5, Math.min(5, Number(st[keys.x] || 0) + dx));
+  const nextY = Math.max(-5, Math.min(5, Number(st[keys.y] || 0) + dy));
+  setField('styles.' + keys.x, Math.round(nextX * 100) / 100);
+  setField('styles.' + keys.y, Math.round(nextY * 100) / 100);
+  syncCustomizerInputs();
+};
+
+window.resetSectionOffset = function(sectionKey) {
+  const keys = { x: sectionKey + 'OffsetX', y: sectionKey + 'OffsetY' };
+  setField('styles.' + keys.x, 0);
+  setField('styles.' + keys.y, 0);
+  syncCustomizerInputs();
+};
+
 function updatePresetCardsActiveState() {
   const st = currentData.styles;
   if (!st) return;
@@ -1521,7 +1578,11 @@ function syncCustomizerInputs() {
   });
 
   // Sync sliders
-  const sliders = ['shlokaSize', 'headingSize', 'namesSize', 'eventSize', 'footerSize', 'ganeshSize', 'omSize', 'chainsSize', 'coupleSize', 'cornerSize', 'curveLevel'];
+  const sliders = [
+    'shlokaSize', 'headingSize', 'namesSize', 'eventSize', 'footerSize', 
+    'ganeshSize', 'omSize', 'chainsSize', 'coupleSize', 'cornerSize', 'curveLevel',
+    'balAagrahSize', 'ceremoniesSize', 'invitationDetailsSize'
+  ];
   sliders.forEach(key => {
     const val = st[key] !== undefined ? st[key] : 100;
     const slider = document.querySelector(`.range-slider[data-style-key="${key}"]`);
@@ -1596,6 +1657,16 @@ function syncCustomizerInputs() {
     const y = Number(st[keys.y] || 0);
     const xLabel = $('nudge-' + corner.key + '-x');
     const yLabel = $('nudge-' + corner.key + '-y');
+    if (xLabel) xLabel.textContent = fmtCmOffset(x);
+    if (yLabel) yLabel.textContent = fmtCmOffset(y);
+  });
+
+  // Sync custom section positions
+  ['balAagrah', 'ceremonies', 'invitationDetails', 'shloka', 'heading', 'ganesh', 'om', 'couple'].forEach(section => {
+    const x = Number(st[section + 'OffsetX'] || 0);
+    const y = Number(st[section + 'OffsetY'] || 0);
+    const xLabel = $('nudge-' + section + '-x');
+    const yLabel = $('nudge-' + section + '-y');
     if (xLabel) xLabel.textContent = fmtCmOffset(x);
     if (yLabel) yLabel.textContent = fmtCmOffset(y);
   });
