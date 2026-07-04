@@ -1357,7 +1357,39 @@
       padding: 40px;
     }
     
-  </style>
+  
+    /* FIX PANEL WIDTHS */
+    .left-panel-wrapper {
+      width: auto !important;
+      max-width: 420px;
+    }
+    .drawer {
+      width: 340px !important;
+      flex: none !important;
+    }
+    
+    /* Ensure properties bar is strictly 300px */
+    .properties-bar {
+      width: 300px !important;
+      min-width: 300px !important;
+      max-width: 300px !important;
+      background-color: var(--w) !important;
+    }
+    
+    /* Ensure canvas-stage expands */
+    .canvas-stage {
+      flex: 1 1 auto !important;
+      width: 100% !important;
+      background-color: var(--g100) !important;
+    }
+    
+    .workspace {
+      display: flex !important;
+      flex-direction: row !important;
+      width: 100% !important;
+    }
+
+</style>
 
 </head>
 <body>
