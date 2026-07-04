@@ -1300,27 +1300,37 @@
       display: none;
     }
 
-    /* FLOATING ZOOM BAR */
+    /* LIVE PREVIEW TOP BAR (Matches universal template editor) */
     .preview-bar {
-      position: absolute !important;
-      bottom: 32px !important;
-      top: auto !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-      background: var(--w) !important;
-      padding: 10px 16px !important;
-      border-radius: 100px !important;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12) !important;
+      height: 50px !important;
+      background-color: var(--w) !important;
+      border-bottom: 1px solid var(--g200) !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
       display: flex !important;
       align-items: center !important;
-      gap: 12px !important;
-      z-index: 50 !important;
-      border: 1px solid var(--g200) !important;
-      width: auto !important;
+      justify-content: space-between !important;
+      padding: 0 20px !important;
+      width: 100% !important;
+      position: relative !important;
+      transform: none !important;
+      left: auto !important;
+      bottom: auto !important;
     }
     
     .preview-lbl {
-      display: none !important;
+      display: flex !important;
+      align-items: center !important;
+      font-weight: 700 !important;
+      font-size: 14px !important;
+      color: var(--g900) !important;
+      gap: 8px !important;
+    }
+    
+    .preview-bar .zoom-bar {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
     }
 
     /* Adjust page switcher if any */
@@ -1752,7 +1762,7 @@
         
         <div class="preview-bar">
           <div class="preview-lbl">
-            <span class="live-dot"></span> CANVAS WORKSPACE
+            <span class="live-dot"></span> Live Card1 Preview
           </div>
           <div class="zoom-bar">
             <button class="zbtn" onclick="adjustZoom(-0.1)" title="Zoom Out">−</button>
