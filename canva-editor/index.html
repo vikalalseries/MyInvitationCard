@@ -13,7 +13,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+  <script src="htmlToFabric.js"></script>
   <style>
     /* ── DYNAMIC STYLE GUIDE MATCHING UNIVERSAL EDITOR ── */
     :root {
@@ -1730,8 +1730,9 @@
             <button class="page-btn active" id="page-btn-1" onclick="switchPage(1)">Page 1 (Ceremonies)</button>
             <button class="page-btn" id="page-btn-2" onclick="switchPage(2)">Page 2 (Details)</button>
           </div>
-          <div id="preview-scaler-wrap" style="display: inline-block; position: relative; transition: width 0.2s, height 0.2s; margin: auto;">
-            <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12); border-radius: 10px; border: none; overflow: hidden; transform-origin: top left; transition: transform 0.1s ease-out; background: #fff;">
+          <div id="preview-scaler-wrap" style="display: inline-block; position: relative; transition: width 0.2s, height 0.2s; margin: auto; border-radius: 10px; box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12); background: #fff; overflow: hidden;">
+            <iframe id="bg-template-frame" src="templates/card1_canva.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 1; pointer-events: none; opacity: 0;"></iframe>
+            <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; border: none; overflow: visible; transform-origin: top left; transition: transform 0.1s ease-out; background: transparent; position: relative; z-index: 2;">
               <canvas id="editor-canvas" width="893" height="760"></canvas>
             </div>
           </div>
@@ -2554,8 +2555,12 @@
           refreshLayersList();
         });
       } else {
-        // Generate page dynamically from activeTemplateData
-        renderCanvasFromTemplateData(activeTemplateData, activeTemplateId, false);
+        // Generate page dynamically from iframe
+        const iframe = document.getElementById('bg-template-frame');
+        parseHtmlToFabric(iframe, canvas, activePage - 1).then(() => {
+          isSavingHistory = true;
+          refreshLayersList();
+        });
       }
     }
 
@@ -3198,9 +3203,25 @@
         // Update Form Mode Link
         const formLink = document.getElementById('form-mode-link');
         if (formLink) {
-          formLink.href = 'editor.html?templateId=' + currentId;
+          formLink.href = '../universal-template-editor/editor.html?templateId=' + currentId;
         }
       }
+      
+      // Load HTML Template into iframe and parse it
+      const iframe = document.getElementById('bg-template-frame');
+      iframe.src = 'templates/' + currentId + '_canva.html';
+      
+      iframe.onload = async () => {
+        const pageIndex = (window.currentPage || 1) - 1;
+        await parseHtmlToFabric(iframe, canvas, pageIndex);
+        
+        setTimeout(() => {
+          isSavingHistory = true;
+          canvas.discardActiveObject();
+          canvas.requestRenderAll();
+          saveHistory();
+        }, 400);
+      };
       
       // Render suggestions of the same category
       renderSuggestions(type);

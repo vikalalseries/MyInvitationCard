@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>विवाह निमंत्रण</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background:#c8829a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:0;
+  font-family:'Noto Serif Devanagari', serif;
+}
+
+/* ── CARD: 23.5 × 19 cm with 1cm padding ── */
+.card {
+  width:23.5cm;
+  min-height:19cm;
+  background:#f2aec8;
+  padding:1cm;
+  display:flex;
+  flex-direction:column;
+  gap:0.3cm;
+}
+
+/* ── EACH SECTION: 21.5 × 8.5 cm ── */
+.sec {
+  width:21.5cm;
+  height:8.5cm;
+  position:relative;
+  border:0.07cm solid #8b0040;
+  box-shadow:inset 0 0 0 0.13cm #f2aec8, inset 0 0 0 0.20cm #8b0040;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(255,255,255,0.52) 0%, transparent 28%),
+    radial-gradient(ellipse at 80% 75%, rgba(255,255,255,0.4)  0%, transparent 32%),
+    linear-gradient(140deg,#fce4ef 0%,#f9d5e8 45%,#f6cde1 75%,#fad8eb 100%);
+}
+.sec::before {
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:radial-gradient(rgba(160,0,60,0.06) 1px, transparent 1px);
+  background-size:5px 5px;
+}
+
+/* 4 corner flowers — exactly one each */
+.fl { position:absolute; color:#8b0040; font-size:1.2cm; line-height:1; z-index:10; }
+.tl { top:0.4cm;  left:0.2cm; }
+.tr { top:0.4cm;  right:0.2cm; }
+.bl { bottom:-0.07cm; left:0.2cm; }
+.br { bottom:-0.07cm; right:0.2cm; }
+
+/* ════════════════════════════════════════
+   SECTION 1  — Top card
+   ════════════════════════════════════════ */
+.s1-wrap {
+  position:relative; z-index:1;
+  width:100%; height:100%;
+}
+
+.s1-mantras {
+  position: absolute;
+  top: 0.1cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12cm;
+  text-align: center;
+  z-index: 5;
+}
+.s1-mantras p { font-size:0.39cm; color:#6e0035; line-height:1.4; }
+.s1-mantras p:first-child { font-size:0.4cm; font-weight:600; }
+
+.swirl {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color:#9b1050;
+  font-size:0.27cm;
+  letter-spacing:0.04cm;
+  width: 12cm;
+  text-align: center;
+  z-index: 5;
+}
+.swirl-top { top: 1.1cm; }
+.swirl-mid { top: 2.0cm; }
+
+.s1-heading {
+  position: absolute;
+  top: 1.45cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8cm;
+  text-align: center;
+  font-size:0.5cm;
+  font-weight:700;
+  color:#6e0035;
+  z-index: 5;
+}
+
+.s1-haldi {
+  position: absolute;
+  top: 2.45cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8cm;
+  text-align: center;
+  z-index: 5;
+}
+.s1-haldi-t { font-size:0.60cm; font-weight:700; color:#6e0035; }
+.s1-haldi-d { font-size:0.47cm; color:#6e0035; margin-top: -0.05cm; }
+
+.vivah-box {
+  position: absolute;
+  top: 4.7cm;
+  left: 3.5cm;
+  text-align: center;
+  z-index: 5;
+}
+.vidai-box {
+  position: absolute;
+  top: 4.7cm;
+  right: 3.5cm;
+  text-align: center;
+  z-index: 5;
+}
+.s1-ev-t { font-size:0.70cm; font-weight:700; color:#6e0035; line-height:1.2; }
+.s1-ev-d { font-size:0.5cm; color:#6e0035; margin-top:0.04cm; }
+
+.couple-box {
+  position: absolute;
+  top: 3.35cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3cm;
+  height: 2.4cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+.couple-box img {
+  width: 3cm;
+  height: auto;
+  display: block;
+}
+
+.s1-bal {
+  position: absolute;
+  bottom: 0.1cm;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 17cm;
+  text-align: center;
+  font-size:0.4cm;
+  color:#6e0035;
+  line-height: 1.5;
+  z-index: 5;
+}
+.s1-bal-n { font-weight:700; font-size:0.4cm; }
+
+/* Absolute positioned icons */
+.ganesh-icon img {
+  width: 3.5cm;
+  height: auto;
+  position: absolute;
+  top: 0.2cm;
+  left: 1.7cm;
+  display: block;
+  z-index: 6;
+}
+.sun-icon img {
+  width: 3cm;
+  height: auto;
+  position: absolute;
+  top: 0.7cm;
+  right: 1.8cm;
+  display: block;
+  z-index: 6;
+}
+.chainleft img {
+  width: 1.8cm;
+  height: auto;
+  position: absolute;
+  top: 2.5cm;
+  left: 0.2cm;
+  display: block;
+  z-index: 6;
+}
+.chainright img {
+  width: 1.8cm;
+  height: auto;
+  position: absolute;
+  top: 2.5cm;
+  right: 0.2cm;
+  display: block;
+  z-index: 6;
+}
+.top-icon img {
+  width: 3.4cm;
+  height: auto;
+  position: absolute;
+  top: 4.0cm;
+  left: 9.0cm;
+  display: block;
+  z-index: 6;
+}
+.bottom-icon img {
+  width: 3.4cm;
+  height: auto;
+  position: absolute;
+  top: 6.2cm;
+  left: 4.3cm;
+  display: block;
+  z-index: 6;
+}
+.top1-icon img {
+  width: 3.4cm;
+  height: auto;
+  position: absolute;
+  top: 6.2cm;
+  right: 4.3cm;
+  display: block;
+  z-index: 6;
+}
+.mid-icon img {
+  width: 2.5cm;
+  height: auto;
+  position: absolute;
+  top: 4.6cm;
+  right: 9.45cm;
+  display: block;
+  z-index: 6;
+}
+
+/* ════════════════════════════════════════
+   SECTION 2  — Bottom card
+   ════════════════════════════════════════ */
+.s2-wrap {
+  position:relative; z-index:1;
+  width:100%; height:100%;
+}
+
+.s2-snehi {
+  position: absolute;
+  top: 0.8cm;
+  left: 3.8cm;
+  font-size:0.380cm;
+  font-weight:600;
+  color:#6e0035;
+  z-index: 5;
+}
+
+.s2-vindhya {
+  position: absolute;
+  top: 0.25cm;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 14cm;
+  z-index: 5;
+}
+.s2-vm { font-size:0.40cm; font-weight:700; color:#6e0035; }
+.s2-vs { font-size:0.380cm; font-weight:600; color:#6e0035; margin-top:0.30cm; }
+
+.s2-bride {
+  position: absolute;
+  top: 1.8cm;
+  left: 0.8cm;
+  font-size:0.65cm;
+  font-weight:700;
+  color:#6e0035;
+  text-align: left;
+  z-index: 5;
+}
+
+.s2-groom {
+  position: absolute;
+  top: 1.8cm;
+  right: 0.8cm;
+  width: 7.0cm;
+  font-size:0.65cm;
+  font-weight:700;
+  color:#6e0035;
+  text-align: right;
+  z-index: 5;
+}
+
+.s2-fam {
+  position: absolute;
+  top: 2.8cm;
+  left: 0.8cm;
+  font-size:0.4cm;
+  color:#6e0035;
+  line-height:1.65;
+  text-align: left;
+  z-index: 5;
+}
+
+.s2-fam-r {
+  position: absolute;
+  top: 2.8cm;
+  right: 0.8cm;
+  font-size:0.4cm;
+  color:#6e0035;
+  line-height:1.65;
+  text-align: right;
+  z-index: 5;
+}
+
+.s2-icon.couple-box {
+  position: absolute;
+  top: 2.1cm;
+  left: 43%;
+  transform: translateX(-50%);
+  width: 3cm;
+  height: 2.2cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+.s2-icon.couple-box img {
+  width: 3cm;
+  height: auto;
+  display: block;
+}
+
+.s2-damp-t {
+  position: absolute;
+  top: 4.15cm;
+  left: 50%;
+  transform: translateX(-50%);
+
+  text-align: center;
+  font-size:0.4cm;
+  font-weight:700;
+  color:#6e0035;
+  z-index: 5;
+}
+
+.s2-damp-d {
+  position: absolute;
+  top: 4.85cm;
+  left: 50%;
+  transform: translateX(-50%);
+
+  text-align: center;
+  font-size:0.37cm;
+  color:#6e0035;
+  line-height:1.45;
+  z-index: 5;
+}
+
+/* Footer columns */
+.fc-l {
+  position: absolute;
+  bottom: 0.05cm;
+  left: 1.6cm;
+
+  text-align: left;
+  z-index: 5;
+}
+
+.fc-c {
+  position: absolute;
+  bottom: 0.05cm;
+  left: 50%;
+  transform: translateX(-50%);
+
+  text-align: center;
+  z-index: 5;
+}
+
+.fc-r {
+  position: absolute;
+  bottom: 0.05cm;
+  right: 1.8cm;
+
+  text-align: center;
+  z-index: 5;
+}
+
+.f-label { font-size:0.45cm; color:#6e0035; margin-bottom:0.02cm; }
+.f-name  { font-size:0.43cm; font-weight:700; color:#6e0035; line-height:1.5; }
+.f-addr  { font-size:0.38cm; color:#6e0035; line-height:1.5; margin-top:0.02cm; }
+
+@page { size:23.5cm 19cm; margin:0; }
+@media print { body { background:none; padding:0; } }
+</style>
+</head>
+<body>
+<div class="card">
+  <div style="text-align: center; padding: 100px; font-size: 24px; color: #6e0035; font-family: sans-serif; font-weight: bold;">Loading card sections...</div>
+</div>
+
+<script>
+let sectionsLoaded = false;
+let currentCardState = null;
+
+async function loadSections() {
+  try {
+    const [res1, res2] = await Promise.all([
+      fetch('card1_sec1.html').then(r => r.text()),
+      fetch('card1_sec2.html').then(r => r.text())
+    ]);
+    
+    const parser = new DOMParser();
+    const doc1 = parser.parseFromString(res1, 'text/html');
+    const doc2 = parser.parseFromString(res2, 'text/html');
+    
+    const sec1 = doc1.querySelector('.sec');
+    const sec2 = doc2.querySelector('.sec');
+    
+    const cardContainer = document.querySelector('.card');
+    cardContainer.innerHTML = '';
+    cardContainer.appendChild(sec1);
+    cardContainer.appendChild(sec2);
+    
+    sectionsLoaded = true;
+    if (currentCardState) {
+      syncCard(currentCardState);
+    }
+  } catch (e) {
+    console.error('Failed to load sections dynamically:', e);
+  }
+}
+
+loadSections();
+
+// ══════════════════════════════════════════════════════
+//  BUILDER ↔ CARD1 LIVE SYNC  (postMessage receiver)
+// ══════════════════════════════════════════════════════
+window.addEventListener('message', function(e) {
+  const d = e.data;
+  if (!d || d.type !== 'MIC_CARD_UPDATE') return;
+  const c = d.card;
+  if (!c) return;
+  
+  currentCardState = c;
+  if (sectionsLoaded) {
+    syncCard(c);
+  }
+});
+
+const DEFAULT_CARD_STYLE = {
+  bodyBg: '#c8829a',
+  cardBg: '#f2aec8',
+  accentColor: '#8b0040',
+  textColor: '#6e0035',
+  headingColor: '#6e0035',
+  fontFamily: 'Noto Serif Devanagari',
+  shlokaSize: 100,
+  headingSize: 100,
+  namesSize: 100,
+  eventSize: 100,
+  footerSize: 100,
+  showGanesh: true,
+  ganeshSize: 100,
+  showOm: true,
+  omSize: 100,
+  showChains: true,
+  chainsSize: 100,
+  showCouple: true,
+  coupleSize: 100,
+  showCorners: true,
+  cornerSymbol: '✿',
+  cornerSize: 100,
+  cardPadding: 1.0,
+  sectionGap: 0.3,
+  showBorder: true,
+  curveLevel: 0,
+  borderPreset: 'classic',
+  borderColor: '#8b0040',
+  iconColors: {},
+  iconReplacements: {}
+};
+
+function resolveCardStyle(style) {
+  return Object.assign({}, DEFAULT_CARD_STYLE, style || {});
+}
+
+function loadCustomFont(fontFamily) {
+  if (!fontFamily || fontFamily === DEFAULT_CARD_STYLE.fontFamily) return;
+  const linkId = 'custom-font-' + String(fontFamily).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  if (document.getElementById(linkId)) return;
+  const link = document.createElement('link');
+  link.id = linkId;
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fontFamily).replace(/%20/g, '+') + ':wght@400;600;700&display=swap';
+  document.head.appendChild(link);
+}
+
+const BORDER_FRAME_PRESETS = {
+  classic: { width: '0.07cm', borderStyle: 'solid', rings: ['0.13cm', '0.22cm'], borderRadius: '0.24cm' },
+  double: { width: '0.10cm', borderStyle: 'double', rings: ['0.14cm', '0.26cm'], borderRadius: '0.20cm' },
+  thin: { width: '0.04cm', borderStyle: 'solid', rings: ['0.09cm', '0.16cm'], borderRadius: '0.18cm' },
+  dashed: { width: '0.08cm', borderStyle: 'dashed', rings: ['0.12cm', '0.20cm'], borderRadius: '0.12cm' },
+  ornate: { width: '0.10cm', borderStyle: 'solid', rings: ['0.12cm', '0.20cm', '0.28cm', '0.36cm', '0.44cm'], borderRadius: '0.28cm' },
+  luxe: { width: '0.12cm', borderStyle: 'double', rings: ['0.14cm', '0.24cm', '0.34cm'], borderRadius: '0.28cm' },
+  modern: { width: '0.06cm', borderStyle: 'solid', rings: ['0.15cm', '0.28cm'], borderRadius: '0.32cm' },
+  minimal: { width: '0.04cm', borderStyle: 'solid', rings: ['0.18cm'], borderRadius: '0.40cm' },
+  'art-deco': { width: '0.06cm', borderStyle: 'solid', rings: ['0.10cm', '0.18cm', '0.26cm', '0.34cm'], borderRadius: '0.16cm' },
+  vintage: { width: '0.10cm', borderStyle: 'solid', rings: ['0.12cm', '0.20cm', '0.28cm', '0.38cm'], borderRadius: '0.36cm' },
+  retro: { width: '0.09cm', borderStyle: 'dotted', rings: ['0.14cm', '0.22cm', '0.30cm'], borderRadius: '0.22cm' },
+  elegant: { width: '0.08cm', borderStyle: 'solid', rings: ['0.11cm', '0.19cm', '0.27cm'], borderRadius: '0.30cm' },
+  bold: { width: '0.14cm', borderStyle: 'solid', rings: ['0.16cm', '0.28cm'], borderRadius: '0.18cm' }
+};
+
+function buildBorderFrameCss(style) {
+  if (style.showBorder === false) {
+    return 'border:none !important; box-shadow:none !important;';
+  }
+  const preset = BORDER_FRAME_PRESETS[style.borderPreset || 'classic'] || BORDER_FRAME_PRESETS.classic;
+  const borderColor = style.borderColor || style.accentColor || '#8b0040';
+  const cardBg = style.cardBg || '#f9f1d0';
+  const shadows = preset.rings.map((ring) => {
+    return `inset 0 0 0 ${ring} ${cardBg}`;
+  }).join(', ');
+  let radius = '';
+  if (style.curveLevel && preset.borderRadius) {
+    const factor = Number(style.curveLevel) / 4;
+    const baseRadius = parseFloat(preset.borderRadius);
+    const radiusValue = (baseRadius * factor).toFixed(3) + 'cm';
+    radius = ` border-radius:${radiusValue};`;
+  }
+  return `border:${preset.width} ${preset.borderStyle} ${borderColor}; box-shadow:${shadows};${radius}`;
+}
+
+const ICON_REPLACEMENT_MAP = [
+  { key: 'ganesh', selector: '.ganesh-icon img', defaultSrc: '../builder1/assets/icons/ganesh.png' },
+  { key: 'om', selector: '.sun-icon img', defaultSrc: '../builder1/assets/icons/om.png' },
+  { key: 'chainLeft', selector: '.chainleft img', defaultSrc: '../builder1/assets/icons/side.png' },
+  { key: 'chainRight', selector: '.chainright img', defaultSrc: '../builder1/assets/icons/side.png' },
+  { key: 'topIcon', selector: '.top-icon img', defaultSrc: '../builder1/assets/icons/top2.png' },
+  { key: 'top1Icon', selector: '.top1-icon img', defaultSrc: '../builder1/assets/icons/top2.png' },
+  { key: 'bottomIcon', selector: '.bottom-icon img', defaultSrc: '../builder1/assets/icons/top2.png' },
+  { key: 'midIcon', selector: '.mid-icon img', defaultSrc: '../builder1/assets/icons/mid.png' },
+  { key: 'couple1', selector: '.s1-wrap .couple-box img', defaultSrc: '../builder1/assets/icons/weds.png' },
+  { key: 'couple2', selector: '.s2-wrap .s2-icon img', defaultSrc: '../builder1/assets/icons/weds.png' }
+];
+
+function applyIconReplacements(style) {
+  const replacements = (style && style.iconReplacements) || {};
+  ICON_REPLACEMENT_MAP.forEach(item => {
+    const value = replacements[item.key];
+    let src = typeof value === 'string' ? value : value && value.file ? value.file : item.defaultSrc;
+    if (src && src.startsWith('/assets/')) {
+      src = '../' + src.substring(1);
+    }
+    document.querySelectorAll(item.selector).forEach(img => {
+      if (!img.dataset.defaultSrc) {
+        img.dataset.defaultSrc = img.getAttribute('src') || item.defaultSrc;
+      }
+      const finalSrc = src || img.dataset.defaultSrc;
+      img.src = finalSrc;
+      
+      // Apply color overlay using CSS mask
+      const color = style.iconColors && style.iconColors[item.key];
+      if (color) {
+        img.style.webkitMaskImage = `url("${finalSrc}")`;
+        img.style.maskImage = `url("${finalSrc}")`;
+        img.style.webkitMaskSize = 'contain';
+        img.style.maskSize = 'contain';
+        img.style.webkitMaskRepeat = 'no-repeat';
+        img.style.maskRepeat = 'no-repeat';
+        img.style.backgroundColor = color;
+        img.style.objectPosition = '-99999px';
+      } else {
+        img.style.webkitMaskImage = '';
+        img.style.maskImage = '';
+        img.style.backgroundColor = '';
+        img.style.objectPosition = '';
+      }
+    });
+  });
+}
+
+function syncCard(c) {
+  // ── SECTION 1: Opening Shloka ────────────────────────
+  setTxt('.s1-mantras p:first-child', c.shloka && c.shloka.line1 ? c.shloka.line1 : '।। श्री गणेशाय नमः ।।');
+  setTxt('.s1-mantras p:last-child',  c.shloka && c.shloka.line2 ? c.shloka.line2 : 'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥');
+
+  // ── SECTION 1: Haldi ────────────────────────────────
+  if (c.haldi) {
+    setTxt('.s1-haldi-t', c.haldi.name || 'हल्दी व मेहन्दी');
+    setTxt('.s1-haldi-d', 'दिनांक - ' + fmtHi(c.haldi.date));
+  }
+
+  // ── SECTION 1: Vivah & Vidai ─────────────────────────
+  const evEls = document.querySelectorAll('.s1-ev');
+  if (evEls[0] && c.vivah) {
+    setTxtEl(evEls[0].querySelector('.s1-ev-t'), c.vivah.name || 'शुभ विवाह');
+    setTxtEl(evEls[0].querySelector('.s1-ev-d'), 'दिनांक - ' + fmtHi(c.vivah.date));
+  }
+  if (evEls[1] && c.vidai) {
+    setTxtEl(evEls[1].querySelector('.s1-ev-t'), c.vidai.name || 'विदाई');
+    setTxtEl(evEls[1].querySelector('.s1-ev-d'), 'दिनांक - ' + fmtHi(c.vidai.date));
+  }
+
+  // ── SECTION 1: Bal Aagrah ───────────────────────────
+  if (c.balAagrah) {
+    const balEl = document.querySelector('.s1-bal');
+    if (balEl) {
+      const nameSpan = balEl.querySelector('.s1-bal-n');
+      const textNode = Array.from(balEl.childNodes).find(n => n.nodeType === 3);
+      if (textNode) textNode.textContent = (c.balAagrah.text || '') + '\n';
+      if (nameSpan)  nameSpan.textContent = c.balAagrah.names || '';
+    }
+  }
+
+  // ── SECTION 2: Snehi ────────────────────────────────
+  setTxt('.s2-snehi', c.snehi || 'स्नेही स्वजन,');
+
+  // ── SECTION 2: Vindhyavasini ────────────────────────
+  if (c.vindhya) {
+    setTxt('.s2-vm', c.vindhya.mantra   || '।। श्री विन्ध्यवासिनी देव्यै नमः ।।');
+    setTxt('.s2-vs', c.vindhya.subtitle || 'आदि शक्ति जगत जननी माँ विन्ध्यवासिनी जी की असीम अनुकम्पा से....');
+  }
+
+  // ── SECTION 2: Bride ────────────────────────────────
+  if (c.bride) {
+    setTxt('.s2-bride', (c.bride.title || 'आयु॰कु॰') + ' ' + (c.bride.name || 'नीलम मौर्या'));
+    const famL = document.querySelector('.s2-fam');
+    if (famL) {
+      const lines = [];
+      if (c.bride.grandfatherName) lines.push('सुपौत्री- स्व0 ' + c.bride.grandfatherName);
+      if (c.bride.fatherName || c.bride.motherName)
+        lines.push('सुपुत्री- ' + [c.bride.fatherName, c.bride.motherName].filter(Boolean).join('- '));
+      if (c.bride.address)
+        lines.push('ग्राम- ' + c.bride.address + (c.bride.post ? ' पो0- ' + c.bride.post : ''));
+      if (c.bride.city) lines.push(c.bride.city);
+      famL.innerHTML = lines.join('<br>');
+    }
+  }
+
+  // ── SECTION 2: Groom ────────────────────────────────
+  if (c.groom) {
+    setTxt('.s2-groom', (c.groom.title || 'चि॰') + ' ' + (c.groom.name || 'राजेश मौर्य'));
+    const famR = document.querySelector('.s2-fam-r');
+    if (famR) {
+      const lines = [];
+      if (c.groom.grandfatherName) lines.push('सुपौत्र- स्व0 ' + c.groom.grandfatherName);
+      if (c.groom.fatherName || c.groom.motherName)
+        lines.push('सुपुत्र- ' + [c.groom.fatherName, c.groom.motherName].filter(Boolean).join('- '));
+      if (c.groom.address)
+        lines.push('ग्राम- ' + c.groom.address + (c.groom.post ? ' पो0- ' + c.groom.post : ''));
+      if (c.groom.city) lines.push(c.groom.city);
+      famR.innerHTML = lines.join('<br>');
+    }
+  }
+
+  // ── SECTION 2: Vinit (center greeting) ──────────────
+  const dampD = document.querySelector('.s2-damp-d');
+  if (dampD && c.vinit !== undefined) {
+    dampD.innerHTML = c.vinit.replace(/\n/g, '<br>');
+  }
+
+  // ── FOOTER: Darshnabhilashi (left) ──────────────────
+  if (c.darshnabhilashi) {
+    setTxt('.fc-l .f-label', c.darshnabhilashi.label || 'दर्शनाभिलाषी -');
+    const fcLName = document.querySelector('.fc-l .f-name');
+    if (fcLName) fcLName.innerHTML = (c.darshnabhilashi.names || '').replace(/\n/g, '<br>');
+  }
+
+  // ── FOOTER: Swagatakankshi (center) ─────────────────
+  if (c.swagatakankshi) {
+    setTxt('.fc-c .f-label', c.swagatakankshi.label || '- स्वागताकांक्षी -');
+    const fcCName = document.querySelector('.fc-c .f-name');
+    if (fcCName) fcCName.innerHTML = (c.swagatakankshi.names || '').replace(/\n/g, '<br>');
+  }
+
+  // ── FOOTER: Nimantrak / Vinit (right) ───────────────
+  if (c.nimantrak) {
+    setTxt('.fc-r .f-label', c.nimantrak.label || '- विनीत -');
+    setTxt('.fc-r .f-name',  c.nimantrak.name  || '');
+    const fcRAddr = document.querySelector('.fc-r .f-addr');
+    if (fcRAddr) {
+      const n = c.nimantrak;
+      const parts = [n.address, n.post ? 'पो0- ' + n.post : '', n.city].filter(Boolean);
+      fcRAddr.innerHTML = parts.join('<br>');
+    }
+  }
+  applyCustomStyles(c.style);
+}
+
+function applyCustomStyles(style) {
+  style = resolveCardStyle(style);
+  let cssEl = document.getElementById('custom-card-styles');
+  if (!cssEl) {
+    cssEl = document.createElement('style');
+    cssEl.id = 'custom-card-styles';
+    document.head.appendChild(cssEl);
+  }
+
+  loadCustomFont(style.fontFamily);
+
+  // Calculate scaled sizes
+  const shlokaSizeVal = 0.39 * (style.shlokaSize / 100);
+  const headingSizeVal = 0.5 * (style.headingSize / 100);
+  const namesSizeVal = 0.65 * (style.namesSize / 100);
+  const eventSizeVal = 0.47 * (style.eventSize / 100);
+  const footerSizeVal = 0.4 * (style.footerSize / 100);
+  
+  const ganeshSizeVal = 3.5 * (style.ganeshSize / 100);
+  const omSizeVal = 3.0 * (style.omSize / 100);
+  const coupleSizeVal = 3.0 * (style.coupleSize / 100);
+  const cornerSizeVal = 1.2 * (style.cornerSize / 100);
+  const chainsSizeVal = 1.8 * (style.chainsSize / 100);
+  const iconShift = (key) => {
+    const x = Number(style[key + 'OffsetX'] || 0);
+    const y = Number(style[key + 'OffsetY'] || 0);
+    return `translate(${x}cm, ${y}cm)`;
+  };
+  const iconColorStyle = (key) => {
+    return '';
+  };
+  const cornerShift = (key) => {
+    const x = Number(style[key + 'OffsetX'] || 0);
+    const y = Number(style[key + 'OffsetY'] || 0);
+    return `translate(${x}cm, ${y}cm)`;
+  };
+  
+  let cssText = `
+    body {
+      background: ${style.bodyBg || '#c8829a'};
+      font-family: '${style.fontFamily || 'Noto Serif Devanagari'}', serif;
+    }
+    .card {
+      background: ${style.cardBg || '#f9f1d0'};
+      padding: ${style.cardPadding !== undefined ? style.cardPadding : 1.0}cm;
+      gap: ${style.sectionGap !== undefined ? style.sectionGap : 0.3}cm;
+    }
+    .sec {
+      ${buildBorderFrameCss(style)}
+      background: ${style.cardBg || '#f9f1d0'};
+    }
+    .fl {
+      color: ${style.accentColor || '#8b0040'};
+      font-size: ${cornerSizeVal}cm;
+      display: ${style.showCorners !== false ? 'block' : 'none'} !important;
+    }
+    .tl { transform: ${cornerShift('cornerTl')} !important; }
+    .tr { transform: ${cornerShift('cornerTr')} !important; }
+    .bl { transform: ${cornerShift('cornerBl')} !important; }
+    .br { transform: ${cornerShift('cornerBr')} !important; }
+    .s1-mantras p {
+      color: ${style.textColor || '#6e0035'};
+    }
+    .s1-mantras p:first-child {
+      font-size: ${shlokaSizeVal * 1.02}cm;
+    }
+    .s1-mantras p:last-child {
+      font-size: ${shlokaSizeVal}cm;
+    }
+    .s1-heading {
+      color: ${style.headingColor || '#6e0035'};
+      font-size: ${headingSizeVal}cm;
+    }
+    .swirl {
+      color: ${style.accentColor || '#9b1050'};
+    }
+    .s1-haldi-t {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${eventSizeVal * 1.25}cm;
+    }
+    .s1-haldi-d {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${eventSizeVal * 1.0}cm;
+    }
+    .s1-ev-t {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${eventSizeVal * 1.4}cm;
+    }
+    .s1-ev-d {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${eventSizeVal}cm;
+    }
+    .s1-ev-sw {
+      color: ${style.accentColor || '#9b1050'};
+    }
+    .s1-bal {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${shlokaSizeVal * 1.02}cm;
+    }
+    .s2-snehi {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${shlokaSizeVal * 0.97}cm;
+    }
+    .s2-vm {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${shlokaSizeVal * 1.02}cm;
+    }
+    .s2-vs {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${shlokaSizeVal * 0.97}cm;
+    }
+    .s2-bride, .s2-groom {
+      color: ${style.headingColor || '#6e0035'};
+      font-size: ${namesSizeVal}cm;
+    }
+    .s2-fam, .s2-fam-r {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal}cm;
+    }
+    .s2-damp-t {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 1.05}cm;
+    }
+    .s2-damp-d {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 0.97}cm;
+    }
+    .f-label {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 1.12}cm;
+    }
+    .f-name {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 1.07}cm;
+    }
+    .f-addr {
+      color: ${style.textColor || '#6e0035'};
+      font-size: ${footerSizeVal * 0.95}cm;
+    }
+    
+    .ganesh-icon img {
+      width: ${ganeshSizeVal}cm !important;
+      display: ${style.showGanesh !== false ? 'block' : 'none'} !important;
+      transform: ${iconShift('ganesh')} !important;
+      ${iconColorStyle('ganesh')}
+    }
+    .sun-icon img {
+      width: ${omSizeVal}cm !important;
+      display: ${style.showOm !== false ? 'block' : 'none'} !important;
+      transform: ${iconShift('om')} !important;
+      ${iconColorStyle('om')}
+    }
+    .chainleft img {
+      width: ${chainsSizeVal}cm !important;
+      display: ${style.showChains !== false ? 'block' : 'none'} !important;
+      transform: ${iconShift('chainLeft')} !important;
+      ${iconColorStyle('chainLeft')}
+    }
+    .chainright img {
+      width: ${chainsSizeVal}cm !important;
+      display: ${style.showChains !== false ? 'block' : 'none'} !important;
+      transform: ${iconShift('chainRight')} !important;
+      ${iconColorStyle('chainRight')}
+    }
+    .top-icon img {
+      transform: ${iconShift('topIcon')} !important;
+      ${iconColorStyle('topIcon')}
+    }
+    .top1-icon img {
+      transform: ${iconShift('top1Icon')} !important;
+      ${iconColorStyle('top1Icon')}
+    }
+    .bottom-icon img {
+      transform: ${iconShift('bottomIcon')} !important;
+      ${iconColorStyle('bottomIcon')}
+    }
+    .mid-icon img {
+      transform: ${iconShift('midIcon')} !important;
+      ${iconColorStyle('midIcon')}
+    }
+    .s1-wrap .couple-box {
+      transform: ${iconShift('couple1')} !important;
+    }
+    .s2-wrap .s2-icon {
+      transform: ${iconShift('couple2')} !important;
+    }
+    .s1-wrap .couple-box img {
+      width: ${coupleSizeVal}cm !important;
+      display: ${style.showCouple !== false ? 'block' : 'none'} !important;
+      ${iconColorStyle('couple1')}
+    }
+    .s2-wrap .s2-icon img {
+      width: ${coupleSizeVal}cm !important;
+      display: ${style.showCouple !== false ? 'block' : 'none'} !important;
+      ${iconColorStyle('couple2')}
+    }
+  `;
+
+  // Dynamically load Google Font if different
+  if (style.fontFamily && style.fontFamily !== 'Noto Serif Devanagari') {
+    let linkId = 'custom-font-' + style.fontFamily.replace(/\s+/g, '-');
+    if (!document.getElementById(linkId)) {
+      const link = document.createElement('link');
+      link.id = linkId;
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=' + style.fontFamily.replace(/\s+/g, '+') + ':wght@400;700&display=swap';
+      document.head.appendChild(link);
+    }
+  }
+
+  cssEl.textContent = cssText;
+  applyIconReplacements(style);
+
+  // Handle corners symbols
+  if (style.cornerSymbol) {
+    document.querySelectorAll('.fl').forEach(el => {
+      el.textContent = style.cornerSymbol;
+    });
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────
+const _HI_MONTHS = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+const _HI_DAYS   = ['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+
+function fmtHi(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.getDate() + ' ' + _HI_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + _HI_DAYS[d.getDay()];
+  } catch(e) { return dateStr; }
+}
+
+function setTxt(sel, txt) {
+  const el = document.querySelector(sel);
+  if (el) el.textContent = txt;
+}
+
+function setTxtEl(el, txt) {
+  if (el) el.textContent = txt;
+}
+</script>
+</body>
+</html>
