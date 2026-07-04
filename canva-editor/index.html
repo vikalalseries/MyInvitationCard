@@ -37,7 +37,7 @@
       --success: #10b981;
       --success-light: #ecfdf5;
 
-      --topbar-h: 56px;
+      --topbar-h: 64px;
       --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --r-card: 18px;
       --r-md: 10px;
@@ -1257,7 +1257,108 @@
       align-items: center;
       gap: 4px;
     }
+  
+    /* ── NEW 3 COLUMN LAYOUT CSS OVERRIDES ── */
+    
+    /* WORKSPACE - Make it a row so properties panel goes to the right */
+    .workspace {
+      flex-direction: row !important;
+    }
+    
+    .canvas-stage {
+      flex: 1;
+      position: relative;
+    }
+
+    /* RIGHT PROPERTIES PANEL (Formerly top toolbar) */
+    .properties-bar {
+      height: 100% !important;
+      width: 300px !important;
+      border-bottom: none !important;
+      border-left: 1px solid var(--g200);
+      flex-direction: column !important;
+      align-items: stretch !important;
+      justify-content: flex-start !important;
+      padding: 20px !important;
+      overflow-y: auto !important;
+      flex-shrink: 0;
+    }
+    .properties-bar .prop-group {
+      flex-direction: column;
+      align-items: stretch;
+      border-right: none;
+      border-bottom: 1px solid var(--g200);
+      padding-right: 0;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+    .properties-bar .prop-group:last-child {
+      border-bottom: none;
+    }
+    
+    .properties-bar .divider {
+      display: none;
+    }
+
+    /* FLOATING ZOOM BAR */
+    .preview-bar {
+      position: absolute !important;
+      bottom: 32px !important;
+      top: auto !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      background: var(--w) !important;
+      padding: 10px 16px !important;
+      border-radius: 100px !important;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12) !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      z-index: 50 !important;
+      border: 1px solid var(--g200) !important;
+      width: auto !important;
+    }
+    
+    .preview-lbl {
+      display: none !important;
+    }
+
+    /* Adjust page switcher if any */
+    .page-switcher {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    
+    /* Update drawer header and styling to match the reference */
+    .sidenav {
+      background: var(--w);
+    }
+    .nav-tab {
+      height: 56px;
+      width: 56px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .nav-tab.active {
+      background: var(--rose-50);
+      color: var(--rose);
+      border-left: none;
+    }
+    
+    /* Ensure preview-vp is centered */
+    .preview-vp {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 40px;
+    }
+    
   </style>
+
 </head>
 <body>
 
@@ -1614,7 +1715,43 @@
     <main class="workspace">
       
       <!-- PROPERTIES BAR -->
-      <div class="properties-bar" id="properties-panel">
+      <!-- CANVAS WORKSPACE STAGE -->
+    <div class="canvas-stage">
+        
+        <div class="preview-bar">
+          <div class="preview-lbl">
+            <span class="live-dot"></span> CANVAS WORKSPACE
+          </div>
+          <div class="zoom-bar">
+            <button class="zbtn" onclick="adjustZoom(-0.1)" title="Zoom Out">−</button>
+            <span class="zlvl" id="zoom-percentage">100%</span>
+            <button class="zbtn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
+            <button class="zbtn zfit" onclick="fitToScreen()" title="Fit to screen">FIT</button>
+          </div>
+        </div>
+
+        <div class="preview-vp">
+          <div class="page-switcher" style="top: 20px;">
+            <button class="page-btn active" id="page-btn-1" onclick="switchPage(1)">Page 1 (Ceremonies)</button>
+            <button class="page-btn" id="page-btn-2" onclick="switchPage(2)">Page 2 (Details)</button>
+          </div>
+          <div id="preview-scaler-wrap" style="display: inline-block; position: relative; transition: width 0.2s, height 0.2s; margin: auto; border-radius: 10px; box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12); background: #fff; overflow: hidden;">
+            <iframe id="bg-template-frame" src="templates/card1_canva.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 1; pointer-events: none; opacity: 0;"></iframe>
+            <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; border: none; overflow: visible; transform-origin: top left; transition: transform 0.1s ease-out; background: transparent; position: relative; z-index: 2;">
+              <canvas id="editor-canvas" width="893" height="760"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    <div class="properties-bar" id="properties-panel">
+
+    <div class="prop-header" style="height: var(--topbar-h); padding: 0; border-bottom: 1px solid var(--g200); display: flex; align-items: center; margin-bottom: 20px;">
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--g900);">Object Properties</h3>
+    </div>
+
         
         <!-- TEXT PROPERTIES -->
         <div class="prop-group" id="props-text" style="display:none;">
@@ -1710,37 +1847,7 @@
       </div>
     </div>
 
-    <!-- CANVAS WORKSPACE STAGE -->
-    <div class="canvas-stage">
-        
-        <div class="preview-bar">
-          <div class="preview-lbl">
-            <span class="live-dot"></span> CANVAS WORKSPACE
-          </div>
-          <div class="zoom-bar">
-            <button class="zbtn" onclick="adjustZoom(-0.1)" title="Zoom Out">−</button>
-            <span class="zlvl" id="zoom-percentage">100%</span>
-            <button class="zbtn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
-            <button class="zbtn zfit" onclick="fitToScreen()" title="Fit to screen">FIT</button>
-          </div>
-        </div>
-
-        <div class="preview-vp">
-          <div class="page-switcher" style="top: 20px;">
-            <button class="page-btn active" id="page-btn-1" onclick="switchPage(1)">Page 1 (Ceremonies)</button>
-            <button class="page-btn" id="page-btn-2" onclick="switchPage(2)">Page 2 (Details)</button>
-          </div>
-          <div id="preview-scaler-wrap" style="display: inline-block; position: relative; transition: width 0.2s, height 0.2s; margin: auto; border-radius: 10px; box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12); background: #fff; overflow: hidden;">
-            <iframe id="bg-template-frame" src="templates/card1_canva.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 1; pointer-events: none; opacity: 0;"></iframe>
-            <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; border: none; overflow: visible; transform-origin: top left; transition: transform 0.1s ease-out; background: transparent; position: relative; z-index: 2;">
-              <canvas id="editor-canvas" width="893" height="760"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-
+    
     </main>
 
   </div>
