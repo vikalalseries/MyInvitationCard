@@ -399,7 +399,7 @@ body {
 </div>
 
 <script>
-let sectionsLoaded = false;
+window.sectionsLoaded = false;
 let currentCardState = null;
 
 async function loadSections() {
@@ -421,7 +421,7 @@ async function loadSections() {
     cardContainer.appendChild(sec1);
     cardContainer.appendChild(sec2);
     
-    sectionsLoaded = true;
+    window.sectionsLoaded = true;
     if (currentCardState) {
       syncCard(currentCardState);
     }
@@ -442,7 +442,7 @@ window.addEventListener('message', function(e) {
   if (!c) return;
   
   currentCardState = c;
-  if (sectionsLoaded) {
+  if (window.sectionsLoaded) {
     syncCard(c);
   }
 });

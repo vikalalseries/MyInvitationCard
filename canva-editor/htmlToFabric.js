@@ -7,10 +7,12 @@ async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
   const doc = iframe.contentDocument || iframe.contentWindow.document;
   
   // Wait for dynamic sections to load if they haven't
-  if (!iframe.contentWindow.sectionsLoaded) {
+  if (!iframe.contentWindow.sectionsLoaded && iframe.contentWindow.document.location.href !== 'about:blank') {
     await new Promise(resolve => {
+      let elapsed = 0;
       const checkInterval = setInterval(() => {
-        if (iframe.contentWindow.sectionsLoaded) {
+        elapsed += 50;
+        if (iframe.contentWindow.sectionsLoaded || elapsed >= 5000) {
           clearInterval(checkInterval);
           resolve();
         }
