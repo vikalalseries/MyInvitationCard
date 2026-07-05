@@ -1505,6 +1505,11 @@
       color: var(--rose);
       border-color: rgba(244, 63, 94, 0.45);
     }
+    .toolbar-icon.text-btn {
+      width: auto !important;
+      padding: 0 12px !important;
+      border-radius: 999px !important;
+    }
     .edit-toolbar select,
     .edit-toolbar input[type="number"] {
       height: 34px;
@@ -2080,14 +2085,14 @@
 
               <div class="toolbar-divider"></div>
 
-              <button class="toolbar-icon" onclick="updateSelectedTextProp('textAlign', 'left')" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
-              <button class="toolbar-icon" onclick="updateSelectedTextProp('textAlign', 'center')" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
-              <button class="toolbar-icon" onclick="updateSelectedTextProp('textAlign', 'right')" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+              <button class="toolbar-icon" id="toolbar-align-cycle" onclick="cycleTextAlignment()" title="Align Text">
+                <i class="fa-solid fa-align-left" id="toolbar-align-icon"></i>
+              </button>
 
               <button class="toolbar-icon" onclick="toggleTextList('bullet')" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
               <button class="toolbar-icon" onclick="toggleTextList('number')" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
 
-              <button class="toolbar-icon" onclick="showTextEffectsPanel()" title="Effects"><span style="font-weight:700;font-size:13px;letter-spacing:0.02em;">Effects</span></button>
+              <button class="toolbar-icon text-btn" onclick="showTextEffectsPanel()" title="Effects"><span style="font-weight:700;font-size:13px;letter-spacing:0.02em;">Effects</span></button>
               <button class="toolbar-icon toolbar-more" onclick="toggleToolbarMoreMenu()" title="More"><i class="fa-solid fa-ellipsis"></i></button>
             </div>
 
@@ -2787,6 +2792,13 @@
         const color = obj.fill || '#ffffff';
         document.getElementById('toolbar-color').style.backgroundColor = color;
         document.getElementById('toolbar-color-input').value = color;
+
+        // Sync text alignment icon
+        const alignIcon = document.getElementById('toolbar-align-icon');
+        if (alignIcon) {
+          const align = obj.textAlign || 'left';
+          alignIcon.className = `fa-solid fa-align-${align}`;
+        }
       }
 
       if (isGraphic) {
@@ -2827,6 +2839,23 @@
       const current = Number(activeObj.fontSize || 24);
       const next = Math.max(8, Math.min(160, current + delta));
       activeObj.set('fontSize', next);
+      activeObj.initDimensions();
+      activeObj.setCoords();
+      canvas.requestRenderAll();
+      syncEditToolbar(activeObj);
+      saveHistory();
+    }
+
+    function cycleTextAlignment() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || (activeObj.type !== 'i-text' && activeObj.type !== 'textbox')) return;
+
+      const alignments = ['left', 'center', 'right'];
+      const current = activeObj.textAlign || 'left';
+      let nextIndex = (alignments.indexOf(current) + 1) % alignments.length;
+      const nextAlign = alignments[nextIndex];
+
+      activeObj.set('textAlign', nextAlign);
       activeObj.initDimensions();
       activeObj.setCoords();
       canvas.requestRenderAll();
