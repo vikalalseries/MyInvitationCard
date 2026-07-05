@@ -1998,6 +1998,7 @@
             }
             await parseHtmlToFabric(iframe, canvas, 0);
             setTimeout(() => {
+              fitToScreen();
               isSavingHistory = true;
               canvas.discardActiveObject();
               canvas.requestRenderAll();
@@ -2765,6 +2766,12 @@
     }
 
     async function loadDefaultConfigAndRender(templateId) {
+      // For card1, always use the iframe-based approach (no config.json needed)
+      if (templateId === 'card1') {
+        loadTemplatePreset('hindu', false);
+        return;
+      }
+      
       try {
         const response = await fetch(`templates/${templateId}/config.json`);
         if (!response.ok) throw new Error("HTTP error " + response.status);
@@ -3412,10 +3419,11 @@
       if (currentId === 'card1') {
         iframe.src = 'templates/' + currentId + '.html';
         iframe.onload = async () => {
-          const pageIndex = (window.currentPage || 1) - 1;
-          await parseHtmlToFabric(iframe, canvas, pageIndex);
+          await parseHtmlToFabric(iframe, canvas, 0);
           
+          // Refit canvas to viewport since dimensions changed
           setTimeout(() => {
+            fitToScreen();
             isSavingHistory = true;
             canvas.discardActiveObject();
             canvas.requestRenderAll();
@@ -3431,7 +3439,9 @@
       renderSuggestions(type);
       
       if (type === 'hindu') {
-        const defaultData = {
+        // For card1 (hindu), the iframe loading above handles the full template rendering.
+        // We only store the default data for reference, NOT render programmatically.
+        activeTemplateData = {
           fields: {
             shlokaLine1: "।। श्री गणेशाय नमः ।।",
             shlokaLine2: "वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥",
@@ -3471,7 +3481,8 @@
             showChains: "true"
           }
         };
-        renderCanvasFromTemplateData(defaultData, 'card1', true);
+        activeTemplateId = 'card1';
+        // renderSuggestions already called above; iframe onload handles rendering
       } else if (type === 'muslim') {
         const defaultData = {
           fields: {

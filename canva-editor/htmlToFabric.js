@@ -56,12 +56,25 @@ async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
 
   // Calculate the scale to fit the card within the canvas container
   const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
   
   // Get the real pixel dimensions of the card
   const cardRect = cardEl.getBoundingClientRect();
   const cardWidth = cardRect.width;
   const cardHeight = cardRect.height;
+  
+  // Dynamically resize canvas to match the card's aspect ratio
+  const newCanvasHeight = Math.round(canvasWidth * (cardHeight / cardWidth));
+  canvas.setHeight(newCanvasHeight);
+  canvas.setWidth(canvasWidth);
+  
+  // Also resize the container box and wrapper to match
+  const containerBox = document.getElementById('canvas-container-box');
+  if (containerBox) {
+    containerBox.style.width = canvasWidth + 'px';
+    containerBox.style.height = newCanvasHeight + 'px';
+  }
+  
+  const canvasHeight = newCanvasHeight;
   
   const scaleX = canvasWidth / cardWidth;
   const scaleY = canvasHeight / cardHeight;
