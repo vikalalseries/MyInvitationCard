@@ -2005,6 +2005,40 @@
       });
     }
 
+    function releaseCanvasPointerState() {
+      if (!canvas) return;
+
+      const activeObj = canvas.getActiveObject();
+      if (activeObj && activeObj.isEditing && typeof activeObj.exitEditing === 'function') {
+        activeObj.exitEditing();
+      }
+
+      // Clear Fabric drag/transform state so the object stops following the pointer.
+      canvas.isDragging = false;
+      canvas._groupSelector = null;
+      canvas._currentTransform = null;
+      canvas._target = null;
+      canvas.renderAll();
+    }
+
+    function deselectIfClickOutsideTemplatePage(evt) {
+      if (!canvas || !evt || !evt.target) return;
+
+      // Only clear the selection when the click lands outside the live template surface.
+      if (evt.target.closest('.preview-vp')) return;
+
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
+
+      if (activeObj.isEditing && typeof activeObj.exitEditing === 'function') {
+        activeObj.exitEditing();
+      }
+
+      canvas.discardActiveObject();
+      releaseCanvasPointerState();
+      canvas.requestRenderAll();
+    }
+
     window.onload = function() {
       // Initialize fabric canvas
       canvas = new fabric.Canvas('editor-canvas', {
@@ -2047,6 +2081,10 @@
           canvas.requestRenderAll();
         }
       });
+      canvas.on('mouse:up', releaseCanvasPointerState);
+      window.addEventListener('mouseup', releaseCanvasPointerState);
+      window.addEventListener('blur', releaseCanvasPointerState);
+      document.addEventListener('mousedown', deselectIfClickOutsideTemplatePage, true);
       
       canvas.on('object:added', saveHistory);
       canvas.on('object:modified', saveHistory);
