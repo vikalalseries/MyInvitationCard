@@ -1,6 +1,7 @@
 /**
  * HTML to Fabric.js Parser Utility
- * Converts an HTML DOM structure (from a template iframe) into Fabric.js objects on a Canvas.
+ * Captures the full HTML card template as a high-fidelity background image
+ * on the Fabric.js canvas using html2canvas.
  */
 
 async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
@@ -20,159 +21,81 @@ async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
     });
   }
 
-  // Target the parent .card container to load all sections stacked vertically
+  // Target the parent .card container (both sections stacked vertically)
   const cardEl = doc.querySelector('.card') || doc.body;
 
   // Clear existing canvas objects
   canvas.clear();
 
-  // 1. Identify Foreground Elements (Text and Images)
-  const foregroundElements = [];
-  const allElements = cardEl.querySelectorAll('*');
-
-  allElements.forEach(el => {
-    // Skip non-visual tags
-    if (['SCRIPT', 'STYLE', 'IFRAME', 'NOSCRIPT', 'SVG'].includes(el.tagName)) return;
-
-    if (el.tagName === 'IMG') {
-      foregroundElements.push({ type: 'image', el: el });
-    } 
-    else {
-      // Check if it's a leaf text node
-      const hasText = el.textContent.trim().length > 0;
-      let isLeaf = true;
-      for (let i = 0; i < el.children.length; i++) {
-        if (el.children[i].tagName !== 'BR') {
-          isLeaf = false;
-          break;
-        }
-      }
-
-      if (hasText && isLeaf) {
-        foregroundElements.push({ type: 'text', el: el });
-      }
-    }
-  });
-
-  // Calculate the scale to fit the card within the canvas container
-  const canvasWidth = canvas.width;
-  
   // Get the real pixel dimensions of the card
   const cardRect = cardEl.getBoundingClientRect();
   const cardWidth = cardRect.width;
   const cardHeight = cardRect.height;
-  
-  // Dynamically resize canvas to match the card's aspect ratio
+
+  // Keep a fixed canvas width and calculate height to preserve aspect ratio
+  const canvasWidth = canvas.width || 893;
   const newCanvasHeight = Math.round(canvasWidth * (cardHeight / cardWidth));
-  canvas.setHeight(newCanvasHeight);
   canvas.setWidth(canvasWidth);
-  
-  // Also resize the container box and wrapper to match
+  canvas.setHeight(newCanvasHeight);
+
+  // Also resize the DOM container box to match
   const containerBox = document.getElementById('canvas-container-box');
   if (containerBox) {
     containerBox.style.width = canvasWidth + 'px';
     containerBox.style.height = newCanvasHeight + 'px';
   }
-  
-  const canvasHeight = newCanvasHeight;
-  
-  const scaleX = canvasWidth / cardWidth;
-  const scaleY = canvasHeight / cardHeight;
 
-  // 2. Generate Fabric Objects for Foreground Elements
-  for (const item of foregroundElements) {
-    const el = item.el;
-    const rect = el.getBoundingClientRect();
-    const computedStyle = iframe.contentWindow.getComputedStyle(el);
-
-    // Calculate position relative to the target .card container
-    const left = rect.left - cardRect.left;
-    const top = rect.top - cardRect.top;
-
-    if (item.type === 'text') {
-      let text = el.innerText || el.textContent;
-      text = text.trim();
-      if (!text) continue;
-
-      const fontSize = parseFloat(computedStyle.fontSize);
-      const fontWeight = computedStyle.fontWeight;
-      const fontFamily = computedStyle.fontFamily.replace(/["']/g, ''); // strip quotes
-      let color = computedStyle.color;
-      if (color === 'rgba(0, 0, 0, 0)') color = '#000000';
-      
-      const textAlign = computedStyle.textAlign;
-
-      const fabricText = new fabric.IText(text, {
-        left: (left + rect.width / 2) * scaleX,
-        top: (top + rect.height / 2) * scaleY,
-        originX: 'center',
-        originY: 'center',
-        fontSize: fontSize * scaleX,
-        fontFamily: fontFamily,
-        fontWeight: fontWeight,
-        fill: color,
-        textAlign: textAlign,
-        lineHeight: parseFloat(computedStyle.lineHeight) / fontSize || 1.3
+  // Wait for ALL images inside the card to be fully loaded
+  const allImages = cardEl.querySelectorAll('img');
+  if (allImages.length > 0) {
+    await Promise.all(Array.from(allImages).map(img => {
+      if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+      return new Promise(resolve => {
+        img.onload = resolve;
+        img.onerror = resolve; // don't block on broken images
       });
-      canvas.add(fabricText);
-    } 
-    else if (item.type === 'image') {
-      const src = el.src;
-      if (!src) continue;
+    }));
+    // Small extra delay for layout reflow after images load
+    await new Promise(r => setTimeout(r, 200));
+  }
 
-      await new Promise((resolve) => {
-        fabric.Image.fromURL(src, function(img) {
-          if (!img) return resolve();
-          img.set({
-            left: (left + rect.width / 2) * scaleX,
-            top: (top + rect.height / 2) * scaleY,
-            originX: 'center',
-            originY: 'center'
-          });
-          img.scaleToWidth(rect.width * scaleX);
-          canvas.add(img);
+  // Capture the ENTIRE card (with all text, images, backgrounds, borders)
+  // using html2canvas for pixel-perfect rendering
+  try {
+    const capturedCanvas = await html2canvas(cardEl, {
+      backgroundColor: null,
+      scale: 2,        // 2x for sharp/retina quality
+      logging: false,
+      useCORS: true,
+      allowTaint: true
+    });
+
+    const imgDataUrl = capturedCanvas.toDataURL('image/png');
+
+    await new Promise((resolve) => {
+      fabric.Image.fromURL(imgDataUrl, function(bgImg) {
+        if (!bgImg) {
+          console.error("Failed to create Fabric image from captured canvas");
+          return resolve();
+        }
+        bgImg.set({
+          scaleX: canvasWidth / capturedCanvas.width,
+          scaleY: newCanvasHeight / capturedCanvas.height,
+          originX: 'left',
+          originY: 'top',
+          left: 0,
+          top: 0
+        });
+        canvas.setBackgroundImage(bgImg, function() {
+          canvas.renderAll();
           resolve();
         });
       });
-    }
-  }
-
-  // 3. Hide foreground elements to capture only the background
-  const originalVisibility = new Map();
-  foregroundElements.forEach(item => {
-    originalVisibility.set(item.el, item.el.style.visibility);
-    item.el.style.visibility = 'hidden';
-  });
-
-  // Capture background using html2canvas
-  try {
-    const bgCanvas = await html2canvas(cardEl, {
-      backgroundColor: null,
-      scale: 1, 
-      logging: false,
-      useCORS: true
-    });
-
-    fabric.Image.fromURL(bgCanvas.toDataURL('image/png'), function(bgImg) {
-      bgImg.set({
-        scaleX: canvasWidth / bgCanvas.width,
-        scaleY: canvasHeight / bgCanvas.height,
-        originX: 'left',
-        originY: 'top',
-        left: 0,
-        top: 0
-      });
-      canvas.setBackgroundImage(bgImg, canvas.renderAll.bind(canvas));
     });
 
   } catch (err) {
-    console.error("Failed to capture template background:", err);
+    console.error("Failed to capture template with html2canvas:", err);
   }
-
-  // Restore foreground elements
-  foregroundElements.forEach(item => {
-    item.el.style.visibility = originalVisibility.get(item.el);
-  });
 
   canvas.renderAll();
   return true;
