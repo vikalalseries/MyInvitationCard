@@ -1327,12 +1327,12 @@
     .edit-toolbar {
       display: none;
       flex-direction: column;
-      gap: 12px;
-      padding: 14px;
+      gap: 10px;
+      padding: 12px 14px;
       background: rgba(255,255,255,0.98);
       border: 1px solid rgba(226, 224, 219, 0.95);
-      border-radius: 18px;
-      box-shadow: 0 10px 28px rgba(26, 25, 22, 0.08), 0 1px 0 rgba(255,255,255,0.9) inset;
+      border-radius: 20px;
+      box-shadow: 0 14px 30px rgba(26, 25, 22, 0.09), 0 1px 0 rgba(255,255,255,0.92) inset;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       flex-wrap: wrap;
@@ -1388,32 +1388,14 @@
       color: var(--g400);
       white-space: nowrap;
     }
-    .edit-toolbar-grid {
-      display: flex;
-      gap: 12px;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-    .edit-toolbar-card {
+    .edit-toolbar-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
-      background: linear-gradient(180deg, #ffffff 0%, #fcfcfb 100%);
-      border: 1px solid var(--g200);
-      border-radius: 14px;
-      padding: 10px 12px;
-      box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset;
-      min-height: 56px;
-    }
-    .edit-toolbar-card.text-card {
-      flex: 1 1 560px;
-    }
-    .edit-toolbar-card.spacing-card {
-      flex: 1 1 310px;
-    }
-    .edit-toolbar-card.object-card {
-      flex: 0 0 auto;
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 2px;
     }
     .edit-toolbar-group {
       display: flex;
@@ -1421,13 +1403,94 @@
       gap: 8px;
       flex-wrap: wrap;
     }
-    .edit-toolbar-label {
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--g400);
-      margin-right: 2px;
+    .toolbar-pill {
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--g200);
+      background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.92) inset;
+      color: var(--g800);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .toolbar-pill.compact {
+      padding: 0 10px;
+    }
+    .toolbar-font {
+      min-width: 156px;
+      max-width: 220px;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .toolbar-font select {
+      border: none !important;
+      background: transparent !important;
+      min-width: 120px;
+      height: 34px;
+      padding: 0;
+      box-shadow: none !important;
+      appearance: none;
+      font-weight: 650;
+    }
+    .toolbar-size {
+      min-width: 102px;
+      justify-content: space-between;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .toolbar-step {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid var(--g200);
+      background: var(--w);
+      color: var(--g700);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: none;
+      transition: all var(--t);
+    }
+    .toolbar-step:hover {
+      border-color: rgba(244, 63, 94, 0.35);
+      background: var(--rose-50);
+      color: var(--rose);
+    }
+    .toolbar-size-value {
+      min-width: 26px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--g900);
+    }
+    .toolbar-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid var(--g200);
+      background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+      color: var(--g700);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: none;
+      transition: all var(--t);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.92) inset;
+    }
+    .toolbar-icon:hover {
+      background: var(--rose-50);
+      color: var(--rose);
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+    .toolbar-icon.active {
+      background: var(--rose-50);
+      color: var(--rose);
+      border-color: rgba(244, 63, 94, 0.45);
     }
     .edit-toolbar select,
     .edit-toolbar input[type="number"] {
@@ -1505,6 +1568,21 @@
       color: var(--g500);
       font-weight: 650;
       white-space: nowrap;
+    }
+    .toolbar-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--g200);
+      flex: none;
+    }
+    .toolbar-more {
+      min-width: 44px;
+    }
+    .toolbar-color-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding-right: 2px;
     }
 
     /* Adjust page switcher if any */
@@ -1960,55 +2038,75 @@
               <div class="edit-toolbar-hint">Esc to deselect</div>
             </div>
 
-            <div class="edit-toolbar-grid">
-              <div class="edit-toolbar-card text-card">
-                <div class="edit-toolbar-group">
-                  <span class="edit-toolbar-label">Text</span>
-                  <select id="toolbar-font" onchange="updateSelectedTextProp('fontFamily', this.value)">
-                    <option value="Outfit">Outfit</option>
-                    <option value="Noto Serif Devanagari">Noto Serif Devanagari</option>
-                    <option value="Cinzel">Cinzel</option>
-                    <option value="Great Vibes">Great Vibes</option>
-                    <option value="Playfair Display">Playfair Display</option>
-                    <option value="Montserrat">Montserrat</option>
-                    <option value="Allura">Allura</option>
-                    <option value="Cormorant Garamond">Cormorant Garamond</option>
-                  </select>
-                  <input type="number" id="toolbar-size" min="8" max="160" value="24" title="Text size" onchange="updateSelectedTextProp('fontSize', Number(this.value))">
-                  <div class="color-swatch" id="toolbar-color" title="Text color" onclick="document.getElementById('toolbar-color-input').click()"></div>
-                  <input type="color" id="toolbar-color-input" style="display:none;" onchange="updateSelectedElementColor(this.value)">
-                  <button class="prop-btn" id="toolbar-bold" onclick="toggleTextWeight('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
-                  <button class="prop-btn" id="toolbar-italic" onclick="toggleTextWeight('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
-                  <button class="prop-btn" id="toolbar-underline" onclick="toggleTextWeight('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
-                  <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'left')" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
-                  <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'center')" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
-                  <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'right')" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
-                </div>
+            <div class="edit-toolbar-row">
+              <div class="toolbar-pill toolbar-font">
+                <select id="toolbar-font" onchange="updateSelectedTextProp('fontFamily', this.value)">
+                  <option value="Outfit">The Seasons</option>
+                  <option value="Noto Serif Devanagari">Noto Serif Devanagari</option>
+                  <option value="Cinzel">Cinzel</option>
+                  <option value="Great Vibes">Great Vibes</option>
+                  <option value="Playfair Display">Playfair Display</option>
+                  <option value="Montserrat">Montserrat</option>
+                  <option value="Allura">Allura</option>
+                  <option value="Cormorant Garamond">Cormorant Garamond</option>
+                </select>
+                <i class="fa-solid fa-chevron-down" style="font-size:11px;color:var(--g400);"></i>
               </div>
 
-              <div class="edit-toolbar-card spacing-card">
-                <div class="edit-toolbar-group">
-                  <span class="edit-toolbar-label">Spacing</span>
-                  <div class="mini-field">
+              <div class="toolbar-pill toolbar-size">
+                <button class="toolbar-step" onclick="adjustSelectedFontSize(-1)" title="Decrease font size">−</button>
+                <span class="toolbar-size-value" id="toolbar-size-value">24</span>
+                <button class="toolbar-step" onclick="adjustSelectedFontSize(1)" title="Increase font size">+</button>
+              </div>
+
+              <button class="toolbar-icon" title="Text color" onclick="document.getElementById('toolbar-color-input').click()">
+                <span style="display:flex; flex-direction:column; align-items:center; line-height:1;">
+                  <span style="font-size:18px; font-weight:800; color:var(--g900);">A</span>
+                  <span id="toolbar-color" class="color-swatch" style="width:18px;height:3px;border-radius:999px;border:none;background-color:#6e0035;margin-top:2px;"></span>
+                </span>
+              </button>
+              <input type="color" id="toolbar-color-input" style="display:none;" onchange="updateSelectedElementColor(this.value)">
+
+              <div class="toolbar-divider"></div>
+
+              <button class="toolbar-icon" id="toolbar-bold" onclick="toggleTextWeight('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
+              <button class="toolbar-icon" id="toolbar-italic" onclick="toggleTextWeight('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
+
+              <div class="toolbar-divider"></div>
+
+              <button class="toolbar-icon" onclick="updateSelectedTextProp('textAlign', 'left')" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+              <button class="toolbar-icon" onclick="updateSelectedTextProp('textAlign', 'center')" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+              <button class="toolbar-icon" onclick="updateSelectedTextProp('textAlign', 'right')" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+
+              <button class="toolbar-icon" onclick="toggleTextList('bullet')" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
+              <button class="toolbar-icon" onclick="toggleTextList('number')" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+
+              <button class="toolbar-icon" onclick="showTextSpacingPanel()" title="Spacing"><i class="fa-solid fa-text-height"></i></button>
+              <button class="toolbar-icon" onclick="showTextEffectsPanel()" title="Effects"><span style="font-weight:700;font-size:13px;letter-spacing:0.02em;">Effects</span></button>
+              <button class="toolbar-icon toolbar-more" onclick="toggleToolbarMoreMenu()" title="More"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+
+            <div id="toolbar-more-menu" style="display:none; width:100%; border-top:1px solid var(--g150); padding-top:10px;">
+              <div class="edit-toolbar-row" style="gap:8px;">
+                <div class="toolbar-pill compact">
+                  <span class="edit-toolbar-label" style="margin-right:8px;">Spacing</span>
+                  <div class="mini-field" style="padding:0; border:none; background:transparent;">
                     <span>Line gap</span>
                     <input type="range" id="toolbar-line-height" min="0.8" max="2.4" step="0.05" value="1.35" oninput="updateSelectedTextProp('lineHeight', Number(this.value))">
                   </div>
-                  <div class="mini-field">
+                  <div class="mini-field" style="padding:0; border:none; background:transparent;">
                     <span>Letter gap</span>
                     <input type="range" id="toolbar-char-spacing" min="-100" max="300" step="5" value="0" oninput="updateSelectedTextProp('charSpacing', Number(this.value))">
                   </div>
                 </div>
-              </div>
-
-              <div class="edit-toolbar-card object-card">
-                <div class="edit-toolbar-group">
-                  <span class="edit-toolbar-label">Object</span>
-                  <button class="prop-btn" onclick="alignObjectCenter('h')" title="Center Horizontally"><i class="fa-solid fa-arrows-h"></i></button>
-                  <button class="prop-btn" onclick="alignObjectCenter('v')" title="Center Vertically"><i class="fa-solid fa-arrows-v"></i></button>
-                  <button class="prop-btn" onclick="changeZIndex('front')" title="Bring to Front"><i class="fa-solid fa-angles-up"></i></button>
-                  <button class="prop-btn" onclick="changeZIndex('back')" title="Send to Back"><i class="fa-solid fa-angles-down"></i></button>
-                  <button class="prop-btn" onclick="duplicateActiveObject()" title="Duplicate Element"><i class="fa-solid fa-clone"></i></button>
-                  <button class="prop-btn" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;"><i class="fa-solid fa-trash"></i></button>
+                <div class="toolbar-pill compact">
+                  <span class="edit-toolbar-label" style="margin-right:8px;">Object</span>
+                  <button class="toolbar-step" onclick="alignObjectCenter('h')" title="Center Horizontally"><i class="fa-solid fa-arrows-h"></i></button>
+                  <button class="toolbar-step" onclick="alignObjectCenter('v')" title="Center Vertically"><i class="fa-solid fa-arrows-v"></i></button>
+                  <button class="toolbar-step" onclick="changeZIndex('front')" title="Bring to Front"><i class="fa-solid fa-angles-up"></i></button>
+                  <button class="toolbar-step" onclick="changeZIndex('back')" title="Send to Back"><i class="fa-solid fa-angles-down"></i></button>
+                  <button class="toolbar-step" onclick="duplicateActiveObject()" title="Duplicate Element"><i class="fa-solid fa-clone"></i></button>
+                  <button class="toolbar-step" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;"><i class="fa-solid fa-trash"></i></button>
                 </div>
               </div>
             </div>
@@ -2599,7 +2697,8 @@
 
       if (isText) {
         document.getElementById('toolbar-font').value = obj.fontFamily || 'Outfit';
-        document.getElementById('toolbar-size').value = obj.fontSize || 24;
+        const sizeValue = document.getElementById('toolbar-size-value');
+        if (sizeValue) sizeValue.textContent = Math.round(obj.fontSize || 24);
         document.getElementById('toolbar-line-height').value = obj.lineHeight || 1.35;
         document.getElementById('toolbar-char-spacing').value = obj.charSpacing || 0;
         document.getElementById('toolbar-bold').classList.toggle('active', obj.fontWeight === 'bold');
@@ -2616,6 +2715,60 @@
         document.getElementById('toolbar-color').style.backgroundColor = color;
         document.getElementById('toolbar-color-input').value = color;
       }
+    }
+
+    function adjustSelectedFontSize(delta) {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || (activeObj.type !== 'i-text' && activeObj.type !== 'textbox')) return;
+
+      const current = Number(activeObj.fontSize || 24);
+      const next = Math.max(8, Math.min(160, current + delta));
+      activeObj.set('fontSize', next);
+      activeObj.initDimensions();
+      activeObj.setCoords();
+      canvas.requestRenderAll();
+      syncEditToolbar(activeObj);
+      saveHistory();
+    }
+
+    function toggleToolbarMoreMenu(forceState) {
+      const menu = document.getElementById('toolbar-more-menu');
+      if (!menu) return;
+      const open = typeof forceState === 'boolean' ? forceState : menu.style.display === 'none' || !menu.style.display;
+      menu.style.display = open ? 'block' : 'none';
+    }
+
+    function showTextSpacingPanel() {
+      toggleToolbarMoreMenu(true);
+    }
+
+    function showTextEffectsPanel() {
+      toggleToolbarMoreMenu(true);
+    }
+
+    function toggleTextList(mode) {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || (activeObj.type !== 'i-text' && activeObj.type !== 'textbox')) return;
+
+      const text = String(activeObj.text || '');
+      if (!text) return;
+
+      const lines = text.split('\n');
+      const stripPrefix = (line) => line.replace(/^\s*(?:[•\-]|\d+\.)\s*/, '');
+
+      let nextText;
+      if (mode === 'number') {
+        nextText = lines.map((line, index) => `${index + 1}. ${stripPrefix(line)}`).join('\n');
+      } else {
+        nextText = lines.map(line => `• ${stripPrefix(line)}`).join('\n');
+      }
+
+      activeObj.set('text', nextText);
+      activeObj.initDimensions();
+      activeObj.setCoords();
+      canvas.requestRenderAll();
+      syncEditToolbar(activeObj);
+      saveHistory();
     }
 
     // ADD TEXT BOX
