@@ -2045,13 +2045,14 @@
           <div class="edit-toolbar" id="edit-toolbar">
             <div class="edit-toolbar-head">
               <div class="edit-toolbar-head-left">
-                <span class="edit-toolbar-kicker">Inline Editing</span>
+                <span class="edit-toolbar-kicker" id="toolbar-kicker-label">Inline Editing</span>
                 <span class="edit-toolbar-target" id="toolbar-target-label">No element selected</span>
               </div>
               <div class="edit-toolbar-hint">Esc to deselect</div>
             </div>
 
-            <div class="edit-toolbar-row">
+            <!-- TEXT FORMATTING ROW -->
+            <div class="edit-toolbar-row" id="toolbar-row-text">
               <div class="toolbar-pill toolbar-font">
                 <select id="toolbar-font" onchange="updateSelectedTextProp('fontFamily', this.value)">
                   <option value="Outfit">The Seasons</option>
@@ -2096,6 +2097,61 @@
 
               <button class="toolbar-icon" onclick="showTextEffectsPanel()" title="Effects"><span style="font-weight:700;font-size:13px;letter-spacing:0.02em;">Effects</span></button>
               <button class="toolbar-icon toolbar-more" onclick="toggleToolbarMoreMenu()" title="More"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+
+            <!-- IMAGE / GRAPHIC ROW -->
+            <div class="edit-toolbar-row" id="toolbar-row-graphic" style="display: none; gap: 8px;">
+              <button class="toolbar-icon" id="toolbar-graphic-color-btn" title="Change color" onclick="document.getElementById('toolbar-graphic-color-input').click()">
+                <span style="display:flex; flex-direction:column; align-items:center; line-height:1;">
+                  <span style="font-size:18px; font-weight:800; color:var(--g900);"><i class="fa-solid fa-palette"></i></span>
+                  <span id="toolbar-graphic-color" class="color-swatch" style="width:18px;height:3px;border-radius:999px;border:none;background-color:#d4af37;margin-top:2px;"></span>
+                </span>
+              </button>
+              <input type="color" id="toolbar-graphic-color-input" style="display:none;" onchange="updateSelectedElementColor(this.value)">
+
+              <div class="toolbar-divider" id="toolbar-graphic-color-divider"></div>
+
+              <button class="toolbar-icon" onclick="flipActiveElement('x')" title="Flip Horizontal">
+                <i class="fa-solid fa-arrows-left-right"></i>
+              </button>
+              <button class="toolbar-icon" onclick="flipActiveElement('y')" title="Flip Vertical">
+                <i class="fa-solid fa-arrows-up-down"></i>
+              </button>
+
+              <div class="toolbar-divider"></div>
+
+              <div class="toolbar-pill compact" style="height: 38px;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--g600); margin-right: 4px;">Opacity</span>
+                <input type="range" id="toolbar-graphic-opacity" min="10" max="100" value="100" style="width: 80px;" oninput="updateSelectedElementOpacity(this.value)">
+                <span id="toolbar-graphic-opacity-val" style="font-size: 12px; font-weight: 600; min-width: 32px; text-align: right; margin-left: 4px;">100%</span>
+              </div>
+
+              <div class="toolbar-divider"></div>
+
+              <button class="toolbar-icon" onclick="alignObjectCenter('h')" title="Center Horizontally">
+                <i class="fa-solid fa-arrows-h"></i>
+              </button>
+              <button class="toolbar-icon" onclick="alignObjectCenter('v')" title="Center Vertically">
+                <i class="fa-solid fa-arrows-v"></i>
+              </button>
+
+              <div class="toolbar-divider"></div>
+
+              <button class="toolbar-icon" onclick="changeZIndex('front')" title="Bring to Front">
+                <i class="fa-solid fa-angles-up"></i>
+              </button>
+              <button class="toolbar-icon" onclick="changeZIndex('back')" title="Send to Back">
+                <i class="fa-solid fa-angles-down"></i>
+              </button>
+
+              <div class="toolbar-divider"></div>
+
+              <button class="toolbar-icon" onclick="duplicateActiveObject()" title="Duplicate Element">
+                <i class="fa-solid fa-clone"></i>
+              </button>
+              <button class="toolbar-icon" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;">
+                <i class="fa-solid fa-trash"></i>
+              </button>
             </div>
 
             <div id="toolbar-more-menu" style="display:none; width:100%; border-top:1px solid var(--g150); padding-top:10px;">
@@ -2695,6 +2751,9 @@
     function syncEditToolbar(obj) {
       const bar = document.getElementById('edit-toolbar');
       const targetLabel = document.getElementById('toolbar-target-label');
+      const kickerLabel = document.getElementById('toolbar-kicker-label');
+      const rowText = document.getElementById('toolbar-row-text');
+      const rowGraphic = document.getElementById('toolbar-row-graphic');
       if (!bar) return;
 
       const isText = obj && (obj.type === 'i-text' || obj.type === 'textbox');
@@ -2717,6 +2776,10 @@
       if (!obj) return;
 
       if (isText) {
+        if (kickerLabel) kickerLabel.textContent = 'Text Editing';
+        if (rowText) rowText.style.display = 'flex';
+        if (rowGraphic) rowGraphic.style.display = 'none';
+
         document.getElementById('toolbar-font').value = obj.fontFamily || 'Outfit';
         const sizeValue = document.getElementById('toolbar-size-value');
         if (sizeValue) sizeValue.textContent = Math.round(obj.fontSize || 24);
@@ -2735,9 +2798,33 @@
       }
 
       if (isGraphic) {
-        const color = obj.fill || (obj._objects && obj._objects[0] && obj._objects[0].fill) || '#ffffff';
-        document.getElementById('toolbar-color').style.backgroundColor = color;
-        document.getElementById('toolbar-color-input').value = color;
+        if (kickerLabel) kickerLabel.textContent = 'Graphic Editing';
+        if (rowText) rowText.style.display = 'none';
+        if (rowGraphic) rowGraphic.style.display = 'flex';
+
+        // Check if object supports color filling (shapes/SVGs)
+        const isSvgOrShape = obj.type === 'rect' || obj.type === 'circle' || obj.type === 'triangle' || obj.type === 'path' || (obj.type === 'group' && obj._objects);
+        const colorBtn = document.getElementById('toolbar-graphic-color-btn');
+        const colorDiv = document.getElementById('toolbar-graphic-color-divider');
+        if (colorBtn && colorDiv) {
+          if (isSvgOrShape) {
+            colorBtn.style.display = 'inline-block';
+            colorDiv.style.display = 'inline-block';
+            const color = obj.fill || (obj._objects && obj._objects[0] && obj._objects[0].fill) || '#ffffff';
+            document.getElementById('toolbar-graphic-color').style.backgroundColor = color;
+            document.getElementById('toolbar-graphic-color-input').value = color;
+          } else {
+            colorBtn.style.display = 'none';
+            colorDiv.style.display = 'none';
+          }
+        }
+
+        // Sync opacity slider
+        const opacityVal = Math.round((obj.opacity || 1) * 100);
+        const opacitySlider = document.getElementById('toolbar-graphic-opacity');
+        const opacityIndicator = document.getElementById('toolbar-graphic-opacity-val');
+        if (opacitySlider) opacitySlider.value = opacityVal;
+        if (opacityIndicator) opacityIndicator.textContent = opacityVal + '%';
       }
     }
 
@@ -3040,6 +3127,9 @@
       if (activeObj) {
         activeObj.set('opacity', value / 100);
         canvas.requestRenderAll();
+        
+        const opacityIndicator = document.getElementById('toolbar-graphic-opacity-val');
+        if (opacityIndicator) opacityIndicator.textContent = Math.round(value) + '%';
       }
     }
 
