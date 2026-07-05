@@ -1326,22 +1326,94 @@
 
     .edit-toolbar {
       display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      background: rgba(255,255,255,0.96);
-      border-bottom: 1px solid var(--g200);
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px;
+      background: rgba(255,255,255,0.98);
+      border: 1px solid rgba(226, 224, 219, 0.95);
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(26, 25, 22, 0.08), 0 1px 0 rgba(255,255,255,0.9) inset;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       flex-wrap: wrap;
       justify-content: space-between;
       width: 100%;
-      border-bottom: 1px solid var(--g200);
       position: relative;
       z-index: 15;
+      margin: 0 auto;
+      max-width: 1320px;
     }
     .edit-toolbar.visible {
       display: flex;
+    }
+    .edit-toolbar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+    }
+    .edit-toolbar-head-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+    .edit-toolbar-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--rose-50);
+      color: var(--rose-dark);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .edit-toolbar-target {
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--g700);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .edit-toolbar-hint {
+      font-size: 12px;
+      color: var(--g400);
+      white-space: nowrap;
+    }
+    .edit-toolbar-grid {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+    .edit-toolbar-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: linear-gradient(180deg, #ffffff 0%, #fcfcfb 100%);
+      border: 1px solid var(--g200);
+      border-radius: 14px;
+      padding: 10px 12px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset;
+      min-height: 56px;
+    }
+    .edit-toolbar-card.text-card {
+      flex: 1 1 560px;
+    }
+    .edit-toolbar-card.spacing-card {
+      flex: 1 1 310px;
+    }
+    .edit-toolbar-card.object-card {
+      flex: 0 0 auto;
     }
     .edit-toolbar-group {
       display: flex;
@@ -1351,37 +1423,67 @@
     }
     .edit-toolbar-label {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--g500);
+      color: var(--g400);
       margin-right: 2px;
     }
     .edit-toolbar select,
     .edit-toolbar input[type="number"] {
-      height: 32px;
+      height: 34px;
       border: 1px solid var(--g200);
-      border-radius: 8px;
+      border-radius: 10px;
       background: var(--w);
       color: var(--g900);
       font-size: 13px;
       padding: 0 10px;
       outline: none;
+      transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+    }
+    .edit-toolbar select:hover,
+    .edit-toolbar input[type="number"]:hover,
+    .edit-toolbar select:focus,
+    .edit-toolbar input[type="number"]:focus {
+      border-color: rgba(244, 63, 94, 0.45);
+      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.08);
+    }
+    .edit-toolbar select {
+      min-width: 170px;
+    }
+    .edit-toolbar input[type="number"] {
+      width: 74px;
     }
     .edit-toolbar input[type="range"] {
       accent-color: var(--rose);
     }
     .edit-toolbar .prop-btn {
-      height: 32px;
-      min-width: 32px;
+      height: 34px;
+      min-width: 34px;
       padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid var(--g200);
+      background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+      color: var(--g700);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset;
+    }
+    .edit-toolbar .prop-btn:hover {
+      color: var(--rose);
+      border-color: rgba(244, 63, 94, 0.35);
+      background: var(--rose-50);
+    }
+    .edit-toolbar .prop-btn.active {
+      color: var(--rose);
+      background: var(--rose-50);
+      border-color: rgba(244, 63, 94, 0.45);
     }
     .edit-toolbar .color-swatch {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
       border: 1px solid var(--g200);
       cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
     }
     .edit-toolbar .sep {
       width: 1px;
@@ -1392,11 +1494,16 @@
     .edit-toolbar .mini-field {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: var(--g50);
+      border: 1px solid var(--g150);
     }
     .edit-toolbar .mini-field span {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--g500);
+      font-weight: 650;
       white-space: nowrap;
     }
 
@@ -1845,49 +1952,65 @@
             <button class="page-btn" id="page-btn-2" onclick="switchPage(2)">Page 2 (Details)</button>
           </div>
           <div class="edit-toolbar" id="edit-toolbar">
-            <div class="edit-toolbar-group">
-              <span class="edit-toolbar-label">Text</span>
-              <select id="toolbar-font" onchange="updateSelectedTextProp('fontFamily', this.value)">
-                <option value="Outfit">Outfit</option>
-                <option value="Noto Serif Devanagari">Noto Serif Devanagari</option>
-                <option value="Cinzel">Cinzel</option>
-                <option value="Great Vibes">Great Vibes</option>
-                <option value="Playfair Display">Playfair Display</option>
-                <option value="Montserrat">Montserrat</option>
-                <option value="Allura">Allura</option>
-                <option value="Cormorant Garamond">Cormorant Garamond</option>
-              </select>
-              <input type="number" id="toolbar-size" min="8" max="160" value="24" title="Text size" onchange="updateSelectedTextProp('fontSize', Number(this.value))">
-              <div class="color-swatch" id="toolbar-color" title="Text color" onclick="document.getElementById('toolbar-color-input').click()"></div>
-              <input type="color" id="toolbar-color-input" style="display:none;" onchange="updateSelectedElementColor(this.value)">
-              <button class="prop-btn" id="toolbar-bold" onclick="toggleTextWeight('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
-              <button class="prop-btn" id="toolbar-italic" onclick="toggleTextWeight('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
-              <button class="prop-btn" id="toolbar-underline" onclick="toggleTextWeight('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
-              <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'left')" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
-              <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'center')" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
-              <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'right')" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+            <div class="edit-toolbar-head">
+              <div class="edit-toolbar-head-left">
+                <span class="edit-toolbar-kicker">Inline Editing</span>
+                <span class="edit-toolbar-target" id="toolbar-target-label">No element selected</span>
+              </div>
+              <div class="edit-toolbar-hint">Esc to deselect</div>
             </div>
 
-            <div class="edit-toolbar-group">
-              <span class="edit-toolbar-label">Spacing</span>
-              <div class="mini-field">
-                <span>Line gap</span>
-                <input type="range" id="toolbar-line-height" min="0.8" max="2.4" step="0.05" value="1.35" oninput="updateSelectedTextProp('lineHeight', Number(this.value))">
+            <div class="edit-toolbar-grid">
+              <div class="edit-toolbar-card text-card">
+                <div class="edit-toolbar-group">
+                  <span class="edit-toolbar-label">Text</span>
+                  <select id="toolbar-font" onchange="updateSelectedTextProp('fontFamily', this.value)">
+                    <option value="Outfit">Outfit</option>
+                    <option value="Noto Serif Devanagari">Noto Serif Devanagari</option>
+                    <option value="Cinzel">Cinzel</option>
+                    <option value="Great Vibes">Great Vibes</option>
+                    <option value="Playfair Display">Playfair Display</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Allura">Allura</option>
+                    <option value="Cormorant Garamond">Cormorant Garamond</option>
+                  </select>
+                  <input type="number" id="toolbar-size" min="8" max="160" value="24" title="Text size" onchange="updateSelectedTextProp('fontSize', Number(this.value))">
+                  <div class="color-swatch" id="toolbar-color" title="Text color" onclick="document.getElementById('toolbar-color-input').click()"></div>
+                  <input type="color" id="toolbar-color-input" style="display:none;" onchange="updateSelectedElementColor(this.value)">
+                  <button class="prop-btn" id="toolbar-bold" onclick="toggleTextWeight('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
+                  <button class="prop-btn" id="toolbar-italic" onclick="toggleTextWeight('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
+                  <button class="prop-btn" id="toolbar-underline" onclick="toggleTextWeight('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
+                  <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'left')" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+                  <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'center')" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+                  <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'right')" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+                </div>
               </div>
-              <div class="mini-field">
-                <span>Letter gap</span>
-                <input type="range" id="toolbar-char-spacing" min="-100" max="300" step="5" value="0" oninput="updateSelectedTextProp('charSpacing', Number(this.value))">
-              </div>
-            </div>
 
-            <div class="edit-toolbar-group">
-              <span class="edit-toolbar-label">Object</span>
-              <button class="prop-btn" onclick="alignObjectCenter('h')" title="Center Horizontally"><i class="fa-solid fa-arrows-h"></i></button>
-              <button class="prop-btn" onclick="alignObjectCenter('v')" title="Center Vertically"><i class="fa-solid fa-arrows-v"></i></button>
-              <button class="prop-btn" onclick="changeZIndex('front')" title="Bring to Front"><i class="fa-solid fa-angles-up"></i></button>
-              <button class="prop-btn" onclick="changeZIndex('back')" title="Send to Back"><i class="fa-solid fa-angles-down"></i></button>
-              <button class="prop-btn" onclick="duplicateActiveObject()" title="Duplicate Element"><i class="fa-solid fa-clone"></i></button>
-              <button class="prop-btn" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;"><i class="fa-solid fa-trash"></i></button>
+              <div class="edit-toolbar-card spacing-card">
+                <div class="edit-toolbar-group">
+                  <span class="edit-toolbar-label">Spacing</span>
+                  <div class="mini-field">
+                    <span>Line gap</span>
+                    <input type="range" id="toolbar-line-height" min="0.8" max="2.4" step="0.05" value="1.35" oninput="updateSelectedTextProp('lineHeight', Number(this.value))">
+                  </div>
+                  <div class="mini-field">
+                    <span>Letter gap</span>
+                    <input type="range" id="toolbar-char-spacing" min="-100" max="300" step="5" value="0" oninput="updateSelectedTextProp('charSpacing', Number(this.value))">
+                  </div>
+                </div>
+              </div>
+
+              <div class="edit-toolbar-card object-card">
+                <div class="edit-toolbar-group">
+                  <span class="edit-toolbar-label">Object</span>
+                  <button class="prop-btn" onclick="alignObjectCenter('h')" title="Center Horizontally"><i class="fa-solid fa-arrows-h"></i></button>
+                  <button class="prop-btn" onclick="alignObjectCenter('v')" title="Center Vertically"><i class="fa-solid fa-arrows-v"></i></button>
+                  <button class="prop-btn" onclick="changeZIndex('front')" title="Bring to Front"><i class="fa-solid fa-angles-up"></i></button>
+                  <button class="prop-btn" onclick="changeZIndex('back')" title="Send to Back"><i class="fa-solid fa-angles-down"></i></button>
+                  <button class="prop-btn" onclick="duplicateActiveObject()" title="Duplicate Element"><i class="fa-solid fa-clone"></i></button>
+                  <button class="prop-btn" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
             </div>
           </div>
           <div id="preview-scaler-wrap" style="display: inline-block; position: relative; transition: width 0.2s, height 0.2s; margin: auto; border-radius: 10px; box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12); background: #fff; overflow: hidden;">
@@ -2440,6 +2563,8 @@
       document.getElementById('props-color').style.display = 'none';
       document.getElementById('props-graphic').style.display = 'none';
       setEditToolbarVisible(false);
+      const targetLabel = document.getElementById('toolbar-target-label');
+      if (targetLabel) targetLabel.textContent = 'No element selected';
     }
 
     function setEditToolbarVisible(visible) {
@@ -2450,12 +2575,25 @@
 
     function syncEditToolbar(obj) {
       const bar = document.getElementById('edit-toolbar');
+      const targetLabel = document.getElementById('toolbar-target-label');
       if (!bar) return;
 
       const isText = obj && (obj.type === 'i-text' || obj.type === 'textbox');
       const isGraphic = obj && !isText;
 
       setEditToolbarVisible(!!obj);
+
+      if (targetLabel) {
+        if (!obj) {
+          targetLabel.textContent = 'No element selected';
+        } else if (obj.name) {
+          targetLabel.textContent = obj.name;
+        } else if (isText && obj.text) {
+          targetLabel.textContent = obj.text.length > 28 ? obj.text.slice(0, 28) + '...' : obj.text;
+        } else {
+          targetLabel.textContent = (obj.type || 'Element').replace(/^\w/, c => c.toUpperCase());
+        }
+      }
 
       if (!obj) return;
 
