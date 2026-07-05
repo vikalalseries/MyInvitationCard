@@ -1895,6 +1895,115 @@
     let pageCanvasStates = { 1: null, 2: null };
     let activeTemplateData = null;
     let activeTemplateId = 'card1';
+    const PX_PER_CM = 38;
+
+    function cmToPx(value) {
+      return Math.round(Number(value) * PX_PER_CM);
+    }
+
+    function makeTextCommon(options = {}) {
+      return {
+        fontFamily: 'Noto Serif Devanagari',
+        fill: '#6e0035',
+        originX: 'center',
+        originY: 'center',
+        selectable: true,
+        ...options
+      };
+    }
+
+    function addTextObject(text, options = {}) {
+      const config = makeTextCommon(options);
+      const useTextbox = Boolean(config.width) || Boolean(config.textAlign === 'center' && text.includes('\n'));
+      const ObjClass = useTextbox ? fabric.Textbox : fabric.IText;
+      const obj = new ObjClass(text, config);
+      canvas.add(obj);
+      return obj;
+    }
+
+    function loadFabricImage(url, options = {}) {
+      return new Promise((resolve) => {
+        fabric.Image.fromURL(url, function(img) {
+          if (!img) {
+            resolve(null);
+            return;
+          }
+          img.set({
+            originX: 'center',
+            originY: 'center',
+            selectable: true,
+            ...options
+          });
+          canvas.add(img);
+          resolve(img);
+        }, { crossOrigin: 'anonymous' });
+      });
+    }
+
+    function addSectionFrame(left, top, width, height, accentColor, fillA, fillB) {
+      const bg = new fabric.Rect({
+        left,
+        top,
+        width,
+        height,
+        fill: {
+          type: 'linear',
+          x1: 0,
+          y1: 0,
+          x2: width,
+          y2: height,
+          colorStops: [
+            { offset: 0, color: fillA },
+            { offset: 0.45, color: fillB },
+            { offset: 1, color: fillA }
+          ]
+        },
+        stroke: accentColor,
+        strokeWidth: 3,
+        selectable: false,
+        evented: false
+      });
+      canvas.add(bg);
+
+      const inner = new fabric.Rect({
+        left: left + 10,
+        top: top + 10,
+        width: width - 20,
+        height: height - 20,
+        fill: 'transparent',
+        stroke: accentColor,
+        strokeWidth: 1,
+        selectable: false,
+        evented: false
+      });
+      canvas.add(inner);
+
+      return { bg, inner };
+    }
+
+    function addCornerFlowers(left, top, width, height, accentColor) {
+      const padX = 12;
+      const padY = 8;
+      const corners = [
+        { x: left + padX, y: top + padY, originX: 'left', originY: 'top' },
+        { x: left + width - padX, y: top + padY, originX: 'right', originY: 'top' },
+        { x: left + padX, y: top + height - padY + 6, originX: 'left', originY: 'bottom' },
+        { x: left + width - padX, y: top + height - padY + 6, originX: 'right', originY: 'bottom' }
+      ];
+      corners.forEach((corner) => {
+        canvas.add(new fabric.Text('✿', {
+          left: corner.x,
+          top: corner.y,
+          originX: corner.originX,
+          originY: corner.originY,
+          fontSize: 18,
+          fontFamily: 'Inter',
+          fill: accentColor,
+          selectable: false,
+          evented: false
+        }));
+      });
+    }
 
     window.onload = function() {
       // Initialize fabric canvas
@@ -1990,21 +2099,7 @@
 
       if (loadedData) {
         if (templateId === 'card1') {
-          const iframe = document.getElementById('bg-template-frame');
-          iframe.src = 'templates/card1.html';
-          iframe.onload = async () => {
-            if (iframe.contentWindow.syncCard) {
-              iframe.contentWindow.syncCard(loadedData);
-            }
-            await parseHtmlToFabric(iframe, canvas, 0);
-            setTimeout(() => {
-              fitToScreen();
-              isSavingHistory = true;
-              canvas.discardActiveObject();
-              canvas.requestRenderAll();
-              saveHistory();
-            }, 400);
-          };
+          renderEditableCard1(loadedData);
         } else {
           // Render from transferred/saved state programmatically for other templates
           renderCanvasFromTemplateData(loadedData, templateId);
@@ -2125,7 +2220,7 @@
       document.getElementById('props-empty').style.display = 'none';
       document.getElementById('props-actions').style.display = 'flex';
       
-      if (obj.type === 'i-text' || obj.type === 'rect' || obj.type === 'circle' || obj.type === 'triangle' || obj.type === 'path' || obj.type === 'group') {
+      if (obj.type === 'i-text' || obj.type === 'textbox' || obj.type === 'rect' || obj.type === 'circle' || obj.type === 'triangle' || obj.type === 'path' || obj.type === 'group') {
         document.getElementById('props-color').style.display = 'flex';
         const color = obj.fill || (obj._objects && obj._objects[0] && obj._objects[0].fill) || '#ffffff';
         if (typeof color === 'string') {
@@ -2135,7 +2230,7 @@
         document.getElementById('props-color').style.display = 'none';
       }
 
-      if (obj.type === 'i-text') {
+      if (obj.type === 'i-text' || obj.type === 'textbox') {
         document.getElementById('props-text').style.display = 'flex';
         document.getElementById('text-font').value = obj.fontFamily || 'Outfit';
         document.getElementById('text-size').value = obj.fontSize || 24;
@@ -2308,7 +2403,7 @@
     // INDIVIDUAL SELECTION PROPERTIES EDITING
     function updateSelectedTextProp(prop, value) {
       const activeObj = canvas.getActiveObject();
-      if (activeObj && activeObj.type === 'i-text') {
+      if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'textbox')) {
         activeObj.set(prop, value);
         canvas.requestRenderAll();
         saveHistory();
@@ -2317,7 +2412,7 @@
 
     function toggleTextWeight(type) {
       const activeObj = canvas.getActiveObject();
-      if (!activeObj || activeObj.type !== 'i-text') return;
+      if (!activeObj || (activeObj.type !== 'i-text' && activeObj.type !== 'textbox')) return;
 
       if (type === 'bold') {
         const current = activeObj.fontWeight;
@@ -2632,7 +2727,7 @@
         let labelName = 'Graphic Element';
         let iconClass = 'fa-solid fa-shapes';
         
-        if (obj.type === 'i-text') {
+        if (obj.type === 'i-text' || obj.type === 'textbox') {
           labelName = obj.text.length > 15 ? obj.text.substring(0, 15) + '...' : obj.text;
           iconClass = 'fa-solid fa-font';
         } else if (obj.type === 'image') {
@@ -2688,6 +2783,7 @@
         canvas.discardActiveObject();
         canvas.requestRenderAll();
         refreshLayersList();
+        saveHistory();
       }
     }
 
@@ -2765,10 +2861,379 @@
       }
     }
 
+    async function renderEditableCard1(data) {
+      const fields = (data && data.fields) || {};
+      const events = (data && data.events) || {};
+      const styles = (data && data.styles) || {};
+
+      const cardBg = styles.cardBg || '#f2aec8';
+      const accentColor = styles.accentColor || '#8b0040';
+      const textColor = styles.textColor || '#6e0035';
+      const headingColor = styles.headingColor || textColor;
+      const showGanesh = styles.showGanesh !== false && styles.showGanesh !== 'false';
+      const showOm = styles.showOm !== false && styles.showOm !== 'false';
+      const showChains = styles.showChains !== false && styles.showChains !== 'false';
+
+      activeTemplateData = data;
+      activeTemplateId = 'card1';
+      activePage = 1;
+      pageCanvasStates = { 1: null, 2: null };
+
+      canvas.clear();
+      isSavingHistory = false;
+
+      const canvasWidth = 893;
+      const canvasHeight = 760;
+      canvas.setWidth(canvasWidth);
+      canvas.setHeight(canvasHeight);
+
+      const containerBox = document.getElementById('canvas-container-box');
+      if (containerBox) {
+        containerBox.style.width = canvasWidth + 'px';
+        containerBox.style.height = canvasHeight + 'px';
+      }
+
+      const wrap = document.getElementById('preview-scaler-wrap');
+      if (wrap) {
+        wrap.style.width = canvasWidth + 'px';
+        wrap.style.height = canvasHeight + 'px';
+      }
+
+      canvas.setBackgroundColor(cardBg, canvas.renderAll.bind(canvas));
+
+      const sectionWidth = cmToPx(21.5);
+      const sectionHeight = cmToPx(8.5);
+      const sectionLeft = cmToPx(1);
+      const sectionTop1 = cmToPx(1);
+      const sectionGap = cmToPx(0.3);
+      const sectionTop2 = sectionTop1 + sectionHeight + sectionGap;
+
+      addSectionFrame(sectionLeft, sectionTop1, sectionWidth, sectionHeight, accentColor, '#fce4ef', '#fad8eb');
+      addSectionFrame(sectionLeft, sectionTop2, sectionWidth, sectionHeight, accentColor, '#fce4ef', '#fad8eb');
+      addCornerFlowers(sectionLeft, sectionTop1, sectionWidth, sectionHeight, accentColor);
+      addCornerFlowers(sectionLeft, sectionTop2, sectionWidth, sectionHeight, accentColor);
+      const centerX = sectionLeft + sectionWidth / 2;
+
+      addTextObject((fields.shlokaLine1 || '।। श्री गणेशाय नमः ।।') + '\n' + (fields.shlokaLine2 || ''), {
+        left: centerX,
+        top: sectionTop1 + cmToPx(0.6),
+        width: cmToPx(12),
+        fontSize: 14,
+        textAlign: 'center',
+        lineHeight: 1.35,
+        fill: textColor,
+        name: 'Shloka'
+      });
+
+      addTextObject('〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰', {
+        left: centerX,
+        top: sectionTop1 + cmToPx(1.25),
+        width: cmToPx(12),
+        fontSize: 16,
+        textAlign: 'center',
+        fill: accentColor,
+        name: 'Swirl Top'
+      });
+
+      addTextObject(fields.headingText || '।। मांगलिक क्षणिकायें ।।', {
+        left: centerX,
+        top: sectionTop1 + cmToPx(1.75),
+        width: cmToPx(9),
+        fontSize: 24,
+        fontWeight: '700',
+        textAlign: 'center',
+        fill: headingColor,
+        name: 'Heading'
+      });
+
+      addTextObject('〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰', {
+        left: centerX,
+        top: sectionTop1 + cmToPx(2.25),
+        width: cmToPx(12),
+        fontSize: 16,
+        textAlign: 'center',
+        fill: accentColor,
+        name: 'Swirl Mid'
+      });
+
+      addTextObject((events.haldi && events.haldi.name) || 'हल्दी व मेहन्दी', {
+        left: sectionLeft + cmToPx(4.0),
+        top: sectionTop1 + cmToPx(4.05),
+        width: cmToPx(4.8),
+        fontSize: 19,
+        fontWeight: '700',
+        fill: headingColor,
+        textAlign: 'center',
+        name: 'Haldi Title'
+      });
+      addTextObject((events.haldi && events.haldi.date) || '', {
+        left: sectionLeft + cmToPx(4.0),
+        top: sectionTop1 + cmToPx(4.55),
+        width: cmToPx(4.8),
+        fontSize: 14,
+        fill: textColor,
+        textAlign: 'center',
+        name: 'Haldi Date'
+      });
+
+      addTextObject((events.vivah && events.vivah.name) || 'शुभ विवाह', {
+        left: centerX,
+        top: sectionTop1 + cmToPx(4.05),
+        width: cmToPx(4.8),
+        fontSize: 20,
+        fontWeight: '700',
+        fill: headingColor,
+        textAlign: 'center',
+        name: 'Vivah Title'
+      });
+      addTextObject((events.vivah && events.vivah.date) || '', {
+        left: centerX,
+        top: sectionTop1 + cmToPx(4.55),
+        width: cmToPx(4.8),
+        fontSize: 14,
+        fill: textColor,
+        textAlign: 'center',
+        name: 'Vivah Date'
+      });
+
+      addTextObject((events.vidai && events.vidai.name) || 'विदाई', {
+        left: sectionLeft + sectionWidth - cmToPx(4.0),
+        top: sectionTop1 + cmToPx(4.05),
+        width: cmToPx(4.8),
+        fontSize: 19,
+        fontWeight: '700',
+        fill: headingColor,
+        textAlign: 'center',
+        name: 'Vidai Title'
+      });
+      addTextObject((events.vidai && events.vidai.date) || '', {
+        left: sectionLeft + sectionWidth - cmToPx(4.0),
+        top: sectionTop1 + cmToPx(4.55),
+        width: cmToPx(4.8),
+        fontSize: 14,
+        fill: textColor,
+        textAlign: 'center',
+        name: 'Vidai Date'
+      });
+
+      addTextObject(((fields.balAagrahText || '') + '\n' + (fields.balAagrahNames || '')).trim(), {
+        left: centerX,
+        top: sectionTop1 + cmToPx(7.75),
+        width: cmToPx(17),
+        fontSize: 14,
+        fill: textColor,
+        textAlign: 'center',
+        lineHeight: 1.35,
+        name: 'Bal Aagrah'
+      });
+
+      addTextObject((fields.snehiText || 'स्नेही स्वजन,').trim(), {
+        left: sectionLeft + cmToPx(0.8),
+        top: sectionTop2 + cmToPx(0.6),
+        width: cmToPx(4.5),
+        fontSize: 14,
+        fontWeight: '600',
+        fill: textColor,
+        textAlign: 'left',
+        name: 'Snehi'
+      });
+
+      addTextObject((fields.deityMantra || '।। श्री विन्ध्यवासिनी देव्यै नमः ।।') + '\n' + (fields.deitySubtitle || ''), {
+        left: centerX,
+        top: sectionTop2 + cmToPx(0.75),
+        width: cmToPx(13.8),
+        fontSize: 13,
+        fill: textColor,
+        textAlign: 'center',
+        lineHeight: 1.35,
+        name: 'Deity Block'
+      });
+
+      addTextObject(((fields.brideTitle || '') + ' ' + (fields.brideName || '')).trim(), {
+        left: sectionLeft + cmToPx(0.8),
+        top: sectionTop2 + cmToPx(1.6),
+        width: cmToPx(7),
+        fontSize: 24,
+        fontWeight: '700',
+        fill: headingColor,
+        textAlign: 'left',
+        name: 'Bride Name'
+      });
+
+      addTextObject(((fields.groomTitle || '') + ' ' + (fields.groomName || '')).trim(), {
+        left: sectionLeft + sectionWidth - cmToPx(0.8),
+        top: sectionTop2 + cmToPx(1.6),
+        width: cmToPx(7),
+        fontSize: 24,
+        fontWeight: '700',
+        fill: headingColor,
+        textAlign: 'right',
+        name: 'Groom Name'
+      });
+
+      addTextObject(
+        `सुपौत्री- ${(fields.brideGrandparents || '')}\nसुपुत्री- ${(fields.brideParents || '')}\n\n${(fields.brideTitle || '')} ${(fields.brideName || '')}`.trim(),
+        {
+          left: sectionLeft + cmToPx(0.8),
+          top: sectionTop2 + cmToPx(2.9),
+          width: cmToPx(7.6),
+          fontSize: 13,
+          fill: textColor,
+          textAlign: 'center',
+          lineHeight: 1.35,
+          name: 'Bride Details'
+        }
+      );
+
+      addTextObject(
+        `सुपौत्र- ${(fields.groomGrandparents || '')}\nसुपुत्र- ${(fields.groomParents || '')}\n\n${(fields.groomTitle || '')} ${(fields.groomName || '')}`.trim(),
+        {
+          left: sectionLeft + sectionWidth - cmToPx(0.8),
+          top: sectionTop2 + cmToPx(2.9),
+          width: cmToPx(7.6),
+          fontSize: 13,
+          fill: textColor,
+          textAlign: 'center',
+          lineHeight: 1.35,
+          name: 'Groom Details'
+        }
+      );
+
+      addTextObject((fields.dampatyaHeading || '।। दाम्पत्य-सूत्र-बन्धन ।।'), {
+        left: centerX,
+        top: sectionTop2 + cmToPx(5.1),
+        width: cmToPx(9),
+        fontSize: 16,
+        fontWeight: '700',
+        fill: headingColor,
+        textAlign: 'center',
+        name: 'Dampatya Heading'
+      });
+
+      addTextObject((fields.vinitText || ''), {
+        left: centerX,
+        top: sectionTop2 + cmToPx(6.15),
+        width: cmToPx(10.8),
+        fontSize: 12,
+        fill: textColor,
+        textAlign: 'center',
+        lineHeight: 1.35,
+        name: 'Vinit Text'
+      });
+
+      addTextObject(`दर्शनाभिलाषी:\n${(fields.darshnabhilashiNames || '')}`.trim(), {
+        left: sectionLeft + cmToPx(0.8),
+        top: sectionTop2 + cmToPx(7.05),
+        width: cmToPx(6.0),
+        fontSize: 11,
+        fill: textColor,
+        textAlign: 'left',
+        lineHeight: 1.25,
+        name: 'Darshan Footer'
+      });
+
+      addTextObject(`स्वागताकांक्षी:\n${(fields.swagatakankshiNames || '')}`.trim(), {
+        left: centerX,
+        top: sectionTop2 + cmToPx(7.05),
+        width: cmToPx(6.0),
+        fontSize: 11,
+        fill: textColor,
+        textAlign: 'center',
+        lineHeight: 1.25,
+        name: 'Swagata Footer'
+      });
+
+      addTextObject(`विनीत:\n${(fields.vinitName || '')}`.trim(), {
+        left: sectionLeft + sectionWidth - cmToPx(0.8),
+        top: sectionTop2 + cmToPx(7.05),
+        width: cmToPx(6.0),
+        fontSize: 11,
+        fill: textColor,
+        textAlign: 'right',
+        lineHeight: 1.25,
+        name: 'Vinit Footer'
+      });
+
+      const imageTasks = [
+        showGanesh ? loadFabricImage('../builder1/assets/icons/ganesh.png', { left: sectionLeft + cmToPx(3.0), top: sectionTop1 + cmToPx(0.95) }) : Promise.resolve(null),
+        showOm ? loadFabricImage('../builder1/assets/icons/om.png', { left: sectionLeft + sectionWidth - cmToPx(3.0), top: sectionTop1 + cmToPx(1.25) }) : Promise.resolve(null),
+        showChains ? loadFabricImage('../builder1/assets/icons/side.png', { left: sectionLeft + cmToPx(0.2), top: sectionTop1 + cmToPx(2.5) }) : Promise.resolve(null),
+        showChains ? loadFabricImage('../builder1/assets/icons/side.png', { left: sectionLeft + sectionWidth - cmToPx(0.2), top: sectionTop1 + cmToPx(2.5), flipX: true }) : Promise.resolve(null),
+        loadFabricImage('../builder1/assets/icons/top2.png', { left: sectionLeft + cmToPx(9.9), top: sectionTop1 + cmToPx(4.0) }),
+        loadFabricImage('../builder1/assets/icons/top2.png', { left: sectionLeft + cmToPx(5.3), top: sectionTop1 + cmToPx(6.2) }),
+        loadFabricImage('../builder1/assets/icons/top2.png', { left: sectionLeft + cmToPx(16.8), top: sectionTop1 + cmToPx(6.2) }),
+        loadFabricImage('../builder1/assets/icons/mid.png', { left: sectionLeft + cmToPx(11.7), top: sectionTop1 + cmToPx(4.6) }),
+        loadFabricImage('../builder1/assets/icons/weds.png', { left: centerX, top: sectionTop2 + cmToPx(2.0) })
+      ];
+
+      const loadedImages = await Promise.all(imageTasks);
+      loadedImages.forEach((img, index) => {
+        if (!img) return;
+        if (index === 0) img.scaleToWidth(cmToPx(3.5));
+        if (index === 1) img.scaleToWidth(cmToPx(3.0));
+        if (index === 2 || index === 3) img.scaleToWidth(cmToPx(1.8));
+        if (index === 4 || index === 5 || index === 6) img.scaleToWidth(cmToPx(3.4));
+        if (index === 7) img.scaleToWidth(cmToPx(2.5));
+        if (index === 8) img.scaleToWidth(cmToPx(3.0));
+        if (index === 3) img.set('flipX', true);
+        img.setCoords();
+      });
+
+      canvas.requestRenderAll();
+      fitToScreen();
+
+      setTimeout(() => {
+        isSavingHistory = true;
+        canvas.discardActiveObject();
+        canvas.requestRenderAll();
+        saveHistory();
+      }, 120);
+    }
+
     async function loadDefaultConfigAndRender(templateId) {
-      // For card1, always use the iframe-based approach (no config.json needed)
+      // For card1, use the editable Canva renderer instead of a flattened preview
       if (templateId === 'card1') {
-        loadTemplatePreset('hindu', false);
+        const defaultData = {
+          fields: {
+            shlokaLine1: "।। श्री गणेशाय नमः ।।",
+            shlokaLine2: "वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥",
+            headingText: "।। मांगलिक क्षणिकायें ।।",
+            brideTitle: "आयु°कु°",
+            brideName: "नीलम मौर्या",
+            brideGrandparents: "स्व0 श्री बनारसी प्रसाद मौर्य- श्रीमती कलावती देवी",
+            brideParents: "श्री शमशेर बहादुर मौर्य- श्रीमती चन्द्रकला देवी",
+            groomTitle: "चि°",
+            groomName: "राजेश मौर्य",
+            groomGrandparents: "स्व0 शिवनाथ मौर्य- श्रीमती प्रेमा देवी",
+            groomParents: "श्री रामकेशवर मौर्य- श्रीमती मालती देवी",
+            balAagrahText: "बाल आग्रह- गाना होगा, बजाना होगा, मिलकर धूम मचाना होगा...",
+            balAagrahNames: "जानकी, जान, अनन्या, अनाया (डोडो)",
+            darshnabhilashiNames: "पुष्पराज मौर्य, जयप्रकाश मौर्य एवं समस्त मौर्य परिवार ।",
+            vinitName: "फूलचन्द मौर्य",
+            swagatakankshiNames: "शमशेर बहादुर मौर्य, अनिल मौर्य",
+            snehiText: "स्नेही स्वजन,",
+            deityMantra: "।। श्री विन्ध्यवासिनी देव्यै नमः ।।",
+            deitySubtitle: "आदि शक्ति जगत जननी माँ विन्ध्यवासिनी जी की असीम अनुकम्पा से....",
+            dampatyaHeading: "।। दाम्पत्य-सूत्र-बन्धन ।।",
+            vinitText: "की मधुर बेला पर पधार कर नवयुगल को अपने\nस्नेहिल आशीर्वाद की मृदुल ज्योत्सना से अभिसिंचित कर हमें अनुगृहीत करें."
+          },
+          events: {
+            haldi: { name: "हल्दी व मेहन्दी", date: "30 मई 2026, शनिवार" },
+            vivah: { name: "शुभ विवाह", date: "31 मई 2026, रविवार" },
+            vidai: { name: "विदाई", date: "01 जून 2026, सोमवार" }
+          },
+          styles: {
+            cardBg: "#f2aec8",
+            textColor: "#6e0035",
+            accentColor: "#8b0040",
+            headingColor: "#6e0035",
+            showBorder: "true",
+            showGanesh: "true",
+            showOm: "true",
+            showChains: "true"
+          }
+        };
+        renderEditableCard1(defaultData);
         return;
       }
       
@@ -3414,23 +3879,8 @@
         }
       }
       
-      // Load HTML Template into iframe and parse it
-      const iframe = document.getElementById('bg-template-frame');
-      if (currentId === 'card1') {
-        iframe.src = 'templates/' + currentId + '.html';
-        iframe.onload = async () => {
-          await parseHtmlToFabric(iframe, canvas, 0);
-          
-          // Refit canvas to viewport since dimensions changed
-          setTimeout(() => {
-            fitToScreen();
-            isSavingHistory = true;
-            canvas.discardActiveObject();
-            canvas.requestRenderAll();
-            saveHistory();
-          }, 400);
-        };
-      } else {
+      if (currentId !== 'card1') {
+        const iframe = document.getElementById('bg-template-frame');
         iframe.src = 'about:blank';
         iframe.onload = null;
       }
@@ -3439,8 +3889,7 @@
       renderSuggestions(type);
       
       if (type === 'hindu') {
-        // For card1 (hindu), the iframe loading above handles the full template rendering.
-        // We only store the default data for reference, NOT render programmatically.
+        // Keep the template data available for saves and duplication.
         activeTemplateData = {
           fields: {
             shlokaLine1: "।। श्री गणेशाय नमः ।।",
@@ -3482,7 +3931,7 @@
           }
         };
         activeTemplateId = 'card1';
-        // renderSuggestions already called above; iframe onload handles rendering
+        renderEditableCard1(activeTemplateData);
       } else if (type === 'muslim') {
         const defaultData = {
           fields: {
@@ -3532,12 +3981,6 @@
         renderCanvasFromTemplateData(defaultData, 'birthday', true);
       }
 
-      setTimeout(() => {
-        isSavingHistory = true;
-        canvas.discardActiveObject();
-        canvas.requestRenderAll();
-        saveHistory();
-      }, 300);
     }
   </script>
 </body>
