@@ -1324,6 +1324,78 @@
       gap: 8px !important;
     }
 
+    .edit-toolbar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.96);
+      border-bottom: 1px solid var(--g200);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .edit-toolbar.visible {
+      display: flex;
+    }
+    .edit-toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .edit-toolbar-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--g500);
+      margin-right: 2px;
+    }
+    .edit-toolbar select,
+    .edit-toolbar input[type="number"] {
+      height: 32px;
+      border: 1px solid var(--g200);
+      border-radius: 8px;
+      background: var(--w);
+      color: var(--g900);
+      font-size: 13px;
+      padding: 0 10px;
+      outline: none;
+    }
+    .edit-toolbar input[type="range"] {
+      accent-color: var(--rose);
+    }
+    .edit-toolbar .prop-btn {
+      height: 32px;
+      min-width: 32px;
+      padding: 0 10px;
+    }
+    .edit-toolbar .color-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid var(--g200);
+      cursor: pointer;
+    }
+    .edit-toolbar .sep {
+      width: 1px;
+      height: 26px;
+      background: var(--g200);
+      flex-shrink: 0;
+    }
+    .edit-toolbar .mini-field {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .edit-toolbar .mini-field span {
+      font-size: 12px;
+      color: var(--g500);
+      white-space: nowrap;
+    }
+
     /* Adjust page switcher if any */
     .page-switcher {
       position: absolute;
@@ -1762,6 +1834,53 @@
         </div>
 
         <div class="preview-vp">
+          <div class="edit-toolbar" id="edit-toolbar">
+            <div class="edit-toolbar-group">
+              <span class="edit-toolbar-label">Text</span>
+              <select id="toolbar-font" onchange="updateSelectedTextProp('fontFamily', this.value)">
+                <option value="Outfit">Outfit</option>
+                <option value="Noto Serif Devanagari">Noto Serif Devanagari</option>
+                <option value="Cinzel">Cinzel</option>
+                <option value="Great Vibes">Great Vibes</option>
+                <option value="Playfair Display">Playfair Display</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="Allura">Allura</option>
+                <option value="Cormorant Garamond">Cormorant Garamond</option>
+              </select>
+              <input type="number" id="toolbar-size" min="8" max="160" value="24" title="Text size" onchange="updateSelectedTextProp('fontSize', Number(this.value))">
+              <div class="color-swatch" id="toolbar-color" title="Text color" onclick="document.getElementById('toolbar-color-input').click()"></div>
+              <input type="color" id="toolbar-color-input" style="display:none;" onchange="updateSelectedElementColor(this.value)">
+              <button class="prop-btn" id="toolbar-bold" onclick="toggleTextWeight('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
+              <button class="prop-btn" id="toolbar-italic" onclick="toggleTextWeight('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
+              <button class="prop-btn" id="toolbar-underline" onclick="toggleTextWeight('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
+              <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'left')" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+              <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'center')" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+              <button class="prop-btn" onclick="updateSelectedTextProp('textAlign', 'right')" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+            </div>
+
+            <div class="edit-toolbar-group">
+              <span class="edit-toolbar-label">Spacing</span>
+              <div class="mini-field">
+                <span>Line gap</span>
+                <input type="range" id="toolbar-line-height" min="0.8" max="2.4" step="0.05" value="1.35" oninput="updateSelectedTextProp('lineHeight', Number(this.value))">
+              </div>
+              <div class="mini-field">
+                <span>Letter gap</span>
+                <input type="range" id="toolbar-char-spacing" min="-100" max="300" step="5" value="0" oninput="updateSelectedTextProp('charSpacing', Number(this.value))">
+              </div>
+            </div>
+
+            <div class="edit-toolbar-group">
+              <span class="edit-toolbar-label">Object</span>
+              <button class="prop-btn" onclick="alignObjectCenter('h')" title="Center Horizontally"><i class="fa-solid fa-arrows-h"></i></button>
+              <button class="prop-btn" onclick="alignObjectCenter('v')" title="Center Vertically"><i class="fa-solid fa-arrows-v"></i></button>
+              <button class="prop-btn" onclick="changeZIndex('front')" title="Bring to Front"><i class="fa-solid fa-angles-up"></i></button>
+              <button class="prop-btn" onclick="changeZIndex('back')" title="Send to Back"><i class="fa-solid fa-angles-down"></i></button>
+              <button class="prop-btn" onclick="duplicateActiveObject()" title="Duplicate Element"><i class="fa-solid fa-clone"></i></button>
+              <button class="prop-btn" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+
           <div class="page-switcher" style="top: 20px; display: none !important;">
             <button class="page-btn active" id="page-btn-1" onclick="switchPage(1)">Page 1 (Ceremonies)</button>
             <button class="page-btn" id="page-btn-2" onclick="switchPage(2)">Page 2 (Details)</button>
@@ -2305,6 +2424,8 @@
       } else {
         document.getElementById('props-graphic').style.display = 'none';
       }
+
+      syncEditToolbar(obj);
     }
 
     function onSelectionCleared() {
@@ -2313,6 +2434,45 @@
       document.getElementById('props-text').style.display = 'none';
       document.getElementById('props-color').style.display = 'none';
       document.getElementById('props-graphic').style.display = 'none';
+      setEditToolbarVisible(false);
+    }
+
+    function setEditToolbarVisible(visible) {
+      const bar = document.getElementById('edit-toolbar');
+      if (!bar) return;
+      bar.classList.toggle('visible', !!visible);
+    }
+
+    function syncEditToolbar(obj) {
+      const bar = document.getElementById('edit-toolbar');
+      if (!bar) return;
+
+      const isText = obj && (obj.type === 'i-text' || obj.type === 'textbox');
+      const isGraphic = obj && !isText;
+
+      setEditToolbarVisible(!!obj);
+
+      if (!obj) return;
+
+      if (isText) {
+        document.getElementById('toolbar-font').value = obj.fontFamily || 'Outfit';
+        document.getElementById('toolbar-size').value = obj.fontSize || 24;
+        document.getElementById('toolbar-line-height').value = obj.lineHeight || 1.35;
+        document.getElementById('toolbar-char-spacing').value = obj.charSpacing || 0;
+        document.getElementById('toolbar-bold').classList.toggle('active', obj.fontWeight === 'bold');
+        document.getElementById('toolbar-italic').classList.toggle('active', obj.fontStyle === 'italic');
+        document.getElementById('toolbar-underline').classList.toggle('active', !!obj.underline);
+
+        const color = obj.fill || '#ffffff';
+        document.getElementById('toolbar-color').style.backgroundColor = color;
+        document.getElementById('toolbar-color-input').value = color;
+      }
+
+      if (isGraphic) {
+        const color = obj.fill || (obj._objects && obj._objects[0] && obj._objects[0].fill) || '#ffffff';
+        document.getElementById('toolbar-color').style.backgroundColor = color;
+        document.getElementById('toolbar-color-input').value = color;
+      }
     }
 
     // ADD TEXT BOX
@@ -2463,7 +2623,12 @@
       const activeObj = canvas.getActiveObject();
       if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'textbox')) {
         activeObj.set(prop, value);
+        if (prop === 'lineHeight' || prop === 'charSpacing' || prop === 'fontSize' || prop === 'fontFamily') {
+          activeObj.initDimensions();
+          activeObj.setCoords();
+        }
         canvas.requestRenderAll();
+        syncEditToolbar(activeObj);
         saveHistory();
       }
     }
@@ -2483,7 +2648,7 @@
       }
 
       canvas.requestRenderAll();
-      onObjectSelection();
+      syncEditToolbar(activeObj);
       saveHistory();
     }
 
@@ -2491,7 +2656,12 @@
       const activeObj = canvas.getActiveObject();
       if (!activeObj) return;
 
-      document.getElementById('selected-color-swatch').style.backgroundColor = color;
+      const colorSwatch = document.getElementById('selected-color-swatch');
+      if (colorSwatch) colorSwatch.style.backgroundColor = color;
+      const toolbarSwatch = document.getElementById('toolbar-color');
+      const toolbarInput = document.getElementById('toolbar-color-input');
+      if (toolbarSwatch) toolbarSwatch.style.backgroundColor = color;
+      if (toolbarInput) toolbarInput.value = color;
       
       if (activeObj.type === 'group' || activeObj._objects) {
         activeObj.set('fill', color);
@@ -2504,6 +2674,7 @@
       }
 
       canvas.requestRenderAll();
+      syncEditToolbar(activeObj);
       saveHistory();
     }
 
