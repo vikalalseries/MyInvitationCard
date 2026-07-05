@@ -2081,14 +2081,30 @@
               <button class="toolbar-icon" onclick="toggleTextList('bullet')" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
               <button class="toolbar-icon" onclick="toggleTextList('number')" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
 
-              <button class="toolbar-icon" onclick="showTextSpacingPanel()" title="Spacing"><i class="fa-solid fa-text-height"></i></button>
               <button class="toolbar-icon" onclick="showTextEffectsPanel()" title="Effects"><span style="font-weight:700;font-size:13px;letter-spacing:0.02em;">Effects</span></button>
               <button class="toolbar-icon toolbar-more" onclick="toggleToolbarMoreMenu()" title="More"><i class="fa-solid fa-ellipsis"></i></button>
             </div>
 
             <div id="toolbar-more-menu" style="display:none; width:100%; border-top:1px solid var(--g150); padding-top:10px;">
               <div class="edit-toolbar-row" style="gap:8px;">
-                <div class="toolbar-pill compact">
+                <button class="toolbar-icon" id="toolbar-underline" onclick="toggleTextDecoration('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
+                <button class="toolbar-icon" id="toolbar-strike" onclick="toggleTextDecoration('line-through')" title="Strikethrough"><i class="fa-solid fa-strikethrough"></i></button>
+                <button class="toolbar-icon" onclick="toggleTextCase()" title="Change case"><span style="font-weight:800;font-size:13px;">aA</span></button>
+                <button class="toolbar-icon" onclick="showTextSpacingPanel()" title="Spacing"><i class="fa-solid fa-text-height"></i></button>
+                <button class="toolbar-icon" onclick="showTextAnimatePanel()" title="Animate"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                <button class="toolbar-icon" onclick="showObjectPositionPanel()" title="Position"><i class="fa-solid fa-layer-group"></i></button>
+                <button class="toolbar-icon" onclick="showTextEffectsPanel()" title="Paint roller"><i class="fa-solid fa-roller"></i></button>
+                <div class="toolbar-divider"></div>
+                <button class="toolbar-icon" onclick="alignObjectCenter('h')" title="Center Horizontally"><i class="fa-solid fa-arrows-h"></i></button>
+                <button class="toolbar-icon" onclick="alignObjectCenter('v')" title="Center Vertically"><i class="fa-solid fa-arrows-v"></i></button>
+                <button class="toolbar-icon" onclick="changeZIndex('front')" title="Bring to Front"><i class="fa-solid fa-angles-up"></i></button>
+                <button class="toolbar-icon" onclick="changeZIndex('back')" title="Send to Back"><i class="fa-solid fa-angles-down"></i></button>
+                <button class="toolbar-icon" onclick="duplicateActiveObject()" title="Duplicate Element"><i class="fa-solid fa-clone"></i></button>
+                <button class="toolbar-icon" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;"><i class="fa-solid fa-trash"></i></button>
+              </div>
+
+              <div class="edit-toolbar-row" style="margin-top:10px;">
+                <div class="toolbar-pill compact" style="flex:1 1 auto; justify-content:flex-start;">
                   <span class="edit-toolbar-label" style="margin-right:8px;">Spacing</span>
                   <div class="mini-field" style="padding:0; border:none; background:transparent;">
                     <span>Line gap</span>
@@ -2098,15 +2114,6 @@
                     <span>Letter gap</span>
                     <input type="range" id="toolbar-char-spacing" min="-100" max="300" step="5" value="0" oninput="updateSelectedTextProp('charSpacing', Number(this.value))">
                   </div>
-                </div>
-                <div class="toolbar-pill compact">
-                  <span class="edit-toolbar-label" style="margin-right:8px;">Object</span>
-                  <button class="toolbar-step" onclick="alignObjectCenter('h')" title="Center Horizontally"><i class="fa-solid fa-arrows-h"></i></button>
-                  <button class="toolbar-step" onclick="alignObjectCenter('v')" title="Center Vertically"><i class="fa-solid fa-arrows-v"></i></button>
-                  <button class="toolbar-step" onclick="changeZIndex('front')" title="Bring to Front"><i class="fa-solid fa-angles-up"></i></button>
-                  <button class="toolbar-step" onclick="changeZIndex('back')" title="Send to Back"><i class="fa-solid fa-angles-down"></i></button>
-                  <button class="toolbar-step" onclick="duplicateActiveObject()" title="Duplicate Element"><i class="fa-solid fa-clone"></i></button>
-                  <button class="toolbar-step" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;"><i class="fa-solid fa-trash"></i></button>
                 </div>
               </div>
             </div>
@@ -2661,6 +2668,7 @@
       document.getElementById('props-color').style.display = 'none';
       document.getElementById('props-graphic').style.display = 'none';
       setEditToolbarVisible(false);
+      toggleToolbarMoreMenu(false);
       const targetLabel = document.getElementById('toolbar-target-label');
       if (targetLabel) targetLabel.textContent = 'No element selected';
     }
@@ -2703,7 +2711,10 @@
         document.getElementById('toolbar-char-spacing').value = obj.charSpacing || 0;
         document.getElementById('toolbar-bold').classList.toggle('active', obj.fontWeight === 'bold');
         document.getElementById('toolbar-italic').classList.toggle('active', obj.fontStyle === 'italic');
-        document.getElementById('toolbar-underline').classList.toggle('active', !!obj.underline);
+        const underlineBtn = document.getElementById('toolbar-underline');
+        const strikeBtn = document.getElementById('toolbar-strike');
+        if (underlineBtn) underlineBtn.classList.toggle('active', !!obj.underline);
+        if (strikeBtn) strikeBtn.classList.toggle('active', !!obj.linethrough);
 
         const color = obj.fill || '#ffffff';
         document.getElementById('toolbar-color').style.backgroundColor = color;
@@ -2744,6 +2755,43 @@
 
     function showTextEffectsPanel() {
       toggleToolbarMoreMenu(true);
+    }
+
+    function showTextAnimatePanel() {
+      toggleToolbarMoreMenu(true);
+      showToast('Animate tools can be expanded here next.');
+    }
+
+    function showObjectPositionPanel() {
+      toggleToolbarMoreMenu(true);
+      showToast('Position controls are available in the overflow row.');
+    }
+
+    function toggleTextDecoration(prop) {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || (activeObj.type !== 'i-text' && activeObj.type !== 'textbox')) return;
+
+      const nextValue = !activeObj[prop];
+      activeObj.set(prop, nextValue);
+      canvas.requestRenderAll();
+      syncEditToolbar(activeObj);
+      saveHistory();
+    }
+
+    function toggleTextCase() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || (activeObj.type !== 'i-text' && activeObj.type !== 'textbox')) return;
+
+      const current = String(activeObj.text || '');
+      if (!current) return;
+
+      const allCaps = current === current.toUpperCase();
+      activeObj.set('text', allCaps ? current.toLowerCase() : current.toUpperCase());
+      activeObj.initDimensions();
+      activeObj.setCoords();
+      canvas.requestRenderAll();
+      syncEditToolbar(activeObj);
+      saveHistory();
     }
 
     function toggleTextList(mode) {
