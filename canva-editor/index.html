@@ -1335,6 +1335,10 @@
       -webkit-backdrop-filter: blur(14px);
       flex-wrap: wrap;
       justify-content: space-between;
+      width: 100%;
+      border-bottom: 1px solid var(--g200);
+      position: relative;
+      z-index: 15;
     }
     .edit-toolbar.visible {
       display: flex;
@@ -1427,7 +1431,9 @@
       align-items: center;
       justify-content: center;
       height: 100%;
-      padding: 40px;
+      padding: 24px 40px 40px;
+      flex-direction: column;
+      gap: 14px;
     }
     
   
@@ -1834,6 +1840,10 @@
         </div>
 
         <div class="preview-vp">
+          <div class="page-switcher" style="top: 20px; display: none !important;">
+            <button class="page-btn active" id="page-btn-1" onclick="switchPage(1)">Page 1 (Ceremonies)</button>
+            <button class="page-btn" id="page-btn-2" onclick="switchPage(2)">Page 2 (Details)</button>
+          </div>
           <div class="edit-toolbar" id="edit-toolbar">
             <div class="edit-toolbar-group">
               <span class="edit-toolbar-label">Text</span>
@@ -1879,11 +1889,6 @@
               <button class="prop-btn" onclick="duplicateActiveObject()" title="Duplicate Element"><i class="fa-solid fa-clone"></i></button>
               <button class="prop-btn" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;"><i class="fa-solid fa-trash"></i></button>
             </div>
-          </div>
-
-          <div class="page-switcher" style="top: 20px; display: none !important;">
-            <button class="page-btn active" id="page-btn-1" onclick="switchPage(1)">Page 1 (Ceremonies)</button>
-            <button class="page-btn" id="page-btn-2" onclick="switchPage(2)">Page 2 (Details)</button>
           </div>
           <div id="preview-scaler-wrap" style="display: inline-block; position: relative; transition: width 0.2s, height 0.2s; margin: auto; border-radius: 10px; box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12); background: #fff; overflow: hidden;">
             <iframe id="bg-template-frame" src="templates/card1.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 1; pointer-events: none; opacity: 0;"></iframe>
