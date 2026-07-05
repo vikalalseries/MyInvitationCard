@@ -1755,7 +1755,7 @@
           </div>
           <div class="zoom-bar">
             <button class="zbtn" onclick="adjustZoom(-0.1)" title="Zoom Out">−</button>
-            <span class="zlvl" id="zoom-percentage">100%</span>
+            <span class="zlvl" id="zoom-percentage">85%</span>
             <button class="zbtn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
             <button class="zbtn zfit" onclick="fitToScreen()" title="Fit to screen">FIT</button>
           </div>
@@ -2164,8 +2164,11 @@
         loadDefaultConfigAndRender(templateId);
       }
       
-      // Auto-fit screen initially
-      setTimeout(fitToScreen, 200);
+      // Set default zoom to 85% initially
+      setTimeout(() => {
+        zoomLevel = 0.85;
+        applyZoomScale();
+      }, 200);
 
       // Sidenav Tab Toggles
       document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -2641,7 +2644,7 @@
     }
 
     // ZOOM CONTROL WIDGET
-    let zoomLevel = 1.0;
+    let zoomLevel = 0.85;
     
     function adjustZoom(delta) {
       zoomLevel = Math.max(0.2, Math.min(3.0, zoomLevel + delta));
@@ -3235,7 +3238,8 @@
       });
 
       canvas.requestRenderAll();
-      fitToScreen();
+      zoomLevel = 0.85;
+      applyZoomScale();
 
       setTimeout(() => {
         isSavingHistory = true;
