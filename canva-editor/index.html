@@ -1762,7 +1762,7 @@
         </div>
 
         <div class="preview-vp">
-          <div class="page-switcher" style="top: 20px;">
+          <div class="page-switcher" style="top: 20px; display: none !important;">
             <button class="page-btn active" id="page-btn-1" onclick="switchPage(1)">Page 1 (Ceremonies)</button>
             <button class="page-btn" id="page-btn-2" onclick="switchPage(2)">Page 2 (Details)</button>
           </div>
@@ -1989,8 +1989,25 @@
       document.getElementById('project-title').value = projectTitleVal;
 
       if (loadedData) {
-        // Render from transferred/saved state
-        renderCanvasFromTemplateData(loadedData, templateId);
+        if (templateId === 'card1') {
+          const iframe = document.getElementById('bg-template-frame');
+          iframe.src = 'templates/card1.html';
+          iframe.onload = async () => {
+            if (iframe.contentWindow.syncCard) {
+              iframe.contentWindow.syncCard(loadedData);
+            }
+            await parseHtmlToFabric(iframe, canvas, 0);
+            setTimeout(() => {
+              isSavingHistory = true;
+              canvas.discardActiveObject();
+              canvas.requestRenderAll();
+              saveHistory();
+            }, 400);
+          };
+        } else {
+          // Render from transferred/saved state programmatically for other templates
+          renderCanvasFromTemplateData(loadedData, templateId);
+        }
       } else {
         // Load default config from JSON file
         loadDefaultConfigAndRender(templateId);
@@ -2542,6 +2559,44 @@
       link.href = dataURL;
       link.click();
       showToast('Downloading High-Res PNG Card...');
+    }
+
+    function handleCanvaDownload(format) {
+      canvas.discardActiveObject();
+      canvas.requestRenderAll();
+      
+      const title = document.getElementById('project-title').value || 'invitation-card';
+      
+      if (format === 'png' || format === 'jpg') {
+        const dataURL = canvas.toDataURL({
+          format: format === 'jpg' ? 'jpeg' : 'png',
+          quality: 1.0,
+          multiplier: 2
+        });
+        
+        const link = document.createElement('a');
+        link.download = `${title}.${format}`;
+        link.href = dataURL;
+        link.click();
+        showToast(`Downloading High-Res ${format.toUpperCase()} Card...`);
+      } else if (format === 'pdf') {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: canvas.width > canvas.height ? 'l' : 'p',
+          unit: 'px',
+          format: [canvas.width, canvas.height]
+        });
+        
+        const imgData = canvas.toDataURL({
+          format: 'png',
+          quality: 1.0,
+          multiplier: 1
+        });
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save(`${title}.pdf`);
+        showToast('Downloading PDF Card...');
+      }
     }
 
     // TOAST UTILS

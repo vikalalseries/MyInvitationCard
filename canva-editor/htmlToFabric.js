@@ -20,19 +20,15 @@ async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
     });
   }
 
-  const secs = doc.querySelectorAll('.sec');
-  if (secs.length === 0) {
-    console.error("No .sec elements found in the iframe template.");
-    return false;
-  }
-  const targetSec = secs[pageIndex] || secs[0];
+  // Target the parent .card container to load all sections stacked vertically
+  const cardEl = doc.querySelector('.card') || doc.body;
 
   // Clear existing canvas objects
   canvas.clear();
 
   // 1. Identify Foreground Elements (Text and Images)
   const foregroundElements = [];
-  const allElements = targetSec.querySelectorAll('*');
+  const allElements = cardEl.querySelectorAll('*');
 
   allElements.forEach(el => {
     // Skip non-visual tags
@@ -58,17 +54,17 @@ async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
     }
   });
 
-  // Calculate the scale to fit the section within the canvas container
+  // Calculate the scale to fit the card within the canvas container
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
   
-  // Get the real pixel dimensions of the section
-  const secRect = targetSec.getBoundingClientRect();
-  const secWidth = secRect.width;
-  const secHeight = secRect.height;
+  // Get the real pixel dimensions of the card
+  const cardRect = cardEl.getBoundingClientRect();
+  const cardWidth = cardRect.width;
+  const cardHeight = cardRect.height;
   
-  const scaleX = canvasWidth / secWidth;
-  const scaleY = canvasHeight / secHeight;
+  const scaleX = canvasWidth / cardWidth;
+  const scaleY = canvasHeight / cardHeight;
 
   // 2. Generate Fabric Objects for Foreground Elements
   for (const item of foregroundElements) {
@@ -76,9 +72,9 @@ async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
     const rect = el.getBoundingClientRect();
     const computedStyle = iframe.contentWindow.getComputedStyle(el);
 
-    // Calculate position relative to the target .sec container
-    const left = rect.left - secRect.left;
-    const top = rect.top - secRect.top;
+    // Calculate position relative to the target .card container
+    const left = rect.left - cardRect.left;
+    const top = rect.top - cardRect.top;
 
     if (item.type === 'text') {
       let text = el.innerText || el.textContent;
@@ -137,7 +133,7 @@ async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
 
   // Capture background using html2canvas
   try {
-    const bgCanvas = await html2canvas(targetSec, {
+    const bgCanvas = await html2canvas(cardEl, {
       backgroundColor: null,
       scale: 1, 
       logging: false,
