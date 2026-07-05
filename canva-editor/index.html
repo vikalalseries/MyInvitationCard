@@ -2030,6 +2030,23 @@
       canvas.on('selection:created', onObjectSelection);
       canvas.on('selection:updated', onObjectSelection);
       canvas.on('selection:cleared', onSelectionCleared);
+      canvas.on('mouse:down', function(opt) {
+        const activeObj = canvas.getActiveObject();
+
+        if (!opt.target && activeObj) {
+          if (activeObj.isEditing && typeof activeObj.exitEditing === 'function') {
+            activeObj.exitEditing();
+          }
+          canvas.discardActiveObject();
+          canvas.requestRenderAll();
+          return;
+        }
+
+        if (activeObj && activeObj.isEditing && opt.target !== activeObj && typeof activeObj.exitEditing === 'function') {
+          activeObj.exitEditing();
+          canvas.requestRenderAll();
+        }
+      });
       
       canvas.on('object:added', saveHistory);
       canvas.on('object:modified', saveHistory);
