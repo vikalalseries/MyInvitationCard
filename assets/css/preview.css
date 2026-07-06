@@ -43,14 +43,41 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
 
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* IE/Edge */
+  scrollbar-width: thin;                              /* Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;  /* Firefox */
 }
 
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  width: 0;
-  display: none;
+/* ── CUSTOM THIN SCROLLBARS (Matching Website UI) ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode scrollbar adaptation */
+html.site-theme-dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+html.site-theme-dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+html.site-theme-dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 .hidden {
@@ -61,7 +88,7 @@ body::-webkit-scrollbar {
   width: 100%;
   min-height: 100%;
   background: var(--card);
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* TOP */

@@ -52,6 +52,25 @@
       margin: 0;
       padding: 0;
       user-select: none;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+    }
+
+    /* Custom scrollbars matching website's other scroll bar UI */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 99px;
+      transition: background 0.2s;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3);
     }
 
     body {
@@ -657,6 +676,7 @@
     .editor-container {
       flex: 1;
       display: flex;
+      min-height: 0;
       overflow: hidden;
       position: relative;
     }
@@ -665,6 +685,8 @@
       width: 40%;
       display: flex;
       flex-shrink: 0;
+      min-height: 0;
+      height: 100%;
       border-right: 1px solid var(--g200);
       background: var(--w);
       z-index: 5;
@@ -716,6 +738,8 @@
       background-color: var(--w);
       display: flex;
       flex-direction: column;
+      min-height: 0;
+      height: 100%;
       z-index: 4;
     }
 
@@ -752,9 +776,30 @@
     }
 
     .drawer-content {
-      flex: 1;
-      overflow-y: auto;
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: calc(100vh - var(--topbar-h) - 56px);
+      overflow-y: scroll;
+      overflow-x: hidden;
       padding: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+      scrollbar-gutter: stable;
+    }
+
+    .drawer-content::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .drawer-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .drawer-content::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 99px;
+    }
+    .drawer-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3);
     }
 
     .drawer-panel-section {
@@ -967,6 +1012,7 @@
     /* WORKSPACE */
     .workspace {
       flex: 1;
+      min-height: 0;
       background-color: var(--g100);
       display: flex;
       flex-direction: column;
@@ -1076,20 +1122,28 @@
     /* CANVAS WRAPPER */
     .canvas-stage {
       flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       position: relative;
       background: var(--rose-50);
+      overflow: hidden;
     }
 
     .preview-vp {
       flex: 1;
-      overflow: auto;
+      height: calc(100vh - var(--topbar-h) - 50px);
+      max-height: calc(100vh - var(--topbar-h) - 50px);
+      overflow-y: scroll;
+      overflow-x: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 40px 24px;
       position: relative;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+      scrollbar-gutter: stable;
     }
 
     .canvas-container {
@@ -1628,15 +1682,49 @@
       border-left: none;
     }
     
-    /* Ensure preview-vp is centered */
+    /* Ensure preview-vp is centered and scrollable */
     .preview-vp {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 24px 40px 40px;
       flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 1 !important;
+      height: calc(100vh - var(--topbar-h) - 50px) !important;
+      max-height: calc(100vh - var(--topbar-h) - 50px) !important;
+      padding: 24px 40px 40px;
       gap: 14px;
+      overflow-y: scroll !important;
+      overflow-x: hidden !important;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+      scrollbar-gutter: stable;
+    }
+
+    .preview-vp > #preview-scaler-wrap {
+      margin: 0 auto 48px !important;
+      align-self: flex-start;
+    }
+
+    #live-preview-image {
+      box-shadow: 0 20px 50px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+      background: #fff;
+    }
+
+    /* Custom scrollbar for preview viewport (matches website UI) */
+    .preview-vp::-webkit-scrollbar {
+      width: 6px !important;
+      height: 6px !important;
+      display: block !important;
+    }
+    .preview-vp::-webkit-scrollbar-track {
+      background: transparent !important;
+    }
+    .preview-vp::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15) !important;
+      border-radius: 10px;
+    }
+    .preview-vp::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3) !important;
     }
     
   
@@ -2039,6 +2127,7 @@
             <span class="zlvl" id="zoom-percentage">85%</span>
             <button class="zbtn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
             <button class="zbtn zfit" onclick="fitToScreen()" title="Fit to screen">FIT</button>
+            <button class="zbtn" style="border-right:none;" onclick="scrollPreviewToBottom()" title="Scroll to bottom"><i class="fa-solid fa-arrow-down"></i></button>
           </div>
         </div>
 
@@ -2185,8 +2274,9 @@
             </div>
           </div>
           <div id="preview-scaler-wrap" style="display: inline-block; position: relative; transition: width 0.2s, height 0.2s; margin: auto; border-radius: 10px; box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12); background: #fff; overflow: hidden;">
+            <img id="live-preview-image" alt="Live preview" style="position:absolute; inset:0; width:100%; height:100%; display:block; object-fit:cover; z-index:3; pointer-events:none; border-radius:inherit;">
             <iframe id="bg-template-frame" src="templates/card1.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 1; pointer-events: none; opacity: 0;"></iframe>
-            <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; border: none; overflow: visible; transform-origin: top left; transition: transform 0.1s ease-out; background: transparent; position: relative; z-index: 2;">
+            <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; border: none; overflow: visible; transform-origin: top left; transition: transform 0.1s ease-out; background: transparent; position: relative; z-index: 2; opacity: 0.01;">
               <canvas id="editor-canvas" width="893" height="760"></canvas>
             </div>
           </div>
@@ -2482,6 +2572,7 @@
       canvas.on('selection:created', onObjectSelection);
       canvas.on('selection:updated', onObjectSelection);
       canvas.on('selection:cleared', onSelectionCleared);
+      canvas.on('after:render', queueLivePreviewUpdate);
       canvas.on('mouse:down', function(opt) {
         const activeObj = canvas.getActiveObject();
 
@@ -3284,10 +3375,41 @@
 
     // ZOOM CONTROL WIDGET
     let zoomLevel = 0.85;
+    let livePreviewFrame = null;
     
     function adjustZoom(delta) {
       zoomLevel = Math.max(0.2, Math.min(3.0, zoomLevel + delta));
       applyZoomScale();
+    }
+
+    function scrollPreviewToBottom() {
+      const vp = document.querySelector('.preview-vp');
+      if (!vp) return;
+      vp.scrollTo({ top: vp.scrollHeight, behavior: 'smooth' });
+    }
+
+    function queueLivePreviewUpdate() {
+      if (!canvas) return;
+      if (livePreviewFrame) return;
+      livePreviewFrame = requestAnimationFrame(() => {
+        livePreviewFrame = null;
+        updateLivePreviewImage();
+      });
+    }
+
+    function updateLivePreviewImage() {
+      if (!canvas) return;
+      const previewImg = document.getElementById('live-preview-image');
+      if (!previewImg) return;
+      try {
+        previewImg.src = canvas.toDataURL({
+          format: 'png',
+          quality: 1,
+          multiplier: 1
+        });
+      } catch (err) {
+        console.warn('Live preview snapshot failed:', err);
+      }
     }
 
       function fitToScreen() {
@@ -3307,6 +3429,7 @@
         wrap.style.width = (canvas.getWidth() * zoomLevel) + 'px';
         wrap.style.height = (canvas.getHeight() * zoomLevel) + 'px';
       }
+      queueLivePreviewUpdate();
       const zoomText = document.getElementById('zoom-percentage');
       if (zoomText) zoomText.textContent = Math.round(zoomLevel * 100) + '%';
     }
