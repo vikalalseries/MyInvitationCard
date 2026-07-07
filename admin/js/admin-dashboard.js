@@ -2608,12 +2608,13 @@ if (pricingSearchEl) pricingSearchEl.addEventListener("input", filterPricingTemp
 let currentPricingTemplateId = null;
 
 window.openPricingModal = function(templateId) {
-  if (!hasPermission("pricing.edit")) {
-    showToast("You do not have permission to edit template pricing", "error");
+  if (!hasPermission("pricing.edit") && !hasPermission("template.edit")) {
+    showToast("You do not have permission to edit template configuration", "error");
     return;
   }
 
-  const t = allPricingTemplates.find(tpl => tpl.templateId === templateId);
+  const t = (typeof allPricingTemplates !== 'undefined' && allPricingTemplates.find(tpl => tpl.templateId === templateId)) || 
+            (typeof allTemplatesData !== 'undefined' && allTemplatesData.find(tpl => tpl.templateId === templateId));
   if (!t) {
     showToast("Template not found", "error");
     return;
@@ -2727,8 +2728,9 @@ if (pricingModalSaveBtn) {
       showToast(data.message, "success");
       closePricingModal();
 
-      // Refresh the template grid
-      fetchPricing();
+      // Refresh the template grids
+      fetchPricing(true);
+      fetchTemplates(true);
     } catch (err) {
       showToast(err.message, "error");
     } finally {
@@ -3089,8 +3091,9 @@ function renderTemplatesBatch() {
           <span class="price-lbl">₹${t.price}</span>
           <span class="id-lbl">ID: ${t.templateId}</span>
         </div>
-        <div class="template-cms-actions">
-          ${hasPermission("template.delete") ? `<button class="table-action-btn delete btn-block" onclick="deleteTemplate('${t.templateId}')"><i class="fa-regular fa-trash-can"></i> Delete Template</button>` : `<span class="badge info-badge">No delete permission</span>`}
+        <div class="template-cms-actions" style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
+          ${hasPermission("template.edit") || hasPermission("pricing.edit") ? `<button class="table-action-btn edit btn-block" style="background: var(--primary-color); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600;" onclick="openPricingModal('${t.templateId}')"><i class="fa-regular fa-pen-to-square"></i> Edit Config & Stocks</button>` : ''}
+          ${hasPermission("template.delete") ? `<button class="table-action-btn delete btn-block" style="width: 100%;" onclick="deleteTemplate('${t.templateId}')"><i class="fa-regular fa-trash-can"></i> Delete Template</button>` : `<span class="badge info-badge">No delete permission</span>`}
         </div>
       </div>
     `;

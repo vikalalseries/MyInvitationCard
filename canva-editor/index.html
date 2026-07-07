@@ -2356,6 +2356,10 @@
           <i class="fa-solid fa-palette"></i>
           Canvas Bg
         </button>
+        <button class="nav-tab" data-target="panel-card-style" id="nav-card-style">
+          <i class="fa-solid fa-border-all"></i>
+          Card Style
+        </button>
         <button class="nav-tab" data-target="panel-uploads">
           <i class="fa-solid fa-cloud-arrow-up"></i>
           Uploads
@@ -2384,8 +2388,69 @@
         
         <!-- TEMPLATES / SUGGESTIONS PANEL -->
         <div id="panel-templates" class="drawer-panel-section active">
+          <div class="elements-category-title">Design Presets</div>
           <div class="presets-grid" id="suggestions-grid">
             <!-- Suggestions will be populated dynamically -->
+          </div>
+
+          <div class="elements-category-title" style="margin-top: 20px;">Curated Color Themes</div>
+          <div class="bg-grid" style="grid-template-columns: repeat(1, 1fr); gap: 8px; padding: 0 4px;">
+            <div onclick="applyCuratedColorPalette('crimson')" style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Royal Crimson & Gold</span>
+              <div style="display: flex; gap: 4px;">
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #7c152a;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #d4af37;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #ffffff;"></div>
+              </div>
+            </div>
+            <div onclick="applyCuratedColorPalette('emerald')" style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Emerald Forest & Gold</span>
+              <div style="display: flex; gap: 4px;">
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #113f2a;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #d4af37;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #fffbeb;"></div>
+              </div>
+            </div>
+            <div onclick="applyCuratedColorPalette('slate')" style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Midnight Slate & Platinum</span>
+              <div style="display: flex; gap: 4px;">
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #1b1917;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #e2e8f0;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #f5f5f4;"></div>
+              </div>
+            </div>
+            <div onclick="applyCuratedColorPalette('rose')" style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Blush Rose & Silver</span>
+              <div style="display: flex; gap: 4px;">
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #dfa8a9;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #b0c4de;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #3f2223;"></div>
+              </div>
+            </div>
+            <div onclick="applyCuratedColorPalette('cream')" style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Classic Ivory & Burgundy</span>
+              <div style="display: flex; gap: 4px;">
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #f9f1d0;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #b38f2d;"></div>
+                <div style="width: 16px; height: 16px; border-radius: 4px; background: #4a0e17;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="elements-category-title" style="margin-top: 20px;">Customize Colors</div>
+          <div style="display: flex; flex-direction: column; gap: 10px; padding: 0 4px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Stock Background</span>
+              <input type="color" id="palette-custom-bg" value="#ffffff" onchange="applyCustomPaletteColor('bg', this.value)" style="border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; padding: 0; background: none;">
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Text Elements</span>
+              <input type="color" id="palette-custom-text" value="#000000" onchange="applyCustomPaletteColor('text', this.value)" style="border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; padding: 0; background: none;">
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Accents & Ornaments</span>
+              <input type="color" id="palette-custom-accent" value="#d4af37" onchange="applyCustomPaletteColor('accent', this.value)" style="border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; padding: 0; background: none;">
+            </div>
           </div>
         </div>
 
@@ -2535,8 +2600,9 @@
 
         <!-- BACKGROUND TAB CONTENT -->
         <div id="panel-background" class="drawer-panel-section">
-          <div class="elements-category-title">Solid Colors</div>
-          <div class="bg-grid">
+          <div class="elements-category-title">Solid Stock Colors</div>
+          <div class="bg-grid" id="solid-colors-grid">
+            <!-- Dynamic allowed stocks loaded here -->
             <div class="bg-color-item" style="background-color: #f9f1d0;" onclick="changeCanvasBackground('#f9f1d0')"></div>
             <div class="bg-color-item" style="background-color: #ffffff;" onclick="changeCanvasBackground('#ffffff')"></div>
             <div class="bg-color-item" style="background-color: #7c152a;" onclick="changeCanvasBackground('#7c152a')"></div>
@@ -2545,12 +2611,102 @@
             <div class="bg-color-item" style="background-color: #dfa8a9;" onclick="changeCanvasBackground('#dfa8a9')"></div>
           </div>
           
+          <div class="elements-category-title">Card Stock Texture</div>
+          <div class="bg-grid" style="grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 4px;">
+            <div class="bg-color-item" onclick="applyCardStockTexture('none')" style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--g200); border-radius: 8px; background: #fff; cursor: pointer; text-align: center; padding: 4px; box-shadow: none; width: auto; aspect-ratio: auto;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Smooth Matte</span>
+              <span style="font-size: 9px; color: var(--g400);">No texture</span>
+            </div>
+            <div class="bg-color-item" onclick="applyCardStockTexture('linen')" style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--g200); border-radius: 8px; background: url('https://www.transparenttextures.com/patterns/linen.png') #fff; cursor: pointer; text-align: center; padding: 4px; box-shadow: none; width: auto; aspect-ratio: auto;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Linen Stock</span>
+              <span style="font-size: 9px; color: var(--g500);">Linen feel</span>
+            </div>
+            <div class="bg-color-item" onclick="applyCardStockTexture('handmade')" style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--g200); border-radius: 8px; background: url('https://www.transparenttextures.com/patterns/handmade-paper.png') #fff; cursor: pointer; text-align: center; padding: 4px; box-shadow: none; width: auto; aspect-ratio: auto;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Handmade</span>
+              <span style="font-size: 9px; color: var(--g500);">Parchment feel</span>
+            </div>
+            <div class="bg-color-item" onclick="applyCardStockTexture('kraft')" style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--g200); border-radius: 8px; background: url('https://www.transparenttextures.com/patterns/cardboard-flat.png') #e2c0a5; cursor: pointer; text-align: center; padding: 4px; box-shadow: none; width: auto; aspect-ratio: auto;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Kraft Stock</span>
+              <span style="font-size: 9px; color: var(--g600);">Recycled paper</span>
+            </div>
+          </div>
+          
           <div class="elements-category-title">HSL Gradients</div>
           <div class="bg-grid">
             <div class="bg-color-item" style="background: linear-gradient(135deg, #7c152a, #d4af37);" onclick="changeCanvasBgGradient('#7c152a', '#d4af37')"></div>
             <div class="bg-color-item" style="background: linear-gradient(135deg, #113f2a, #a48630);" onclick="changeCanvasBgGradient('#113f2a', '#a48630')"></div>
             <div class="bg-color-item" style="background: linear-gradient(135deg, #1c1917, #44403c);" onclick="changeCanvasBgGradient('#1c1917', '#44403c')"></div>
             <div class="bg-color-item" style="background: linear-gradient(135deg, #5b3e31, #dfa8a9);" onclick="changeCanvasBgGradient('#5b3e31', '#dfa8a9')"></div>
+          </div>
+        </div>
+
+        <!-- CARD STYLE TAB CONTENT -->
+        <div id="panel-card-style" class="drawer-panel-section">
+          <div class="elements-category-title">Card Border Frame</div>
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding: 0 4px;">
+            <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Border Style</span>
+              <select id="card-border-style" onchange="updateCardBorder()" style="width: 100%; height: 34px; border: 1px solid var(--g200); border-radius: 8px; padding: 0 8px; outline: none; background: #fff; font-size: 12px; color: var(--g800);">
+                <option value="none">None (No Border)</option>
+                <option value="solid">Solid Single Line</option>
+                <option value="double">Double Thin Line</option>
+                <option value="dashed">Dashed Line</option>
+              </select>
+            </div>
+
+            <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--g700);">
+                <span>Border Thickness</span>
+                <span id="label-border-thickness" style="color: var(--g500);">3 px</span>
+              </div>
+              <input type="range" id="card-border-thickness" min="1" max="16" step="1" value="3" oninput="updateCardBorder()" style="width: 100%; accent-color: var(--rose);">
+            </div>
+
+            <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--g700);">
+                <span>Border Margin (Inset)</span>
+                <span id="label-border-inset" style="color: var(--g500);">20 px</span>
+              </div>
+              <input type="range" id="card-border-inset" min="10" max="60" step="2" value="20" oninput="updateCardBorder()" style="width: 100%; accent-color: var(--rose);">
+            </div>
+
+            <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Border Color</span>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="color" id="card-border-color" value="#d4af37" onchange="updateCardBorder()" style="border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; padding: 0; background: none;">
+                <span id="label-border-color-hex" style="font-size: 12px; color: var(--g500); font-family: monospace;">#d4af37</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="elements-category-title">Corner Ornaments</div>
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding: 0 4px;">
+            <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Ornament Style</span>
+              <select id="card-ornament-style" onchange="updateCardOrnaments()" style="width: 100%; height: 34px; border: 1px solid var(--g200); border-radius: 8px; padding: 0 8px; outline: none; background: #fff; font-size: 12px; color: var(--g800);">
+                <option value="none">None (No Ornaments)</option>
+                <option value="traditional">Traditional Swirl</option>
+                <option value="floral">Elegant Floral</option>
+                <option value="geometric">Geometric Art-Deco</option>
+                <option value="royal">Royal Mandap</option>
+              </select>
+            </div>
+
+            <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--g700);">
+                <span>Ornament Size</span>
+                <span id="label-ornament-size" style="color: var(--g500);">45 px</span>
+              </div>
+              <input type="range" id="card-ornament-size" min="20" max="100" step="5" value="45" oninput="updateCardOrnaments()" style="width: 100%; accent-color: var(--rose);">
+            </div>
+
+            <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Ornament Color</span>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="color" id="card-ornament-color" value="#d4af37" onchange="updateCardOrnaments()" style="border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; padding: 0; background: none;">
+                <span id="label-ornament-color-hex" style="font-size: 12px; color: var(--g500); font-family: monospace;">#d4af37</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -3676,6 +3832,9 @@
         // Load default config from JSON file
         loadDefaultConfigAndRender(templateId);
       }
+
+      // Fetch allowed card stock color and configuration from database API
+      fetchTemplateDbData(templateId);
       
       // Set default zoom to 85% initially
       setTimeout(() => {
@@ -7095,7 +7254,338 @@
         };
         renderCanvasFromTemplateData(defaultData, 'birthday', true);
       }
+    }
 
+    // --- NEW DYNAMIC TEMPLATE CONFIG, TEXTURES, BORDERS, ORNAMENTS & PALETTES ---
+    const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+      ? "http://localhost:5000"
+      : window.location.protocol + "//" + window.location.host;
+
+    let currentTemplateDbData = null;
+
+    async function fetchTemplateDbData(templateId) {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/templates/${templateId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.template) {
+            currentTemplateDbData = data.template;
+            console.log("Template DB details loaded successfully:", currentTemplateDbData);
+            if (currentTemplateDbData.allowedCardStocks && currentTemplateDbData.allowedCardStocks.length > 0) {
+              populateCardStockColors(currentTemplateDbData.allowedCardStocks);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch template DB data:", err);
+      }
+    }
+
+    function populateCardStockColors(allowedStocks) {
+      const grid = document.getElementById("solid-colors-grid");
+      if (!grid || !allowedStocks || allowedStocks.length === 0) return;
+      grid.innerHTML = "";
+      allowedStocks.forEach(color => {
+        const swatch = document.createElement("div");
+        swatch.className = "bg-color-item";
+        swatch.style.backgroundColor = color;
+        swatch.setAttribute("onclick", `changeCanvasBackground('${color}')`);
+        grid.appendChild(swatch);
+      });
+    }
+
+    function applyCardStockTexture(textureName) {
+      const existing = canvas.getObjects().find(obj => obj.name === 'card-texture');
+      if (existing) {
+        canvas.remove(existing);
+      }
+
+      if (textureName === 'none') {
+        canvas.requestRenderAll();
+        saveHistory();
+        return;
+      }
+
+      const textureUrls = {
+        'linen': 'https://www.transparenttextures.com/patterns/linen.png',
+        'handmade': 'https://www.transparenttextures.com/patterns/handmade-paper.png',
+        'kraft': 'https://www.transparenttextures.com/patterns/cardboard-flat.png',
+        'felt': 'https://www.transparenttextures.com/patterns/felt.png'
+      };
+
+      const url = textureUrls[textureName];
+      if (!url) return;
+
+      fabric.util.loadImage(url, function(img) {
+        const pattern = new fabric.Pattern({
+          source: img,
+          repeat: 'repeat'
+        });
+
+        const textureRect = new fabric.Rect({
+          left: 0,
+          top: 0,
+          width: canvas.getWidth(),
+          height: canvas.getHeight(),
+          fill: pattern,
+          selectable: false,
+          evented: false,
+          name: 'card-texture',
+          opacity: 0.22,
+          hoverCursor: 'default'
+        });
+
+        canvas.add(textureRect);
+        textureRect.sendToBack();
+        canvas.requestRenderAll();
+        saveHistory();
+      }, null, { crossOrigin: 'anonymous' });
+    }
+
+    function updateCardBorder() {
+      const style = document.getElementById("card-border-style").value;
+      const thickness = parseInt(document.getElementById("card-border-thickness").value, 10);
+      const color = document.getElementById("card-border-color").value;
+      const inset = parseInt(document.getElementById("card-border-inset").value, 10);
+
+      document.getElementById("label-border-thickness").textContent = `${thickness} px`;
+      document.getElementById("label-border-inset").textContent = `${inset} px`;
+      document.getElementById("label-border-color-hex").textContent = color.toUpperCase();
+
+      applyCardBorder(style, thickness, color, inset);
+    }
+
+    function applyCardBorder(style, thickness, color, inset) {
+      const existingBorders = canvas.getObjects().filter(obj => obj.name === 'card-border' || obj.name === 'card-border-inner');
+      existingBorders.forEach(obj => canvas.remove(obj));
+
+      if (style === 'none') {
+        canvas.requestRenderAll();
+        saveHistory();
+        return;
+      }
+
+      const borderOptions = {
+        left: inset,
+        top: inset,
+        width: canvas.getWidth() - (inset * 2) - thickness,
+        height: canvas.getHeight() - (inset * 2) - thickness,
+        fill: 'transparent',
+        stroke: color,
+        strokeWidth: thickness,
+        selectable: false,
+        evented: false,
+        name: 'card-border',
+        hoverCursor: 'default'
+      };
+
+      if (style === 'dashed') {
+        borderOptions.strokeDashArray = [10, 5];
+      }
+
+      const mainBorder = new fabric.Rect(borderOptions);
+      canvas.add(mainBorder);
+
+      if (style === 'double') {
+        const innerInset = inset + (thickness * 2);
+        const innerBorder = new fabric.Rect({
+          left: innerInset,
+          top: innerInset,
+          width: canvas.getWidth() - (innerInset * 2) - Math.max(1, thickness / 2),
+          height: canvas.getHeight() - (innerInset * 2) - Math.max(1, thickness / 2),
+          fill: 'transparent',
+          stroke: color,
+          strokeWidth: Math.max(1, thickness / 2),
+          selectable: false,
+          evented: false,
+          name: 'card-border-inner',
+          hoverCursor: 'default'
+        });
+        canvas.add(innerBorder);
+        innerBorder.sendToBack();
+      }
+
+      mainBorder.sendToBack();
+
+      const texture = canvas.getObjects().find(obj => obj.name === 'card-texture');
+      if (texture) {
+        texture.sendToBack();
+      }
+
+      canvas.requestRenderAll();
+      saveHistory();
+    }
+
+    function updateCardOrnaments() {
+      const style = document.getElementById("card-ornament-style").value;
+      const size = parseInt(document.getElementById("card-ornament-size").value, 10);
+      const color = document.getElementById("card-ornament-color").value;
+      const borderInset = parseInt(document.getElementById("card-border-inset").value, 10);
+
+      document.getElementById("label-ornament-size").textContent = `${size} px`;
+      document.getElementById("label-ornament-color-hex").textContent = color.toUpperCase();
+
+      applyCornerOrnaments(style, size, color, borderInset);
+    }
+
+    function applyCornerOrnaments(style, size, color, borderInset) {
+      const corners = canvas.getObjects().filter(obj => obj.name && obj.name.startsWith('card-corner-'));
+      corners.forEach(obj => canvas.remove(obj));
+
+      if (style === 'none') {
+        canvas.requestRenderAll();
+        saveHistory();
+        return;
+      }
+
+      const paths = {
+        'traditional': 'M 0,0 C 15,0 25,10 25,25 C 25,35 15,45 0,45 C 5,40 10,30 10,25 C 10,15 0,10 0,0 Z',
+        'floral': 'M 0,0 C 20,5 35,20 40,40 C 35,35 20,20 0,0 Z M 15,5 C 22,8 28,15 30,22 C 25,22 18,15 15,5 Z',
+        'geometric': 'M 0,0 L 40,0 L 40,6 L 6,6 L 6,40 L 0,40 Z M 12,12 L 28,12 L 28,15 L 15,15 L 15,28 L 12,28 Z',
+        'royal': 'M 0,0 L 45,0 C 40,10 30,20 30,30 C 30,40 40,45 45,45 L 0,45 Z'
+      };
+
+      const pathStr = paths[style];
+      if (!pathStr) return;
+
+      const tl = new fabric.Path(pathStr, {
+        left: borderInset,
+        top: borderInset,
+        fill: color,
+        selectable: false,
+        evented: false,
+        name: 'card-corner-tl',
+        hoverCursor: 'default',
+        originX: 'left',
+        originY: 'top'
+      });
+
+      const tr = new fabric.Path(pathStr, {
+        left: canvas.getWidth() - borderInset,
+        top: borderInset,
+        fill: color,
+        selectable: false,
+        evented: false,
+        name: 'card-corner-tr',
+        hoverCursor: 'default',
+        originX: 'left',
+        originY: 'top',
+        angle: 90
+      });
+
+      const br = new fabric.Path(pathStr, {
+        left: canvas.getWidth() - borderInset,
+        top: canvas.getHeight() - borderInset,
+        fill: color,
+        selectable: false,
+        evented: false,
+        name: 'card-corner-br',
+        hoverCursor: 'default',
+        originX: 'left',
+        originY: 'top',
+        angle: 180
+      });
+
+      const bl = new fabric.Path(pathStr, {
+        left: borderInset,
+        top: canvas.getHeight() - borderInset,
+        fill: color,
+        selectable: false,
+        evented: false,
+        name: 'card-corner-bl',
+        hoverCursor: 'default',
+        originX: 'left',
+        originY: 'top',
+        angle: 270
+      });
+
+      [tl, tr, bl, br].forEach(obj => {
+        obj.scaleToWidth(size);
+        canvas.add(obj);
+        obj.bringToFront();
+      });
+
+      canvas.requestRenderAll();
+      saveHistory();
+    }
+
+    function applyCuratedColorPalette(themeName) {
+      const themes = {
+        'crimson': { bg: '#7c152a', text: '#ffffff', accent: '#d4af37' },
+        'emerald': { bg: '#113f2a', text: '#fffbeb', accent: '#d4af37' },
+        'slate': { bg: '#1b1917', text: '#f5f5f4', accent: '#e2e8f0' },
+        'rose': { bg: '#dfa8a9', text: '#3f2223', accent: '#b0c4de' },
+        'cream': { bg: '#f9f1d0', text: '#4a0e17', accent: '#b38f2d' }
+      };
+
+      const theme = themes[themeName];
+      if (!theme) return;
+
+      changeCanvasBackground(theme.bg);
+
+      document.getElementById("palette-custom-bg").value = theme.bg;
+      document.getElementById("palette-custom-text").value = theme.text;
+      document.getElementById("palette-custom-accent").value = theme.accent;
+
+      const borderStyleEl = document.getElementById("card-border-style");
+      if (borderStyleEl && borderStyleEl.value !== 'none') {
+        document.getElementById("card-border-color").value = theme.accent;
+        updateCardBorder();
+      }
+      const ornamentStyleEl = document.getElementById("card-ornament-style");
+      if (ornamentStyleEl && ornamentStyleEl.value !== 'none') {
+        document.getElementById("card-ornament-color").value = theme.accent;
+        updateCardOrnaments();
+      }
+
+      canvas.getObjects().forEach(obj => {
+        if (obj.type === 'i-text' || obj.type === 'textbox') {
+          obj.set('fill', theme.text);
+        } else if (obj.name !== 'card-border' && obj.name !== 'card-border-inner' && !obj.name?.startsWith('card-corner-') && obj.name !== 'card-texture') {
+          if (obj.fill && obj.fill !== 'transparent') {
+            obj.set('fill', theme.accent);
+          }
+          if (obj.stroke && obj.stroke !== 'transparent') {
+            obj.set('stroke', theme.accent);
+          }
+        }
+      });
+
+      canvas.requestRenderAll();
+      saveHistory();
+    }
+
+    function applyCustomPaletteColor(type, value) {
+      if (type === 'bg') {
+        changeCanvasBackground(value);
+      } else if (type === 'text') {
+        canvas.getObjects().forEach(obj => {
+          if (obj.type === 'i-text' || obj.type === 'textbox') {
+            obj.set('fill', value);
+          }
+        });
+        canvas.requestRenderAll();
+        saveHistory();
+      } else if (type === 'accent') {
+        document.getElementById("card-border-color").value = value;
+        document.getElementById("card-ornament-color").value = value;
+        
+        updateCardBorder();
+        updateCardOrnaments();
+
+        canvas.getObjects().forEach(obj => {
+          if (obj.name !== 'card-border' && obj.name !== 'card-border-inner' && !obj.name?.startsWith('card-corner-') && obj.name !== 'card-texture') {
+            if (obj.fill && obj.fill !== 'transparent') {
+              obj.set('fill', value);
+            }
+            if (obj.stroke && obj.stroke !== 'transparent') {
+              obj.set('stroke', value);
+            }
+          }
+        });
+        canvas.requestRenderAll();
+        saveHistory();
+      }
     }
   </script>
 </body>
