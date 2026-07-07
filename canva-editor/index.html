@@ -2678,6 +2678,9 @@
 
               <button class="toolbar-icon" id="toolbar-bold" onclick="toggleTextWeight('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
               <button class="toolbar-icon" id="toolbar-italic" onclick="toggleTextWeight('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
+              <button class="toolbar-icon" id="toolbar-underline" onclick="toggleTextDecoration('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
+              <button class="toolbar-icon" id="toolbar-strike" onclick="toggleTextDecoration('line-through')" title="Strikethrough"><i class="fa-solid fa-strikethrough"></i></button>
+              <button class="toolbar-icon" onclick="toggleTextCase()" title="Change case"><span style="font-weight:800;font-size:13px;">aA</span></button>
 
               <div class="toolbar-divider"></div>
 
@@ -2686,9 +2689,69 @@
               </button>
 
               <button class="toolbar-icon" onclick="toggleTextList('bullet')" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
-              <button class="toolbar-icon" onclick="toggleTextList('number')" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+              
+              <!-- Custom Canva-style Spacing Picker -->
+              <div class="image-toolbar-dropdown" style="position: relative; display: inline-block;">
+                <button class="toolbar-icon" id="toolbar-spacing-btn" title="Spacing" onclick="toggleCustomSpacingPopover(event)">
+                  <i class="fa-solid fa-text-height"></i>
+                </button>
+                <div class="image-dropdown-content spacing-dropdown-panel" id="toolbar-spacing-popover" style="padding: 14px; min-width: 220px; display: none; flex-direction: column; gap: 12px; top: 100%; left: 50%; transform: translateX(-50%); box-shadow: var(--shadow-lg); border-radius: 16px; border: 1px solid var(--g150); background-color: var(--w); z-index: 200;">
+                  <div style="font-size:12px; font-weight:700; color:var(--g800); margin-bottom:4px;">Spacing Options</div>
+                  
+                  <div class="adjust-control">
+                    <div class="adjust-label">
+                      <span>Letter spacing</span>
+                      <span id="label-char-spacing">0</span>
+                    </div>
+                    <input type="range" id="toolbar-char-spacing-new" min="-100" max="300" step="5" value="0" oninput="updateSelectedTextSpacing('charSpacing', Number(this.value))">
+                  </div>
+                  
+                  <div class="adjust-control" style="margin-top: 8px;">
+                    <div class="adjust-label">
+                      <span>Line spacing</span>
+                      <span id="label-line-height">1.35</span>
+                    </div>
+                    <input type="range" id="toolbar-line-height-new" min="0.8" max="2.4" step="0.05" value="1.35" oninput="updateSelectedTextSpacing('lineHeight', Number(this.value))">
+                  </div>
+                </div>
+              </div>
 
               <button class="toolbar-icon text-btn" onclick="showTextEffectsPanel()" title="Effects"><span style="font-weight:700;font-size:13px;letter-spacing:0.02em;">Effects</span></button>
+              
+              <!-- Floating Nudge D-pad in inline bar -->
+              <div class="image-toolbar-dropdown" style="position: relative; display: inline-block;">
+                <button class="toolbar-icon" id="toolbar-nudge-toggle" onclick="toggleToolbarNudgePopover(event)" title="Position / Nudge">
+                  <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                </button>
+                <div class="image-dropdown-content nudge-dropdown-panel" id="toolbar-nudge-popover" style="padding: 14px; min-width: 160px; display: none; flex-direction: column; gap: 8px; top: 100%; left: 50%; transform: translateX(-50%); box-shadow: var(--shadow-lg); border-radius: 16px; border: 1px solid var(--g150); background-color: var(--w); z-index: 200; align-items: center;">
+                  <div style="font-size:11px; font-weight:700; color:var(--g500); margin-bottom:4px;">Nudge Position</div>
+                  
+                  <div style="display: grid; grid-template-columns: repeat(3, 32px); grid-template-rows: repeat(3, 32px); gap: 4px; justify-content: center; align-items: center;">
+                    <div></div>
+                    <button class="nudge-btn" onclick="nudgeActiveObject('up')" style="width:32px; height:32px; border-radius:8px; border:1px solid var(--g200); background:var(--g50); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-chevron-up" style="font-size:12px; color:var(--g700);"></i></button>
+                    <div></div>
+                    
+                    <button class="nudge-btn" onclick="nudgeActiveObject('left')" style="width:32px; height:32px; border-radius:8px; border:1px solid var(--g200); background:var(--g50); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-chevron-left" style="font-size:12px; color:var(--g700);"></i></button>
+                    <div style="display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-arrows-to-dot" style="font-size:10px; color:var(--g400);"></i></div>
+                    <button class="nudge-btn" onclick="nudgeActiveObject('right')" style="width:32px; height:32px; border-radius:8px; border:1px solid var(--g200); background:var(--g50); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-chevron-right" style="font-size:12px; color:var(--g700);"></i></button>
+                    
+                    <div></div>
+                    <button class="nudge-btn" onclick="nudgeActiveObject('down')" style="width:32px; height:32px; border-radius:8px; border:1px solid var(--g200); background:var(--g50); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-chevron-down" style="font-size:12px; color:var(--g700);"></i></button>
+                    <div></div>
+                  </div>
+                  
+                  <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
+                    <label style="font-size: 11px; color: var(--g500);">Step:</label>
+                    <select id="toolbar-nudge-step-select" style="font-size: 11px; padding: 2px 4px; border: 1px solid var(--g200); border-radius: 4px; background: var(--g50); outline: none;">
+                      <option value="1">1 px</option>
+                      <option value="5">5 px</option>
+                      <option value="10">10 px</option>
+                      <option value="20">20 px</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               <button class="toolbar-icon toolbar-more" onclick="toggleToolbarMoreMenu()" title="More"><i class="fa-solid fa-ellipsis"></i></button>
             </div>
 
@@ -2967,10 +3030,6 @@
 
             <div id="toolbar-more-menu" style="display:none; width:100%; border-top:1px solid var(--g150); padding-top:10px;">
               <div class="edit-toolbar-row" style="gap:8px;">
-                <button class="toolbar-icon" id="toolbar-underline" onclick="toggleTextDecoration('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
-                <button class="toolbar-icon" id="toolbar-strike" onclick="toggleTextDecoration('line-through')" title="Strikethrough"><i class="fa-solid fa-strikethrough"></i></button>
-                <button class="toolbar-icon" onclick="toggleTextCase()" title="Change case"><span style="font-weight:800;font-size:13px;">aA</span></button>
-                <button class="toolbar-icon" onclick="showTextSpacingPanel()" title="Spacing"><i class="fa-solid fa-text-height"></i></button>
                 <button class="toolbar-icon" onclick="showTextAnimatePanel()" title="Animate"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
                 <button class="toolbar-icon" onclick="showObjectPositionPanel()" title="Position"><i class="fa-solid fa-layer-group"></i></button>
                 <button class="toolbar-icon" onclick="showTextEffectsPanel()" title="Paint roller"><i class="fa-solid fa-roller"></i></button>
@@ -2981,20 +3040,6 @@
                 <button class="toolbar-icon" onclick="changeZIndex('back')" title="Send to Back"><i class="fa-solid fa-angles-down"></i></button>
                 <button class="toolbar-icon" onclick="duplicateActiveObject()" title="Duplicate Element"><i class="fa-solid fa-clone"></i></button>
                 <button class="toolbar-icon" onclick="deleteActiveObject()" title="Delete Element" style="color:#ff4a4a;"><i class="fa-solid fa-trash"></i></button>
-              </div>
-
-              <div class="edit-toolbar-row" style="margin-top:10px;">
-                <div class="toolbar-pill compact" style="flex:1 1 auto; justify-content:flex-start;">
-                  <span class="edit-toolbar-label" style="margin-right:8px;">Spacing</span>
-                  <div class="mini-field" style="padding:0; border:none; background:transparent;">
-                    <span>Line gap</span>
-                    <input type="range" id="toolbar-line-height" min="0.8" max="2.4" step="0.05" value="1.35" oninput="updateSelectedTextProp('lineHeight', Number(this.value))">
-                  </div>
-                  <div class="mini-field" style="padding:0; border:none; background:transparent;">
-                    <span>Letter gap</span>
-                    <input type="range" id="toolbar-char-spacing" min="-100" max="300" step="5" value="0" oninput="updateSelectedTextProp('charSpacing', Number(this.value))">
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -3967,7 +4012,9 @@
         'toolbar-font-popover',
         'toolbar-color-popover',
         'toolbar-graphic-color-popover',
-        'nudge-popover'
+        'nudge-popover',
+        'toolbar-spacing-popover',
+        'toolbar-nudge-popover'
       ];
       
       dropdowns.forEach(id => {
@@ -3999,7 +4046,7 @@
       const activeObj = canvas.getActiveObject();
       if (!activeObj) return;
 
-      const selectEl = document.getElementById('nudge-step-select');
+      const selectEl = document.getElementById('nudge-step-select') || document.getElementById('toolbar-nudge-step-select');
       const step = selectEl ? parseInt(selectEl.value, 10) : 1;
 
       if (direction === 'up') {
@@ -4014,6 +4061,72 @@
 
       activeObj.setCoords();
       canvas.requestRenderAll();
+      saveHistory();
+    }
+
+    function toggleCustomSpacingPopover(event) {
+      if (event) event.stopPropagation();
+      const el = document.getElementById('toolbar-spacing-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'toolbar-spacing-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+        // Sync sliders on open
+        const obj = canvas.getActiveObject();
+        if (obj) {
+          const charSpacing = obj.charSpacing || 0;
+          const lineHeight = obj.lineHeight || 1.35;
+          
+          const charInput = document.getElementById('toolbar-char-spacing-new');
+          if (charInput) charInput.value = charSpacing;
+          const charLabel = document.getElementById('label-char-spacing');
+          if (charLabel) charLabel.textContent = charSpacing;
+          
+          const lineInput = document.getElementById('toolbar-line-height-new');
+          if (lineInput) lineInput.value = lineHeight;
+          const lineLabel = document.getElementById('label-line-height');
+          if (lineLabel) lineLabel.textContent = lineHeight.toFixed(2);
+        }
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function toggleToolbarNudgePopover(event) {
+      if (event) event.stopPropagation();
+      const el = document.getElementById('toolbar-nudge-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'toolbar-nudge-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function updateSelectedTextSpacing(prop, value) {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
+
+      activeObj.set(prop, value);
+      activeObj.setCoords();
+      canvas.requestRenderAll();
+      
+      // Update label
+      if (prop === 'charSpacing') {
+        const label = document.getElementById('label-char-spacing');
+        if (label) label.textContent = value;
+      } else if (prop === 'lineHeight') {
+        const label = document.getElementById('label-line-height');
+        if (label) label.textContent = value.toFixed(2);
+      }
+      
       saveHistory();
     }
 
@@ -4895,8 +5008,17 @@
         });
         const sizeInput = document.getElementById('toolbar-size-input');
         if (sizeInput) sizeInput.value = Math.round(obj.fontSize || 24);
-        document.getElementById('toolbar-line-height').value = obj.lineHeight || 1.35;
-        document.getElementById('toolbar-char-spacing').value = obj.charSpacing || 0;
+        
+        const lineInputNew = document.getElementById('toolbar-line-height-new');
+        if (lineInputNew) lineInputNew.value = obj.lineHeight || 1.35;
+        const lineLabel = document.getElementById('label-line-height');
+        if (lineLabel) lineLabel.textContent = (obj.lineHeight || 1.35).toFixed(2);
+
+        const charInputNew = document.getElementById('toolbar-char-spacing-new');
+        if (charInputNew) charInputNew.value = obj.charSpacing || 0;
+        const charLabel = document.getElementById('label-char-spacing');
+        if (charLabel) charLabel.textContent = obj.charSpacing || 0;
+
         document.getElementById('toolbar-bold').classList.toggle('active', obj.fontWeight === 'bold');
         document.getElementById('toolbar-italic').classList.toggle('active', obj.fontStyle === 'italic');
         const underlineBtn = document.getElementById('toolbar-underline');
@@ -5027,8 +5149,9 @@
       const activeObj = canvas.getActiveObject();
       if (!activeObj || (activeObj.type !== 'i-text' && activeObj.type !== 'textbox')) return;
 
-      const nextValue = !activeObj[prop];
-      activeObj.set(prop, nextValue);
+      const actualProp = prop === 'line-through' ? 'linethrough' : prop;
+      const nextValue = !activeObj[actualProp];
+      activeObj.set(actualProp, nextValue);
       canvas.requestRenderAll();
       syncEditToolbar(activeObj);
       saveHistory();
@@ -5060,11 +5183,22 @@
       const lines = text.split('\n');
       const stripPrefix = (line) => line.replace(/^\s*(?:[•\-]|\d+\.)\s*/, '');
 
+      const isAlreadyBullet = lines.every(line => line.trim().startsWith('•'));
+      const isAlreadyNumber = lines.every((line, index) => line.trim().startsWith(`${index + 1}.`));
+
       let nextText;
       if (mode === 'number') {
-        nextText = lines.map((line, index) => `${index + 1}. ${stripPrefix(line)}`).join('\n');
+        if (isAlreadyNumber) {
+          nextText = lines.map(line => stripPrefix(line)).join('\n');
+        } else {
+          nextText = lines.map((line, index) => `${index + 1}. ${stripPrefix(line)}`).join('\n');
+        }
       } else {
-        nextText = lines.map(line => `• ${stripPrefix(line)}`).join('\n');
+        if (isAlreadyBullet) {
+          nextText = lines.map(line => stripPrefix(line)).join('\n');
+        } else {
+          nextText = lines.map(line => `• ${stripPrefix(line)}`).join('\n');
+        }
       }
 
       activeObj.set('text', nextText);
