@@ -1632,6 +1632,44 @@
       background-color: var(--rose-50);
       color: var(--rose);
     }
+
+    /* Custom Canva Dropdown Upgrades */
+    .font-dropdown-item {
+      background: none;
+      border: none;
+      padding: 8px 10px;
+      text-align: left;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      color: var(--g800);
+      transition: background 0.15s;
+      width: 100%;
+      outline: none;
+      display: block;
+    }
+    .font-dropdown-item:hover {
+      background-color: var(--g100);
+      color: var(--g900);
+    }
+    .font-dropdown-item.active {
+      background-color: rgba(59, 130, 246, 0.08);
+      color: #3b82f6;
+      font-weight: 600;
+    }
+    .color-picker-cell {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid rgba(0,0,0,0.06);
+      display: inline-block;
+    }
+    .color-picker-cell:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
     .adjust-control {
       display: flex;
       flex-direction: column;
@@ -2554,32 +2592,74 @@
           <div class="edit-toolbar" id="edit-toolbar">
             <!-- TEXT FORMATTING ROW -->
             <div class="edit-toolbar-row" id="toolbar-row-text">
-              <div class="toolbar-pill toolbar-font">
-                <select id="toolbar-font" onchange="updateSelectedTextProp('fontFamily', this.value)">
-                  <option value="Outfit">The Seasons</option>
-                  <option value="Noto Serif Devanagari">Noto Serif Devanagari</option>
-                  <option value="Cinzel">Cinzel</option>
-                  <option value="Great Vibes">Great Vibes</option>
-                  <option value="Playfair Display">Playfair Display</option>
-                  <option value="Montserrat">Montserrat</option>
-                  <option value="Allura">Allura</option>
-                  <option value="Cormorant Garamond">Cormorant Garamond</option>
-                </select>
-                <i class="fa-solid fa-chevron-down" style="font-size:11px;color:var(--g400);"></i>
+              <!-- Canva Custom Font Selector -->
+              <div class="image-toolbar-dropdown" style="position: relative; display: inline-block;">
+                <button class="toolbar-font-btn" id="toolbar-font-toggle" onclick="toggleCustomFontPopover(event)" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1px solid var(--g200); border-radius: var(--r-sm); background: var(--g50); color: var(--g900); font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--t); outline: none;">
+                  <span id="toolbar-font-name">Outfit</span>
+                  <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: var(--g500);"></i>
+                </button>
+                
+                <!-- Font Dropdown Popover Panel -->
+                <div class="image-dropdown-content font-dropdown-panel" id="toolbar-font-popover" style="padding: 12px; min-width: 240px; display: none; flex-direction: column; gap: 10px; top: 100%; left: 0; box-shadow: var(--shadow-lg); border-radius: 16px; border: 1px solid var(--g150); background-color: var(--w); z-index: 200; max-height: 300px; overflow-y: auto;">
+                  <!-- Search Font Box -->
+                  <div style="position: relative; width: 100%;">
+                    <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 10px; font-size: 12px; color: var(--g400);"></i>
+                    <input type="text" id="font-search-input" placeholder="Search fonts..." oninput="filterFontsList(this.value)" style="width: 100%; padding: 8px 8px 8px 30px; font-size: 12px; border: 1px solid var(--g200); border-radius: var(--r-sm); background: var(--g50); color: var(--g900); outline: none;">
+                  </div>
+                  <!-- Fonts List -->
+                  <div id="font-list-container" style="display: flex; flex-direction: column; gap: 2px; width: 100%;">
+                    <button class="font-dropdown-item" onclick="selectCustomFontFamily('Outfit')" style="font-family: 'Outfit'; font-size: 14px;">Outfit (Modern Sans)</button>
+                    <button class="font-dropdown-item" onclick="selectCustomFontFamily('Noto Serif Devanagari')" style="font-family: 'Noto Serif Devanagari'; font-size: 14px;">Noto Serif Devanagari (Hindi)</button>
+                    <button class="font-dropdown-item" onclick="selectCustomFontFamily('Cinzel')" style="font-family: 'Cinzel'; font-size: 14px;">Cinzel (Classic Serif)</button>
+                    <button class="font-dropdown-item" onclick="selectCustomFontFamily('Great Vibes')" style="font-family: 'Great Vibes'; font-size: 18px;">Great Vibes (Elegant Script)</button>
+                    <button class="font-dropdown-item" onclick="selectCustomFontFamily('Playfair Display')" style="font-family: 'Playfair Display'; font-size: 14px;">Playfair Display (Serif)</button>
+                    <button class="font-dropdown-item" onclick="selectCustomFontFamily('Montserrat')" style="font-family: 'Montserrat'; font-size: 14px;">Montserrat (Clean Sans)</button>
+                    <button class="font-dropdown-item" onclick="selectCustomFontFamily('Allura')" style="font-family: 'Allura'; font-size: 18px;">Allura (Fine Script)</button>
+                    <button class="font-dropdown-item" onclick="selectCustomFontFamily('Cormorant Garamond')" style="font-family: 'Cormorant Garamond'; font-size: 14px;">Cormorant Garamond</button>
+                  </div>
+                </div>
               </div>
 
               <div class="toolbar-pill toolbar-size">
                 <button class="toolbar-step" onclick="adjustSelectedFontSize(-1)" title="Decrease font size">−</button>
-                <span class="toolbar-size-value" id="toolbar-size-value">24</span>
+                <input type="number" class="toolbar-size-input" id="toolbar-size-input" value="24" min="1" max="500" style="width: 32px; border: none; background: transparent; text-align: center; font-size: 13px; font-weight: 700; color: var(--g800); outline: none; -webkit-appearance: none; -moz-appearance: textfield;" onchange="updateSelectedTextProp('fontSize', Number(this.value))">
                 <button class="toolbar-step" onclick="adjustSelectedFontSize(1)" title="Increase font size">+</button>
               </div>
 
-              <button class="toolbar-icon" title="Text color" onclick="document.getElementById('toolbar-color-input').click()">
-                <span style="display:flex; flex-direction:column; align-items:center; line-height:1;">
-                  <span style="font-size:18px; font-weight:800; color:var(--g900);">A</span>
-                  <span id="toolbar-color" class="color-swatch" style="width:18px;height:3px;border-radius:999px;border:none;background-color:#6e0035;margin-top:2px;"></span>
-                </span>
-              </button>
+              <!-- Custom Canva-style Color Picker for Text -->
+              <div class="image-toolbar-dropdown" style="position: relative; display: inline-block;">
+                <button class="toolbar-icon" title="Text color" onclick="toggleCustomColorPopover(event, 'text')">
+                  <span style="display:flex; flex-direction:column; align-items:center; line-height:1;">
+                    <span style="font-size:18px; font-weight:800; color:var(--g900);">A</span>
+                    <span id="toolbar-color" class="color-swatch" style="width:18px;height:3px;border-radius:999px;border:none;background-color:#6e0035;margin-top:2px;"></span>
+                  </span>
+                </button>
+                <div class="image-dropdown-content color-dropdown-panel" id="toolbar-color-popover" style="padding: 14px; min-width: 240px; display: none; flex-direction: column; gap: 10px; top: 100%; left: 0; box-shadow: var(--shadow-lg); border-radius: 16px; border: 1px solid var(--g150); background-color: var(--w); z-index: 200;">
+                  <div style="font-size:12px; font-weight:700; color:var(--g800); margin-bottom:4px;">Document Colors</div>
+                  <div class="color-grid" id="text-doc-colors-grid" style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px;">
+                    <!-- Filled dynamically -->
+                  </div>
+                  <div style="height:1px; background-color:var(--g100); margin:4px 0;"></div>
+                  <div style="font-size:12px; font-weight:700; color:var(--g800); margin-bottom:4px;">Default Colors</div>
+                  <div class="color-grid" style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px;">
+                    <div class="color-picker-cell" style="background-color: #000000;" onclick="selectCustomColor('#000000')"></div>
+                    <div class="color-picker-cell" style="background-color: #ffffff; border: 1px solid var(--g250);" onclick="selectCustomColor('#ffffff')"></div>
+                    <div class="color-picker-cell" style="background-color: #7f7f7f;" onclick="selectCustomColor('#7f7f7f')"></div>
+                    <div class="color-picker-cell" style="background-color: #ff0000;" onclick="selectCustomColor('#ff0000')"></div>
+                    <div class="color-picker-cell" style="background-color: #ffc000;" onclick="selectCustomColor('#ffc000')"></div>
+                    <div class="color-picker-cell" style="background-color: #ffff00;" onclick="selectCustomColor('#ffff00')"></div>
+                    <div class="color-picker-cell" style="background-color: #00b050;" onclick="selectCustomColor('#00b050')"></div>
+                    <div class="color-picker-cell" style="background-color: #00b0f0;" onclick="selectCustomColor('#00b0f0')"></div>
+                    <div class="color-picker-cell" style="background-color: #002060;" onclick="selectCustomColor('#002060')"></div>
+                    <div class="color-picker-cell" style="background-color: #7030a0;" onclick="selectCustomColor('#7030a0')"></div>
+                  </div>
+                  <div style="height:1px; background-color:var(--g100); margin:4px 0;"></div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                    <span style="font-size:11px; color:var(--g500);">Custom Color</span>
+                    <button class="custom-color-add-btn" onclick="triggerCustomColorInput('text')" style="background:var(--g50); border:1px dashed var(--g200); border-radius:6px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="fa-solid fa-plus" style="font-size:12px; color:var(--g600);"></i></button>
+                  </div>
+                </div>
+              </div>
               <input type="color" id="toolbar-color-input" style="display:none;" onchange="updateSelectedElementColor(this.value)">
 
               <div class="toolbar-divider"></div>
@@ -2602,12 +2682,40 @@
 
             <!-- IMAGE / GRAPHIC ROW -->
             <div class="edit-toolbar-row" id="toolbar-row-graphic" style="display: none; gap: 8px;">
-              <button class="toolbar-icon" id="toolbar-graphic-color-btn" title="Change color" onclick="document.getElementById('toolbar-graphic-color-input').click()">
-                <span style="display:flex; flex-direction:column; align-items:center; line-height:1;">
-                  <span style="font-size:18px; font-weight:800; color:var(--g900);"><i class="fa-solid fa-palette"></i></span>
-                  <span id="toolbar-graphic-color" class="color-swatch" style="width:18px;height:3px;border-radius:999px;border:none;background-color:#d4af37;margin-top:2px;"></span>
-                </span>
-              </button>
+              <!-- Custom Canva-style Color Picker for Graphics -->
+              <div class="image-toolbar-dropdown" style="position: relative; display: inline-block;">
+                <button class="toolbar-icon" id="toolbar-graphic-color-btn" title="Change color" onclick="toggleCustomColorPopover(event, 'graphic')">
+                  <span style="display:flex; flex-direction:column; align-items:center; line-height:1;">
+                    <span style="font-size:18px; font-weight:800; color:var(--g900);"><i class="fa-solid fa-palette"></i></span>
+                    <span id="toolbar-graphic-color" class="color-swatch" style="width:18px;height:3px;border-radius:999px;border:none;background-color:#d4af37;margin-top:2px;"></span>
+                  </span>
+                </button>
+                <div class="image-dropdown-content color-dropdown-panel" id="toolbar-graphic-color-popover" style="padding: 14px; min-width: 240px; display: none; flex-direction: column; gap: 10px; top: 100%; left: 0; box-shadow: var(--shadow-lg); border-radius: 16px; border: 1px solid var(--g150); background-color: var(--w); z-index: 200;">
+                  <div style="font-size:12px; font-weight:700; color:var(--g800); margin-bottom:4px;">Document Colors</div>
+                  <div class="color-grid" id="graphic-doc-colors-grid" style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px;">
+                    <!-- Filled dynamically -->
+                  </div>
+                  <div style="height:1px; background-color:var(--g100); margin:4px 0;"></div>
+                  <div style="font-size:12px; font-weight:700; color:var(--g800); margin-bottom:4px;">Default Colors</div>
+                  <div class="color-grid" style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px;">
+                    <div class="color-picker-cell" style="background-color: #000000;" onclick="selectCustomColor('#000000')"></div>
+                    <div class="color-picker-cell" style="background-color: #ffffff; border: 1px solid var(--g250);" onclick="selectCustomColor('#ffffff')"></div>
+                    <div class="color-picker-cell" style="background-color: #7f7f7f;" onclick="selectCustomColor('#7f7f7f')"></div>
+                    <div class="color-picker-cell" style="background-color: #ff0000;" onclick="selectCustomColor('#ff0000')"></div>
+                    <div class="color-picker-cell" style="background-color: #ffc000;" onclick="selectCustomColor('#ffc000')"></div>
+                    <div class="color-picker-cell" style="background-color: #ffff00;" onclick="selectCustomColor('#ffff00')"></div>
+                    <div class="color-picker-cell" style="background-color: #00b050;" onclick="selectCustomColor('#00b050')"></div>
+                    <div class="color-picker-cell" style="background-color: #00b0f0;" onclick="selectCustomColor('#00b0f0')"></div>
+                    <div class="color-picker-cell" style="background-color: #002060;" onclick="selectCustomColor('#002060')"></div>
+                    <div class="color-picker-cell" style="background-color: #7030a0;" onclick="selectCustomColor('#7030a0')"></div>
+                  </div>
+                  <div style="height:1px; background-color:var(--g100); margin:4px 0;"></div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                    <span style="font-size:11px; color:var(--g500);">Custom Color</span>
+                    <button class="custom-color-add-btn" onclick="triggerCustomColorInput('graphic')" style="background:var(--g50); border:1px dashed var(--g200); border-radius:6px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="fa-solid fa-plus" style="font-size:12px; color:var(--g600);"></i></button>
+                  </div>
+                </div>
+              </div>
               <input type="color" id="toolbar-graphic-color-input" style="display:none;" onchange="updateSelectedElementColor(this.value)">
 
               <div class="toolbar-divider" id="toolbar-graphic-color-divider"></div>
@@ -2879,9 +2987,9 @@
             </div>
           </div>
           <div id="preview-scaler-wrap" style="display: inline-block; position: relative; transition: width 0.2s, height 0.2s; margin: auto; border-radius: 10px; box-shadow: 0 28px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.12); background: #fff; overflow: hidden;">
-            <img id="live-preview-image" alt="Live preview" style="position:absolute; inset:0; width:100%; height:100%; display:block; object-fit:cover; z-index:3; pointer-events:none; border-radius:inherit;">
+            <img id="live-preview-image" alt="Live preview" style="position:absolute; inset:0; width:100%; height:100%; display:none; object-fit:cover; z-index:3; pointer-events:none; border-radius:inherit;">
             <iframe id="bg-template-frame" src="templates/card1.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 1; pointer-events: none; opacity: 0;"></iframe>
-            <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; border: none; overflow: visible; transform-origin: top left; transition: transform 0.1s ease-out; background: transparent; position: relative; z-index: 2; opacity: 0.01;">
+            <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; border: none; overflow: visible; transform-origin: top left; transition: transform 0.1s ease-out; background: transparent; position: relative; z-index: 2; opacity: 1;">
               <canvas id="editor-canvas" width="893" height="760"></canvas>
             </div>
         </div>
@@ -3773,7 +3881,10 @@
         'image-crop-popover',
         'image-bg-popover',
         'image-eraser-popover',
-        'image-animate-popover'
+        'image-animate-popover',
+        'toolbar-font-popover',
+        'toolbar-color-popover',
+        'toolbar-graphic-color-popover'
       ];
       
       dropdowns.forEach(id => {
@@ -3784,6 +3895,117 @@
           el.style.display = 'none';
         }
       });
+    }
+
+    // Custom Font Popover Functions
+    function toggleCustomFontPopover(event) {
+      if (event) event.stopPropagation();
+      const el = document.getElementById('toolbar-font-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'toolbar-font-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+        const searchInput = document.getElementById('font-search-input');
+        if (searchInput) {
+          searchInput.value = '';
+          filterFontsList('');
+        }
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function filterFontsList(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.font-dropdown-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(q)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    function selectCustomFontFamily(fontFamily) {
+      updateSelectedTextProp('fontFamily', fontFamily);
+      const fontNameEl = document.getElementById('toolbar-font-name');
+      if (fontNameEl) fontNameEl.textContent = fontFamily;
+      closeAllImageDropdowns();
+    }
+
+    // Custom Color Popover Functions
+    let colorModeTarget = 'text'; // 'text' or 'graphic'
+
+    function toggleCustomColorPopover(event, type) {
+      if (event) event.stopPropagation();
+      colorModeTarget = type;
+      const popoverId = type === 'text' ? 'toolbar-color-popover' : 'toolbar-graphic-color-popover';
+      const el = document.getElementById(popoverId);
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? popoverId : null);
+      
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+        
+        // Populate document colors dynamically based on active template styling
+        let docColors = ['#8b0040', '#6e0035', '#fad8eb', '#f2aec8', '#d4af37'];
+        if (activeTemplateData && activeTemplateData.styles) {
+          const styles = activeTemplateData.styles;
+          const extracted = [styles.cardBg, styles.accentColor, styles.textColor, styles.headingColor, '#d4af37'].filter(Boolean);
+          docColors = Array.from(new Set(extracted));
+        }
+        
+        const gridId = type === 'text' ? 'text-doc-colors-grid' : 'graphic-doc-colors-grid';
+        const grid = document.getElementById(gridId);
+        if (grid) {
+          grid.innerHTML = '';
+          docColors.forEach(color => {
+            const cell = document.createElement('div');
+            cell.className = 'color-picker-cell';
+            cell.style.backgroundColor = color;
+            if (color.toLowerCase() === '#ffffff') {
+              cell.style.border = '1px solid var(--g250)';
+            }
+            cell.onclick = () => selectCustomColor(color);
+            grid.appendChild(cell);
+          });
+        }
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function selectCustomColor(color) {
+      updateSelectedElementColor(color);
+      
+      // Update color swatch UI indicator
+      if (colorModeTarget === 'text') {
+        const swatch = document.getElementById('toolbar-color');
+        if (swatch) swatch.style.backgroundColor = color;
+        const hiddenInput = document.getElementById('toolbar-color-input');
+        if (hiddenInput) hiddenInput.value = color;
+      } else {
+        const swatch = document.getElementById('toolbar-graphic-color');
+        if (swatch) swatch.style.backgroundColor = color;
+        const hiddenInput = document.getElementById('toolbar-graphic-color-input');
+        if (hiddenInput) hiddenInput.value = color;
+      }
+      
+      closeAllImageDropdowns();
+    }
+
+    function triggerCustomColorInput(type) {
+      colorModeTarget = type;
+      const inputId = type === 'text' ? 'toolbar-color-input' : 'toolbar-graphic-color-input';
+      const input = document.getElementById(inputId);
+      if (input) input.click();
     }
 
     function toggleImageFlipDropdown() {
@@ -4544,9 +4766,15 @@
         if (rowGraphic) rowGraphic.style.display = 'none';
         if (rowImage) rowImage.style.display = 'none';
 
-        document.getElementById('toolbar-font').value = obj.fontFamily || 'Outfit';
-        const sizeValue = document.getElementById('toolbar-size-value');
-        if (sizeValue) sizeValue.textContent = Math.round(obj.fontSize || 24);
+        const fontNameEl = document.getElementById('toolbar-font-name');
+        if (fontNameEl) fontNameEl.textContent = obj.fontFamily || 'Outfit';
+        document.querySelectorAll('.font-dropdown-item').forEach(btn => {
+          const font = btn.style.fontFamily.replace(/['"]/g, '');
+          const activeFont = (obj.fontFamily || 'Outfit').replace(/['"]/g, '');
+          btn.classList.toggle('active', font.toLowerCase() === activeFont.toLowerCase());
+        });
+        const sizeInput = document.getElementById('toolbar-size-input');
+        if (sizeInput) sizeInput.value = Math.round(obj.fontSize || 24);
         document.getElementById('toolbar-line-height').value = obj.lineHeight || 1.35;
         document.getElementById('toolbar-char-spacing').value = obj.charSpacing || 0;
         document.getElementById('toolbar-bold').classList.toggle('active', obj.fontWeight === 'bold');
@@ -4910,10 +5138,16 @@
 
       const colorSwatch = document.getElementById('selected-color-swatch');
       if (colorSwatch) colorSwatch.style.backgroundColor = color;
+      
       const toolbarSwatch = document.getElementById('toolbar-color');
       const toolbarInput = document.getElementById('toolbar-color-input');
       if (toolbarSwatch) toolbarSwatch.style.backgroundColor = color;
       if (toolbarInput) toolbarInput.value = color;
+
+      const graphicSwatch = document.getElementById('toolbar-graphic-color');
+      const graphicInput = document.getElementById('toolbar-graphic-color-input');
+      if (graphicSwatch) graphicSwatch.style.backgroundColor = color;
+      if (graphicInput) graphicInput.value = color;
       
       if (activeObj.type === 'group' || activeObj._objects) {
         activeObj.set('fill', color);
@@ -5096,7 +5330,7 @@
     function updateLivePreviewImage() {
       if (!canvas) return;
       const previewImg = document.getElementById('live-preview-image');
-      if (!previewImg) return;
+      if (!previewImg || previewImg.style.display === 'none') return;
       try {
         previewImg.src = canvas.toDataURL({
           format: 'png',
