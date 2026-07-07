@@ -1633,8 +1633,73 @@
       display: flex;
       justify-content: space-between;
     }
-    .adjust-control input[type="range"] {
+    .adjust-control input[type="range"],
+    #toolbar-image-opacity {
+      -webkit-appearance: none;
       width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--g200);
+      outline: none;
+      margin: 8px 0;
+    }
+    .adjust-control input[type="range"]::-webkit-slider-thumb,
+    #toolbar-image-opacity::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--rose);
+      cursor: pointer;
+      transition: transform 0.1s;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .adjust-control input[type="range"]::-webkit-slider-thumb:hover,
+    #toolbar-image-opacity::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* Visual Swatches for Effects Filters */
+    .effects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 10px;
+    }
+    .filter-swatch-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+      width: 62px;
+    }
+    .filter-swatch-item:hover {
+      background-color: var(--g50);
+    }
+    .filter-preview-thumbnail {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      border: 1px solid var(--g200);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+      transition: transform 0.2s;
+    }
+    .filter-swatch-item:hover .filter-preview-thumbnail {
+      transform: scale(1.05);
+      border-color: var(--rose);
+    }
+    .filter-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--g700);
+      text-align: center;
     }
     .edit-toolbar-head {
       display: flex;
@@ -2544,13 +2609,30 @@
               <!-- Effects Dropdown -->
               <div class="image-toolbar-dropdown">
                 <button class="image-toolbar-text-btn" onclick="toggleImageEffectsPopover()" title="Effects">Effects</button>
-                <div class="image-dropdown-content" id="image-effects-popover" style="padding: 10px; min-width: 160px; display: none; flex-direction: column; gap: 4px;">
-                  <div style="font-size: 12px; font-weight: 600; color: var(--g800); padding: 4px 8px; margin-bottom: 2px;">Filters</div>
-                  <button onclick="applyEffectFilter('none')"><i class="fa-solid fa-ban"></i> None</button>
-                  <button onclick="applyEffectFilter('grayscale')"><i class="fa-solid fa-adjust"></i> Grayscale</button>
-                  <button onclick="applyEffectFilter('sepia')"><i class="fa-solid fa-mug-hot"></i> Sepia</button>
-                  <button onclick="applyEffectFilter('vintage')"><i class="fa-solid fa-camera-retro"></i> Vintage</button>
-                  <button onclick="applyEffectFilter('invert')"><i class="fa-solid fa-circle-half-stroke"></i> Invert</button>
+                <div class="image-dropdown-content" id="image-effects-popover" style="padding: 8px; min-width: 180px; display: none; flex-direction: column;">
+                  <div style="font-size: 11px; font-weight: 700; color: var(--g500); padding: 4px 8px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--g100); margin-bottom: 8px;">Filters</div>
+                  <div class="effects-grid">
+                    <button class="filter-swatch-item" onclick="applyEffectFilter('none')">
+                      <div class="filter-preview-thumbnail" style="background: linear-gradient(135deg, #113f2a, #a48630);"></div>
+                      <span class="filter-name">None</span>
+                    </button>
+                    <button class="filter-swatch-item" onclick="applyEffectFilter('grayscale')">
+                      <div class="filter-preview-thumbnail" style="background: grayscale(1) contrast(1.1) linear-gradient(135deg, #113f2a, #a48630); filter: grayscale(100%);"></div>
+                      <span class="filter-name">Grayscale</span>
+                    </button>
+                    <button class="filter-swatch-item" onclick="applyEffectFilter('sepia')">
+                      <div class="filter-preview-thumbnail" style="background: sepia(1) linear-gradient(135deg, #113f2a, #a48630); filter: sepia(100%) hue-rotate(15deg);"></div>
+                      <span class="filter-name">Sepia</span>
+                    </button>
+                    <button class="filter-swatch-item" onclick="applyEffectFilter('vintage')">
+                      <div class="filter-preview-thumbnail" style="background: sepia(0.3) saturate(1.3) linear-gradient(135deg, #113f2a, #a48630); filter: contrast(1.2) brightness(0.9) sepia(20%);"></div>
+                      <span class="filter-name">Vintage</span>
+                    </button>
+                    <button class="filter-swatch-item" onclick="applyEffectFilter('invert')">
+                      <div class="filter-preview-thumbnail" style="background: invert(1) linear-gradient(135deg, #113f2a, #a48630); filter: invert(100%);"></div>
+                      <span class="filter-name">Invert</span>
+                    </button>
+                  </div>
                 </div>
               </div>
               
@@ -2558,9 +2640,20 @@
               
               <div class="image-toolbar-divider"></div>
               
-              <button class="image-toolbar-icon-btn" onclick="toggleToolbarMoreMenu()" title="More">
-                <i class="fa-solid fa-ellipsis"></i>
-              </button>
+              <!-- More Options Dropdown -->
+              <div class="image-toolbar-dropdown">
+                <button class="image-toolbar-icon-btn" onclick="toggleImageMorePopover()" title="More">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="image-dropdown-content" id="image-more-popover" style="padding: 6px 0; min-width: 160px; display: none; flex-direction: column;">
+                  <button onclick="changeZIndex('front'); closeAllImageDropdowns();"><i class="fa-solid fa-angles-up"></i> Bring to Front</button>
+                  <button onclick="changeZIndex('back'); closeAllImageDropdowns();"><i class="fa-solid fa-angles-down"></i> Send to Back</button>
+                  <button onclick="duplicateActiveObject(); closeAllImageDropdowns();"><i class="fa-solid fa-clone"></i> Duplicate</button>
+                  <button onclick="toggleLockActiveObject(); closeAllImageDropdowns();" id="btn-image-lock-toggle"><i class="fa-solid fa-lock"></i> Lock Object</button>
+                  <div style="height: 1px; background-color: var(--g100); margin: 4px 0;"></div>
+                  <button onclick="deleteActiveObject(); closeAllImageDropdowns();" style="color: #ef4444;"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
+              </div>
             </div>
 
             <div id="toolbar-more-menu" style="display:none; width:100%; border-top:1px solid var(--g150); padding-top:10px;">
@@ -3326,7 +3419,8 @@
         'image-flip-dropdown',
         'image-opacity-popover',
         'image-adjust-popover',
-        'image-effects-popover'
+        'image-effects-popover',
+        'image-more-popover'
       ];
       
       dropdowns.forEach(id => {
@@ -3404,6 +3498,50 @@
       }
     }
 
+    function toggleImageMorePopover() {
+      const el = document.getElementById('image-more-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'image-more-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+        
+        // Sync Lock/Unlock label
+        const activeObj = canvas.getActiveObject();
+        const lockBtn = document.getElementById('btn-image-lock-toggle');
+        if (activeObj && lockBtn) {
+          const isLocked = activeObj.lockMovementX;
+          lockBtn.innerHTML = isLocked ? '<i class="fa-solid fa-unlock"></i> Unlock Object' : '<i class="fa-solid fa-lock"></i> Lock Object';
+        }
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function toggleLockActiveObject() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
+
+      const isLocked = activeObj.lockMovementX;
+      activeObj.set({
+        lockMovementX: !isLocked,
+        lockMovementY: !isLocked,
+        lockScalingX: !isLocked,
+        lockScalingY: !isLocked,
+        lockRotation: !isLocked,
+        hasControls: isLocked, // Show controls when unlocked, hide when locked
+        selectable: true
+      });
+      
+      canvas.discardActiveObject();
+      canvas.requestRenderAll();
+      saveHistory();
+
+      showToast(isLocked ? "🔓 Element unlocked!" : "🔒 Element locked!");
+    }
+
     function handleImageEditClick() {
       toggleImageAdjustPopover();
       showToast("Adjust your image details using the controls.");
@@ -3451,9 +3589,13 @@
       showToast("🧹 Magic Eraser: Draw over elements to erase them.");
       
       canvas.isDrawingMode = true;
-      canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+      try {
+        canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+      } catch (e) {
+        canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+        canvas.freeDrawingBrush.color = '#ffffff'; // Fallback white color
+      }
       canvas.freeDrawingBrush.width = 24;
-      canvas.freeDrawingBrush.color = 'rgba(255, 255, 255, 0.9)'; // simulated erase color
       canvas.defaultCursor = 'crosshair';
       
       showDoneErasingButton();
@@ -3647,20 +3789,181 @@
       showToast("✨ Animation applied: Zoom Pulse!");
     }
 
+    // REAL INTERACTIVE CROP
+    let isCroppingMode = false;
+    let originalSelectable = true;
+
     function triggerImageCrop() {
       const activeObj = canvas.getActiveObject();
       if (!activeObj || activeObj.type !== 'image') return;
+
+      if (isCroppingMode) {
+        finalizeCropping();
+        return;
+      }
+
+      isCroppingMode = true;
+      originalSelectable = activeObj.selectable;
       
-      showToast("Crop: Image trimmed 5% from edges.");
-      activeObj.set({
-        cropX: (activeObj.cropX || 0) + 10,
-        cropY: (activeObj.cropY || 0) + 10,
-        width: activeObj.width - 20,
-        height: activeObj.height - 20
+      showToast("🎨 Drag dashed box corners to crop. Click Done when finished.");
+      closeAllImageDropdowns();
+
+      // Create crop box overlay
+      const imgWidth = activeObj.width * activeObj.scaleX;
+      const imgHeight = activeObj.height * activeObj.scaleY;
+
+      const cropBox = new fabric.Rect({
+        left: activeObj.left,
+        top: activeObj.top,
+        width: imgWidth,
+        height: imgHeight,
+        fill: 'rgba(0, 0, 0, 0.2)',
+        stroke: 'var(--rose)',
+        strokeWidth: 2,
+        strokeDashArray: [6, 4],
+        cornerColor: 'var(--rose)',
+        cornerStrokeColor: 'var(--rose)',
+        borderColor: 'var(--rose)',
+        cornerSize: 10,
+        transparentCorners: false,
+        hasRotatingPoint: false,
+        lockRotation: true,
+        name: 'crop-box'
       });
-      activeObj.setCoords();
+
+      // Temporarily lock original image so it can't be dragged
+      activeObj.set({
+        selectable: false,
+        evented: false
+      });
+
+      // Attach references
+      activeObj._cropBox = cropBox;
+      cropBox._targetImage = activeObj;
+
+      // Add cropBox to canvas and select it
+      canvas.add(cropBox);
+      canvas.setActiveObject(cropBox);
+
+      // Handle crop constraints on scale and move
+      cropBox.on('moving', () => constrainCropBox(cropBox, activeObj));
+      cropBox.on('scaling', () => constrainCropBox(cropBox, activeObj));
+
+      // Show float "Done Cropping" button
+      showDoneCroppingButton();
+      canvas.requestRenderAll();
+    }
+
+    function constrainCropBox(cb, img) {
+      const imgW = img.width * img.scaleX;
+      const imgH = img.height * img.scaleY;
+
+      // Keep inside left boundary
+      if (cb.left < img.left) {
+        cb.left = img.left;
+      }
+      // Keep inside top boundary
+      if (cb.top < img.top) {
+        cb.top = img.top;
+      }
+      
+      const cbW = cb.width * cb.scaleX;
+      const cbH = cb.height * cb.scaleY;
+
+      // Keep inside right boundary
+      if (cb.left + cbW > img.left + imgW) {
+        cb.left = img.left + imgW - cbW;
+      }
+      // Keep inside bottom boundary
+      if (cb.top + cbH > img.top + imgH) {
+        cb.top = img.top + imgH - cbH;
+      }
+
+      // Constrain scale if user drags too wide
+      if (cb.width * cb.scaleX > imgW) {
+        cb.scaleX = imgW / cb.width;
+      }
+      if (cb.height * cb.scaleY > imgH) {
+        cb.scaleY = imgH / cb.height;
+      }
+
+      canvas.renderAll();
+    }
+
+    function showDoneCroppingButton() {
+      if (document.getElementById('btn-done-cropping')) return;
+
+      const btn = document.createElement('button');
+      btn.id = 'btn-done-cropping';
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Done Cropping';
+      btn.style.position = 'fixed';
+      btn.style.top = '80px';
+      btn.style.left = '50%';
+      btn.style.transform = 'translateX(-50%)';
+      btn.style.zIndex = '9999';
+      btn.style.backgroundColor = 'var(--rose)';
+      btn.style.color = '#fff';
+      btn.style.border = 'none';
+      btn.style.borderRadius = '30px';
+      btn.style.padding = '12px 24px';
+      btn.style.fontWeight = '600';
+      btn.style.boxShadow = '0 4px 15px rgba(244, 63, 94, 0.4)';
+      btn.style.cursor = 'pointer';
+      btn.style.transition = 'all 0.2s';
+      
+      btn.onclick = function() {
+        finalizeCropping();
+      };
+
+      document.body.appendChild(btn);
+    }
+
+    function finalizeCropping() {
+      const cb = canvas.getActiveObject();
+      if (!cb || cb.name !== 'crop-box') return;
+
+      const img = cb._targetImage;
+      if (!img) return;
+
+      const offsetX = cb.left - img.left;
+      const offsetY = cb.top - img.top;
+
+      const cbW = cb.width * cb.scaleX;
+      const cbH = cb.height * cb.scaleY;
+
+      // Adjust crop offset relative to current crop coordinates
+      const pixelOffsetX = offsetX / img.scaleX;
+      const pixelOffsetY = offsetY / img.scaleY;
+
+      const newCropX = (img.cropX || 0) + pixelOffsetX;
+      const newCropY = (img.cropY || 0) + pixelOffsetY;
+      const newWidth = cbW / img.scaleX;
+      const newHeight = cbH / img.scaleY;
+
+      // Update image properties and position
+      img.set({
+        cropX: newCropX,
+        cropY: newCropY,
+        width: newWidth,
+        height: newHeight,
+        left: cb.left,
+        top: cb.top,
+        selectable: originalSelectable,
+        evented: true
+      });
+
+      img.setCoords();
+
+      // Clean up overlay and done button
+      canvas.remove(cb);
+      const btn = document.getElementById('btn-done-cropping');
+      if (btn) btn.remove();
+
+      isCroppingMode = false;
+      canvas.setActiveObject(img);
       canvas.requestRenderAll();
       saveHistory();
+      showToast("✨ Image cropped successfully!");
     }
 
     function onSelectionCleared() {
