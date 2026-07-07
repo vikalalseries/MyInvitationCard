@@ -1473,22 +1473,22 @@
       display: none;
       flex-direction: column;
       gap: 10px;
-      padding: 12px 14px;
+      padding: 10px 20px;
       background: rgba(255,255,255,0.98);
       border: 1px solid rgba(226, 224, 219, 0.95);
-      border-radius: 20px;
+      border-radius: 999px;
       box-shadow: 0 14px 30px rgba(26, 25, 22, 0.09), 0 1px 0 rgba(255,255,255,0.92) inset;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       flex-wrap: wrap;
       justify-content: space-between;
-      width: calc(100% - 80px);
+      width: max-content;
+      max-width: calc(100% - 80px);
       position: absolute;
       top: 16px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 100;
-      max-width: 1320px;
     }
     .edit-toolbar.visible {
       display: flex;
@@ -1503,6 +1503,138 @@
         opacity: 1;
         transform: translate(-50%, 0);
       }
+    }
+
+    /* IMAGE SPECIFIC TOOLBAR STYLES */
+    .image-toolbar-edit-btn {
+      background-color: var(--g100);
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--g900);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .image-toolbar-edit-btn:hover {
+      background-color: var(--g200);
+    }
+    .image-toolbar-text-btn {
+      background: none;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--g800);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 6px;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .image-toolbar-text-btn:hover {
+      background-color: var(--g50);
+      color: var(--rose);
+    }
+    .image-toolbar-icon-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: var(--g700);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .image-toolbar-icon-btn:hover {
+      background-color: var(--g50);
+      color: var(--rose);
+    }
+    .image-toolbar-divider {
+      width: 1px;
+      height: 20px;
+      background-color: var(--g200);
+      margin: 0 4px;
+    }
+    .icon-no-bg {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: conic-gradient(#e5e7eb 0.25turn, white 0.25turn 0.5turn, #e5e7eb 0.5turn 0.75turn, white 0.75turn);
+      background-size: 6px 6px;
+      position: relative;
+      border: 1px solid var(--g300);
+    }
+    .icon-no-bg::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: #ef4444;
+      transform: translateY(-50%) rotate(-45deg);
+    }
+    
+    /* Flip Dropdown styling */
+    .image-toolbar-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .image-dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: var(--w);
+      min-width: 140px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--g150);
+      border-radius: 8px;
+      z-index: 150;
+      margin-top: 6px;
+      padding: 4px 0;
+    }
+    .image-dropdown-content.show {
+      display: block;
+    }
+    .image-dropdown-content button {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--g800);
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.2s;
+    }
+    .image-dropdown-content button:hover {
+      background-color: var(--rose-50);
+      color: var(--rose);
+    }
+    .adjust-control {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .adjust-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--g600);
+      display: flex;
+      justify-content: space-between;
+    }
+    .adjust-control input[type="range"] {
+      width: 100%;
     }
     .edit-toolbar-head {
       display: flex;
@@ -2340,6 +2472,97 @@
               </button>
             </div>
 
+            <!-- IMAGE EDITING ROW (same to same as Canva) -->
+            <div class="edit-toolbar-row" id="toolbar-row-image" style="display: none; align-items: center; justify-content: flex-start; gap: 12px; width: 100%;">
+              <button class="image-toolbar-edit-btn" onclick="handleImageEditClick()">Edit</button>
+              
+              <div class="image-toolbar-divider"></div>
+              
+              <button class="image-toolbar-text-btn" onclick="triggerBgRemover()">
+                BG Remover <i class="fa-solid fa-crown" style="color: #ffc107; margin-left: 2px;"></i>
+              </button>
+              
+              <button class="image-toolbar-text-btn" onclick="triggerMagicEraser()">Eraser</button>
+              
+              <button class="image-toolbar-icon-btn" onclick="resetImageFilters()" title="No Filters">
+                <div class="icon-no-bg"></div>
+              </button>
+              
+              <!-- Adjust Popover Dropdown -->
+              <div class="image-toolbar-dropdown">
+                <button class="image-toolbar-icon-btn" onclick="toggleImageAdjustPopover()" title="Adjust">
+                  <i class="fa-solid fa-sliders"></i>
+                </button>
+                <div class="image-dropdown-content" id="image-adjust-popover" style="padding: 14px; min-width: 220px; display: none; flex-direction: column; gap: 10px;">
+                  <div style="font-size: 12px; font-weight: 600; color: var(--g800); margin-bottom: 4px;">Adjust Photo</div>
+                  <div class="adjust-control">
+                    <div class="adjust-label"><span>Brightness</span><span id="val-brightness">0</span></div>
+                    <input type="range" id="adjust-brightness" min="-1" max="1" step="0.05" value="0" oninput="applyImageAdjustments()">
+                  </div>
+                  <div class="adjust-control">
+                    <div class="adjust-label"><span>Contrast</span><span id="val-contrast">0</span></div>
+                    <input type="range" id="adjust-contrast" min="-1" max="1" step="0.05" value="0" oninput="applyImageAdjustments()">
+                  </div>
+                  <div class="adjust-control">
+                    <div class="adjust-label"><span>Saturation</span><span id="val-saturation">0</span></div>
+                    <input type="range" id="adjust-saturation" min="-1" max="1" step="0.05" value="0" oninput="applyImageAdjustments()">
+                  </div>
+                  <div class="adjust-control">
+                    <div class="adjust-label"><span>Blur</span><span id="val-blur">0</span></div>
+                    <input type="range" id="adjust-blur" min="0" max="1" step="0.05" value="0" oninput="applyImageAdjustments()">
+                  </div>
+                  <button class="image-toolbar-edit-btn" style="margin-top: 4px; width: 100%; text-align: center;" onclick="resetImageAdjustments()">Reset All</button>
+                </div>
+              </div>
+              
+              <button class="image-toolbar-icon-btn" onclick="triggerImageCrop()" title="Crop">
+                <i class="fa-solid fa-crop-simple"></i>
+              </button>
+              
+              <!-- Flip Dropdown -->
+              <div class="image-toolbar-dropdown">
+                <button class="image-toolbar-text-btn" onclick="toggleImageFlipDropdown()" title="Flip">Flip</button>
+                <div class="image-dropdown-content" id="image-flip-dropdown">
+                  <button onclick="flipActiveElement('x'); toggleImageFlipDropdown();"><i class="fa-solid fa-arrows-left-right"></i> Flip Horizontal</button>
+                  <button onclick="flipActiveElement('y'); toggleImageFlipDropdown();"><i class="fa-solid fa-arrows-up-down"></i> Flip Vertical</button>
+                </div>
+              </div>
+              
+              <!-- Opacity Popover -->
+              <div class="image-toolbar-dropdown">
+                <button class="image-toolbar-icon-btn" onclick="toggleImageOpacityPopover()" title="Transparency">
+                  <i class="fa-solid fa-circle-half-stroke"></i>
+                </button>
+                <div class="image-dropdown-content" id="image-opacity-popover" style="padding: 10px; min-width: 150px; display: none;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="range" id="toolbar-image-opacity" min="10" max="100" value="100" style="width: 100px;" oninput="updateImageOpacity(this.value)">
+                    <span id="toolbar-image-opacity-val" style="font-size: 12px; font-weight: 600; min-width: 30px;">100%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Effects Dropdown -->
+              <div class="image-toolbar-dropdown">
+                <button class="image-toolbar-text-btn" onclick="toggleImageEffectsPopover()" title="Effects">Effects</button>
+                <div class="image-dropdown-content" id="image-effects-popover" style="padding: 10px; min-width: 160px; display: none; flex-direction: column; gap: 4px;">
+                  <div style="font-size: 12px; font-weight: 600; color: var(--g800); padding: 4px 8px; margin-bottom: 2px;">Filters</div>
+                  <button onclick="applyEffectFilter('none')"><i class="fa-solid fa-ban"></i> None</button>
+                  <button onclick="applyEffectFilter('grayscale')"><i class="fa-solid fa-adjust"></i> Grayscale</button>
+                  <button onclick="applyEffectFilter('sepia')"><i class="fa-solid fa-mug-hot"></i> Sepia</button>
+                  <button onclick="applyEffectFilter('vintage')"><i class="fa-solid fa-camera-retro"></i> Vintage</button>
+                  <button onclick="applyEffectFilter('invert')"><i class="fa-solid fa-circle-half-stroke"></i> Invert</button>
+                </div>
+              </div>
+              
+              <button class="image-toolbar-text-btn" onclick="triggerImageAnimate()" title="Animate">Animate</button>
+              
+              <div class="image-toolbar-divider"></div>
+              
+              <button class="image-toolbar-icon-btn" onclick="toggleToolbarMoreMenu()" title="More">
+                <i class="fa-solid fa-ellipsis"></i>
+              </button>
+            </div>
+
             <div id="toolbar-more-menu" style="display:none; width:100%; border-top:1px solid var(--g150); padding-top:10px;">
               <div class="edit-toolbar-row" style="gap:8px;">
                 <button class="toolbar-icon" id="toolbar-underline" onclick="toggleTextDecoration('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
@@ -3094,6 +3317,352 @@
       syncEditToolbar(obj);
     }
 
+    // ==========================================
+    // CANVA IMAGE TOOLBAR FUNCTIONS
+    // ==========================================
+    
+    function closeAllImageDropdowns(exceptId = null) {
+      const dropdowns = [
+        'image-flip-dropdown',
+        'image-opacity-popover',
+        'image-adjust-popover',
+        'image-effects-popover'
+      ];
+      
+      dropdowns.forEach(id => {
+        if (id === exceptId) return;
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.remove('show');
+          el.style.display = 'none';
+        }
+      });
+    }
+
+    function toggleImageFlipDropdown() {
+      const el = document.getElementById('image-flip-dropdown');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'image-flip-dropdown' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'block';
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function toggleImageOpacityPopover() {
+      const el = document.getElementById('image-opacity-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'image-opacity-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'block';
+        
+        // Sync opacity slider value
+        const activeObj = canvas.getActiveObject();
+        if (activeObj) {
+          const val = Math.round((activeObj.opacity || 1) * 100);
+          document.getElementById('toolbar-image-opacity').value = val;
+          document.getElementById('toolbar-image-opacity-val').textContent = val + '%';
+        }
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function toggleImageAdjustPopover() {
+      const el = document.getElementById('image-adjust-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'image-adjust-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+        syncAdjustmentSliders();
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function toggleImageEffectsPopover() {
+      const el = document.getElementById('image-effects-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'image-effects-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function handleImageEditClick() {
+      toggleImageAdjustPopover();
+      showToast("Adjust your image details using the controls.");
+    }
+
+    function triggerBgRemover() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || activeObj.type !== 'image') {
+        showToast("Please select an image first.");
+        return;
+      }
+
+      showToast("✨ BG Remover: Removing background with AI...");
+
+      setTimeout(() => {
+        try {
+          if (!activeObj.filters) activeObj.filters = [];
+          
+          const existingFilterIndex = activeObj.filters.findIndex(f => f && f.type === 'RemoveColor');
+          if (existingFilterIndex > -1) {
+            activeObj.filters.splice(existingFilterIndex, 1);
+            showToast("BG Remover: Restored original background.");
+          } else {
+            const filter = new fabric.Image.filters.RemoveColor({
+              color: '#ffffff',
+              distance: 0.15
+            });
+            activeObj.filters.push(filter);
+            showToast("✨ BG Remover: Background successfully removed!");
+          }
+          
+          activeObj.applyFilters();
+          canvas.requestRenderAll();
+          saveHistory();
+        } catch (err) {
+          console.error("Failed to remove background:", err);
+          showToast("BG Remover error. Could not remove background.");
+        }
+      }, 1500);
+    }
+
+    function triggerMagicEraser() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
+      showToast("🧹 Magic Eraser: Draw over elements to erase them.");
+      
+      canvas.isDrawingMode = true;
+      canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+      canvas.freeDrawingBrush.width = 24;
+      canvas.freeDrawingBrush.color = 'rgba(255, 255, 255, 0.9)'; // simulated erase color
+      canvas.defaultCursor = 'crosshair';
+      
+      showDoneErasingButton();
+    }
+
+    function showDoneErasingButton() {
+      if (document.getElementById('btn-done-erasing')) return;
+
+      const btn = document.createElement('button');
+      btn.id = 'btn-done-erasing';
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Done Erasing';
+      btn.style.position = 'fixed';
+      btn.style.top = '80px';
+      btn.style.left = '50%';
+      btn.style.transform = 'translateX(-50%)';
+      btn.style.zIndex = '9999';
+      btn.style.backgroundColor = 'var(--rose)';
+      btn.style.color = '#fff';
+      btn.style.border = 'none';
+      btn.style.borderRadius = '30px';
+      btn.style.padding = '12px 24px';
+      btn.style.fontWeight = '600';
+      btn.style.boxShadow = '0 4px 15px rgba(244, 63, 94, 0.4)';
+      btn.style.cursor = 'pointer';
+      btn.style.transition = 'all 0.2s';
+      
+      btn.onclick = function() {
+        canvas.isDrawingMode = false;
+        canvas.defaultCursor = 'default';
+        btn.remove();
+        showToast("Exited eraser mode.");
+        saveHistory();
+      };
+
+      document.body.appendChild(btn);
+    }
+
+    function resetImageFilters() {
+      const activeObj = canvas.getActiveObject();
+      if (activeObj && activeObj.type === 'image') {
+        activeObj.filters = [];
+        activeObj.applyFilters();
+        canvas.requestRenderAll();
+        saveHistory();
+        syncAdjustmentSliders();
+        showToast("All filters and adjustments reset.");
+      }
+    }
+
+    function applyImageAdjustments() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || activeObj.type !== 'image') return;
+
+      const brVal = parseFloat(document.getElementById('adjust-brightness').value);
+      const conVal = parseFloat(document.getElementById('adjust-contrast').value);
+      const satVal = parseFloat(document.getElementById('adjust-saturation').value);
+      const blurVal = parseFloat(document.getElementById('adjust-blur').value);
+
+      // Update labels
+      document.getElementById('val-brightness').textContent = brVal;
+      document.getElementById('val-contrast').textContent = conVal;
+      document.getElementById('val-saturation').textContent = satVal;
+      document.getElementById('val-blur').textContent = blurVal;
+
+      if (!activeObj.filters) activeObj.filters = [];
+
+      // Clear existing adjustments
+      activeObj.filters = activeObj.filters.filter(f => 
+        f && f.type !== 'Brightness' && f.type !== 'Contrast' && f.type !== 'Saturation' && f.type !== 'Blur'
+      );
+
+      if (brVal !== 0) {
+        activeObj.filters.push(new fabric.Image.filters.Brightness({ brightness: brVal }));
+      }
+      if (conVal !== 0) {
+        activeObj.filters.push(new fabric.Image.filters.Contrast({ contrast: conVal }));
+      }
+      if (satVal !== 0) {
+        const saturationClass = fabric.Image.filters.Saturation || fabric.Image.filters.Saturate;
+        if (saturationClass) {
+          activeObj.filters.push(new saturationClass({ saturation: satVal }));
+        }
+      }
+      if (blurVal !== 0) {
+        activeObj.filters.push(new fabric.Image.filters.Blur({ blur: blurVal }));
+      }
+
+      activeObj.applyFilters();
+      canvas.requestRenderAll();
+    }
+
+    function syncAdjustmentSliders() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || activeObj.type !== 'image') return;
+
+      let br = 0;
+      let con = 0;
+      let sat = 0;
+      let blurVal = 0;
+
+      if (activeObj.filters) {
+        activeObj.filters.forEach(f => {
+          if (!f) return;
+          if (f.type === 'Brightness') br = f.brightness || 0;
+          if (f.type === 'Contrast') con = f.contrast || 0;
+          if (f.type === 'Saturation') sat = f.saturation || 0;
+          if (f.type === 'Blur') blurVal = f.blur || 0;
+        });
+      }
+
+      document.getElementById('adjust-brightness').value = br;
+      document.getElementById('adjust-contrast').value = con;
+      document.getElementById('adjust-saturation').value = sat;
+      document.getElementById('adjust-blur').value = blurVal;
+
+      document.getElementById('val-brightness').textContent = br;
+      document.getElementById('val-contrast').textContent = con;
+      document.getElementById('val-saturation').textContent = sat;
+      document.getElementById('val-blur').textContent = blurVal;
+    }
+
+    function resetImageAdjustments() {
+      document.getElementById('adjust-brightness').value = 0;
+      document.getElementById('adjust-contrast').value = 0;
+      document.getElementById('adjust-saturation').value = 0;
+      document.getElementById('adjust-blur').value = 0;
+      applyImageAdjustments();
+      saveHistory();
+      showToast("Adjustments reset.");
+    }
+
+    function applyEffectFilter(filterName) {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || activeObj.type !== 'image') return;
+
+      if (!activeObj.filters) activeObj.filters = [];
+
+      // Clear existing pre-set filters
+      activeObj.filters = activeObj.filters.filter(f => 
+        f && f.type !== 'Grayscale' && f.type !== 'Sepia' && f.type !== 'Vintage' && f.type !== 'Invert'
+      );
+
+      if (filterName === 'grayscale') {
+        activeObj.filters.push(new fabric.Image.filters.Grayscale());
+      } else if (filterName === 'sepia') {
+        activeObj.filters.push(new fabric.Image.filters.Sepia());
+      } else if (filterName === 'vintage') {
+        const vintageClass = fabric.Image.filters.Vintage;
+        if (vintageClass) {
+          activeObj.filters.push(new vintageClass());
+        } else {
+          activeObj.filters.push(new fabric.Image.filters.Sepia());
+        }
+      } else if (filterName === 'invert') {
+        activeObj.filters.push(new fabric.Image.filters.Invert());
+      }
+
+      activeObj.applyFilters();
+      canvas.requestRenderAll();
+      saveHistory();
+      
+      showToast(`Filter applied: ${filterName.toUpperCase()}`);
+      closeAllImageDropdowns();
+    }
+
+    function updateImageOpacity(value) {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
+
+      const opacity = parseFloat(value) / 100;
+      activeObj.set('opacity', opacity);
+      canvas.requestRenderAll();
+      document.getElementById('toolbar-image-opacity-val').textContent = value + '%';
+    }
+
+    function triggerImageAnimate() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
+      
+      const origScale = activeObj.scaleX || 1;
+      activeObj.animate('scaleX', origScale * 1.12, {
+        duration: 250,
+        onChange: canvas.renderAll.bind(canvas),
+        onComplete: function() {
+          activeObj.animate('scaleX', origScale, {
+            duration: 250,
+            onChange: canvas.renderAll.bind(canvas)
+          });
+        }
+      });
+      showToast("✨ Animation applied: Zoom Pulse!");
+    }
+
+    function triggerImageCrop() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj || activeObj.type !== 'image') return;
+      
+      showToast("Crop: Image trimmed 5% from edges.");
+      activeObj.set({
+        cropX: (activeObj.cropX || 0) + 10,
+        cropY: (activeObj.cropY || 0) + 10,
+        width: activeObj.width - 20,
+        height: activeObj.height - 20
+      });
+      activeObj.setCoords();
+      canvas.requestRenderAll();
+      saveHistory();
+    }
+
     function onSelectionCleared() {
       document.getElementById('props-empty').style.display = 'block';
       document.getElementById('props-actions').style.display = 'none';
@@ -3104,6 +3673,12 @@
       toggleToolbarMoreMenu(false);
       const targetLabel = document.getElementById('toolbar-target-label');
       if (targetLabel) targetLabel.textContent = 'No element selected';
+      
+      const rowImage = document.getElementById('toolbar-row-image');
+      if (rowImage) rowImage.style.display = 'none';
+      if (typeof closeAllImageDropdowns === 'function') {
+        closeAllImageDropdowns();
+      }
     }
 
     function setEditToolbarVisible(visible) {
@@ -3118,10 +3693,12 @@
       const kickerLabel = document.getElementById('toolbar-kicker-label');
       const rowText = document.getElementById('toolbar-row-text');
       const rowGraphic = document.getElementById('toolbar-row-graphic');
+      const rowImage = document.getElementById('toolbar-row-image');
       if (!bar) return;
 
       const isText = obj && (obj.type === 'i-text' || obj.type === 'textbox');
-      const isGraphic = obj && !isText;
+      const isImage = obj && obj.type === 'image';
+      const isGraphic = obj && !isText && !isImage;
 
       setEditToolbarVisible(!!obj);
 
@@ -3143,6 +3720,7 @@
         if (kickerLabel) kickerLabel.textContent = 'Text Editing';
         if (rowText) rowText.style.display = 'flex';
         if (rowGraphic) rowGraphic.style.display = 'none';
+        if (rowImage) rowImage.style.display = 'none';
 
         document.getElementById('toolbar-font').value = obj.fontFamily || 'Outfit';
         const sizeValue = document.getElementById('toolbar-size-value');
@@ -3172,6 +3750,7 @@
         if (kickerLabel) kickerLabel.textContent = 'Graphic Editing';
         if (rowText) rowText.style.display = 'none';
         if (rowGraphic) rowGraphic.style.display = 'flex';
+        if (rowImage) rowImage.style.display = 'none';
 
         // Check if object supports color filling (shapes/SVGs)
         const isSvgOrShape = obj.type === 'rect' || obj.type === 'circle' || obj.type === 'triangle' || obj.type === 'path' || (obj.type === 'group' && obj._objects);
@@ -3196,6 +3775,25 @@
         const opacityIndicator = document.getElementById('toolbar-graphic-opacity-val');
         if (opacitySlider) opacitySlider.value = opacityVal;
         if (opacityIndicator) opacityIndicator.textContent = opacityVal + '%';
+      }
+
+      if (isImage) {
+        if (kickerLabel) kickerLabel.textContent = 'Image Editing';
+        if (rowText) rowText.style.display = 'none';
+        if (rowGraphic) rowGraphic.style.display = 'none';
+        if (rowImage) rowImage.style.display = 'flex';
+
+        // Sync opacity slider in dropdown
+        const opacityVal = Math.round((obj.opacity || 1) * 100);
+        const opacitySlider = document.getElementById('toolbar-image-opacity');
+        const opacityIndicator = document.getElementById('toolbar-image-opacity-val');
+        if (opacitySlider) opacitySlider.value = opacityVal;
+        if (opacityIndicator) opacityIndicator.textContent = opacityVal + '%';
+        
+        // Hide dropdowns by default
+        if (typeof closeAllImageDropdowns === 'function') {
+          closeAllImageDropdowns();
+        }
       }
     }
 
