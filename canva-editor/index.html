@@ -746,11 +746,12 @@
 
     .drawer-scroll-buttons {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
       display: none;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       z-index: 100;
     }
 
@@ -759,29 +760,31 @@
     }
 
     .drawer-scroll-btn {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background-color: var(--w);
+      background-color: rgba(255, 255, 255, 0.9);
       border: 1px solid var(--g200);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
       color: var(--g700);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s ease;
+      backdrop-filter: blur(4px);
     }
 
     .drawer-scroll-btn:hover {
       border-color: var(--rose);
       color: var(--rose);
-      transform: translateY(-2px);
+      transform: scale(1.08);
+      background-color: var(--w);
       box-shadow: 0 6px 16px rgba(124, 21, 42, 0.12);
     }
 
     .drawer-scroll-btn:active {
-      transform: translateY(0);
+      transform: scale(1);
       box-shadow: 0 2px 6px rgba(124, 21, 42, 0.08);
     }
 
@@ -2224,8 +2227,7 @@
             <button class="zbtn" onclick="adjustZoom(-0.1)" title="Zoom Out">−</button>
             <span class="zlvl" id="zoom-percentage">85%</span>
             <button class="zbtn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
-            <button class="zbtn zfit" onclick="fitToScreen()" title="Fit to screen">FIT</button>
-            <button class="zbtn" style="border-right:none;" onclick="scrollPreviewToBottom()" title="Scroll to bottom"><i class="fa-solid fa-arrow-down"></i></button>
+            <button class="zbtn zfit" style="border-right:none;" onclick="fitToScreen()" title="Fit to screen">FIT</button>
           </div>
         </div>
 
