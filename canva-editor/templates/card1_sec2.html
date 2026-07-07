@@ -17,10 +17,10 @@ body {
   font-family:'Noto Serif Devanagari', serif;
 }
 
-/* ── CARD: 23.5 × 10.5 cm with 1cm padding ── */
+/* ── CARD: 23.5 × 19 cm with 1cm padding ── */
 .card {
   width:23.5cm;
-  min-height:10.5cm;
+  min-height:19cm;
   background:#f2aec8;
   padding:1cm;
   display:flex;
@@ -55,7 +55,7 @@ body {
 .br { bottom:-0.07cm; right:0.2cm; }
 
 /* ════════════════════════════════════════
-   SECTION 2  — Bottom card (Flattened Absolute Layout)
+   SECTION 2  — Bottom card
    ════════════════════════════════════════ */
 .s2-wrap {
   position:relative; z-index:1;
@@ -64,8 +64,8 @@ body {
 
 .s2-snehi {
   position: absolute;
-  top: 0.6cm;
-  left: 0.8cm;
+  top: 0.8cm;
+  left: 3.8cm;
   font-size:0.380cm;
   font-weight:600;
   color:#6e0035;
@@ -82,13 +82,12 @@ body {
   z-index: 5;
 }
 .s2-vm { font-size:0.40cm; font-weight:700; color:#6e0035; }
-.s2-vs { font-size:0.380cm; font-weight:600; color:#6e0035; margin-top:0.05cm; }
+.s2-vs { font-size:0.380cm; font-weight:600; color:#6e0035; margin-top:0.30cm; }
 
 .s2-bride {
   position: absolute;
-  top: 1.3cm;
+  top: 1.8cm;
   left: 0.8cm;
-  width: 7.0cm;
   font-size:0.65cm;
   font-weight:700;
   color:#6e0035;
@@ -98,7 +97,7 @@ body {
 
 .s2-groom {
   position: absolute;
-  top: 1.3cm;
+  top: 1.8cm;
   right: 0.8cm;
   width: 7.0cm;
   font-size:0.65cm;
@@ -110,9 +109,8 @@ body {
 
 .s2-fam {
   position: absolute;
-  top: 2.1cm;
+  top: 2.8cm;
   left: 0.8cm;
-  width: 7.0cm;
   font-size:0.4cm;
   color:#6e0035;
   line-height:1.65;
@@ -122,9 +120,8 @@ body {
 
 .s2-fam-r {
   position: absolute;
-  top: 2.1cm;
+  top: 2.8cm;
   right: 0.8cm;
-  width: 7.0cm;
   font-size:0.4cm;
   color:#6e0035;
   line-height:1.65;
@@ -134,8 +131,8 @@ body {
 
 .s2-icon.couple-box {
   position: absolute;
-  top: 1.25cm;
-  left: 50%;
+  top: 2.1cm;
+  left: 43%;
   transform: translateX(-50%);
   width: 3cm;
   height: 2.2cm;
@@ -152,10 +149,10 @@ body {
 
 .s2-damp-t {
   position: absolute;
-  top: 3.45cm;
+  top: 4.15cm;
   left: 50%;
   transform: translateX(-50%);
-  width: 6.0cm;
+
   text-align: center;
   font-size:0.4cm;
   font-weight:700;
@@ -165,10 +162,10 @@ body {
 
 .s2-damp-d {
   position: absolute;
-  top: 4.05cm;
+  top: 4.85cm;
   left: 50%;
   transform: translateX(-50%);
-  width: 9.0cm;
+
   text-align: center;
   font-size:0.37cm;
   color:#6e0035;
@@ -179,28 +176,28 @@ body {
 /* Footer columns */
 .fc-l {
   position: absolute;
-  bottom: 0.25cm;
-  left: 0.8cm;
-  width: 6.0cm;
+  bottom: 0.05cm;
+  left: 1.6cm;
+
   text-align: left;
   z-index: 5;
 }
 
 .fc-c {
   position: absolute;
-  bottom: 0.25cm;
+  bottom: 0.05cm;
   left: 50%;
   transform: translateX(-50%);
-  width: 6.0cm;
+
   text-align: center;
   z-index: 5;
 }
 
 .fc-r {
   position: absolute;
-  bottom: 0.25cm;
-  right: 0.8cm;
-  width: 6.0cm;
+  bottom: 0.05cm;
+  right: 1.8cm;
+
   text-align: center;
   z-index: 5;
 }
@@ -209,7 +206,7 @@ body {
 .f-name  { font-size:0.43cm; font-weight:700; color:#6e0035; line-height:1.5; }
 .f-addr  { font-size:0.38cm; color:#6e0035; line-height:1.5; margin-top:0.02cm; }
 
-@page { size:23.5cm 10.5cm; margin:0; }
+@page { size:23.5cm 19cm; margin:0; }
 @media print { body { background:none; padding:0; } }
 </style>
 </head>
