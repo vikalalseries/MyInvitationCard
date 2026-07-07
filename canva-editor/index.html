@@ -1670,6 +1670,18 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
+    .nudge-btn {
+      transition: all 0.15s ease;
+    }
+    .nudge-btn:hover {
+      background-color: var(--g100) !important;
+      border-color: var(--g300) !important;
+    }
+    .nudge-btn:active {
+      transform: scale(0.92);
+      background-color: var(--g150) !important;
+    }
+
     .adjust-control {
       display: flex;
       flex-direction: column;
@@ -3089,6 +3101,40 @@
           <button class="prop-btn" onclick="duplicateActiveObject()" title="Duplicate Element">
             <i class="fa-solid fa-clone"></i>
           </button>
+          
+          <!-- Floating Nudge Panel -->
+          <div class="image-toolbar-dropdown" style="position: relative; display: inline-block;">
+            <button class="prop-btn" id="nudge-panel-toggle" onclick="toggleNudgePanel(event)" title="Nudge / Position">
+              <i class="fa-solid fa-arrows-up-down-left-right"></i>
+            </button>
+            <div class="image-dropdown-content nudge-dropdown-panel" id="nudge-popover" style="padding: 14px; min-width: 160px; display: none; flex-direction: column; gap: 8px; top: auto; bottom: 100%; right: 0; left: auto; box-shadow: var(--shadow-lg); border-radius: 16px; border: 1px solid var(--g150); background-color: var(--w); z-index: 200; align-items: center; margin-bottom: 8px;">
+              <div style="font-size:11px; font-weight:700; color:var(--g500); margin-bottom:4px;">Nudge Position</div>
+              
+              <div style="display: grid; grid-template-columns: repeat(3, 32px); grid-template-rows: repeat(3, 32px); gap: 4px; justify-content: center; align-items: center;">
+                <div></div>
+                <button class="nudge-btn" onclick="nudgeActiveObject('up')" style="width:32px; height:32px; border-radius:8px; border:1px solid var(--g200); background:var(--g50); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-chevron-up" style="font-size:12px; color:var(--g700);"></i></button>
+                <div></div>
+                
+                <button class="nudge-btn" onclick="nudgeActiveObject('left')" style="width:32px; height:32px; border-radius:8px; border:1px solid var(--g200); background:var(--g50); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-chevron-left" style="font-size:12px; color:var(--g700);"></i></button>
+                <div style="display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-arrows-to-dot" style="font-size:10px; color:var(--g400);"></i></div>
+                <button class="nudge-btn" onclick="nudgeActiveObject('right')" style="width:32px; height:32px; border-radius:8px; border:1px solid var(--g200); background:var(--g50); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-chevron-right" style="font-size:12px; color:var(--g700);"></i></button>
+                
+                <div></div>
+                <button class="nudge-btn" onclick="nudgeActiveObject('down')" style="width:32px; height:32px; border-radius:8px; border:1px solid var(--g200); background:var(--g50); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-chevron-down" style="font-size:12px; color:var(--g700);"></i></button>
+                <div></div>
+              </div>
+              
+              <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
+                <label style="font-size: 11px; color: var(--g500);">Step:</label>
+                <select id="nudge-step-select" style="font-size: 11px; padding: 2px 4px; border: 1px solid var(--g200); border-radius: 4px; background: var(--g50); outline: none;">
+                  <option value="1">1 px</option>
+                  <option value="5">5 px</option>
+                  <option value="10">10 px</option>
+                  <option value="20">20 px</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <button class="prop-btn" onclick="deleteActiveObject()" title="Delete Element" style="color: #ff4a4a;">
             <i class="fa-solid fa-trash"></i>
           </button>
@@ -3591,7 +3637,8 @@
         });
       });
 
-      // Keyboard bindings for Delete, copy-paste, undo-redo
+      // Keyboard bindings for Delete, copy-paste, undo-redo, arrow nudging
+      let arrowNudging = false;
       window.addEventListener('keydown', function(e) {
         if (e.key === 'Delete' || e.key === 'Backspace') {
           const activeObj = canvas.getActiveObject();
@@ -3605,6 +3652,42 @@
         if (e.ctrlKey && e.key === 'y') {
           e.preventDefault();
           redo();
+        }
+        if (e.ctrlKey && e.key.toLowerCase() === 'd') {
+          e.preventDefault();
+          duplicateActiveObject();
+        }
+
+        // Arrow keys nudging
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          const activeObj = canvas.getActiveObject();
+          if (!activeObj || activeObj.isEditing) return;
+          
+          e.preventDefault();
+          arrowNudging = true;
+          const step = e.shiftKey ? 10 : 1;
+          
+          if (e.key === 'ArrowUp') {
+            activeObj.set('top', activeObj.top - step);
+          } else if (e.key === 'ArrowDown') {
+            activeObj.set('top', activeObj.top + step);
+          } else if (e.key === 'ArrowLeft') {
+            activeObj.set('left', activeObj.left - step);
+          } else if (e.key === 'ArrowRight') {
+            activeObj.set('left', activeObj.left + step);
+          }
+          
+          activeObj.setCoords();
+          canvas.requestRenderAll();
+        }
+      });
+
+      window.addEventListener('keyup', function(e) {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          if (arrowNudging) {
+            arrowNudging = false;
+            saveHistory();
+          }
         }
       });
 
@@ -3883,7 +3966,8 @@
         'image-animate-popover',
         'toolbar-font-popover',
         'toolbar-color-popover',
-        'toolbar-graphic-color-popover'
+        'toolbar-graphic-color-popover',
+        'nudge-popover'
       ];
       
       dropdowns.forEach(id => {
@@ -3894,6 +3978,43 @@
           el.style.display = 'none';
         }
       });
+    }
+
+    function toggleNudgePanel(event) {
+      if (event) event.stopPropagation();
+      const el = document.getElementById('nudge-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'nudge-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function nudgeActiveObject(direction) {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
+
+      const selectEl = document.getElementById('nudge-step-select');
+      const step = selectEl ? parseInt(selectEl.value, 10) : 1;
+
+      if (direction === 'up') {
+        activeObj.set('top', activeObj.top - step);
+      } else if (direction === 'down') {
+        activeObj.set('top', activeObj.top + step);
+      } else if (direction === 'left') {
+        activeObj.set('left', activeObj.left - step);
+      } else if (direction === 'right') {
+        activeObj.set('left', activeObj.left + step);
+      }
+
+      activeObj.setCoords();
+      canvas.requestRenderAll();
+      saveHistory();
     }
 
     // Custom Font Popover Functions
