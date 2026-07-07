@@ -51,10 +51,21 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
       user-select: none;
       scrollbar-width: thin;
       scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
     }
+
+    input, textarea, select, [contenteditable="true"] {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+
 
     /* Custom scrollbars matching website's other scroll bar UI */
     ::-webkit-scrollbar {
@@ -3149,23 +3160,9 @@
       canvas = new fabric.Canvas('editor-canvas', {
         backgroundColor: '#f9f1d0',
         preserveObjectStacking: true,
-        selectionColor: 'rgba(0, 196, 204, 0.1)',
-        selectionBorderColor: '#00c4cc',
+        selectionColor: 'rgba(59, 130, 246, 0.08)',
+        selectionBorderColor: '#3b82f6',
         selectionLineWidth: 1.5,
-        perPixelTargetFind: true,
-        targetFindTolerance: 6
-      });
-
-      // Customize selection controls matching Canva selection style
-      fabric.Object.prototype.set({
-        transparentCorners: false,
-        cornerColor: '#ffffff',
-        cornerStrokeColor: '#00c4cc',
-        borderColor: '#00c4cc',
-        cornerSize: 8,
-        cornerStyle: 'circle',
-        borderScaleFactor: 1.5,
-        padding: 6,
         perPixelTargetFind: true,
         targetFindTolerance: 6
       });
@@ -3183,28 +3180,79 @@
         ctx.fillStyle = '#ffffff';
         ctx.fill();
         ctx.lineWidth = 1.5;
-        ctx.strokeStyle = '#00c4cc';
+        ctx.strokeStyle = '#3b82f6';
         ctx.stroke();
         ctx.restore();
       };
 
-      // Custom render function for middle stretch handles (vertical capsule bars)
-      const renderStretchBarV = function(ctx, left, top, styleOverride, fabricObject) {
+      // Custom render function for Canva-style bottom rotation handle
+      const renderRotateHandle = function(ctx, left, top, styleOverride, fabricObject) {
         ctx.save();
         ctx.translate(left, top);
+        
+        // Shadow for the rotation circle to look premium and floating
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2;
+
+        // Draw white background circle
         ctx.beginPath();
-        if (typeof ctx.roundRect === 'function') {
-          ctx.roundRect(-10, -3, 20, 6, 3);
-        } else {
-          ctx.rect(-10, -3, 20, 6);
-        }
+        ctx.arc(0, 0, 10, 0, 2 * Math.PI);
         ctx.fillStyle = '#ffffff';
         ctx.fill();
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = '#00c4cc';
+        
+        // Reset shadow so it doesn't apply to the border or icon
+        ctx.shadowColor = 'transparent';
+
+        // Draw light grey/blue border
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#ccd2e3';
         ctx.stroke();
+
+        // Draw dual curved arrow rotate icon in dark grey
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.5;
+        ctx.fillStyle = '#0f172a';
+
+        // Left curved arrow
+        ctx.beginPath();
+        ctx.arc(0, 0, 5.5, -0.45 * Math.PI, 0.45 * Math.PI);
+        ctx.stroke();
+        // Left arrowhead
+        ctx.beginPath();
+        ctx.moveTo(3.5, 4.5);
+        ctx.lineTo(6.5, 1.5);
+        ctx.lineTo(2.5, 0.5);
+        ctx.fill();
+
+        // Right curved arrow
+        ctx.beginPath();
+        ctx.arc(0, 0, 5.5, 0.55 * Math.PI, 1.45 * Math.PI);
+        ctx.stroke();
+        // Right arrowhead
+        ctx.beginPath();
+        ctx.moveTo(-3.5, -4.5);
+        ctx.lineTo(-6.5, -1.5);
+        ctx.lineTo(-2.5, -0.5);
+        ctx.fill();
+
         ctx.restore();
       };
+
+      // Customize selection controls matching Canva selection style globally
+      fabric.Object.prototype.set({
+        transparentCorners: false,
+        cornerColor: '#ffffff',
+        cornerStrokeColor: '#3b82f6',
+        borderColor: '#3b82f6',
+        cornerSize: 10,
+        cornerStyle: 'circle',
+        borderScaleFactor: 1.5,
+        padding: 8,
+        perPixelTargetFind: true,
+        targetFindTolerance: 6
+      });
 
       // Customize individual control items
       if (fabric.Control && fabric.controlsUtils) {
@@ -3229,77 +3277,22 @@
           cornerSize: 12
         });
 
-        // Top & Bottom stretchers
-        fabric.Object.prototype.controls.mt = new fabric.Control({
-          x: 0,
-          y: -0.5,
-          actionHandler: fabric.controlsUtils.changeHeight,
-          cursorStyleHandler: fabric.controlsUtils.scaleSkewCursorStyleHandler,
-          actionName: 'resizing',
-          render: renderStretchBarV,
-          cornerSize: 12
-        });
-
-        fabric.Object.prototype.controls.mb = new fabric.Control({
-          x: 0,
-          y: 0.5,
-          actionHandler: fabric.controlsUtils.changeHeight,
-          cursorStyleHandler: fabric.controlsUtils.scaleSkewCursorStyleHandler,
-          actionName: 'resizing',
-          render: renderStretchBarV,
-          cornerSize: 12
+        // Hide top & bottom stretchers to match Canva selection style
+        fabric.Object.prototype.setControlsVisibility({
+          mt: false,
+          mb: false
         });
 
         // Bottom Rotate Control matching Canva
         fabric.Object.prototype.controls.mtr = new fabric.Control({
           x: 0,
           y: 0.5,
-          offsetY: 30, // Centered below bottom of bounding box
+          offsetY: 25, // Centered below bottom of bounding box
+          withConnection: false, // Hide connection line to center
           actionHandler: fabric.controlsUtils.rotationWithSnapping,
           cursorStyleHandler: fabric.controlsUtils.rotationCursorStyleHandler,
           actionName: 'rotate',
-          render: function(ctx, left, top, styleOverride, fabricObject) {
-            ctx.save();
-            ctx.translate(left, top);
-            
-            // Draw background circle
-            ctx.beginPath();
-            ctx.arc(0, 0, 10, 0, 2 * Math.PI);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = '#00c4cc';
-            ctx.stroke();
-
-            // Draw vector curved rotation arrows
-            ctx.strokeStyle = '#00c4cc';
-            ctx.lineWidth = 1.5;
-            ctx.fillStyle = '#00c4cc';
-
-            // Left arrow arc
-            ctx.beginPath();
-            ctx.arc(0, 0, 5, -0.4 * Math.PI, 0.4 * Math.PI);
-            ctx.stroke();
-            // Left arrowhead
-            ctx.beginPath();
-            ctx.moveTo(3, 4);
-            ctx.lineTo(6, 1);
-            ctx.lineTo(2, 0);
-            ctx.fill();
-
-            // Right arrow arc
-            ctx.beginPath();
-            ctx.arc(0, 0, 5, 0.6 * Math.PI, 1.4 * Math.PI);
-            ctx.stroke();
-            // Right arrowhead
-            ctx.beginPath();
-            ctx.moveTo(-3, -4);
-            ctx.lineTo(-6, -1);
-            ctx.lineTo(-2, 0);
-            ctx.fill();
-
-            ctx.restore();
-          },
+          render: renderRotateHandle,
           cornerSize: 20
         });
       }
@@ -3319,61 +3312,32 @@
         obj.set({
           transparentCorners: false,
           cornerColor: '#ffffff',
-          cornerStrokeColor: '#00c4cc',
-          borderColor: '#00c4cc',
-          cornerSize: 8,
+          cornerStrokeColor: '#3b82f6',
+          borderColor: '#3b82f6',
+          cornerSize: 10,
           cornerStyle: 'circle',
           borderScaleFactor: 1.5,
-          padding: 6,
+          padding: 8,
           perPixelTargetFind: true,
           targetFindTolerance: 6
+        });
+
+        // Hide top & bottom stretchers
+        obj.setControlsVisibility({
+          mt: false,
+          mb: false
         });
 
         // Enforce custom stretch capsule styling
         if (obj.controls) {
           if (obj.controls.ml) obj.controls.ml.render = renderStretchBarH;
           if (obj.controls.mr) obj.controls.mr.render = renderStretchBarH;
-          if (obj.controls.mt) obj.controls.mt.render = renderStretchBarV;
-          if (obj.controls.mb) obj.controls.mb.render = renderStretchBarV;
           
           if (obj.controls.mtr) {
-            obj.controls.mtr.offsetY = 30;
+            obj.controls.mtr.offsetY = 25;
             obj.controls.mtr.y = 0.5;
-            obj.controls.mtr.render = function(ctx, left, top, styleOverride, fabricObject) {
-              ctx.save();
-              ctx.translate(left, top);
-              ctx.beginPath();
-              ctx.arc(0, 0, 10, 0, 2 * Math.PI);
-              ctx.fillStyle = '#ffffff';
-              ctx.fill();
-              ctx.lineWidth = 1.5;
-              ctx.strokeStyle = '#00c4cc';
-              ctx.stroke();
-
-              ctx.strokeStyle = '#00c4cc';
-              ctx.lineWidth = 1.5;
-              ctx.fillStyle = '#00c4cc';
-
-              ctx.beginPath();
-              ctx.arc(0, 0, 5, -0.4 * Math.PI, 0.4 * Math.PI);
-              ctx.stroke();
-              ctx.beginPath();
-              ctx.moveTo(3, 4);
-              ctx.lineTo(6, 1);
-              ctx.lineTo(2, 0);
-              ctx.fill();
-
-              ctx.beginPath();
-              ctx.arc(0, 0, 5, 0.6 * Math.PI, 1.4 * Math.PI);
-              ctx.stroke();
-              ctx.beginPath();
-              ctx.moveTo(-3, -4);
-              ctx.lineTo(-6, -1);
-              ctx.lineTo(-2, 0);
-              ctx.fill();
-
-              ctx.restore();
-            };
+            obj.controls.mtr.withConnection = false;
+            obj.controls.mtr.render = renderRotateHandle;
           }
         }
       });
