@@ -1141,10 +1141,56 @@
       justify-content: center;
       padding: 40px 24px 0;
       position: relative;
-      scrollbar-width: thin;
+      scrollbar-width: none; /* Hide default scrollbar in Firefox */
       scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
       scrollbar-gutter: stable;
     }
+
+    .preview-vp::-webkit-scrollbar {
+      display: none; /* Hide default scrollbar in Chrome/Safari/Edge */
+    }
+
+    /* Premium custom scrollbar rail and thumb */
+    .preview-scrollbar-rail {
+      position: absolute;
+      top: 50px; /* Below the preview bar */
+      right: 6px;
+      bottom: 6px;
+      width: 8px;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 99px;
+      z-index: 150;
+      opacity: 0;
+      transition: opacity 0.3s, background 0.3s, width 0.3s;
+      pointer-events: auto;
+    }
+    .preview-scrollbar-rail:hover, .preview-scrollbar-rail.active {
+      background: rgba(0, 0, 0, 0.08);
+      width: 12px;
+    }
+    .preview-scrollbar-rail.visible {
+      opacity: 1;
+    }
+    .preview-scrollbar-thumb {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      min-height: 30px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 99px;
+      cursor: pointer;
+      transition: background 0.2s, width 0.2s;
+    }
+    .preview-scrollbar-rail:hover .preview-scrollbar-thumb, .preview-scrollbar-rail.active .preview-scrollbar-thumb {
+      width: 10px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .preview-scrollbar-thumb:hover, .preview-scrollbar-thumb.dragging {
+      background: rgba(0, 0, 0, 0.45) !important;
+    }
+
 
     .canvas-container {
       box-shadow: 0 20px 50px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
@@ -2279,7 +2325,10 @@
             <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; border: none; overflow: visible; transform-origin: top left; transition: transform 0.1s ease-out; background: transparent; position: relative; z-index: 2; opacity: 0.01;">
               <canvas id="editor-canvas" width="893" height="760"></canvas>
             </div>
-          </div>
+        </div>
+        <!-- Custom Preview Scrollbar -->
+        <div class="preview-scrollbar-rail" id="preview-scroll-rail">
+          <div class="preview-scrollbar-thumb" id="preview-scroll-thumb"></div>
         </div>
       </div>
 
@@ -2599,6 +2648,16 @@
       canvas.on('object:modified', saveHistory);
       canvas.on('object:removed', saveHistory);
 
+      // Handle canvas wheel scrolling on preview viewport
+      canvas.on('mouse:wheel', function(opt) {
+        const vp = document.querySelector('.preview-vp');
+        if (vp) {
+          vp.scrollTop += opt.e.deltaY;
+          opt.e.preventDefault();
+          opt.e.stopPropagation();
+        }
+      });
+
       // Handle custom fonts load in fabric
       document.fonts.ready.then(() => {
         canvas.requestRenderAll();
@@ -2718,7 +2777,109 @@
           redo();
         }
       });
+
+      // Attach scroll and resize listeners for custom preview scrollbar
+      const vp = document.querySelector('.preview-vp');
+      if (vp) {
+        vp.addEventListener('scroll', updateCustomScrollbar);
+      }
+      window.addEventListener('resize', updateCustomScrollbar);
+      
+      initCustomScrollbarDrag();
+      setTimeout(updateCustomScrollbar, 500);
     };
+
+    // CUSTOM SCROLLBAR FUNCTIONS
+    function updateCustomScrollbar() {
+      const vp = document.querySelector('.preview-vp');
+      const rail = document.getElementById('preview-scroll-rail');
+      const thumb = document.getElementById('preview-scroll-thumb');
+      if (!vp || !rail || !thumb) return;
+
+      const scrollHeight = vp.scrollHeight;
+      const clientHeight = vp.clientHeight;
+
+      if (scrollHeight <= clientHeight + 5) {
+        rail.classList.remove('visible');
+        return;
+      }
+
+      rail.classList.add('visible');
+
+      const railHeight = rail.clientHeight;
+      const thumbHeight = Math.max(30, (clientHeight / scrollHeight) * railHeight);
+      thumb.style.height = thumbHeight + 'px';
+
+      const maxScrollTop = scrollHeight - clientHeight;
+      const maxThumbTop = railHeight - thumbHeight;
+      const scrollTop = vp.scrollTop;
+
+      const thumbTop = maxScrollTop > 0 ? (scrollTop / maxScrollTop) * maxThumbTop : 0;
+      thumb.style.top = thumbTop + 'px';
+    }
+
+    function initCustomScrollbarDrag() {
+      const vp = document.querySelector('.preview-vp');
+      const rail = document.getElementById('preview-scroll-rail');
+      const thumb = document.getElementById('preview-scroll-thumb');
+      if (!vp || !rail || !thumb) return;
+
+      let isDragging = false;
+      let startY = 0;
+      let startScrollTop = 0;
+
+      thumb.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        startY = e.clientY;
+        startScrollTop = vp.scrollTop;
+        thumb.classList.add('dragging');
+        rail.classList.add('active');
+        document.body.style.userSelect = 'none'; // Prevent text selection
+        e.preventDefault();
+      });
+
+      window.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+
+        const deltaY = e.clientY - startY;
+        const railHeight = rail.clientHeight;
+        const thumbHeight = thumb.clientHeight;
+        const maxThumbTop = railHeight - thumbHeight;
+        const maxScrollTop = vp.scrollHeight - vp.clientHeight;
+
+        if (maxThumbTop <= 0) return;
+
+        const scrollDelta = (deltaY / maxThumbTop) * maxScrollTop;
+        vp.scrollTop = startScrollTop + scrollDelta;
+      });
+
+      window.addEventListener('mouseup', function() {
+        if (isDragging) {
+          isDragging = false;
+          thumb.classList.remove('dragging');
+          rail.classList.remove('active');
+          document.body.style.userSelect = '';
+        }
+      });
+
+      // Click on rail to jump
+      rail.addEventListener('mousedown', function(e) {
+        if (e.target === thumb) return;
+        const rect = rail.getBoundingClientRect();
+        const clickY = e.clientY - rect.top;
+        const thumbHeight = thumb.clientHeight;
+
+        const targetThumbTop = clickY - thumbHeight / 2;
+        const railHeight = rail.clientHeight;
+        const maxThumbTop = railHeight - thumbHeight;
+        const maxScrollTop = vp.scrollHeight - vp.clientHeight;
+
+        if (maxThumbTop <= 0) return;
+
+        const ratio = Math.max(0, Math.min(1, targetThumbTop / maxThumbTop));
+        vp.scrollTop = ratio * maxScrollTop;
+      });
+    }
 
     // HISTORY CONTROL (UNDO / REDO)
     function saveHistory() {
@@ -2764,8 +2925,10 @@
     }
 
     function updateUndoRedoButtonsState() {
-      document.getElementById('btn-undo').disabled = undoStack.length <= 1;
-      document.getElementById('btn-redo').disabled = !redoStack.length;
+      const btnUndo = document.getElementById('btn-undo');
+      const btnRedo = document.getElementById('btn-redo');
+      if (btnUndo) btnUndo.disabled = undoStack.length <= 1;
+      if (btnRedo) btnRedo.disabled = !redoStack.length;
     }
 
     // DRAWER COLLAPSE
@@ -3432,6 +3595,9 @@
       queueLivePreviewUpdate();
       const zoomText = document.getElementById('zoom-percentage');
       if (zoomText) zoomText.textContent = Math.round(zoomLevel * 100) + '%';
+      if (typeof updateCustomScrollbar === 'function') {
+        updateCustomScrollbar();
+      }
     }
 
     // LOCAL STORAGE STATE SAVE/LOAD
@@ -3663,6 +3829,9 @@
           canvas.requestRenderAll();
           isSavingHistory = true;
           refreshLayersList();
+          if (typeof updateCustomScrollbar === 'function') {
+            updateCustomScrollbar();
+          }
         });
       } else {
         if (activeTemplateId === 'card1') {
@@ -3671,12 +3840,18 @@
           parseHtmlToFabric(iframe, canvas, activePage - 1).then(() => {
             isSavingHistory = true;
             refreshLayersList();
+            if (typeof updateCustomScrollbar === 'function') {
+              updateCustomScrollbar();
+            }
           });
         } else {
           // Render programmatically for other templates
           renderCanvasFromTemplateData(activeTemplateData, activeTemplateId, false);
           isSavingHistory = true;
           refreshLayersList();
+          if (typeof updateCustomScrollbar === 'function') {
+            updateCustomScrollbar();
+          }
         }
       }
     }
@@ -4677,6 +4852,9 @@
         canvas.discardActiveObject();
         canvas.requestRenderAll();
         saveHistory();
+        if (typeof updateCustomScrollbar === 'function') {
+          updateCustomScrollbar();
+        }
       }, 400);
     }
 
