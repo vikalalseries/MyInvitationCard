@@ -2992,11 +2992,10 @@
             <div class="canvas-container" id="canvas-container-box" style="width: 893px; height: 760px; border: none; overflow: visible; transform-origin: top left; transition: transform 0.1s ease-out; background: transparent; position: relative; z-index: 2; opacity: 1;">
               <canvas id="editor-canvas" width="893" height="760"></canvas>
             </div>
-        </div>
-        <!-- Custom Preview Scrollbar -->
-        <div class="preview-scrollbar-rail" id="preview-scroll-rail">
-          <div class="preview-scrollbar-thumb" id="preview-scroll-thumb"></div>
-        </div>
+      </div>
+      <!-- Custom Preview Scrollbar -->
+      <div class="preview-scrollbar-rail" id="preview-scroll-rail">
+        <div class="preview-scrollbar-thumb" id="preview-scroll-thumb"></div>
       </div>
 
 
@@ -5682,8 +5681,10 @@
 
       addTextObject((fields.shlokaLine1 || '।। श्री गणेशाय नमः ।।') + '\n' + (fields.shlokaLine2 || ''), {
         left: centerX,
-        top: sectionTop1 + cmToPx(0.6),
+        top: sectionTop1 + cmToPx(0.1),
         width: cmToPx(12),
+        originX: 'center',
+        originY: 'top',
         fontSize: 14,
         textAlign: 'center',
         lineHeight: 1.35,
@@ -5693,8 +5694,10 @@
 
       addTextObject('〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰', {
         left: centerX,
-        top: sectionTop1 + cmToPx(1.25),
+        top: sectionTop1 + cmToPx(1.1),
         width: cmToPx(12),
+        originX: 'center',
+        originY: 'top',
         fontSize: 16,
         textAlign: 'center',
         fill: accentColor,
@@ -5703,8 +5706,10 @@
 
       addTextObject(fields.headingText || '।। मांगलिक क्षणिकायें ।।', {
         left: centerX,
-        top: sectionTop1 + cmToPx(1.75),
-        width: cmToPx(9),
+        top: sectionTop1 + cmToPx(1.45),
+        width: cmToPx(8),
+        originX: 'center',
+        originY: 'top',
         fontSize: 24,
         fontWeight: '700',
         textAlign: 'center',
@@ -5714,18 +5719,23 @@
 
       addTextObject('〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰', {
         left: centerX,
-        top: sectionTop1 + cmToPx(2.25),
+        top: sectionTop1 + cmToPx(2.0),
         width: cmToPx(12),
+        originX: 'center',
+        originY: 'top',
         fontSize: 16,
         textAlign: 'center',
         fill: accentColor,
         name: 'Swirl Mid'
       });
 
+      // Haldi (centered in Section 1 in card1)
       addTextObject((events.haldi && events.haldi.name) || 'हल्दी व मेहन्दी', {
-        left: sectionLeft + cmToPx(4.0),
-        top: sectionTop1 + cmToPx(4.05),
-        width: cmToPx(4.8),
+        left: centerX,
+        top: sectionTop1 + cmToPx(2.45),
+        width: cmToPx(8),
+        originX: 'center',
+        originY: 'top',
         fontSize: 19,
         fontWeight: '700',
         fill: headingColor,
@@ -5733,19 +5743,24 @@
         name: 'Haldi Title'
       });
       addTextObject((events.haldi && events.haldi.date) || '', {
-        left: sectionLeft + cmToPx(4.0),
-        top: sectionTop1 + cmToPx(4.55),
-        width: cmToPx(4.8),
+        left: centerX,
+        top: sectionTop1 + cmToPx(3.05),
+        width: cmToPx(8),
+        originX: 'center',
+        originY: 'top',
         fontSize: 14,
         fill: textColor,
         textAlign: 'center',
         name: 'Haldi Date'
       });
 
+      // Vivah (left aligned in Section 1 in card1)
       addTextObject((events.vivah && events.vivah.name) || 'शुभ विवाह', {
-        left: centerX,
-        top: sectionTop1 + cmToPx(4.05),
+        left: sectionLeft + cmToPx(3.5),
+        top: sectionTop1 + cmToPx(4.7),
         width: cmToPx(4.8),
+        originX: 'left',
+        originY: 'top',
         fontSize: 20,
         fontWeight: '700',
         fill: headingColor,
@@ -5753,19 +5768,24 @@
         name: 'Vivah Title'
       });
       addTextObject((events.vivah && events.vivah.date) || '', {
-        left: centerX,
-        top: sectionTop1 + cmToPx(4.55),
+        left: sectionLeft + cmToPx(3.5),
+        top: sectionTop1 + cmToPx(5.45),
         width: cmToPx(4.8),
+        originX: 'left',
+        originY: 'top',
         fontSize: 14,
         fill: textColor,
         textAlign: 'center',
         name: 'Vivah Date'
       });
 
+      // Vidai (right aligned in Section 1 in card1)
       addTextObject((events.vidai && events.vidai.name) || 'विदाई', {
-        left: sectionLeft + sectionWidth - cmToPx(4.0),
-        top: sectionTop1 + cmToPx(4.05),
+        left: sectionLeft + sectionWidth - cmToPx(3.5),
+        top: sectionTop1 + cmToPx(4.7),
         width: cmToPx(4.8),
+        originX: 'right',
+        originY: 'top',
         fontSize: 19,
         fontWeight: '700',
         fill: headingColor,
@@ -5773,19 +5793,24 @@
         name: 'Vidai Title'
       });
       addTextObject((events.vidai && events.vidai.date) || '', {
-        left: sectionLeft + sectionWidth - cmToPx(4.0),
-        top: sectionTop1 + cmToPx(4.55),
+        left: sectionLeft + sectionWidth - cmToPx(3.5),
+        top: sectionTop1 + cmToPx(5.45),
         width: cmToPx(4.8),
+        originX: 'right',
+        originY: 'top',
         fontSize: 14,
         fill: textColor,
         textAlign: 'center',
         name: 'Vidai Date'
       });
 
+      // Bal Aagrah
       addTextObject(((fields.balAagrahText || '') + '\n' + (fields.balAagrahNames || '')).trim(), {
         left: centerX,
-        top: sectionTop1 + cmToPx(7.75),
+        top: sectionTop1 + cmToPx(8.4),
         width: cmToPx(17),
+        originX: 'center',
+        originY: 'bottom',
         fontSize: 14,
         fill: textColor,
         textAlign: 'center',
@@ -5794,9 +5819,11 @@
       });
 
       addTextObject((fields.snehiText || 'स्नेही स्वजन,').trim(), {
-        left: sectionLeft + cmToPx(0.8),
-        top: sectionTop2 + cmToPx(0.6),
+        left: sectionLeft + cmToPx(3.8),
+        top: sectionTop2 + cmToPx(0.8),
         width: cmToPx(4.5),
+        originX: 'left',
+        originY: 'top',
         fontSize: 14,
         fontWeight: '600',
         fill: textColor,
@@ -5806,8 +5833,10 @@
 
       addTextObject((fields.deityMantra || '।। श्री विन्ध्यवासिनी देव्यै नमः ।।') + '\n' + (fields.deitySubtitle || ''), {
         left: centerX,
-        top: sectionTop2 + cmToPx(0.75),
-        width: cmToPx(13.8),
+        top: sectionTop2 + cmToPx(0.25),
+        width: cmToPx(14),
+        originX: 'center',
+        originY: 'top',
         fontSize: 13,
         fill: textColor,
         textAlign: 'center',
@@ -5817,8 +5846,10 @@
 
       addTextObject(((fields.brideTitle || '') + ' ' + (fields.brideName || '')).trim(), {
         left: sectionLeft + cmToPx(0.8),
-        top: sectionTop2 + cmToPx(1.6),
+        top: sectionTop2 + cmToPx(1.8),
         width: cmToPx(7),
+        originX: 'left',
+        originY: 'top',
         fontSize: 24,
         fontWeight: '700',
         fill: headingColor,
@@ -5828,8 +5859,10 @@
 
       addTextObject(((fields.groomTitle || '') + ' ' + (fields.groomName || '')).trim(), {
         left: sectionLeft + sectionWidth - cmToPx(0.8),
-        top: sectionTop2 + cmToPx(1.6),
+        top: sectionTop2 + cmToPx(1.8),
         width: cmToPx(7),
+        originX: 'right',
+        originY: 'top',
         fontSize: 24,
         fontWeight: '700',
         fill: headingColor,
@@ -5841,11 +5874,13 @@
         `सुपौत्री- ${(fields.brideGrandparents || '')}\nसुपुत्री- ${(fields.brideParents || '')}\n\n${(fields.brideTitle || '')} ${(fields.brideName || '')}`.trim(),
         {
           left: sectionLeft + cmToPx(0.8),
-          top: sectionTop2 + cmToPx(2.9),
+          top: sectionTop2 + cmToPx(2.8),
           width: cmToPx(7.6),
+          originX: 'left',
+          originY: 'top',
           fontSize: 13,
           fill: textColor,
-          textAlign: 'center',
+          textAlign: 'left',
           lineHeight: 1.35,
           name: 'Bride Details'
         }
@@ -5855,11 +5890,13 @@
         `सुपौत्र- ${(fields.groomGrandparents || '')}\nसुपुत्र- ${(fields.groomParents || '')}\n\n${(fields.groomTitle || '')} ${(fields.groomName || '')}`.trim(),
         {
           left: sectionLeft + sectionWidth - cmToPx(0.8),
-          top: sectionTop2 + cmToPx(2.9),
+          top: sectionTop2 + cmToPx(2.8),
           width: cmToPx(7.6),
+          originX: 'right',
+          originY: 'top',
           fontSize: 13,
           fill: textColor,
-          textAlign: 'center',
+          textAlign: 'right',
           lineHeight: 1.35,
           name: 'Groom Details'
         }
@@ -5867,8 +5904,10 @@
 
       addTextObject((fields.dampatyaHeading || '।। दाम्पत्य-सूत्र-बन्धन ।।'), {
         left: centerX,
-        top: sectionTop2 + cmToPx(5.1),
+        top: sectionTop2 + cmToPx(4.15),
         width: cmToPx(9),
+        originX: 'center',
+        originY: 'top',
         fontSize: 16,
         fontWeight: '700',
         fill: headingColor,
@@ -5878,8 +5917,10 @@
 
       addTextObject((fields.vinitText || ''), {
         left: centerX,
-        top: sectionTop2 + cmToPx(6.15),
+        top: sectionTop2 + cmToPx(4.85),
         width: cmToPx(10.8),
+        originX: 'center',
+        originY: 'top',
         fontSize: 12,
         fill: textColor,
         textAlign: 'center',
@@ -5888,9 +5929,11 @@
       });
 
       addTextObject(`दर्शनाभिलाषी:\n${(fields.darshnabhilashiNames || '')}`.trim(), {
-        left: sectionLeft + cmToPx(0.8),
-        top: sectionTop2 + cmToPx(7.05),
+        left: sectionLeft + cmToPx(1.6),
+        top: sectionTop2 + cmToPx(8.45),
         width: cmToPx(6.0),
+        originX: 'left',
+        originY: 'bottom',
         fontSize: 11,
         fill: textColor,
         textAlign: 'left',
@@ -5900,8 +5943,10 @@
 
       addTextObject(`स्वागताकांक्षी:\n${(fields.swagatakankshiNames || '')}`.trim(), {
         left: centerX,
-        top: sectionTop2 + cmToPx(7.05),
+        top: sectionTop2 + cmToPx(8.45),
         width: cmToPx(6.0),
+        originX: 'center',
+        originY: 'bottom',
         fontSize: 11,
         fill: textColor,
         textAlign: 'center',
@@ -5910,9 +5955,11 @@
       });
 
       addTextObject(`विनीत:\n${(fields.vinitName || '')}`.trim(), {
-        left: sectionLeft + sectionWidth - cmToPx(0.8),
-        top: sectionTop2 + cmToPx(7.05),
+        left: sectionLeft + sectionWidth - cmToPx(1.8),
+        top: sectionTop2 + cmToPx(8.45),
         width: cmToPx(6.0),
+        originX: 'right',
+        originY: 'bottom',
         fontSize: 11,
         fill: textColor,
         textAlign: 'right',
@@ -5921,15 +5968,15 @@
       });
 
       const imageTasks = [
-        showGanesh ? loadFabricImage('../builder1/assets/icons/ganesh.png', { left: sectionLeft + cmToPx(3.0), top: sectionTop1 + cmToPx(0.95) }) : Promise.resolve(null),
-        showOm ? loadFabricImage('../builder1/assets/icons/om.png', { left: sectionLeft + sectionWidth - cmToPx(3.0), top: sectionTop1 + cmToPx(1.25) }) : Promise.resolve(null),
-        showChains ? loadFabricImage('../builder1/assets/icons/side.png', { left: sectionLeft + cmToPx(0.2), top: sectionTop1 + cmToPx(2.5) }) : Promise.resolve(null),
-        showChains ? loadFabricImage('../builder1/assets/icons/side.png', { left: sectionLeft + sectionWidth - cmToPx(0.2), top: sectionTop1 + cmToPx(2.5), flipX: true }) : Promise.resolve(null),
-        loadFabricImage('../builder1/assets/icons/top2.png', { left: sectionLeft + cmToPx(9.9), top: sectionTop1 + cmToPx(4.0) }),
-        loadFabricImage('../builder1/assets/icons/top2.png', { left: sectionLeft + cmToPx(5.3), top: sectionTop1 + cmToPx(6.2) }),
-        loadFabricImage('../builder1/assets/icons/top2.png', { left: sectionLeft + cmToPx(16.8), top: sectionTop1 + cmToPx(6.2) }),
-        loadFabricImage('../builder1/assets/icons/mid.png', { left: sectionLeft + cmToPx(11.7), top: sectionTop1 + cmToPx(4.6) }),
-        loadFabricImage('../builder1/assets/icons/weds.png', { left: centerX, top: sectionTop2 + cmToPx(2.0) })
+        showGanesh ? loadFabricImage('../builder1/assets/icons/ganesh.png', { left: sectionLeft + cmToPx(1.7), top: sectionTop1 + cmToPx(0.2), originX: 'left', originY: 'top' }) : Promise.resolve(null),
+        showOm ? loadFabricImage('../builder1/assets/icons/om.png', { left: sectionLeft + cmToPx(16.7), top: sectionTop1 + cmToPx(0.7), originX: 'left', originY: 'top' }) : Promise.resolve(null),
+        showChains ? loadFabricImage('../builder1/assets/icons/side.png', { left: sectionLeft + cmToPx(0.2), top: sectionTop1 + cmToPx(2.5), originX: 'left', originY: 'top' }) : Promise.resolve(null),
+        showChains ? loadFabricImage('../builder1/assets/icons/side.png', { left: sectionLeft + cmToPx(19.5), top: sectionTop1 + cmToPx(2.5), originX: 'left', originY: 'top', flipX: true }) : Promise.resolve(null),
+        loadFabricImage('../builder1/assets/icons/top2.png', { left: sectionLeft + cmToPx(9.0), top: sectionTop1 + cmToPx(4.0), originX: 'left', originY: 'top' }),
+        loadFabricImage('../builder1/assets/icons/top2.png', { left: sectionLeft + cmToPx(4.3), top: sectionTop1 + cmToPx(6.2), originX: 'left', originY: 'top' }),
+        loadFabricImage('../builder1/assets/icons/top2.png', { left: sectionLeft + cmToPx(13.8), top: sectionTop1 + cmToPx(6.2), originX: 'left', originY: 'top' }),
+        loadFabricImage('../builder1/assets/icons/mid.png', { left: sectionLeft + cmToPx(9.55), top: sectionTop1 + cmToPx(4.6), originX: 'left', originY: 'top' }),
+        loadFabricImage('../builder1/assets/icons/weds.png', { left: sectionLeft + cmToPx(9.25), top: sectionTop2 + cmToPx(2.1), originX: 'left', originY: 'top' })
       ];
 
       const loadedImages = await Promise.all(imageTasks);
@@ -5941,7 +5988,6 @@
         if (index === 4 || index === 5 || index === 6) img.scaleToWidth(cmToPx(3.4));
         if (index === 7) img.scaleToWidth(cmToPx(2.5));
         if (index === 8) img.scaleToWidth(cmToPx(3.0));
-        if (index === 3) img.set('flipX', true);
         img.setCoords();
       });
 
