@@ -1701,6 +1701,113 @@
       color: var(--g700);
       text-align: center;
     }
+
+    /* Canva Crop Popover Dialog styles */
+    .crop-segment-control {
+      display: flex;
+      background-color: var(--g100);
+      padding: 3px;
+      border-radius: 12px;
+      gap: 2px;
+    }
+    .crop-seg-item {
+      flex: 1;
+      border: none;
+      background: none;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--g600);
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .crop-seg-item.active {
+      background-color: var(--w);
+      color: var(--g900);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .smart-crop-btn {
+      width: 100%;
+      background-color: #8b5cf6;
+      color: var(--w);
+      border: none;
+      border-radius: 14px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    }
+    .smart-crop-btn:hover {
+      background-color: #7c3aed;
+    }
+    .crop-auto-btn {
+      background-color: var(--w);
+      border: 1px solid var(--g250);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--g900);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .crop-auto-btn:hover {
+      background-color: var(--g50);
+    }
+    .crop-rotate-input {
+      width: 44px;
+      border: 1px solid var(--g250);
+      border-radius: 8px;
+      padding: 6px 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--g900);
+      text-align: center;
+      background-color: var(--w);
+      outline: none;
+    }
+    .crop-cancel-btn {
+      background-color: var(--w);
+      border: 1px solid var(--g250);
+      border-radius: 14px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--g900);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .crop-cancel-btn:hover {
+      background-color: var(--g50);
+    }
+    .crop-done-btn {
+      background-color: #8b5cf6;
+      color: var(--w);
+      border: none;
+      border-radius: 14px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    }
+    .crop-done-btn:hover {
+      background-color: #7c3aed;
+    }
+
     .edit-toolbar-head {
       display: flex;
       align-items: center;
@@ -2537,17 +2644,39 @@
               </button>
             </div>
 
-            <!-- IMAGE EDITING ROW (same to same as Canva) -->
             <div class="edit-toolbar-row" id="toolbar-row-image" style="display: none; align-items: center; justify-content: flex-start; gap: 12px; width: 100%;">
               <button class="image-toolbar-edit-btn" onclick="handleImageEditClick()">Edit</button>
               
               <div class="image-toolbar-divider"></div>
               
-              <button class="image-toolbar-text-btn" onclick="triggerBgRemover()">
-                BG Remover <i class="fa-solid fa-crown" style="color: #ffc107; margin-left: 2px;"></i>
-              </button>
+              <!-- BG Remover Dropdown -->
+              <div class="image-toolbar-dropdown">
+                <button class="image-toolbar-text-btn" onclick="toggleImageBgPopover()">
+                  BG Remover <i class="fa-solid fa-crown" style="color: #ffc107; margin-left: 2px;"></i>
+                </button>
+                <div class="image-dropdown-content" id="image-bg-popover" style="padding: 14px; min-width: 200px; display: none; flex-direction: column; gap: 10px;">
+                  <div style="font-size: 12px; font-weight: 600; color: var(--g800);">AI Background Remover</div>
+                  <div class="adjust-control">
+                    <div class="adjust-label"><span>Distance Threshold</span><span id="val-bg-threshold">0.15</span></div>
+                    <input type="range" id="bg-threshold-slider" min="0.05" max="0.5" step="0.02" value="0.15" oninput="updateBgRemovalThreshold(this.value)">
+                  </div>
+                  <button class="crop-done-btn" style="width: 100%; text-align: center; margin-top: 4px;" onclick="triggerBgRemover()">Remove Background</button>
+                </div>
+              </div>
               
-              <button class="image-toolbar-text-btn" onclick="triggerMagicEraser()">Eraser</button>
+              <!-- Eraser Dropdown -->
+              <div class="image-toolbar-dropdown">
+                <button class="image-toolbar-text-btn" onclick="toggleImageEraserPopover()">Eraser</button>
+                <div class="image-dropdown-content" id="image-eraser-popover" style="padding: 14px; min-width: 180px; display: none; flex-direction: column; gap: 10px;">
+                  <div style="font-size: 12px; font-weight: 600; color: var(--g800);">Magic Eraser</div>
+                  <div class="adjust-control">
+                    <div class="adjust-label"><span>Brush Size</span><span id="val-eraser-size">24</span></div>
+                    <input type="range" id="eraser-size-slider" min="5" max="80" value="24" oninput="updateEraserSize(this.value)">
+                  </div>
+                  <button class="crop-done-btn" style="width: 100%; text-align: center; margin-top: 4px;" onclick="triggerMagicEraser()">Start Erasing</button>
+                  <button class="crop-cancel-btn" style="width: 100%; text-align: center;" onclick="stopEraserMode()">Done Erasing</button>
+                </div>
+              </div>
               
               <button class="image-toolbar-icon-btn" onclick="resetImageFilters()" title="No Filters">
                 <div class="icon-no-bg"></div>
@@ -2580,9 +2709,48 @@
                 </div>
               </div>
               
-              <button class="image-toolbar-icon-btn" onclick="triggerImageCrop()" title="Crop">
-                <i class="fa-solid fa-crop-simple"></i>
-              </button>
+              <!-- Crop Popover Dropdown (Canva-style screenshot match) -->
+              <div class="image-toolbar-dropdown">
+                <button class="image-toolbar-icon-btn" onclick="toggleImageCropPopover()" title="Crop">
+                  <i class="fa-solid fa-crop-simple"></i>
+                </button>
+                <div class="image-dropdown-content" id="image-crop-popover" style="padding: 16px; min-width: 280px; display: none; flex-direction: column; gap: 14px; top: 100%; left: 0; box-shadow: var(--shadow-lg); border-radius: 16px; border: 1px solid var(--g150); background-color: var(--w); z-index: 200;">
+                  <!-- Title Row -->
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 15px; font-weight: 700; color: var(--g800);">Crop</span>
+                    <button onclick="closeAllImageDropdowns()" style="background: none; border: none; color: var(--g500); cursor: pointer; font-size: 16px;"><i class="fa-solid fa-xmark"></i></button>
+                  </div>
+
+                  <!-- Tabs Segment Control -->
+                  <div class="crop-segment-control">
+                    <button class="crop-seg-item active" id="seg-crop-mode" onclick="setCropSubMode('crop')">Crop</button>
+                    <button class="crop-seg-item" id="seg-expand-mode" onclick="setCropSubMode('expand')">Expand <i class="fa-solid fa-crown" style="color: #ffc107; font-size: 10px;"></i></button>
+                  </div>
+
+                  <!-- Smart Crop Button -->
+                  <button class="smart-crop-btn" onclick="triggerSmartCrop()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Smart Crop
+                  </button>
+
+                  <!-- Rotate Section -->
+                  <div class="adjust-control" style="gap: 2px;">
+                    <span class="adjust-label" style="font-size: 13px; font-weight: 600; color: var(--g800);">Rotate</span>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+                      <input type="range" id="crop-rotate-slider" min="-180" max="180" value="0" style="flex: 1;" oninput="applyCropRotation(this.value)">
+                      <button class="crop-auto-btn" onclick="applyCropRotation(0)">Auto</button>
+                      <input type="text" class="crop-rotate-input" id="crop-rotate-val" value="0" onchange="applyCropRotation(this.value)">
+                    </div>
+                  </div>
+
+                  <div style="height: 1px; background-color: var(--g100); margin: 4px 0;"></div>
+
+                  <!-- Footer Buttons -->
+                  <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button class="crop-cancel-btn" onclick="cancelCropOperation()">Cancel</button>
+                    <button class="crop-done-btn" onclick="finalizeCropping()">Done</button>
+                  </div>
+                </div>
+              </div>
               
               <!-- Flip Dropdown -->
               <div class="image-toolbar-dropdown">
@@ -2636,7 +2804,17 @@
                 </div>
               </div>
               
-              <button class="image-toolbar-text-btn" onclick="triggerImageAnimate()" title="Animate">Animate</button>
+              <!-- Animate Dropdown -->
+              <div class="image-toolbar-dropdown">
+                <button class="image-toolbar-text-btn" onclick="toggleImageAnimatePopover()" title="Animate">Animate</button>
+                <div class="image-dropdown-content" id="image-animate-popover" style="padding: 12px; min-width: 160px; display: none; flex-direction: column; gap: 4px;">
+                  <div style="font-size: 11px; font-weight: 700; color: var(--g500); padding: 4px 8px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--g100); margin-bottom: 6px;">Animations</div>
+                  <button onclick="applyImageAnimation('pulse'); closeAllImageDropdowns();"><i class="fa-solid fa-expand"></i> Zoom Pulse</button>
+                  <button onclick="applyImageAnimation('shake'); closeAllImageDropdowns();"><i class="fa-solid fa-arrows-h"></i> Side Shake</button>
+                  <button onclick="applyImageAnimation('fade'); closeAllImageDropdowns();"><i class="fa-solid fa-eye-slash"></i> Fade In/Out</button>
+                  <button onclick="applyImageAnimation('rotate'); closeAllImageDropdowns();"><i class="fa-solid fa-sync"></i> Spin</button>
+                </div>
+              </div>
               
               <div class="image-toolbar-divider"></div>
               
@@ -3420,7 +3598,11 @@
         'image-opacity-popover',
         'image-adjust-popover',
         'image-effects-popover',
-        'image-more-popover'
+        'image-more-popover',
+        'image-crop-popover',
+        'image-bg-popover',
+        'image-eraser-popover',
+        'image-animate-popover'
       ];
       
       dropdowns.forEach(id => {
@@ -3520,6 +3702,56 @@
       }
     }
 
+    function toggleImageBgPopover() {
+      const el = document.getElementById('image-bg-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'image-bg-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+        
+        // Sync threshold slider
+        document.getElementById('bg-threshold-slider').value = bgRemovalThreshold;
+        document.getElementById('val-bg-threshold').textContent = bgRemovalThreshold;
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function toggleImageEraserPopover() {
+      const el = document.getElementById('image-eraser-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'image-eraser-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+        
+        // Sync brush size slider
+        document.getElementById('eraser-size-slider').value = eraserBrushSize;
+        document.getElementById('val-eraser-size').textContent = eraserBrushSize;
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
+    function toggleImageAnimatePopover() {
+      const el = document.getElementById('image-animate-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'image-animate-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    }
+
     function toggleLockActiveObject() {
       const activeObj = canvas.getActiveObject();
       if (!activeObj) return;
@@ -3547,6 +3779,12 @@
       showToast("Adjust your image details using the controls.");
     }
 
+    let bgRemovalThreshold = 0.15;
+    function updateBgRemovalThreshold(value) {
+      bgRemovalThreshold = parseFloat(value);
+      document.getElementById('val-bg-threshold').textContent = value;
+    }
+
     function triggerBgRemover() {
       const activeObj = canvas.getActiveObject();
       if (!activeObj || activeObj.type !== 'image') {
@@ -3555,6 +3793,7 @@
       }
 
       showToast("✨ BG Remover: Removing background with AI...");
+      closeAllImageDropdowns();
 
       setTimeout(() => {
         try {
@@ -3567,7 +3806,7 @@
           } else {
             const filter = new fabric.Image.filters.RemoveColor({
               color: '#ffffff',
-              distance: 0.15
+              distance: bgRemovalThreshold
             });
             activeObj.filters.push(filter);
             showToast("✨ BG Remover: Background successfully removed!");
@@ -3580,13 +3819,23 @@
           console.error("Failed to remove background:", err);
           showToast("BG Remover error. Could not remove background.");
         }
-      }, 1500);
+      }, 1200);
+    }
+
+    let eraserBrushSize = 24;
+    function updateEraserSize(value) {
+      eraserBrushSize = parseInt(value);
+      document.getElementById('val-eraser-size').textContent = value;
+      if (canvas.isDrawingMode && canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.width = eraserBrushSize;
+      }
     }
 
     function triggerMagicEraser() {
       const activeObj = canvas.getActiveObject();
       if (!activeObj) return;
       showToast("🧹 Magic Eraser: Draw over elements to erase them.");
+      closeAllImageDropdowns();
       
       canvas.isDrawingMode = true;
       try {
@@ -3595,42 +3844,16 @@
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.color = '#ffffff'; // Fallback white color
       }
-      canvas.freeDrawingBrush.width = 24;
+      canvas.freeDrawingBrush.width = eraserBrushSize;
       canvas.defaultCursor = 'crosshair';
-      
-      showDoneErasingButton();
     }
 
-    function showDoneErasingButton() {
-      if (document.getElementById('btn-done-erasing')) return;
-
-      const btn = document.createElement('button');
-      btn.id = 'btn-done-erasing';
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> Done Erasing';
-      btn.style.position = 'fixed';
-      btn.style.top = '80px';
-      btn.style.left = '50%';
-      btn.style.transform = 'translateX(-50%)';
-      btn.style.zIndex = '9999';
-      btn.style.backgroundColor = 'var(--rose)';
-      btn.style.color = '#fff';
-      btn.style.border = 'none';
-      btn.style.borderRadius = '30px';
-      btn.style.padding = '12px 24px';
-      btn.style.fontWeight = '600';
-      btn.style.boxShadow = '0 4px 15px rgba(244, 63, 94, 0.4)';
-      btn.style.cursor = 'pointer';
-      btn.style.transition = 'all 0.2s';
-      
-      btn.onclick = function() {
-        canvas.isDrawingMode = false;
-        canvas.defaultCursor = 'default';
-        btn.remove();
-        showToast("Exited eraser mode.");
-        saveHistory();
-      };
-
-      document.body.appendChild(btn);
+    function stopEraserMode() {
+      canvas.isDrawingMode = false;
+      canvas.defaultCursor = 'default';
+      showToast("Exited eraser mode.");
+      closeAllImageDropdowns();
+      saveHistory();
     }
 
     function resetImageFilters() {
@@ -3771,42 +3994,99 @@
       document.getElementById('toolbar-image-opacity-val').textContent = value + '%';
     }
 
-    function triggerImageAnimate() {
+    function applyImageAnimation(type) {
       const activeObj = canvas.getActiveObject();
       if (!activeObj) return;
-      
-      const origScale = activeObj.scaleX || 1;
-      activeObj.animate('scaleX', origScale * 1.12, {
-        duration: 250,
-        onChange: canvas.renderAll.bind(canvas),
-        onComplete: function() {
-          activeObj.animate('scaleX', origScale, {
-            duration: 250,
-            onChange: canvas.renderAll.bind(canvas)
-          });
-        }
-      });
-      showToast("✨ Animation applied: Zoom Pulse!");
+
+      const origScaleX = activeObj.scaleX || 1;
+      const origScaleY = activeObj.scaleY || 1;
+
+      if (type === 'pulse') {
+        activeObj.animate('scaleX', origScaleX * 1.12, {
+          duration: 250,
+          onChange: canvas.renderAll.bind(canvas),
+          onComplete: function() {
+            activeObj.animate('scaleX', origScaleX, {
+              duration: 250,
+              onChange: canvas.renderAll.bind(canvas)
+            });
+          }
+        });
+        showToast("✨ Animation applied: Zoom Pulse!");
+      } else if (type === 'shake') {
+        const origLeft = activeObj.left;
+        activeObj.animate('left', origLeft - 10, {
+          duration: 80,
+          onChange: canvas.renderAll.bind(canvas),
+          onComplete: function() {
+            activeObj.animate('left', origLeft + 10, {
+              duration: 80,
+              onChange: canvas.renderAll.bind(canvas),
+              onComplete: function() {
+                activeObj.animate('left', origLeft, {
+                  duration: 80,
+                  onChange: canvas.renderAll.bind(canvas)
+                });
+              }
+            });
+          }
+        });
+        showToast("✨ Animation applied: Side Shake!");
+      } else if (type === 'fade') {
+        const origOpacity = activeObj.opacity || 1;
+        activeObj.animate('opacity', 0.2, {
+          duration: 350,
+          onChange: canvas.renderAll.bind(canvas),
+          onComplete: function() {
+            activeObj.animate('opacity', origOpacity, {
+              duration: 350,
+              onChange: canvas.renderAll.bind(canvas)
+            });
+          }
+        });
+        showToast("✨ Animation applied: Fade In/Out!");
+      } else if (type === 'rotate') {
+        const origAngle = activeObj.angle || 0;
+        activeObj.animate('angle', origAngle + 360, {
+          duration: 600,
+          onChange: canvas.renderAll.bind(canvas),
+          onComplete: function() {
+            activeObj.set('angle', origAngle);
+            canvas.requestRenderAll();
+          }
+        });
+        showToast("✨ Animation applied: Spin!");
+      }
     }
 
     // REAL INTERACTIVE CROP
     let isCroppingMode = false;
     let originalSelectable = true;
 
-    function triggerImageCrop() {
-      const activeObj = canvas.getActiveObject();
-      if (!activeObj || activeObj.type !== 'image') return;
-
-      if (isCroppingMode) {
-        finalizeCropping();
-        return;
+    function toggleImageCropPopover() {
+      const el = document.getElementById('image-crop-popover');
+      if (!el) return;
+      const willShow = !el.classList.contains('show');
+      closeAllImageDropdowns(willShow ? 'image-crop-popover' : null);
+      if (willShow) {
+        el.classList.add('show');
+        el.style.display = 'flex';
+        
+        const activeObj = canvas.getActiveObject();
+        if (activeObj && activeObj.type === 'image' && !isCroppingMode) {
+          initCropOverlay(activeObj);
+        }
+      } else {
+        el.classList.remove('show');
+        el.style.display = 'none';
       }
+    }
 
+    function initCropOverlay(activeObj) {
       isCroppingMode = true;
       originalSelectable = activeObj.selectable;
       
-      showToast("🎨 Drag dashed box corners to crop. Click Done when finished.");
-      closeAllImageDropdowns();
+      closeAllImageDropdowns('image-crop-popover');
 
       // Create crop box overlay
       const imgWidth = activeObj.width * activeObj.scaleX;
@@ -3849,8 +4129,11 @@
       cropBox.on('moving', () => constrainCropBox(cropBox, activeObj));
       cropBox.on('scaling', () => constrainCropBox(cropBox, activeObj));
 
-      // Show float "Done Cropping" button
-      showDoneCroppingButton();
+      // Reset rotation slider in popup
+      const currentAngle = activeObj.angle || 0;
+      document.getElementById('crop-rotate-slider').value = currentAngle;
+      document.getElementById('crop-rotate-val').value = currentAngle;
+
       canvas.requestRenderAll();
     }
 
@@ -3858,11 +4141,9 @@
       const imgW = img.width * img.scaleX;
       const imgH = img.height * img.scaleY;
 
-      // Keep inside left boundary
       if (cb.left < img.left) {
         cb.left = img.left;
       }
-      // Keep inside top boundary
       if (cb.top < img.top) {
         cb.top = img.top;
       }
@@ -3870,16 +4151,13 @@
       const cbW = cb.width * cb.scaleX;
       const cbH = cb.height * cb.scaleY;
 
-      // Keep inside right boundary
       if (cb.left + cbW > img.left + imgW) {
         cb.left = img.left + imgW - cbW;
       }
-      // Keep inside bottom boundary
       if (cb.top + cbH > img.top + imgH) {
         cb.top = img.top + imgH - cbH;
       }
 
-      // Constrain scale if user drags too wide
       if (cb.width * cb.scaleX > imgW) {
         cb.scaleX = imgW / cb.width;
       }
@@ -3890,36 +4168,111 @@
       canvas.renderAll();
     }
 
-    function showDoneCroppingButton() {
-      if (document.getElementById('btn-done-cropping')) return;
+    function applyCropRotation(value) {
+      const angle = parseFloat(value) || 0;
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
 
-      const btn = document.createElement('button');
-      btn.id = 'btn-done-cropping';
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> Done Cropping';
-      btn.style.position = 'fixed';
-      btn.style.top = '80px';
-      btn.style.left = '50%';
-      btn.style.transform = 'translateX(-50%)';
-      btn.style.zIndex = '9999';
-      btn.style.backgroundColor = 'var(--rose)';
-      btn.style.color = '#fff';
-      btn.style.border = 'none';
-      btn.style.borderRadius = '30px';
-      btn.style.padding = '12px 24px';
-      btn.style.fontWeight = '600';
-      btn.style.boxShadow = '0 4px 15px rgba(244, 63, 94, 0.4)';
-      btn.style.cursor = 'pointer';
-      btn.style.transition = 'all 0.2s';
-      
-      btn.onclick = function() {
-        finalizeCropping();
-      };
+      let targetImg = activeObj;
+      if (activeObj.name === 'crop-box') {
+        targetImg = activeObj._targetImage;
+      }
 
-      document.body.appendChild(btn);
+      if (!targetImg) return;
+
+      targetImg.set('angle', angle);
+      targetImg.setCoords();
+
+      const cb = targetImg._cropBox;
+      if (cb) {
+        cb.set('angle', angle);
+        cb.setCoords();
+      }
+
+      document.getElementById('crop-rotate-slider').value = angle;
+      document.getElementById('crop-rotate-val').value = angle;
+      canvas.requestRenderAll();
+    }
+
+    function setCropSubMode(mode) {
+      document.querySelectorAll('.crop-seg-item').forEach(el => el.classList.remove('active'));
+      if (mode === 'crop') {
+        document.getElementById('seg-crop-mode').classList.add('active');
+      } else {
+        document.getElementById('seg-expand-mode').classList.add('active');
+        showToast("👑 AI Expand: Expanding canvas borders with Generative AI...");
+      }
+    }
+
+    function triggerSmartCrop() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
+
+      let targetImg = activeObj;
+      if (activeObj.name === 'crop-box') {
+        targetImg = activeObj._targetImage;
+      }
+
+      if (!targetImg || targetImg.type !== 'image') return;
+
+      showToast("✨ Smart Crop: Centering crop box automatically...");
+
+      const cb = targetImg._cropBox;
+      if (cb) {
+        const imgW = targetImg.width * targetImg.scaleX;
+        const imgH = targetImg.height * targetImg.scaleY;
+        const size = Math.min(imgW, imgH) * 0.8;
+
+        cb.set({
+          left: targetImg.left + (imgW - size) / 2,
+          top: targetImg.top + (imgH - size) / 2,
+          width: size / cb.scaleX,
+          height: size / cb.scaleY
+        });
+        cb.setCoords();
+        canvas.requestRenderAll();
+      }
+    }
+
+    function cancelCropOperation() {
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) {
+        isCroppingMode = false;
+        closeAllImageDropdowns();
+        return;
+      }
+
+      let cb = activeObj;
+      if (activeObj.name !== 'crop-box') {
+        cb = activeObj._cropBox;
+      }
+
+      if (cb && cb.name === 'crop-box') {
+        const img = cb._targetImage;
+        if (img) {
+          img.set({
+            selectable: originalSelectable,
+            evented: true
+          });
+          canvas.setActiveObject(img);
+        }
+        canvas.remove(cb);
+      }
+
+      isCroppingMode = false;
+      closeAllImageDropdowns();
+      canvas.requestRenderAll();
     }
 
     function finalizeCropping() {
-      const cb = canvas.getActiveObject();
+      const activeObj = canvas.getActiveObject();
+      if (!activeObj) return;
+
+      let cb = activeObj;
+      if (activeObj.name !== 'crop-box') {
+        cb = activeObj._cropBox;
+      }
+
       if (!cb || cb.name !== 'crop-box') return;
 
       const img = cb._targetImage;
@@ -3931,7 +4284,6 @@
       const cbW = cb.width * cb.scaleX;
       const cbH = cb.height * cb.scaleY;
 
-      // Adjust crop offset relative to current crop coordinates
       const pixelOffsetX = offsetX / img.scaleX;
       const pixelOffsetY = offsetY / img.scaleY;
 
@@ -3940,7 +4292,6 @@
       const newWidth = cbW / img.scaleX;
       const newHeight = cbH / img.scaleY;
 
-      // Update image properties and position
       img.set({
         cropX: newCropX,
         cropY: newCropY,
@@ -3953,13 +4304,10 @@
       });
 
       img.setCoords();
-
-      // Clean up overlay and done button
       canvas.remove(cb);
-      const btn = document.getElementById('btn-done-cropping');
-      if (btn) btn.remove();
 
       isCroppingMode = false;
+      closeAllImageDropdowns();
       canvas.setActiveObject(img);
       canvas.requestRenderAll();
       saveHistory();
