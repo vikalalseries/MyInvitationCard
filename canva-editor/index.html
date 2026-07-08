@@ -7521,9 +7521,10 @@
       const theme = themes[themeName];
       if (!theme) return;
 
-      changeCanvasBackground(theme.bg);
+      // don't change whole template background colour from curated theme color
+      // changeCanvasBackground(theme.bg);
+      // document.getElementById("palette-custom-bg").value = theme.bg;
 
-      document.getElementById("palette-custom-bg").value = theme.bg;
       document.getElementById("palette-custom-text").value = theme.text;
       document.getElementById("palette-custom-accent").value = theme.accent;
 

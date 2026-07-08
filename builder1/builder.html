@@ -4246,7 +4246,8 @@ window.applyColorPreset = function(presetIndex, element) {
   const preset = PRESETS[presetIndex];
   if (!preset) return;
 
-  setField('style.bodyBg', preset.bodyBg);
+      // Do not change the template background color when applying preset themes
+  // setField('style.bodyBg', preset.bodyBg);
   setField('style.accentColor', preset.accent);
   setField('style.borderColor', preset.accent);
   setField('style.textColor', preset.text);
