@@ -6080,7 +6080,7 @@
       const events = (data && data.events) || {};
       const styles = (data && data.styles) || {};
 
-      const cardBg = styles.cardBg || '#f2aec8';
+      const cardBg = styles.cardBg || '#f9f1d0';
       const accentColor = styles.accentColor || '#8b0040';
       const textColor = styles.textColor || '#6e0035';
       const headingColor = styles.headingColor || textColor;
@@ -6485,7 +6485,7 @@
             vidai: { name: "विदाई", date: "01 जून 2026, सोमवार" }
           },
           styles: {
-            cardBg: "#f2aec8",
+            cardBg: "#f9f1d0",
             textColor: "#6e0035",
             accentColor: "#8b0040",
             headingColor: "#6e0035",
@@ -7292,6 +7292,7 @@
       }
 
       if (textureName === 'none') {
+        changeCanvasBackground('#ffffff');
         canvas.requestRenderAll();
         saveHistory();
         return;
@@ -7306,6 +7307,12 @@
 
       const url = textureUrls[textureName];
       if (!url) return;
+
+      if (textureName === 'kraft') {
+        changeCanvasBackground('#e2c0a5');
+      } else {
+        changeCanvasBackground('#ffffff');
+      }
 
       fabric.util.loadImage(url, function(img) {
         const pattern = new fabric.Pattern({
@@ -7512,6 +7519,8 @@
       const theme = themes[themeName];
       if (!theme) return;
 
+      isSavingHistory = false;
+
       // don't change whole template background colour from curated theme color
       // changeCanvasBackground(theme.bg);
       // document.getElementById("palette-custom-bg").value = theme.bg;
@@ -7544,10 +7553,13 @@
       });
 
       canvas.requestRenderAll();
+      isSavingHistory = true;
       saveHistory();
     }
 
     function applyCustomPaletteColor(type, value) {
+      isSavingHistory = false;
+
       if (type === 'bg') {
         changeCanvasBackground(value);
       } else if (type === 'text') {
@@ -7557,7 +7569,6 @@
           }
         });
         canvas.requestRenderAll();
-        saveHistory();
       } else if (type === 'accent') {
         document.getElementById("card-border-color").value = value;
         document.getElementById("card-ornament-color").value = value;
@@ -7576,8 +7587,10 @@
           }
         });
         canvas.requestRenderAll();
-        saveHistory();
       }
+
+      isSavingHistory = true;
+      saveHistory();
     }
   </script>
 </body>
