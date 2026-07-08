@@ -1997,6 +1997,25 @@
       font-weight: 700;
       color: var(--g900);
     }
+    .toolbar-size-input {
+      width: 36px !important;
+      border: none !important;
+      background: transparent !important;
+      text-align: center !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      color: #0f172a !important;
+      outline: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: textfield !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .toolbar-size-input::-webkit-outer-spin-button,
+    .toolbar-size-input::-webkit-inner-spin-button {
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
     .toolbar-icon {
       width: 34px;
       height: 34px;
@@ -2776,7 +2795,7 @@
 
               <div class="toolbar-pill toolbar-size">
                 <button class="toolbar-step" onclick="adjustSelectedFontSize(-1)" title="Decrease font size">−</button>
-                <input type="number" class="toolbar-size-input" id="toolbar-size-input" value="24" min="1" max="500" style="width: 32px; border: none; background: transparent; text-align: center; font-size: 13px; font-weight: 700; color: var(--g800); outline: none; -webkit-appearance: none; -moz-appearance: textfield;" onchange="updateSelectedTextProp('fontSize', Number(this.value))">
+                <input type="number" class="toolbar-size-input" id="toolbar-size-input" value="24" min="1" max="500" onchange="updateSelectedTextProp('fontSize', Number(this.value))">
                 <button class="toolbar-step" onclick="adjustSelectedFontSize(1)" title="Increase font size">+</button>
               </div>
 
