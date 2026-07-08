@@ -3685,7 +3685,15 @@
       canvas.on('selection:created', onObjectSelection);
       canvas.on('selection:updated', onObjectSelection);
       canvas.on('selection:cleared', onSelectionCleared);
-      canvas.on('after:render', queueLivePreviewUpdate);
+      canvas.on('after:render', function() {
+        drawGuidelines();
+        queueLivePreviewUpdate();
+      });
+      canvas.on('object:moving', handleObjectMoving);
+      canvas.on('mouse:up', function() {
+        activeGuidelines = [];
+        canvas.requestRenderAll();
+      });
 
       // Global object customization hook (overrides template JSON presets)
       canvas.on('object:added', function(e) {
@@ -5145,7 +5153,154 @@
       showToast("✨ Image cropped successfully!");
     }
 
+    let activeGuidelines = [];
+
+    function drawGuidelines() {
+      if (activeGuidelines.length === 0) return;
+      const ctx = canvas.getSelectionContext();
+      if (!ctx) return;
+
+      ctx.save();
+      ctx.strokeStyle = '#e01a89'; // Canva pink/magenta alignment guide line color
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 4]);
+
+      activeGuidelines.forEach(line => {
+        ctx.beginPath();
+        ctx.moveTo(line.x1, line.y1);
+        ctx.lineTo(line.x2, line.y2);
+        ctx.stroke();
+      });
+
+      ctx.restore();
+    }
+
+    function handleObjectMoving(e) {
+      const activeObj = e.target;
+      if (!activeObj) return;
+
+      activeGuidelines = [];
+      const threshold = 6; // snap tolerance in pixels
+      const canvasWidth = canvas.getWidth();
+      const canvasHeight = canvas.getHeight();
+
+      const activeBounds = activeObj.getBoundingRect();
+      const activeLeft = activeBounds.left;
+      const activeTop = activeBounds.top;
+      const activeWidth = activeBounds.width;
+      const activeHeight = activeBounds.height;
+      const activeRight = activeLeft + activeWidth;
+      const activeBottom = activeTop + activeHeight;
+      const activeCenterX = activeLeft + activeWidth / 2;
+      const activeCenterY = activeTop + activeHeight / 2;
+
+      let snapX = null;
+      let snapY = null;
+
+      // 1. Snapping to Canvas Center
+      if (Math.abs(activeCenterX - canvasWidth / 2) < threshold) {
+        snapX = canvasWidth / 2 - activeWidth / 2;
+        activeGuidelines.push({
+          x1: canvasWidth / 2,
+          y1: 0,
+          x2: canvasWidth / 2,
+          y2: canvasHeight
+        });
+      }
+      if (Math.abs(activeCenterY - canvasHeight / 2) < threshold) {
+        snapY = canvasHeight / 2 - activeHeight / 2;
+        activeGuidelines.push({
+          x1: 0,
+          y1: canvasHeight / 2,
+          x2: canvasWidth,
+          y2: canvasHeight / 2
+        });
+      }
+
+      // 2. Snapping to Other Objects (ignoring textures)
+      const objects = canvas.getObjects();
+      for (let i = 0; i < objects.length; i++) {
+        const targetObj = objects[i];
+        if (targetObj === activeObj) continue;
+        if (targetObj.name === 'card-texture') continue;
+
+        const targetBounds = targetObj.getBoundingRect();
+        const targetLeft = targetBounds.left;
+        const targetTop = targetBounds.top;
+        const targetWidth = targetBounds.width;
+        const targetHeight = targetBounds.height;
+        const targetRight = targetLeft + targetWidth;
+        const targetBottom = targetTop + targetHeight;
+        const targetCenterX = targetLeft + targetWidth / 2;
+        const targetCenterY = targetTop + targetHeight / 2;
+
+        // Check horizontal snap (aligning vertical edges or centers)
+        if (snapX === null) {
+          if (Math.abs(activeLeft - targetLeft) < threshold) {
+            snapX = targetLeft;
+            activeGuidelines.push({ x1: targetLeft, y1: Math.min(activeTop, targetTop), x2: targetLeft, y2: Math.max(activeBottom, targetBottom) });
+          }
+          else if (Math.abs(activeRight - targetRight) < threshold) {
+            snapX = targetRight - activeWidth;
+            activeGuidelines.push({ x1: targetRight, y1: Math.min(activeTop, targetTop), x2: targetRight, y2: Math.max(activeBottom, targetBottom) });
+          }
+          else if (Math.abs(activeCenterX - targetCenterX) < threshold) {
+            snapX = targetCenterX - activeWidth / 2;
+            activeGuidelines.push({ x1: targetCenterX, y1: Math.min(activeTop, targetTop), x2: targetCenterX, y2: Math.max(activeBottom, targetBottom) });
+          }
+          else if (Math.abs(activeLeft - targetRight) < threshold) {
+            snapX = targetRight;
+            activeGuidelines.push({ x1: targetRight, y1: Math.min(activeTop, targetTop), x2: targetRight, y2: Math.max(activeBottom, targetBottom) });
+          }
+          else if (Math.abs(activeRight - targetLeft) < threshold) {
+            snapX = targetLeft - activeWidth;
+            activeGuidelines.push({ x1: targetLeft, y1: Math.min(activeTop, targetTop), x2: targetLeft, y2: Math.max(activeBottom, targetBottom) });
+          }
+        }
+
+        // Check vertical snap (aligning horizontal edges or centers)
+        if (snapY === null) {
+          if (Math.abs(activeTop - targetTop) < threshold) {
+            snapY = targetTop;
+            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetTop, x2: Math.max(activeRight, targetRight), y2: targetTop });
+          }
+          else if (Math.abs(activeBottom - targetBottom) < threshold) {
+            snapY = targetBottom - activeHeight;
+            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetBottom, x2: Math.max(activeRight, targetRight), y2: targetBottom });
+          }
+          else if (Math.abs(activeCenterY - targetCenterY) < threshold) {
+            snapY = targetCenterY - activeHeight / 2;
+            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetCenterY, x2: Math.max(activeRight, targetRight), y2: targetCenterY });
+          }
+          else if (Math.abs(activeTop - targetBottom) < threshold) {
+            snapY = targetBottom;
+            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetBottom, x2: Math.max(activeRight, targetRight), y2: targetBottom });
+          }
+          else if (Math.abs(activeBottom - targetTop) < threshold) {
+            snapY = targetTop - activeHeight;
+            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetTop, x2: Math.max(activeRight, targetRight), y2: targetTop });
+          }
+        }
+      }
+
+      if (snapX !== null) {
+        if (activeObj.originX === 'center') {
+          activeObj.set('left', snapX + activeWidth / 2);
+        } else {
+          activeObj.set('left', snapX);
+        }
+      }
+      if (snapY !== null) {
+        if (activeObj.originY === 'center') {
+          activeObj.set('top', snapY + activeHeight / 2);
+        } else {
+          activeObj.set('top', snapY);
+        }
+      }
+    }
+
     function onSelectionCleared() {
+      activeGuidelines = [];
       document.getElementById('props-empty').style.display = 'block';
       document.getElementById('props-actions').style.display = 'none';
       document.getElementById('props-text').style.display = 'none';
