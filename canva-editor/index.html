@@ -2439,10 +2439,7 @@
 
           <div class="elements-category-title" style="margin-top: 20px;">Customize Colors</div>
           <div style="display: flex; flex-direction: column; gap: 10px; padding: 0 4px; margin-bottom: 10px;">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Stock Background</span>
-              <input type="color" id="palette-custom-bg" value="#ffffff" onchange="applyCustomPaletteColor('bg', this.value)" style="border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; padding: 0; background: none;">
-            </div>
+
             <div style="display: flex; align-items: center; justify-content: space-between;">
               <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Text Elements</span>
               <input type="color" id="palette-custom-text" value="#000000" onchange="applyCustomPaletteColor('text', this.value)" style="border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; padding: 0; background: none;">
@@ -2600,17 +2597,6 @@
 
         <!-- BACKGROUND TAB CONTENT -->
         <div id="panel-background" class="drawer-panel-section">
-          <div class="elements-category-title">Solid Stock Colors</div>
-          <div class="bg-grid" id="solid-colors-grid">
-            <!-- Dynamic allowed stocks loaded here -->
-            <div class="bg-color-item" style="background-color: #f9f1d0;" onclick="changeCanvasBackground('#f9f1d0')"></div>
-            <div class="bg-color-item" style="background-color: #ffffff;" onclick="changeCanvasBackground('#ffffff')"></div>
-            <div class="bg-color-item" style="background-color: #7c152a;" onclick="changeCanvasBackground('#7c152a')"></div>
-            <div class="bg-color-item" style="background-color: #113f2a;" onclick="changeCanvasBackground('#113f2a')"></div>
-            <div class="bg-color-item" style="background-color: #0d0d0f;" onclick="changeCanvasBackground('#0d0d0f')"></div>
-            <div class="bg-color-item" style="background-color: #dfa8a9;" onclick="changeCanvasBackground('#dfa8a9')"></div>
-          </div>
-          
           <div class="elements-category-title">Card Stock Texture</div>
           <div class="bg-grid" style="grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 4px;">
             <div class="bg-color-item" onclick="applyCardStockTexture('none')" style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--g200); border-radius: 8px; background: #fff; cursor: pointer; text-align: center; padding: 4px; box-shadow: none; width: auto; aspect-ratio: auto;">
@@ -2629,14 +2615,6 @@
               <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Kraft Stock</span>
               <span style="font-size: 9px; color: var(--g600);">Recycled paper</span>
             </div>
-          </div>
-          
-          <div class="elements-category-title">HSL Gradients</div>
-          <div class="bg-grid">
-            <div class="bg-color-item" style="background: linear-gradient(135deg, #7c152a, #d4af37);" onclick="changeCanvasBgGradient('#7c152a', '#d4af37')"></div>
-            <div class="bg-color-item" style="background: linear-gradient(135deg, #113f2a, #a48630);" onclick="changeCanvasBgGradient('#113f2a', '#a48630')"></div>
-            <div class="bg-color-item" style="background: linear-gradient(135deg, #1c1917, #44403c);" onclick="changeCanvasBgGradient('#1c1917', '#44403c')"></div>
-            <div class="bg-color-item" style="background: linear-gradient(135deg, #5b3e31, #dfa8a9);" onclick="changeCanvasBgGradient('#5b3e31', '#dfa8a9')"></div>
           </div>
         </div>
 
