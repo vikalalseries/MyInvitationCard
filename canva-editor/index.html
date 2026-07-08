@@ -5259,15 +5259,43 @@
       const canvasWidth = canvas.getWidth();
       const canvasHeight = canvas.getHeight();
 
-      const activeBounds = activeObj.getBoundingRect();
-      const activeLeft = activeBounds.left;
-      const activeTop = activeBounds.top;
-      const activeWidth = activeBounds.width;
-      const activeHeight = activeBounds.height;
-      const activeRight = activeLeft + activeWidth;
-      const activeBottom = activeTop + activeHeight;
-      const activeCenterX = activeLeft + activeWidth / 2;
-      const activeCenterY = activeTop + activeHeight / 2;
+      // Calculate unsnapped coordinates using pointer offsets to avoid sticky snapping
+      const activeWidth = activeObj.width * activeObj.scaleX;
+      const activeHeight = activeObj.height * activeObj.scaleY;
+
+      let unsnappedLeft, unsnappedTop;
+      const transform = canvas._currentTransform;
+      if (transform) {
+        const pointer = canvas.getPointer(e.e);
+        unsnappedLeft = pointer.x - transform.offsetX;
+        unsnappedTop = pointer.y - transform.offsetY;
+      } else {
+        unsnappedLeft = activeObj.left;
+        unsnappedTop = activeObj.top;
+      }
+
+      // Calculate the unsnapped bounds
+      let activeLeft, activeCenterX, activeRight;
+      if (activeObj.originX === 'center') {
+        activeCenterX = unsnappedLeft;
+        activeLeft = unsnappedLeft - activeWidth / 2;
+        activeRight = unsnappedLeft + activeWidth / 2;
+      } else {
+        activeLeft = unsnappedLeft;
+        activeCenterX = unsnappedLeft + activeWidth / 2;
+        activeRight = unsnappedLeft + activeWidth;
+      }
+
+      let activeTop, activeCenterY, activeBottom;
+      if (activeObj.originY === 'center') {
+        activeCenterY = unsnappedTop;
+        activeTop = unsnappedTop - activeHeight / 2;
+        activeBottom = unsnappedTop + activeHeight / 2;
+      } else {
+        activeTop = unsnappedTop;
+        activeCenterY = unsnappedTop + activeHeight / 2;
+        activeBottom = unsnappedTop + activeHeight;
+      }
 
       let snapX = null;
       let snapY = null;
@@ -5441,19 +5469,25 @@
         }
       }
 
+      // Apply Snap or Unsnapped Pointer Coordinate
       if (snapX !== null) {
         if (activeObj.originX === 'center') {
           activeObj.set('left', snapX + activeWidth / 2);
         } else {
           activeObj.set('left', snapX);
         }
+      } else {
+        activeObj.set('left', unsnappedLeft);
       }
+
       if (snapY !== null) {
         if (activeObj.originY === 'center') {
           activeObj.set('top', snapY + activeHeight / 2);
         } else {
           activeObj.set('top', snapY);
         }
+      } else {
+        activeObj.set('top', unsnappedTop);
       }
 
       // Determine which single closest neighbor distance bubble to show (limit to < 100px range)
