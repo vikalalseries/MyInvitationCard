@@ -1371,8 +1371,9 @@ window.applyColorPreset = function(presetIndex, element) {
   const preset = PRESETS[presetIndex];
   if (!preset) return;
 
-  // Do not change the template background color when applying preset themes
-  // setField('styles.bodyBg', preset.bodyBg);
+  // Change both the card background and page background when applying preset themes
+  setField('styles.cardBg', preset.cardBg);
+  setField('styles.bodyBg', preset.bodyBg);
   setField('styles.accentColor', preset.accent);
   setField('styles.borderColor', preset.accent);
   setField('styles.textColor', preset.text);
