@@ -3692,6 +3692,7 @@
       canvas.on('object:moving', handleObjectMoving);
       canvas.on('mouse:up', function() {
         activeGuidelines = [];
+        activeDistance = null;
         canvas.requestRenderAll();
       });
 
@@ -5154,23 +5155,91 @@
     }
 
     let activeGuidelines = [];
+    let activeDistance = null;
 
     function drawGuidelines() {
-      if (activeGuidelines.length === 0) return;
       const ctx = canvas.getSelectionContext();
       if (!ctx) return;
 
-      ctx.save();
-      ctx.strokeStyle = '#e01a89'; // Canva pink/magenta alignment guide line color
-      ctx.lineWidth = 1;
-      ctx.setLineDash([6, 4]);
+      const canvasWidth = canvas.getWidth();
+      const canvasHeight = canvas.getHeight();
 
-      activeGuidelines.forEach(line => {
+      ctx.save();
+
+      // 1. Draw snap lines (magenta/pink solid lines)
+      if (activeGuidelines.length > 0) {
+        ctx.strokeStyle = '#e01a89'; // Canva guide color
+        ctx.lineWidth = 1;
+        ctx.setLineDash([]); // Solid line like real Canva
+
+        activeGuidelines.forEach(line => {
+          ctx.beginPath();
+          if (line.type === 'v') {
+            ctx.moveTo(line.x, 0);
+            ctx.lineTo(line.x, canvasHeight);
+          } else if (line.type === 'h') {
+            ctx.moveTo(0, line.y);
+            ctx.lineTo(canvasWidth, line.y);
+          }
+          ctx.stroke();
+        });
+      }
+
+      // 2. Draw active distance bubble (purple/magenta)
+      if (activeDistance) {
+        const { x, y1, y2, dist } = activeDistance;
+
+        ctx.strokeStyle = '#e01a89';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([]);
+
+        // Draw vertical connector line
         ctx.beginPath();
-        ctx.moveTo(line.x1, line.y1);
-        ctx.lineTo(line.x2, line.y2);
+        ctx.moveTo(x, y1);
+        ctx.lineTo(x, y2);
         ctx.stroke();
-      });
+
+        // Draw horizontal end ticks
+        ctx.beginPath();
+        ctx.moveTo(x - 4, y1);
+        ctx.lineTo(x + 4, y1);
+        ctx.moveTo(x - 4, y2);
+        ctx.lineTo(x + 4, y2);
+        ctx.stroke();
+
+        // Draw measurement bubble
+        const midY = (y1 + y2) / 2;
+        const text = String(dist);
+
+        ctx.font = 'bold 10px Arial';
+        const textWidth = ctx.measureText(text).width;
+        const rectWidth = Math.max(22, textWidth + 10);
+        const rectHeight = 16;
+        const rectX = x - rectWidth / 2;
+        const rectY = midY - rectHeight / 2;
+        const radius = 8; // rounded corners
+
+        // Draw bubble background
+        ctx.fillStyle = '#e01a89';
+        ctx.beginPath();
+        ctx.moveTo(rectX + radius, rectY);
+        ctx.lineTo(rectX + rectWidth - radius, rectY);
+        ctx.quadraticCurveTo(rectX + rectWidth, rectY, rectX + rectWidth, rectY + radius);
+        ctx.lineTo(rectX + rectWidth, rectY + rectHeight - radius);
+        ctx.quadraticCurveTo(rectX + rectWidth, rectY + rectHeight, rectX + rectWidth - radius, rectY + rectHeight);
+        ctx.lineTo(rectX + radius, rectY + rectHeight);
+        ctx.quadraticCurveTo(rectX, rectY + rectHeight, rectX, rectY + rectHeight - radius);
+        ctx.lineTo(rectX, rectY + radius);
+        ctx.quadraticCurveTo(rectX, rectY, rectX + radius, rectY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw text
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, x, midY + 0.5);
+      }
 
       ctx.restore();
     }
@@ -5180,7 +5249,9 @@
       if (!activeObj) return;
 
       activeGuidelines = [];
-      const threshold = 6; // snap tolerance in pixels
+      activeDistance = null;
+
+      const threshold = 6;
       const canvasWidth = canvas.getWidth();
       const canvasHeight = canvas.getHeight();
 
@@ -5197,28 +5268,23 @@
       let snapX = null;
       let snapY = null;
 
-      // 1. Snapping to Canvas Center
+      // 1. Center Snapping
       if (Math.abs(activeCenterX - canvasWidth / 2) < threshold) {
         snapX = canvasWidth / 2 - activeWidth / 2;
-        activeGuidelines.push({
-          x1: canvasWidth / 2,
-          y1: 0,
-          x2: canvasWidth / 2,
-          y2: canvasHeight
-        });
+        activeGuidelines.push({ type: 'v', x: canvasWidth / 2 });
       }
       if (Math.abs(activeCenterY - canvasHeight / 2) < threshold) {
         snapY = canvasHeight / 2 - activeHeight / 2;
-        activeGuidelines.push({
-          x1: 0,
-          y1: canvasHeight / 2,
-          x2: canvasWidth,
-          y2: canvasHeight / 2
-        });
+        activeGuidelines.push({ type: 'h', y: canvasHeight / 2 });
       }
 
-      // 2. Snapping to Other Objects (ignoring textures)
+      // 2. Element-to-Element Snapping & Distance
       const objects = canvas.getObjects();
+      let closestAbove = null;
+      let minDistanceAbove = Infinity;
+      let closestBelow = null;
+      let minDistanceBelow = Infinity;
+
       for (let i = 0; i < objects.length; i++) {
         const targetObj = objects[i];
         if (targetObj === activeObj) continue;
@@ -5234,51 +5300,77 @@
         const targetCenterX = targetLeft + targetWidth / 2;
         const targetCenterY = targetTop + targetHeight / 2;
 
-        // Check horizontal snap (aligning vertical edges or centers)
         if (snapX === null) {
           if (Math.abs(activeLeft - targetLeft) < threshold) {
             snapX = targetLeft;
-            activeGuidelines.push({ x1: targetLeft, y1: Math.min(activeTop, targetTop), x2: targetLeft, y2: Math.max(activeBottom, targetBottom) });
+            activeGuidelines.push({ type: 'v', x: targetLeft });
           }
           else if (Math.abs(activeRight - targetRight) < threshold) {
             snapX = targetRight - activeWidth;
-            activeGuidelines.push({ x1: targetRight, y1: Math.min(activeTop, targetTop), x2: targetRight, y2: Math.max(activeBottom, targetBottom) });
+            activeGuidelines.push({ type: 'v', x: targetRight });
           }
           else if (Math.abs(activeCenterX - targetCenterX) < threshold) {
             snapX = targetCenterX - activeWidth / 2;
-            activeGuidelines.push({ x1: targetCenterX, y1: Math.min(activeTop, targetTop), x2: targetCenterX, y2: Math.max(activeBottom, targetBottom) });
+            activeGuidelines.push({ type: 'v', x: targetCenterX });
           }
           else if (Math.abs(activeLeft - targetRight) < threshold) {
             snapX = targetRight;
-            activeGuidelines.push({ x1: targetRight, y1: Math.min(activeTop, targetTop), x2: targetRight, y2: Math.max(activeBottom, targetBottom) });
+            activeGuidelines.push({ type: 'v', x: targetRight });
           }
           else if (Math.abs(activeRight - targetLeft) < threshold) {
             snapX = targetLeft - activeWidth;
-            activeGuidelines.push({ x1: targetLeft, y1: Math.min(activeTop, targetTop), x2: targetLeft, y2: Math.max(activeBottom, targetBottom) });
+            activeGuidelines.push({ type: 'v', x: targetLeft });
           }
         }
 
-        // Check vertical snap (aligning horizontal edges or centers)
         if (snapY === null) {
           if (Math.abs(activeTop - targetTop) < threshold) {
             snapY = targetTop;
-            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetTop, x2: Math.max(activeRight, targetRight), y2: targetTop });
+            activeGuidelines.push({ type: 'h', y: targetTop });
           }
           else if (Math.abs(activeBottom - targetBottom) < threshold) {
             snapY = targetBottom - activeHeight;
-            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetBottom, x2: Math.max(activeRight, targetRight), y2: targetBottom });
+            activeGuidelines.push({ type: 'h', y: targetBottom });
           }
           else if (Math.abs(activeCenterY - targetCenterY) < threshold) {
             snapY = targetCenterY - activeHeight / 2;
-            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetCenterY, x2: Math.max(activeRight, targetRight), y2: targetCenterY });
+            activeGuidelines.push({ type: 'h', y: targetCenterY });
           }
           else if (Math.abs(activeTop - targetBottom) < threshold) {
             snapY = targetBottom;
-            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetBottom, x2: Math.max(activeRight, targetRight), y2: targetBottom });
+            activeGuidelines.push({ type: 'h', y: targetBottom });
           }
           else if (Math.abs(activeBottom - targetTop) < threshold) {
             snapY = targetTop - activeHeight;
-            activeGuidelines.push({ x1: Math.min(activeLeft, targetLeft), y1: targetTop, x2: Math.max(activeRight, targetRight), y2: targetTop });
+            activeGuidelines.push({ type: 'h', y: targetTop });
+          }
+        }
+
+        // Distance Check (Vertical overlap/stack alignment)
+        const overlap = !(activeRight < targetLeft || activeLeft > targetRight);
+        if (overlap) {
+          if (targetCenterY < activeCenterY) {
+            const dist = activeTop - targetBottom;
+            if (dist > 0 && dist < minDistanceAbove) {
+              minDistanceAbove = dist;
+              closestAbove = {
+                y1: targetBottom,
+                y2: activeTop,
+                x: activeCenterX,
+                dist: Math.round(dist)
+              };
+            }
+          } else {
+            const dist = targetTop - activeBottom;
+            if (dist > 0 && dist < minDistanceBelow) {
+              minDistanceBelow = dist;
+              closestBelow = {
+                y1: activeBottom,
+                y2: targetTop,
+                x: activeCenterX,
+                dist: Math.round(dist)
+              };
+            }
           }
         }
       }
@@ -5297,10 +5389,17 @@
           activeObj.set('top', snapY);
         }
       }
+
+      if (closestAbove && minDistanceAbove < 150) {
+        activeDistance = closestAbove;
+      } else if (closestBelow && minDistanceBelow < 150) {
+        activeDistance = closestBelow;
+      }
     }
 
     function onSelectionCleared() {
       activeGuidelines = [];
+      activeDistance = null;
       document.getElementById('props-empty').style.display = 'block';
       document.getElementById('props-actions').style.display = 'none';
       document.getElementById('props-text').style.display = 'none';
