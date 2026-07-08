@@ -5251,7 +5251,11 @@
       activeGuidelines = [];
       activeDistance = null;
 
-      const threshold = 6;
+      // Skip snapping/guidelines if the moving object is rotated (not a multiple of 90 degrees)
+      const activeAngle = Math.round(activeObj.angle || 0) % 90;
+      if (activeAngle !== 0) return;
+
+      const threshold = 5; // Snap threshold in pixels (smoother and more stable than 6)
       const canvasWidth = canvas.getWidth();
       const canvasHeight = canvas.getHeight();
 
@@ -5290,15 +5294,19 @@
 
       // 2. Element-to-Element Snapping & Distance
       const objects = canvas.getObjects();
-      let closestAbove = null;
-      let minDistanceAbove = Infinity;
-      let closestBelow = null;
-      let minDistanceBelow = Infinity;
+      let closestAboveObj = null;
+      let maxBottomAbove = -Infinity;
+      let closestBelowObj = null;
+      let minTopBelow = Infinity;
 
       for (let i = 0; i < objects.length; i++) {
         const targetObj = objects[i];
         if (targetObj === activeObj) continue;
         if (targetObj.name === 'card-texture') continue;
+
+        // Skip snapping to target if it is rotated
+        const targetAngle = Math.round(targetObj.angle || 0) % 90;
+        if (targetAngle !== 0) continue;
 
         const targetBounds = targetObj.getBoundingRect();
         const targetLeft = targetBounds.left;
@@ -5406,29 +5414,27 @@
           }
         }
 
-        // Distance Check (Vertical overlap/stack alignment)
+        // Distance Check (directly adjacent neighbors logic)
         const overlap = !(activeRight < targetLeft || activeLeft > targetRight);
         if (overlap) {
-          if (targetCenterY < activeCenterY) {
-            const dist = activeTop - targetBottom;
-            if (dist > 0 && dist < minDistanceAbove) {
-              minDistanceAbove = dist;
-              closestAbove = {
+          if (targetBottom <= activeTop) {
+            if (targetBottom > maxBottomAbove) {
+              maxBottomAbove = targetBottom;
+              closestAboveObj = {
                 y1: targetBottom,
                 y2: activeTop,
                 x: activeCenterX,
-                dist: Math.round(dist)
+                dist: Math.round(activeTop - targetBottom)
               };
             }
-          } else {
-            const dist = targetTop - activeBottom;
-            if (dist > 0 && dist < minDistanceBelow) {
-              minDistanceBelow = dist;
-              closestBelow = {
+          } else if (targetTop >= activeBottom) {
+            if (targetTop < minTopBelow) {
+              minTopBelow = targetTop;
+              closestBelowObj = {
                 y1: activeBottom,
                 y2: targetTop,
                 x: activeCenterX,
-                dist: Math.round(dist)
+                dist: Math.round(targetTop - activeBottom)
               };
             }
           }
@@ -5450,11 +5456,21 @@
         }
       }
 
-      if (closestAbove && minDistanceAbove < 150) {
-        activeDistance = closestAbove;
-      } else if (closestBelow && minDistanceBelow < 150) {
-        activeDistance = closestBelow;
+      // Determine which single closest neighbor distance bubble to show (limit to < 100px range)
+      let selectedDistance = null;
+      let finalMinDist = Infinity;
+
+      if (closestAboveObj && closestAboveObj.dist < 100) {
+        selectedDistance = closestAboveObj;
+        finalMinDist = closestAboveObj.dist;
       }
+      if (closestBelowObj && closestBelowObj.dist < 100) {
+        if (closestBelowObj.dist < finalMinDist) {
+          selectedDistance = closestBelowObj;
+        }
+      }
+
+      activeDistance = selectedDistance;
     }
 
     function onSelectionCleared() {
