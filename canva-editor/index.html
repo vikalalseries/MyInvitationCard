@@ -4155,6 +4155,10 @@
 
     // SELECTION CALLBACKS
     function onObjectSelection() {
+      activeGuidelines = [];
+      activeDistance = null;
+      canvas.requestRenderAll();
+
       const obj = canvas.getActiveObject();
       if (!obj) return;
 
@@ -5161,9 +5165,6 @@
       const ctx = canvas.getContext();
       if (!ctx) return;
 
-      const canvasWidth = canvas.getWidth();
-      const canvasHeight = canvas.getHeight();
-
       ctx.save();
 
       // 1. Draw snap lines (magenta/pink solid lines)
@@ -5174,13 +5175,8 @@
 
         activeGuidelines.forEach(line => {
           ctx.beginPath();
-          if (line.type === 'v') {
-            ctx.moveTo(line.x, 0);
-            ctx.lineTo(line.x, canvasHeight);
-          } else if (line.type === 'h') {
-            ctx.moveTo(0, line.y);
-            ctx.lineTo(canvasWidth, line.y);
-          }
+          ctx.moveTo(Math.round(line.x1) + 0.5, Math.round(line.y1) + 0.5);
+          ctx.lineTo(Math.round(line.x2) + 0.5, Math.round(line.y2) + 0.5);
           ctx.stroke();
         });
       }
@@ -5193,18 +5189,22 @@
         ctx.lineWidth = 1;
         ctx.setLineDash([]);
 
+        const rx = Math.round(x) + 0.5;
+        const ry1 = Math.round(y1) + 0.5;
+        const ry2 = Math.round(y2) + 0.5;
+
         // Draw vertical connector line
         ctx.beginPath();
-        ctx.moveTo(x, y1);
-        ctx.lineTo(x, y2);
+        ctx.moveTo(rx, ry1);
+        ctx.lineTo(rx, ry2);
         ctx.stroke();
 
         // Draw horizontal end ticks
         ctx.beginPath();
-        ctx.moveTo(x - 4, y1);
-        ctx.lineTo(x + 4, y1);
-        ctx.moveTo(x - 4, y2);
-        ctx.lineTo(x + 4, y2);
+        ctx.moveTo(rx - 4, ry1);
+        ctx.lineTo(rx + 4, ry1);
+        ctx.moveTo(rx - 4, ry2);
+        ctx.lineTo(rx + 4, ry2);
         ctx.stroke();
 
         // Draw measurement bubble
@@ -5215,8 +5215,8 @@
         const textWidth = ctx.measureText(text).width;
         const rectWidth = Math.max(22, textWidth + 10);
         const rectHeight = 16;
-        const rectX = x - rectWidth / 2;
-        const rectY = midY - rectHeight / 2;
+        const rectX = Math.round(x - rectWidth / 2);
+        const rectY = Math.round(midY - rectHeight / 2);
         const radius = 8; // rounded corners
 
         // Draw bubble background
@@ -5238,7 +5238,7 @@
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(text, x, midY + 0.5);
+        ctx.fillText(text, Math.round(x), Math.round(midY) + 0.5);
       }
 
       ctx.restore();
@@ -5271,11 +5271,21 @@
       // 1. Center Snapping
       if (Math.abs(activeCenterX - canvasWidth / 2) < threshold) {
         snapX = canvasWidth / 2 - activeWidth / 2;
-        activeGuidelines.push({ type: 'v', x: canvasWidth / 2 });
+        activeGuidelines.push({
+          x1: canvasWidth / 2,
+          y1: 0,
+          x2: canvasWidth / 2,
+          y2: canvasHeight
+        });
       }
       if (Math.abs(activeCenterY - canvasHeight / 2) < threshold) {
         snapY = canvasHeight / 2 - activeHeight / 2;
-        activeGuidelines.push({ type: 'h', y: canvasHeight / 2 });
+        activeGuidelines.push({
+          x1: 0,
+          y1: canvasHeight / 2,
+          x2: canvasWidth,
+          y2: canvasHeight / 2
+        });
       }
 
       // 2. Element-to-Element Snapping & Distance
@@ -5303,46 +5313,96 @@
         if (snapX === null) {
           if (Math.abs(activeLeft - targetLeft) < threshold) {
             snapX = targetLeft;
-            activeGuidelines.push({ type: 'v', x: targetLeft });
+            activeGuidelines.push({
+              x1: targetLeft,
+              y1: Math.min(activeTop, targetTop),
+              x2: targetLeft,
+              y2: Math.max(activeBottom, targetBottom)
+            });
           }
           else if (Math.abs(activeRight - targetRight) < threshold) {
             snapX = targetRight - activeWidth;
-            activeGuidelines.push({ type: 'v', x: targetRight });
+            activeGuidelines.push({
+              x1: targetRight,
+              y1: Math.min(activeTop, targetTop),
+              x2: targetRight,
+              y2: Math.max(activeBottom, targetBottom)
+            });
           }
           else if (Math.abs(activeCenterX - targetCenterX) < threshold) {
             snapX = targetCenterX - activeWidth / 2;
-            activeGuidelines.push({ type: 'v', x: targetCenterX });
+            activeGuidelines.push({
+              x1: targetCenterX,
+              y1: Math.min(activeTop, targetTop),
+              x2: targetCenterX,
+              y2: Math.max(activeBottom, targetBottom)
+            });
           }
           else if (Math.abs(activeLeft - targetRight) < threshold) {
             snapX = targetRight;
-            activeGuidelines.push({ type: 'v', x: targetRight });
+            activeGuidelines.push({
+              x1: targetRight,
+              y1: Math.min(activeTop, targetTop),
+              x2: targetRight,
+              y2: Math.max(activeBottom, targetBottom)
+            });
           }
           else if (Math.abs(activeRight - targetLeft) < threshold) {
             snapX = targetLeft - activeWidth;
-            activeGuidelines.push({ type: 'v', x: targetLeft });
+            activeGuidelines.push({
+              x1: targetLeft,
+              y1: Math.min(activeTop, targetTop),
+              x2: targetLeft,
+              y2: Math.max(activeBottom, targetBottom)
+            });
           }
         }
 
         if (snapY === null) {
           if (Math.abs(activeTop - targetTop) < threshold) {
             snapY = targetTop;
-            activeGuidelines.push({ type: 'h', y: targetTop });
+            activeGuidelines.push({
+              x1: Math.min(activeLeft, targetLeft),
+              y1: targetTop,
+              x2: Math.max(activeRight, targetRight),
+              y2: targetTop
+            });
           }
           else if (Math.abs(activeBottom - targetBottom) < threshold) {
             snapY = targetBottom - activeHeight;
-            activeGuidelines.push({ type: 'h', y: targetBottom });
+            activeGuidelines.push({
+              x1: Math.min(activeLeft, targetLeft),
+              y1: targetBottom,
+              x2: Math.max(activeRight, targetRight),
+              y2: targetBottom
+            });
           }
           else if (Math.abs(activeCenterY - targetCenterY) < threshold) {
             snapY = targetCenterY - activeHeight / 2;
-            activeGuidelines.push({ type: 'h', y: targetCenterY });
+            activeGuidelines.push({
+              x1: Math.min(activeLeft, targetLeft),
+              y1: targetCenterY,
+              x2: Math.max(activeRight, targetRight),
+              y2: targetCenterY
+            });
           }
           else if (Math.abs(activeTop - targetBottom) < threshold) {
             snapY = targetBottom;
-            activeGuidelines.push({ type: 'h', y: targetBottom });
+            activeGuidelines.push({
+              x1: Math.min(activeLeft, targetLeft),
+              y1: targetBottom,
+              x2: Math.max(activeRight, targetRight),
+              y2: targetBottom
+            });
           }
           else if (Math.abs(activeBottom - targetTop) < threshold) {
             snapY = targetTop - activeHeight;
-            activeGuidelines.push({ type: 'h', y: targetTop });
+            activeGuidelines.push({
+              x1: Math.min(activeLeft, targetLeft),
+              y1: targetTop,
+              x2: Math.max(activeRight, targetRight),
+              y2: targetTop
+            });
           }
         }
 
@@ -5415,6 +5475,7 @@
       if (typeof closeAllImageDropdowns === 'function') {
         closeAllImageDropdowns();
       }
+      canvas.requestRenderAll();
     }
 
     function setEditToolbarVisible(visible) {
