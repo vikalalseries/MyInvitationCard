@@ -3439,12 +3439,9 @@
     }
 
     function addSectionFrame(left, top, width, height, accentColor, fillA, fillB) {
-      const bg = new fabric.Rect({
-        left,
-        top,
-        width,
-        height,
-        fill: {
+      let fillVal = fillA;
+      if (fillB) {
+        fillVal = {
           type: 'linear',
           x1: 0,
           y1: 0,
@@ -3455,7 +3452,15 @@
             { offset: 0.45, color: fillB },
             { offset: 1, color: fillA }
           ]
-        },
+        };
+      }
+      const bg = new fabric.Rect({
+        left,
+        top,
+        width,
+        height,
+        name: 'section-bg',
+        fill: fillVal,
         stroke: accentColor,
         strokeWidth: 3,
         selectable: false,
@@ -5537,6 +5542,14 @@
     function changeCanvasBackground(color) {
       canvas.setBackgroundImage(null);
       canvas.setBackgroundColor(color, canvas.renderAll.bind(canvas));
+      
+      canvas.getObjects().forEach(obj => {
+        if (obj.name === 'section-bg') {
+          obj.set('fill', color);
+        }
+      });
+      
+      canvas.requestRenderAll();
       saveHistory();
     }
 
@@ -6131,8 +6144,8 @@
       const sectionGap = cmToPx(0.3);
       const sectionTop2 = sectionTop1 + sectionHeight + sectionGap;
 
-      addSectionFrame(sectionLeft, sectionTop1, sectionWidth, sectionHeight, accentColor, '#fce4ef', '#fad8eb');
-      addSectionFrame(sectionLeft, sectionTop2, sectionWidth, sectionHeight, accentColor, '#fce4ef', '#fad8eb');
+      addSectionFrame(sectionLeft, sectionTop1, sectionWidth, sectionHeight, accentColor, cardBg);
+      addSectionFrame(sectionLeft, sectionTop2, sectionWidth, sectionHeight, accentColor, cardBg);
       addCornerFlowers(sectionLeft, sectionTop1, sectionWidth, sectionHeight, accentColor);
       addCornerFlowers(sectionLeft, sectionTop2, sectionWidth, sectionHeight, accentColor);
       const centerX = sectionLeft + sectionWidth / 2;
@@ -7542,7 +7555,7 @@
       canvas.getObjects().forEach(obj => {
         if (obj.type === 'i-text' || obj.type === 'textbox') {
           obj.set('fill', theme.text);
-        } else if (obj.name !== 'card-border' && obj.name !== 'card-border-inner' && !obj.name?.startsWith('card-corner-') && obj.name !== 'card-texture') {
+        } else if (obj.name !== 'card-border' && obj.name !== 'card-border-inner' && !obj.name?.startsWith('card-corner-') && obj.name !== 'card-texture' && obj.name !== 'section-bg') {
           if (obj.fill && obj.fill !== 'transparent') {
             obj.set('fill', theme.accent);
           }
@@ -7575,7 +7588,7 @@
         updateCardOrnaments();
 
         canvas.getObjects().forEach(obj => {
-          if (obj.name !== 'card-border' && obj.name !== 'card-border-inner' && !obj.name?.startsWith('card-corner-') && obj.name !== 'card-texture') {
+          if (obj.name !== 'card-border' && obj.name !== 'card-border-inner' && !obj.name?.startsWith('card-corner-') && obj.name !== 'card-texture' && obj.name !== 'section-bg') {
             if (obj.fill && obj.fill !== 'transparent') {
               obj.set('fill', value);
             }
