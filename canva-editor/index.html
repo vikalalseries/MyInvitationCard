@@ -4068,7 +4068,7 @@
     function saveHistory() {
       if (!isSavingHistory) return;
       
-      const json = JSON.stringify(canvas.toObject(['id', 'locked', 'selectable']));
+      const json = JSON.stringify(canvas.toObject(['id', 'locked', 'selectable', 'name']));
       undoStack.push(json);
       redoStack = []; // Reset redo
       
@@ -5817,7 +5817,7 @@
 
     // LOCAL STORAGE STATE SAVE/LOAD
     function saveToLocalStorage() {
-      const json = JSON.stringify(canvas.toObject(['id', 'locked', 'selectable']));
+      const json = JSON.stringify(canvas.toObject(['id', 'locked', 'selectable', 'name']));
       localStorage.setItem('canva_invite_layout', json);
       showToast('Layout Saved Successfully!');
     }
@@ -6032,7 +6032,7 @@
       if (activePage === pageNum) return;
       
       // Save current page state
-      pageCanvasStates[activePage] = JSON.stringify(canvas.toObject(['id', 'locked', 'selectable']));
+      pageCanvasStates[activePage] = JSON.stringify(canvas.toObject(['id', 'locked', 'selectable', 'name']));
       
       activePage = pageNum;
       
