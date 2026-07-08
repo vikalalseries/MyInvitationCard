@@ -7113,6 +7113,8 @@
 
       renderSuggestions(isMuslim ? 'muslim' : (isEngagement ? 'engagement' : 'hindu'));
 
+      adjustTextureAndBackgroundZIndices();
+
       setTimeout(() => {
         isSavingHistory = true;
         canvas.discardActiveObject();
@@ -7285,6 +7287,27 @@
       });
     }
 
+    function adjustTextureAndBackgroundZIndices() {
+      if (!canvas) return;
+      const objects = canvas.getObjects();
+      
+      const texture = objects.find(obj => obj.name === 'card-texture');
+      const sectionBgs = objects.filter(obj => obj.name === 'section-bg');
+      const borders = objects.filter(obj => obj.name === 'card-border' || obj.name === 'card-border-inner');
+      
+      if (texture) {
+        texture.sendToBack();
+      }
+      sectionBgs.forEach(bg => {
+        bg.sendToBack();
+      });
+      borders.forEach(border => {
+        border.sendToBack();
+      });
+      
+      canvas.requestRenderAll();
+    }
+
     function applyCardStockTexture(textureName) {
       const existing = canvas.getObjects().find(obj => obj.name === 'card-texture');
       if (existing) {
@@ -7293,6 +7316,7 @@
 
       if (textureName === 'none') {
         changeCanvasBackground('#ffffff');
+        adjustTextureAndBackgroundZIndices();
         canvas.requestRenderAll();
         saveHistory();
         return;
@@ -7310,6 +7334,10 @@
 
       if (textureName === 'kraft') {
         changeCanvasBackground('#e2c0a5');
+      } else if (textureName === 'linen') {
+        changeCanvasBackground('#fff5e1'); // Ivory background for Linen
+      } else if (textureName === 'handmade') {
+        changeCanvasBackground('#f9f1d0'); // Cream background for Handmade
       } else {
         changeCanvasBackground('#ffffff');
       }
@@ -7334,7 +7362,7 @@
         });
 
         canvas.add(textureRect);
-        textureRect.sendToBack();
+        adjustTextureAndBackgroundZIndices();
         canvas.requestRenderAll();
         saveHistory();
       }, null, { crossOrigin: 'anonymous' });
@@ -7400,15 +7428,9 @@
           hoverCursor: 'default'
         });
         canvas.add(innerBorder);
-        innerBorder.sendToBack();
       }
 
-      mainBorder.sendToBack();
-
-      const texture = canvas.getObjects().find(obj => obj.name === 'card-texture');
-      if (texture) {
-        texture.sendToBack();
-      }
+      adjustTextureAndBackgroundZIndices();
 
       canvas.requestRenderAll();
       saveHistory();
