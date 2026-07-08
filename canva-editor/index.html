@@ -2500,6 +2500,14 @@
         <!-- ELEMENTS (GRAPHICS) PANEL -->
         <div id="panel-elements" class="drawer-panel-section">
           
+          <div class="graphics-search-box" style="margin-bottom: 12px; position: sticky; top: 0; background: #fff; z-index: 10; padding: 4px 0;">
+            <div style="position: relative; display: flex; align-items: center;">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; color: var(--g400); font-size: 13px;"></i>
+              <input type="text" id="graphics-search-input" placeholder="Search graphics..." oninput="filterGraphics(this.value)" style="width: 100%; height: 36px; border: 1px solid var(--g200); border-radius: 8px; padding: 0 32px 0 32px; outline: none; font-size: 12px; background: var(--g50); color: var(--g800);">
+              <i class="fa-solid fa-circle-xmark" id="graphics-search-clear" onclick="clearGraphicsSearch()" style="position: absolute; right: 12px; color: var(--g400); cursor: pointer; display: none; font-size: 14px;"></i>
+            </div>
+          </div>
+
           <div class="elements-category-title">Religious Symbols</div>
           <div class="elements-grid">
             <div class="element-item" onclick="addGraphicPNG('../builder1/assets/icons/ganesh.png')" title="Ganesh Motif">
@@ -5808,6 +5816,50 @@
       canvas.add(text);
       canvas.setActiveObject(text);
       canvas.requestRenderAll();
+    }
+
+    // SEARCH / FILTER GRAPHICS IN ELEMENTS PANEL
+    function filterGraphics(query) {
+      query = query.toLowerCase().trim();
+      const clearBtn = document.getElementById('graphics-search-clear');
+      if (clearBtn) {
+        clearBtn.style.display = query ? 'block' : 'none';
+      }
+
+      const grids = document.querySelectorAll('#panel-elements .elements-grid');
+      grids.forEach(grid => {
+        let matchingItemsInGrid = 0;
+        const items = grid.querySelectorAll('.element-item');
+        items.forEach(item => {
+          const title = (item.getAttribute('title') || '').toLowerCase();
+          if (title.includes(query)) {
+            item.style.display = ''; // Restore default flex/block layout
+            matchingItemsInGrid++;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+
+        // Hide/Show category title and grid container
+        const categoryTitle = grid.previousElementSibling;
+        if (categoryTitle && categoryTitle.classList.contains('elements-category-title')) {
+          if (matchingItemsInGrid > 0) {
+            categoryTitle.style.display = '';
+            grid.style.display = '';
+          } else {
+            categoryTitle.style.display = 'none';
+            grid.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    function clearGraphicsSearch() {
+      const input = document.getElementById('graphics-search-input');
+      if (input) {
+        input.value = '';
+        filterGraphics('');
+      }
     }
 
     // ADD GRAPHICS
