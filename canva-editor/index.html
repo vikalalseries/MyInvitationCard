@@ -3826,7 +3826,10 @@
 
       // Parse template parameter from URL query to determine preset loading
       const urlParams = new URLSearchParams(window.location.search);
-      const templateId = urlParams.get('templateId') || urlParams.get('template') || 'card1';
+      let templateId = urlParams.get('templateId') || urlParams.get('template') || 'card1';
+      if (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday') {
+        templateId = 'card1';
+      }
       const projectId = urlParams.get('projectId') || null;
 
       // Scan local storage keys to search for a project by id
@@ -7699,7 +7702,9 @@
             headingText: "Jalasa-e-Nikah",
             groomName: "AARIF KHAN",
             brideName: "SARIYA ANJUM",
-            vinitText: "We cordially invite you to join us on the Nikah ceremony..."
+            vinitText: "We cordially invite you to join us on the Nikah ceremony...",
+            shlokaLine1: "",
+            shlokaLine2: ""
           },
           events: {},
           styles: {
@@ -7707,15 +7712,22 @@
             textColor: "#ffffff",
             accentColor: "#a48630",
             headingColor: "#a48630",
-            showBorder: "true"
+            showBorder: "true",
+            showGanesh: false,
+            showOm: false,
+            showChains: true
           }
         };
-        renderCanvasFromTemplateData(defaultData, '37', true);
+        activeTemplateId = 'card1';
+        renderEditableCard1(defaultData);
       } else if (type === 'engagement') {
         const defaultData = {
           fields: {
             brideName: "Riya",
-            groomName: "Kabir"
+            groomName: "Kabir",
+            headingText: "।। Engagement Ceremony ।।",
+            shlokaLine1: "",
+            shlokaLine2: ""
           },
           events: {},
           styles: {
@@ -7723,23 +7735,35 @@
             textColor: "#5b3e31",
             accentColor: "#5b3e31",
             headingColor: "#5b3e31",
-            showBorder: "true"
+            showBorder: "true",
+            showGanesh: false,
+            showOm: false,
+            showChains: true
           }
         };
-        renderCanvasFromTemplateData(defaultData, '38', true);
+        activeTemplateId = 'card1';
+        renderEditableCard1(defaultData);
       } else if (type === 'birthday') {
         const defaultData = {
-          fields: {},
+          fields: {
+            headingText: "Happy Birthday",
+            shlokaLine1: "",
+            shlokaLine2: ""
+          },
           events: {},
           styles: {
             cardBg: "#111e3b",
             textColor: "#ffffff",
             accentColor: "#d4af37",
             headingColor: "#d4af37",
-            showBorder: "true"
+            showBorder: "true",
+            showGanesh: false,
+            showOm: false,
+            showChains: true
           }
         };
-        renderCanvasFromTemplateData(defaultData, 'birthday', true);
+        activeTemplateId = 'card1';
+        renderEditableCard1(defaultData);
       }
     }
 
