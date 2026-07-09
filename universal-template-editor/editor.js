@@ -470,6 +470,12 @@ window.addEventListener('DOMContentLoaded', () => {
   
   // Set up auth state
   checkAuthState();
+
+  // If a tab parameter is set in the URL, switch to it
+  const tabParam = urlParams.get('tab');
+  if (tabParam) {
+    switchBuilderTab(tabParam);
+  }
   
   // Document title change listener
   const titleInput = document.getElementById('doc-title-input');
