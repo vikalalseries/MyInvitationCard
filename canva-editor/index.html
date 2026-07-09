@@ -2263,7 +2263,37 @@
     
     <div class="tb-sep"></div>
     
-    <!-- Navigation Tabs Removed for Standalone Canva Editor -->
+    <!-- Navigation Tabs (Content / Customize / AI Tools) -->
+    <nav class="tb-tabs">
+      <button class="tab-btn" id="tab-content" onclick="navigateToParentTab('content')" title="Edit invitation text content">
+        <span class="tab-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </span>
+        Content
+      </button>
+      
+      <button class="tab-btn active" id="tab-customize" onclick="navigateToParentTab('customize')" title="Customize appearance">
+        <span class="tab-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M12 2v2M12 20v2"/>
+          </svg>
+        </span>
+        Customize
+      </button>
+      
+      <button class="tab-btn ai-tab" id="tab-ai" onclick="navigateToParentTab('ai')" title="AI Copywriting Tools">
+        <span class="tab-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+        </span>
+        AI Tools
+      </button>
+    </nav>
 
     <!-- Toolbar Right (Saves, Downloads, Profile Actions) -->
     <div class="tb-right">
@@ -8343,6 +8373,31 @@
         }
       }
     });
+
+    // Handle redirecting/switching to tabs on parent
+    function navigateToParentTab(tabName) {
+      if (tabName === 'customize') return;
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const templateId = urlParams.get('templateId') || 'card1';
+      const projectId = urlParams.get('projectId');
+      
+      let targetUrl = `../universal-template-editor/editor.html?templateId=${templateId}`;
+      if (projectId) {
+        targetUrl += `&projectId=${projectId}`;
+      }
+      targetUrl += `&tab=${tabName}`;
+      
+      if (window.parent && window.parent !== window) {
+        if (typeof window.parent.switchBuilderTab === 'function') {
+          window.parent.switchBuilderTab(tabName);
+        } else {
+          window.parent.location.href = targetUrl;
+        }
+      } else {
+        window.location.href = targetUrl;
+      }
+    }
   </script>
 </body>
 </html>
