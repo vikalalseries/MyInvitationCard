@@ -477,8 +477,37 @@ window.addEventListener('DOMContentLoaded', () => {
     titleInput.addEventListener('change', (e) => {
       triggerSaving();
       toast('Draft renamed to: ' + e.target.value, 's');
+      
+      const isCustomize = document.getElementById('tab-customize').classList.contains('active');
+      if (isCustomize) {
+        const canvaIframe = document.getElementById('canva-editor-iframe');
+        if (canvaIframe && canvaIframe.contentWindow) {
+          canvaIframe.contentWindow.postMessage({
+            type: 'CANVA_RENAME_PROJECT',
+            title: e.target.value
+          }, '*');
+        }
+      }
     });
   }
+
+  // Handle messages from embedded Canva editor iframe
+  window.addEventListener('message', (e) => {
+    const d = e.data;
+    if (!d) return;
+    if (d.type === 'CANVA_SAVE_STATUS') {
+      const status = document.getElementById('save-status');
+      const text = document.getElementById('save-status-text');
+      if (status && text) {
+        if (d.text === 'Saving...') {
+          status.classList.add('saving');
+        } else {
+          status.classList.remove('saving');
+        }
+        text.textContent = d.text;
+      }
+    }
+  });
 
   // Toggle profile popup dropdown
   const profileBtn = document.getElementById('builderUserMenuBtn');
@@ -540,21 +569,9 @@ async function loadTemplate(templateId) {
   // Update Canva Mode Link & Add transfer listener
   const canvaLink = document.getElementById('canva-mode-link');
   if (canvaLink) {
-    let url = 'canva-editor.html?templateId=' + templateId;
-    if (window.activeProjectId) {
-      url += '&projectId=' + window.activeProjectId;
-    }
-    canvaLink.href = url;
-    
-    // Add click listener to save active draft data state before redirecting
-    canvaLink.addEventListener('click', () => {
-      const stateToTransfer = {
-        templateId: activeTemplateId,
-        projectId: window.activeProjectId,
-        documentTitle: document.getElementById('doc-title-input')?.value || '',
-        data: JSON.parse(JSON.stringify(currentData))
-      };
-      localStorage.setItem('mic_canva_editor_transfer', JSON.stringify(stateToTransfer));
+    canvaLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchBuilderTab('customize');
     });
   }
   
@@ -1706,11 +1723,58 @@ function switchBuilderTab(tabId) {
   // Set active class on active button
   document.getElementById(`tab-${tabId}`).classList.add('active');
   
-  // Toggle sidebar main panel views
-  document.querySelectorAll('.sidebar-view-panel').forEach(panel => {
-    panel.style.display = 'none';
-  });
-  document.getElementById(`${tabId}-view`).style.display = 'flex';
+  const canvaView = document.getElementById('canva-editor-view');
+  const sidebar = document.querySelector('.sidebar');
+  const rightCol = document.querySelector('.right-col');
+  
+  if (tabId === 'customize') {
+    // Hide normal sidebar and right-col
+    if (sidebar) sidebar.style.display = 'none';
+    if (rightCol) rightCol.style.display = 'none';
+    
+    // Show Canva editor view
+    if (canvaView) {
+      canvaView.style.display = 'block';
+      
+      // Save current content draft state and transfer it to the Canva Editor
+      const stateToTransfer = {
+        templateId: activeTemplateId || 'card1',
+        projectId: window.activeProjectId,
+        documentTitle: document.getElementById('doc-title-input')?.value || '',
+        data: JSON.parse(JSON.stringify(currentData))
+      };
+      localStorage.setItem('mic_canva_editor_transfer', JSON.stringify(stateToTransfer));
+      
+      // Set Canva editor iframe src
+      const iframe = document.getElementById('canva-editor-iframe');
+      if (iframe) {
+        let url = '../canva-editor/index.html?templateId=' + (activeTemplateId || 'card1') + '&embed=true';
+        if (window.activeProjectId) {
+          url += '&projectId=' + window.activeProjectId;
+        }
+        iframe.src = url;
+      }
+    }
+  } else {
+    // Hide Canva editor view
+    if (canvaView) canvaView.style.display = 'none';
+    
+    // Show normal sidebar and right-col
+    if (sidebar) sidebar.style.display = 'flex';
+    if (rightCol) rightCol.style.display = 'flex';
+    
+    // Toggle sidebar main panel views
+    document.querySelectorAll('.sidebar-view-panel').forEach(panel => {
+      panel.style.display = 'none';
+    });
+    const targetView = document.getElementById(`${tabId}-view`);
+    if (targetView) targetView.style.display = 'flex';
+    
+    // Refresh preview when returning to Content tab
+    if (tabId === 'content') {
+      sendUpdate();
+    }
+  }
 }
 
 // ── NAV SUB-TABS SWITCHER (CONTENT SIDEBAR LEVEL) ──
@@ -1997,14 +2061,28 @@ async function captureCardCanvas() {
 function handleDownload(format) {
   document.getElementById('dl-wrap').classList.remove('open');
   
+  const docName = document.getElementById('doc-title-input').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_') || 'invitation_card';
+
+  // If in Customize (Canva editor) mode, forward download command to the iframe
+  const isCustomize = document.getElementById('tab-customize').classList.contains('active');
+  if (isCustomize) {
+    const canvaIframe = document.getElementById('canva-editor-iframe');
+    if (canvaIframe && canvaIframe.contentWindow) {
+      canvaIframe.contentWindow.postMessage({
+        type: 'CANVA_TRIGGER_DOWNLOAD',
+        format: format,
+        docName: docName
+      }, '*');
+    }
+    return;
+  }
+
   // Access control check for export formats
   if (!userLoggedIn) {
     showLoginPopup();
     toast('Please log in to download your card.', 'e');
     return;
   }
-  
-  const docName = document.getElementById('doc-title-input').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_') || 'invitation_card';
   
   showDownloadProgress(
     `Generating ${format.toUpperCase()}...`,
