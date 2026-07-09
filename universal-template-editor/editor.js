@@ -7,9 +7,6 @@ const BACKEND_URL = window.location.hostname === "localhost" || window.location.
 // Parse templateId from URL parameter on load
 const urlParams = new URLSearchParams(window.location.search);
 let templateParam = urlParams.get('templateId') || urlParams.get('template') || 'card1';
-if (templateParam === '1' || templateParam === '37' || templateParam === '38') {
-  templateParam = 'card1';
-}
 let activeTemplateId = templateParam;
 let activeProjectId = urlParams.get('projectId') || null;
 
@@ -581,8 +578,10 @@ async function loadTemplate(templateId) {
     });
   }
   
+  const loadId = (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday' || templateId === 'card1') ? 'card1' : templateId;
+
   try {
-    const response = await fetch(`templates/${templateId}/config.json`);
+    const response = await fetch(`templates/${loadId}/config.json`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
     config = await response.json();
@@ -651,7 +650,7 @@ async function loadTemplate(templateId) {
     // Set preview iframe template path directly
     const previewIframe = document.getElementById('card1-iframe');
     if (previewIframe) {
-      previewIframe.src = `templates/${templateId}/template.html`;
+      previewIframe.src = `templates/${loadId}/template.html`;
       
       // Clear previous load listeners and bind direct update trigger
       previewIframe.onload = () => {
@@ -716,12 +715,55 @@ function initializeDataState() {
     styles: JSON.parse(JSON.stringify(DEFAULT_STYLE))
   };
   
+  // Override styles and default fields based on activeTemplateId if it's Muslim, Engagement, or Birthday
+  if (activeTemplateId === 'muslim' || activeTemplateId === '37') {
+    currentData.styles.cardBg = '#113f2a';
+    currentData.styles.bodyBg = '#0b2b1d';
+    currentData.styles.accentColor = '#a48630';
+    currentData.styles.textColor = '#ffffff';
+    currentData.styles.headingColor = '#a48630';
+    currentData.styles.showGanesh = false;
+    currentData.styles.showOm = false;
+    currentData.styles.showCouple = false;
+    
+    currentData.fields.shlokaLine1 = '';
+    currentData.fields.shlokaLine2 = '';
+    currentData.fields.headingText = 'Jalasa-e-Nikah';
+    currentData.fields.brideName = 'SARIYA ANJUM';
+    currentData.fields.groomName = 'AARIF KHAN';
+    currentData.fields.vinitText = 'We cordially invite you to join us on the Nikah ceremony...';
+  } else if (activeTemplateId === 'engagement' || activeTemplateId === '38') {
+    currentData.styles.cardBg = '#dfa8a9';
+    currentData.styles.bodyBg = '#a6686b';
+    currentData.styles.accentColor = '#5b3e31';
+    currentData.styles.textColor = '#5b3e31';
+    currentData.styles.headingColor = '#5b3e31';
+    currentData.styles.showGanesh = false;
+    currentData.styles.showOm = false;
+    
+    currentData.fields.shlokaLine1 = '';
+    currentData.fields.shlokaLine2 = '';
+    currentData.fields.headingText = '।। Engagement Ceremony ।।';
+    currentData.fields.brideName = 'Riya';
+    currentData.fields.groomName = 'Kabir';
+  } else if (activeTemplateId === 'birthday') {
+    currentData.styles.cardBg = '#111e3b';
+    currentData.styles.bodyBg = '#0a1224';
+    currentData.styles.accentColor = '#d4af37';
+    currentData.styles.textColor = '#ffffff';
+    currentData.styles.headingColor = '#d4af37';
+    currentData.styles.showGanesh = false;
+    currentData.styles.showOm = false;
+  }
+
   if (!config) return;
   
   if (config.fields) {
     config.fields.forEach(f => {
       // Set to null to indicate it is not customized yet (shows default in preview, placeholder in editor)
-      currentData.fields[f.id] = null;
+      if (currentData.fields[f.id] === undefined) {
+        currentData.fields[f.id] = null;
+      }
     });
   }
   
@@ -1956,12 +1998,13 @@ function autoSaveUserProject() {
   }
   
   const existingIndex = userProjects.findIndex(p => p.id === activeProjectId);
+  const loadId = (activeTemplateId === '1' || activeTemplateId === '37' || activeTemplateId === '38' || activeTemplateId === 'muslim' || activeTemplateId === 'engagement' || activeTemplateId === 'birthday' || activeTemplateId === 'card1') ? 'card1' : activeTemplateId;
   const projectData = {
     id: activeProjectId,
     templateId: activeTemplateId,
     documentTitle: docTitle,
     lastSaved: new Date().toISOString(),
-    thumbnail: `templates/${activeTemplateId}/thumbnail.jpg`,
+    thumbnail: `templates/${loadId}/thumbnail.jpg`,
     data: JSON.parse(JSON.stringify(currentData))
   };
   
