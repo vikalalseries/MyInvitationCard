@@ -45,6 +45,22 @@ async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
     containerBox.style.height = newCanvasHeight + 'px';
   }
 
+  // Calculate scaled section bounds for section-wise borders
+  const sections = cardEl.querySelectorAll('.sec');
+  const sectionBounds = [];
+  const scale = canvasWidth / cardWidth;
+  sections.forEach(sec => {
+    const secRect = sec.getBoundingClientRect();
+    sectionBounds.push({
+      left: (secRect.left - cardRect.left) * scale,
+      top: (secRect.top - cardRect.top) * scale,
+      width: secRect.width * scale,
+      height: secRect.height * scale
+    });
+  });
+  window.cardSectionsBounds = sectionBounds;
+  console.log("Calculated card section bounds:", window.cardSectionsBounds);
+
   // Wait for ALL images inside the card to be fully loaded
   const allImages = cardEl.querySelectorAll('img');
   if (allImages.length > 0) {
@@ -62,6 +78,10 @@ async function parseHtmlToFabric(iframe, canvas, pageIndex = 0) {
   // Capture the ENTIRE card (with all text, images, backgrounds, borders)
   // using html2canvas for pixel-perfect rendering
   try {
+    // Hide pre-added corner florettes so they are not captured in the background image
+    const preAddedFl = cardEl.querySelectorAll('.fl');
+    preAddedFl.forEach(el => el.style.setProperty('display', 'none', 'important'));
+
     const capturedCanvas = await html2canvas(cardEl, {
       backgroundColor: null,
       scale: 2,        // 2x for sharp/retina quality
