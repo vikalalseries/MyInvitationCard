@@ -4111,7 +4111,6 @@
       });
     }
 
-    // HISTORY CONTROL (UNDO / REDO)
     function saveHistory() {
       if (!isSavingHistory) return;
       
@@ -4121,6 +4120,22 @@
       
       updateUndoRedoButtonsState();
       refreshLayersList();
+
+      // Notify parent about save status if embedded
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'CANVA_SAVE_STATUS',
+          text: 'Saving...'
+        }, '*');
+        
+        if (window.canvaSaveTimeout) clearTimeout(window.canvaSaveTimeout);
+        window.canvaSaveTimeout = setTimeout(() => {
+          window.parent.postMessage({
+            type: 'CANVA_SAVE_STATUS',
+            text: 'Draft Saved'
+          }, '*');
+        }, 800);
+      }
     }
 
     function undo() {
@@ -8299,6 +8314,35 @@
       isSavingHistory = true;
       saveHistory();
     }
+
+    // Embedded Mode Check & CSS Injection
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('embed') === 'true') {
+      document.body.classList.add('is-embedded');
+      
+      const style = document.createElement('style');
+      style.textContent = `
+        body.is-embedded .topbar {
+          display: none !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // postMessage listener for download and rename commands from parent editor
+    window.addEventListener('message', function(e) {
+      const d = e.data;
+      if (!d) return;
+      
+      if (d.type === 'CANVA_TRIGGER_DOWNLOAD') {
+        handleCanvaDownload(d.format);
+      } else if (d.type === 'CANVA_RENAME_PROJECT') {
+        const titleEl = document.getElementById('project-title');
+        if (titleEl) {
+          titleEl.value = d.title;
+        }
+      }
+    });
   </script>
 </body>
 </html>
