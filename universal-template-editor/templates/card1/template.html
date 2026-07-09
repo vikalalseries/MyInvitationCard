@@ -745,9 +745,17 @@ function applyIconReplacements(style) {
   ICON_REPLACEMENT_MAP.forEach(item => {
     const value = replacements[item.key];
     let src = typeof value === 'string' ? value : value && value.file ? value.file : item.defaultSrc;
-    if (src && src.startsWith('../builder1/')) {
-      src = '../../../' + src.substring(3);
+    
+    if (src) {
+      if (src.includes('builder1/assets/icons/')) {
+        const idx = src.indexOf('builder1/assets/icons/');
+        src = '../../../' + src.substring(idx);
+      } else if (src.includes('assets/icons/')) {
+        const idx = src.indexOf('assets/icons/');
+        src = '../../../' + src.substring(idx);
+      }
     }
+    
     document.querySelectorAll(item.selector).forEach(img => {
       if (!img.dataset.defaultSrc) {
         img.dataset.defaultSrc = img.getAttribute('src') || item.defaultSrc;
