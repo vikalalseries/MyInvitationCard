@@ -2653,9 +2653,27 @@
               <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Border Style</span>
               <select id="card-border-style" onchange="updateCardBorder()" style="width: 100%; height: 34px; border: 1px solid var(--g200); border-radius: 8px; padding: 0 8px; outline: none; background: #fff; font-size: 12px; color: var(--g800);">
                 <option value="none">None (No Border)</option>
-                <option value="solid">Solid Single Line</option>
-                <option value="double">Double Thin Line</option>
-                <option value="dashed">Dashed Line</option>
+                <option value="classic" selected>Classic Frame</option>
+                <option value="double">Double Frame</option>
+                <option value="thin">Thin Frame</option>
+                <option value="dashed">Dashed Frame</option>
+                <option value="ornate">Ornate Frame</option>
+                <option value="luxe">Luxe Frame</option>
+                <option value="modern">Modern Frame</option>
+                <option value="minimal">Minimal Frame</option>
+                <option value="art-deco">Art Deco Frame</option>
+                <option value="vintage">Vintage Frame</option>
+                <option value="retro">Retro Frame</option>
+                <option value="elegant">Elegant Frame</option>
+                <option value="bold">Bold Frame</option>
+              </select>
+            </div>
+
+            <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Border Scope</span>
+              <select id="card-border-scope" onchange="updateCardBorder()" style="width: 100%; height: 34px; border: 1px solid var(--g200); border-radius: 8px; padding: 0 8px; outline: none; background: #fff; font-size: 12px; color: var(--g800);">
+                <option value="whole">Whole Card</option>
+                <option value="section" selected>Section Wise</option>
               </select>
             </div>
 
@@ -2678,8 +2696,8 @@
             <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
               <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Border Color</span>
               <div style="display: flex; gap: 8px; align-items: center;">
-                <input type="color" id="card-border-color" value="#d4af37" onchange="updateCardBorder()" style="border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; padding: 0; background: none;">
-                <span id="label-border-color-hex" style="font-size: 12px; color: var(--g500); font-family: monospace;">#d4af37</span>
+                <input type="color" id="card-border-color" value="#8b0040" onchange="updateCardBorder()" style="border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; padding: 0; background: none;">
+                <span id="label-border-color-hex" style="font-size: 12px; color: var(--g500); font-family: monospace;">#8B0040</span>
               </div>
             </div>
           </div>
@@ -2690,10 +2708,13 @@
               <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Ornament Style</span>
               <select id="card-ornament-style" onchange="updateCardOrnaments()" style="width: 100%; height: 34px; border: 1px solid var(--g200); border-radius: 8px; padding: 0 8px; outline: none; background: #fff; font-size: 12px; color: var(--g800);">
                 <option value="none">None (No Ornaments)</option>
-                <option value="traditional">Traditional Swirl</option>
-                <option value="floral">Elegant Floral</option>
-                <option value="geometric">Geometric Art-Deco</option>
-                <option value="royal">Royal Mandap</option>
+                <option value="traditional-blossom" selected>✿ Traditional Blossom</option>
+                <option value="light-flower">❀ Light Flower</option>
+                <option value="swirly-flower">❊ Swirly Flower</option>
+                <option value="geometric-star">❖ Geometric Star</option>
+                <option value="royal-fleur-de-lis">⚜ Royal Fleur-de-lis</option>
+                <option value="cherry-blossom-emoji">🌸 Cherry Blossom (Emoji)</option>
+                <option value="white-flower-emoji">💮 White Flower (Emoji)</option>
               </select>
             </div>
 
@@ -2708,8 +2729,8 @@
             <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
               <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Ornament Color</span>
               <div style="display: flex; gap: 8px; align-items: center;">
-                <input type="color" id="card-ornament-color" value="#d4af37" onchange="updateCardOrnaments()" style="border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; padding: 0; background: none;">
-                <span id="label-ornament-color-hex" style="font-size: 12px; color: var(--g500); font-family: monospace;">#d4af37</span>
+                <input type="color" id="card-ornament-color" value="#8b0040" onchange="updateCardOrnaments()" style="border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; padding: 0; background: none;">
+                <span id="label-ornament-color-hex" style="font-size: 12px; color: var(--g500); font-family: monospace;">#8B0040</span>
               </div>
             </div>
           </div>
@@ -6483,6 +6504,8 @@
           // Generate page dynamically from iframe
           const iframe = document.getElementById('bg-template-frame');
           parseHtmlToFabric(iframe, canvas, activePage - 1).then(() => {
+            updateCardBorder();
+            updateCardOrnaments();
             isSavingHistory = true;
             refreshLayersList();
             if (typeof updateCustomScrollbar === 'function') {
@@ -7819,44 +7842,187 @@
         return;
       }
 
-      const borderOptions = {
-        left: inset,
-        top: inset,
-        width: canvas.getWidth() - (inset * 2) - thickness,
-        height: canvas.getHeight() - (inset * 2) - thickness,
-        fill: 'transparent',
-        stroke: color,
-        strokeWidth: thickness,
-        selectable: false,
-        evented: false,
-        name: 'card-border',
-        hoverCursor: 'default'
-      };
+      const W = canvas.getWidth();
+      const H = canvas.getHeight();
 
-      if (style === 'dashed') {
-        borderOptions.strokeDashArray = [10, 5];
+      // Read border scope option
+      const scope = document.getElementById("card-border-scope")?.value || "whole";
+      let targets = [];
+      if (scope === "section") {
+        let sections = window.cardSectionsBounds;
+        if (!sections || sections.length === 0) {
+          // Default: split in 2 vertically stacked sections
+          sections = [
+            { left: 0, top: 0, width: W, height: H / 2 },
+            { left: 0, top: H / 2, width: W, height: H / 2 }
+          ];
+        }
+        targets = sections;
+      } else {
+        targets = [{ left: 0, top: 0, width: W, height: H }];
       }
 
-      const mainBorder = new fabric.Rect(borderOptions);
-      canvas.add(mainBorder);
-
-      if (style === 'double') {
-        const innerInset = inset + (thickness * 2);
-        const innerBorder = new fabric.Rect({
-          left: innerInset,
-          top: innerInset,
-          width: canvas.getWidth() - (innerInset * 2) - Math.max(1, thickness / 2),
-          height: canvas.getHeight() - (innerInset * 2) - Math.max(1, thickness / 2),
+      // Basic helper to add a rectangle border
+      function addRectBorder(x, y, w, h, strokeW, dashArray, extraName, customOptions = {}) {
+        const borderObj = new fabric.Rect({
+          left: x,
+          top: y,
+          width: w,
+          height: h,
           fill: 'transparent',
           stroke: color,
-          strokeWidth: Math.max(1, thickness / 2),
+          strokeWidth: strokeW,
           selectable: false,
           evented: false,
-          name: 'card-border-inner',
-          hoverCursor: 'default'
+          name: extraName || 'card-border',
+          hoverCursor: 'default',
+          ...customOptions
         });
-        canvas.add(innerBorder);
+        if (dashArray) {
+          borderObj.strokeDashArray = dashArray;
+        }
+        canvas.add(borderObj);
+        return borderObj;
       }
+
+      // Draw borders for each target section
+      targets.forEach(target => {
+        const tLeft = target.left + inset;
+        const tTop = target.top + inset;
+        const tWidth = target.width - (inset * 2) - thickness;
+        const tHeight = target.height - (inset * 2) - thickness;
+
+        if (style === 'classic' || style === 'solid') {
+          addRectBorder(tLeft, tTop, tWidth, tHeight, thickness);
+
+        } else if (style === 'double') {
+          addRectBorder(tLeft, tTop, tWidth, tHeight, thickness);
+          const innerInset = inset + (thickness * 2);
+          const innerStrokeWidth = Math.max(1, thickness / 2);
+          addRectBorder(target.left + innerInset, target.top + innerInset, target.width - (innerInset * 2) - innerStrokeWidth, target.height - (innerInset * 2) - innerStrokeWidth, innerStrokeWidth, null, 'card-border-inner');
+
+        } else if (style === 'thin') {
+          const thinThickness = Math.max(1, Math.round(thickness / 3));
+          addRectBorder(target.left + inset, target.top + inset, target.width - (inset * 2) - thinThickness, target.height - (inset * 2) - thinThickness, thinThickness);
+
+        } else if (style === 'dashed') {
+          addRectBorder(tLeft, tTop, tWidth, tHeight, thickness, [10, 5]);
+
+        } else if (style === 'ornate') {
+          addRectBorder(tLeft, tTop, tWidth, tHeight, thickness);
+          
+          const innerInset = inset + (thickness * 2) + 2;
+          const innerStroke = Math.max(1, thickness / 2.5);
+          addRectBorder(target.left + innerInset, target.top + innerInset, target.width - (innerInset * 2) - innerStroke, target.height - (innerInset * 2) - innerStroke, innerStroke, null, 'card-border-inner');
+
+          const sqSize = Math.max(4, thickness * 1.5);
+          const corners = [
+            { x: target.left + innerInset - sqSize/2, y: target.top + innerInset - sqSize/2 },
+            { x: target.left + target.width - innerInset - sqSize/2, y: target.top + innerInset - sqSize/2 },
+            { x: target.left + innerInset - sqSize/2, y: target.top + target.height - innerInset - sqSize/2 },
+            { x: target.left + target.width - innerInset - sqSize/2, y: target.top + target.height - innerInset - sqSize/2 }
+          ];
+          corners.forEach(c => {
+            const sq = new fabric.Rect({
+              left: c.x,
+              top: c.y,
+              width: sqSize,
+              height: sqSize,
+              fill: color,
+              selectable: false,
+              evented: false,
+              name: 'card-border-inner',
+              hoverCursor: 'default'
+            });
+            canvas.add(sq);
+          });
+
+        } else if (style === 'luxe') {
+          addRectBorder(tLeft, tTop, tWidth, tHeight, thickness);
+          
+          const innerInset = inset + (thickness * 2) + 4;
+          const innerStroke = Math.max(1, thickness / 2);
+          addRectBorder(target.left + innerInset, target.top + innerInset, target.width - (innerInset * 2) - innerStroke, target.height - (innerInset * 2) - innerStroke, innerStroke, null, 'card-border-inner');
+
+          const dSize = Math.max(6, thickness * 1.8);
+          const corners = [
+            { x: target.left + inset + thickness, y: target.top + inset + thickness },
+            { x: target.left + target.width - inset - thickness - dSize/2, y: target.top + inset + thickness },
+            { x: target.left + inset + thickness, y: target.top + target.height - inset - thickness - dSize/2 },
+            { x: target.left + target.width - inset - thickness - dSize/2, y: target.top + target.height - inset - thickness - dSize/2 }
+          ];
+          corners.forEach(c => {
+            const d = new fabric.Rect({
+              left: c.x,
+              top: c.y,
+              width: dSize,
+              height: dSize,
+              fill: color,
+              selectable: false,
+              evented: false,
+              angle: 45,
+              name: 'card-border-inner',
+              hoverCursor: 'default',
+              originX: 'center',
+              originY: 'center'
+            });
+            canvas.add(d);
+          });
+
+        } else if (style === 'modern') {
+          const outerStroke = Math.max(1, thickness / 2);
+          addRectBorder(target.left + inset, target.top + inset, target.width - (inset * 2) - outerStroke, target.height - (inset * 2) - outerStroke, outerStroke);
+
+          const innerInset = inset + (thickness * 2);
+          const innerStroke = Math.max(1, thickness / 2);
+          addRectBorder(target.left + innerInset, target.top + innerInset, target.width - (innerInset * 2) - innerStroke, target.height - (innerInset * 2) - innerStroke, innerStroke, [6, 4], 'card-border-inner');
+
+        } else if (style === 'minimal') {
+          const thinStroke = Math.max(1, thickness / 4);
+          addRectBorder(target.left + inset, target.top + inset, target.width - (inset * 2) - thinStroke, target.height - (inset * 2) - thinStroke, thinStroke, null, 'card-border', { opacity: 0.6 });
+
+        } else if (style === 'art-deco') {
+          const strokeW = Math.max(1, thickness / 3);
+          addRectBorder(target.left + inset, target.top + inset, target.width - (inset * 2) - strokeW, target.height - (inset * 2) - strokeW, strokeW);
+
+          const inner1 = inset + (thickness * 1.5);
+          addRectBorder(target.left + inner1, target.top + inner1, target.width - (inner1 * 2) - strokeW, target.height - (inner1 * 2) - strokeW, strokeW, null, 'card-border-inner');
+
+          const inner2 = inset + (thickness * 3);
+          addRectBorder(target.left + inner2, target.top + inner2, target.width - (inner2 * 2) - strokeW, target.height - (inner2 * 2) - strokeW, strokeW, null, 'card-border-inner');
+
+        } else if (style === 'vintage') {
+          addRectBorder(tLeft, tTop, tWidth, tHeight, thickness);
+
+          const innerInset = inset + (thickness * 2) + 2;
+          const innerStroke = Math.max(1, thickness / 3);
+          addRectBorder(target.left + innerInset, target.top + innerInset, target.width - (innerInset * 2) - innerStroke, target.height - (innerInset * 2) - innerStroke, innerStroke, [2, 4], 'card-border-inner');
+
+        } else if (style === 'retro') {
+          addRectBorder(tLeft, tTop, tWidth, tHeight, thickness);
+          
+          const shadowOffset = Math.max(3, thickness * 1.2);
+          addRectBorder(tLeft + shadowOffset, tTop + shadowOffset, tWidth, tHeight, thickness, null, 'card-border-inner', { opacity: 0.35 });
+
+        } else if (style === 'elegant') {
+          const outerStroke = thickness;
+          const rx = 15;
+          const ry = 15;
+          addRectBorder(target.left + inset, target.top + inset, target.width - (inset * 2) - outerStroke, target.height - (inset * 2) - outerStroke, outerStroke, null, 'card-border', { rx, ry });
+
+          const innerInset = inset + (thickness * 2);
+          const innerStroke = Math.max(1, thickness / 2);
+          addRectBorder(target.left + innerInset, target.top + innerInset, target.width - (innerInset * 2) - innerStroke, target.height - (innerInset * 2) - innerStroke, innerStroke, null, 'card-border-inner', { rx: Math.max(0, rx - thickness), ry: Math.max(0, ry - thickness) });
+
+        } else if (style === 'bold') {
+          const boldThickness = thickness * 1.6;
+          addRectBorder(target.left + inset, target.top + inset, target.width - (inset * 2) - boldThickness, target.height - (inset * 2) - boldThickness, boldThickness);
+          
+          const innerInset = inset + boldThickness + Math.max(2, thickness / 2);
+          const innerStroke = Math.max(1, thickness / 3);
+          addRectBorder(target.left + innerInset, target.top + innerInset, target.width - (innerInset * 2) - innerStroke, target.height - (innerInset * 2) - innerStroke, innerStroke, null, 'card-border-inner');
+        }
+      });
 
       adjustTextureAndBackgroundZIndices();
 
@@ -7886,71 +8052,162 @@
         return;
       }
 
-      const paths = {
-        'traditional': 'M 0,0 C 15,0 25,10 25,25 C 25,35 15,45 0,45 C 5,40 10,30 10,25 C 10,15 0,10 0,0 Z',
-        'floral': 'M 0,0 C 20,5 35,20 40,40 C 35,35 20,20 0,0 Z M 15,5 C 22,8 28,15 30,22 C 25,22 18,15 15,5 Z',
-        'geometric': 'M 0,0 L 40,0 L 40,6 L 6,6 L 6,40 L 0,40 Z M 12,12 L 28,12 L 28,15 L 15,15 L 15,28 L 12,28 Z',
-        'royal': 'M 0,0 L 45,0 C 40,10 30,20 30,30 C 30,40 40,45 45,45 L 0,45 Z'
-      };
+      const W = canvas.getWidth();
+      const H = canvas.getHeight();
 
-      const pathStr = paths[style];
-      if (!pathStr) return;
+      // Read border scope option
+      const scope = document.getElementById("card-border-scope")?.value || "whole";
+      let targets = [];
+      if (scope === "section") {
+        let sections = window.cardSectionsBounds;
+        if (!sections || sections.length === 0) {
+          // Default: split in 2 vertically stacked sections
+          sections = [
+            { left: 0, top: 0, width: W, height: H / 2 },
+            { left: 0, top: H / 2, width: W, height: H / 2 }
+          ];
+        }
+        targets = sections;
+      } else {
+        targets = [{ left: 0, top: 0, width: W, height: H }];
+      }
 
-      const tl = new fabric.Path(pathStr, {
-        left: borderInset,
-        top: borderInset,
-        fill: color,
-        selectable: false,
-        evented: false,
-        name: 'card-corner-tl',
-        hoverCursor: 'default',
-        originX: 'left',
-        originY: 'top'
-      });
+      const isEmoji = style.endsWith('-emoji');
+      let emojiChar = '';
+      if (style === 'cherry-blossom-emoji') emojiChar = '🌸';
+      else if (style === 'white-flower-emoji') emojiChar = '💮';
 
-      const tr = new fabric.Path(pathStr, {
-        left: canvas.getWidth() - borderInset,
-        top: borderInset,
-        fill: color,
-        selectable: false,
-        evented: false,
-        name: 'card-corner-tr',
-        hoverCursor: 'default',
-        originX: 'left',
-        originY: 'top',
-        angle: 90
-      });
+      targets.forEach((target, index) => {
+        const suffix = `${index}`;
 
-      const br = new fabric.Path(pathStr, {
-        left: canvas.getWidth() - borderInset,
-        top: canvas.getHeight() - borderInset,
-        fill: color,
-        selectable: false,
-        evented: false,
-        name: 'card-corner-br',
-        hoverCursor: 'default',
-        originX: 'left',
-        originY: 'top',
-        angle: 180
-      });
+        if (isEmoji && emojiChar) {
+          const tl = new fabric.Text(emojiChar, {
+            left: target.left + borderInset,
+            top: target.top + borderInset,
+            fontSize: size,
+            selectable: false,
+            evented: false,
+            name: 'card-corner-tl-' + suffix,
+            hoverCursor: 'default',
+            originX: 'left',
+            originY: 'top'
+          });
 
-      const bl = new fabric.Path(pathStr, {
-        left: borderInset,
-        top: canvas.getHeight() - borderInset,
-        fill: color,
-        selectable: false,
-        evented: false,
-        name: 'card-corner-bl',
-        hoverCursor: 'default',
-        originX: 'left',
-        originY: 'top',
-        angle: 270
-      });
+          const tr = new fabric.Text(emojiChar, {
+            left: target.left + target.width - borderInset - size,
+            top: target.top + borderInset,
+            fontSize: size,
+            selectable: false,
+            evented: false,
+            name: 'card-corner-tr-' + suffix,
+            hoverCursor: 'default',
+            originX: 'left',
+            originY: 'top'
+          });
 
-      [tl, tr, bl, br].forEach(obj => {
-        obj.scaleToWidth(size);
-        canvas.add(obj);
-        obj.bringToFront();
+          const br = new fabric.Text(emojiChar, {
+            left: target.left + target.width - borderInset - size,
+            top: target.top + target.height - borderInset - size,
+            fontSize: size,
+            selectable: false,
+            evented: false,
+            name: 'card-corner-br-' + suffix,
+            hoverCursor: 'default',
+            originX: 'left',
+            originY: 'top'
+          });
+
+          const bl = new fabric.Text(emojiChar, {
+            left: target.left + borderInset,
+            top: target.top + target.height - borderInset - size,
+            fontSize: size,
+            selectable: false,
+            evented: false,
+            name: 'card-corner-bl-' + suffix,
+            hoverCursor: 'default',
+            originX: 'left',
+            originY: 'top'
+          });
+
+          [tl, tr, bl, br].forEach(obj => {
+            canvas.add(obj);
+            obj.bringToFront();
+          });
+
+        } else {
+          const paths = {
+            'traditional': 'M 0,0 C 15,0 25,10 25,25 C 25,35 15,45 0,45 C 5,40 10,30 10,25 C 10,15 0,10 0,0 Z',
+            'floral': 'M 0,0 C 20,5 35,20 40,40 C 35,35 20,20 0,0 Z M 15,5 C 22,8 28,15 30,22 C 25,22 18,15 15,5 Z',
+            'geometric': 'M 0,0 L 40,0 L 40,6 L 6,6 L 6,40 L 0,40 Z M 12,12 L 28,12 L 28,15 L 15,15 L 15,28 L 12,28 Z',
+            'royal': 'M 0,0 L 45,0 C 40,10 30,20 30,30 C 30,40 40,45 45,45 L 0,45 Z',
+
+            'traditional-blossom': 'M 0,0 L 20,0 L 20,2 L 2,2 L 2,20 L 0,20 Z M 15,10 C 17.5,10 19,12.5 19,15 C 19,17.5 17.5,19 15,19 C 12.5,19 11,17.5 11,15 C 11,12.5 12.5,10 15,10 Z M 15,5 C 20,5 20,10 18,12 C 22,12 25,15 22,18 C 20,22 15,20 15,25 C 10,25 10,20 8,18 C 5,15 8,12 12,12 C 10,10 10,5 15,5 Z',
+            'light-flower': 'M 0,0 C 15,0 20,5 20,20 C 20,25 25,30 30,30 M 20,20 C 18,15 22,12 25,15 C 28,18 25,22 20,20 C 15,18 12,22 15,25 C 18,28 22,25 20,20 Z',
+            'swirly-flower': 'M 0,0 C 10,0 15,5 20,10 Q 25,5 30,10 Q 35,5 40,10 C 35,15 30,15 25,20 C 25,25 20,30 20,35 C 15,30 15,25 10,20 C 10,15 5,10 0,0 Z M 20,15 C 22,13 25,13 27,15 C 29,17 29,20 27,22 C 25,24 22,24 20,22 Z',
+            'geometric-star': 'M 0,0 L 25,0 L 25,2 L 2,2 L 2,25 L 0,25 Z M 15,15 L 20,7 L 25,15 L 33,20 L 25,25 L 20,33 L 15,25 L 7,20 Z M 20,17 A 3,3 0 1,1 19.9,17 Z',
+            'royal-fleur-de-lis': 'M 0,0 L 20,0 L 20,2 L 2,2 L 2,20 L 0,20 Z M 20,10 C 20,5 15,5 15,0 C 15,5 10,5 10,10 C 10,15 15,15 15,25 C 15,15 20,15 20,10 Z M 15,12 C 17,12 18,14 18,16 C 18,18 16,19 14,19 C 14,17 13,16 15,12 Z'
+          };
+
+          const pathStr = paths[style];
+          if (!pathStr) return;
+
+          const tl = new fabric.Path(pathStr, {
+            left: target.left + borderInset,
+            top: target.top + borderInset,
+            fill: color,
+            selectable: false,
+            evented: false,
+            name: 'card-corner-tl-' + suffix,
+            hoverCursor: 'default',
+            originX: 'left',
+            originY: 'top'
+          });
+
+          const tr = new fabric.Path(pathStr, {
+            left: target.left + target.width - borderInset,
+            top: target.top + borderInset,
+            fill: color,
+            selectable: false,
+            evented: false,
+            name: 'card-corner-tr-' + suffix,
+            hoverCursor: 'default',
+            originX: 'left',
+            originY: 'top',
+            angle: 90
+          });
+
+          const br = new fabric.Path(pathStr, {
+            left: target.left + target.width - borderInset,
+            top: target.top + target.height - borderInset,
+            fill: color,
+            selectable: false,
+            evented: false,
+            name: 'card-corner-br-' + suffix,
+            hoverCursor: 'default',
+            originX: 'left',
+            originY: 'top',
+            angle: 180
+          });
+
+          const bl = new fabric.Path(pathStr, {
+            left: target.left + borderInset,
+            top: target.top + target.height - borderInset,
+            fill: color,
+            selectable: false,
+            evented: false,
+            name: 'card-corner-bl-' + suffix,
+            hoverCursor: 'default',
+            originX: 'left',
+            originY: 'top',
+            angle: 270
+          });
+
+          [tl, tr, bl, br].forEach(obj => {
+            obj.scaleToWidth(size);
+            canvas.add(obj);
+            obj.bringToFront();
+          });
+        }
       });
 
       canvas.requestRenderAll();
