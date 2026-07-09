@@ -113,7 +113,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 // Load template config
 async function loadTemplateConfig() {
   try {
-    const response = await fetch(`templates/${orderConfig.templateId}/config.json`);
+    const tId = orderConfig.templateId || 'card1';
+    const loadId = (tId === '1' || tId === '37' || tId === '38' || tId === 'muslim' || tId === 'engagement' || tId === 'birthday' || tId === 'card1') ? 'card1' : tId;
+    const response = await fetch(`templates/${loadId}/config.json`);
     if (response.ok) {
       config = await response.json();
     }
@@ -167,7 +169,9 @@ function initializeSummaryUI() {
   // Setup miniature preview iframe
   const iframe = document.getElementById('iframe-checkout-preview');
   if (iframe) {
-    iframe.src = `templates/${orderConfig.templateId}/template.html`;
+    const tId = orderConfig.templateId || 'card1';
+    const loadId = (tId === '1' || tId === '37' || tId === '38' || tId === 'muslim' || tId === 'engagement' || tId === 'birthday' || tId === 'card1') ? 'card1' : tId;
+    iframe.src = `templates/${loadId}/template.html`;
     iframe.onload = () => {
       // Sync customized texts resolving defaults
       syncCheckoutIframeData(iframe);

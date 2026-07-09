@@ -343,7 +343,8 @@ async function setupIframePreview() {
   if (!iframe) return;
   
   const templateId = orderConfig.templateId || 'card1';
-  iframe.src = `templates/${templateId}/template.html`;
+  const loadId = (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday' || templateId === 'card1') ? 'card1' : templateId;
+  iframe.src = `templates/${loadId}/template.html`;
   
   // Fetch template title
   document.getElementById("checkout-card-title").textContent = orderConfig.documentTitle || "Wedding Card";
@@ -363,7 +364,7 @@ async function setupIframePreview() {
   // Fetch template configuration for preview sync
   let config = null;
   try {
-    const response = await fetch(`templates/${templateId}/config.json`);
+    const response = await fetch(`templates/${loadId}/config.json`);
     if (response.ok) {
       config = await response.json();
     }

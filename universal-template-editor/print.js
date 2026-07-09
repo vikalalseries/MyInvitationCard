@@ -127,7 +127,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 // Load template config
 async function loadTemplateConfig() {
   try {
-    const response = await fetch(`templates/${templateId}/config.json`);
+    const loadId = (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday' || templateId === 'card1') ? 'card1' : templateId;
+    const response = await fetch(`templates/${loadId}/config.json`);
     if (response.ok) {
       config = await response.json();
     }
@@ -220,7 +221,8 @@ function setRadioChecked(name, value) {
 
 // Initialize Iframes
 function initializeIframes() {
-  const templatePath = `templates/${templateId}/template.html`;
+  const loadId = (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday' || templateId === 'card1') ? 'card1' : templateId;
+  const templatePath = `templates/${loadId}/template.html`;
   
   // A list of all iframes on this page
   const iframeIds = [
@@ -645,7 +647,8 @@ function openZoomInspector(page) {
   
   modal.classList.add('active');
   
-  const templatePath = `templates/${templateId}/template.html`;
+  const loadId = (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday' || templateId === 'card1') ? 'card1' : templateId;
+  const templatePath = `templates/${loadId}/template.html`;
   iframe.src = templatePath;
   iframe.onload = () => {
     syncIframeData(iframe);
@@ -1258,12 +1261,13 @@ function saveDraft() {
     targetProjectId = 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
+  const loadId = (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday' || templateId === 'card1') ? 'card1' : templateId;
   const projectData = {
     id: targetProjectId,
     templateId: templateId,
     documentTitle: targetDocTitle,
     lastSaved: new Date().toISOString(),
-    thumbnail: `templates/${templateId}/thumbnail.jpg`,
+    thumbnail: `templates/${loadId}/thumbnail.jpg`,
     data: currentData || { fields: {}, events: {}, styles: {} },
     printConfig: {
       quantity,
@@ -1339,7 +1343,8 @@ function triggerLocalPrint() {
   toast("Preparing PDF for local printing...", "i");
   const hiddenIframe = document.getElementById('print-iframe-hidden');
   if (hiddenIframe) {
-    hiddenIframe.src = `templates/${templateId}/template.html`;
+    const loadId = (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday' || templateId === 'card1') ? 'card1' : templateId;
+    hiddenIframe.src = `templates/${loadId}/template.html`;
     hiddenIframe.onload = () => {
       // Send print template updates
       syncIframeData(hiddenIframe);

@@ -41,7 +41,7 @@ let liveOrderPollTimer = null;
 function resolveTemplateFolder(templateId) {
   if (!templateId) return "card1";
   const id = String(templateId).toLowerCase();
-  if (id === "card1" || id === "1" || id === "37" || id === "38" || id.startsWith("card")) {
+  if (id === "card1" || id === "1" || id === "37" || id === "38" || id === "muslim" || id === "engagement" || id === "birthday" || id.startsWith("card")) {
     return "card1";
   }
   return "card1";

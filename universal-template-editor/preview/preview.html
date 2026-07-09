@@ -187,7 +187,8 @@ const templateId = urlParams.get('template') || 'card1';
 document.getElementById('template-tag').textContent = templateId.toUpperCase();
 
 // Set iframe source
-iframe.src = `../templates/${templateId}/template.html`;
+const loadId = (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday' || templateId === 'card1') ? 'card1' : templateId;
+iframe.src = `../templates/${loadId}/template.html`;
 
 // Listen to template loaded event
 iframe.addEventListener('load', function() {
