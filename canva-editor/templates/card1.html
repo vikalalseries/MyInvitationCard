@@ -34,8 +34,6 @@ body {
   width:21.5cm;
   height:8.5cm;
   position:relative;
-  border:0.07cm solid #8b0040;
-  box-shadow:inset 0 0 0 0.13cm #f2aec8, inset 0 0 0 0.20cm #8b0040;
   overflow:hidden;
   background:
     radial-gradient(ellipse at 15% 20%, rgba(255,255,255,0.52) 0%, transparent 28%),
@@ -512,23 +510,7 @@ const BORDER_FRAME_PRESETS = {
 };
 
 function buildBorderFrameCss(style) {
-  if (style.showBorder === false) {
-    return 'border:none !important; box-shadow:none !important;';
-  }
-  const preset = BORDER_FRAME_PRESETS[style.borderPreset || 'classic'] || BORDER_FRAME_PRESETS.classic;
-  const borderColor = style.borderColor || style.accentColor || '#8b0040';
-  const cardBg = style.cardBg || '#f9f1d0';
-  const shadows = preset.rings.map((ring) => {
-    return `inset 0 0 0 ${ring} ${cardBg}`;
-  }).join(', ');
-  let radius = '';
-  if (style.curveLevel && preset.borderRadius) {
-    const factor = Number(style.curveLevel) / 4;
-    const baseRadius = parseFloat(preset.borderRadius);
-    const radiusValue = (baseRadius * factor).toFixed(3) + 'cm';
-    radius = ` border-radius:${radiusValue};`;
-  }
-  return `border:${preset.width} ${preset.borderStyle} ${borderColor}; box-shadow:${shadows};${radius}`;
+  return 'border:none !important; box-shadow:none !important;';
 }
 
 const ICON_REPLACEMENT_MAP = [
