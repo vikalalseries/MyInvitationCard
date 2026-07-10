@@ -9047,9 +9047,8 @@
         }
       }
       setTimeout(() => {
-        if (typeof fitToScreen === 'function') {
-          fitToScreen();
-        } else if (typeof applyZoomScale === 'function') {
+        zoomLevel = 0.85;
+        if (typeof applyZoomScale === 'function') {
           applyZoomScale();
         }
       }, 100);
