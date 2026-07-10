@@ -506,10 +506,26 @@ function proceedToPaymentPage() {
     }
   }
 
+  if (!userLoggedIn) {
+    showError("Please log in before proceeding to payment.");
+    if (typeof showLoginPopup === 'function') {
+      showLoginPopup();
+    }
+    return;
+  }
+
   completeCheckoutRedirect(fullName, phone, emergencyPhone, address, address2, city, state, pincode);
 }
 
 function completeCheckoutRedirect(fullName, phone, emergencyPhone, address, address2, city, state, pincode) {
+  if (!userLoggedIn) {
+    showError("Please log in first to continue to payment.");
+    if (typeof showLoginPopup === 'function') {
+      showLoginPopup();
+    }
+    return;
+  }
+
   const shippingDetails = {
     fullName,
     phone,

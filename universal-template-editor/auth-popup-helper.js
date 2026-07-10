@@ -36,7 +36,8 @@ function injectLoginPopup() {
     
     <!-- View 1: Welcome Options -->
     <div id="lp-view-welcome" class="lp-view active">
-      <div class="lp-title">Login</div>
+      <div class="lp-title">Login to Continue</div>
+      <p class="lp-subtitle">Please sign in with Google or email to proceed to the payment page.</p>
       <button class="lp-google-btn" onclick="handleGoogleLogin()">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
         Continue with Google

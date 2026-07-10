@@ -2,6 +2,8 @@
    payment.js - Price Summary & Razorpay Payment Logic
    ════════════════════════════════════════════════════════════ */
 
+let userLoggedIn = false;
+
 // Initialize Firebase Auth dynamically to track logged in user
 Promise.all([
   import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
@@ -10,8 +12,10 @@ Promise.all([
   authMod.onAuthStateChanged(configMod.auth, (user) => {
     if (user) {
       window.currentUserUid = user.uid;
+      userLoggedIn = true;
     } else {
       window.currentUserUid = null;
+      userLoggedIn = false;
     }
   });
 }).catch(err => {
@@ -427,6 +431,14 @@ async function setupIframePreview() {
 
 // ── RAZORPAY GATEWAY TRIGGER ──
 function triggerRazorpayPayment() {
+  if (!userLoggedIn) {
+    showError("Please log in before completing the payment.");
+    if (typeof showLoginPopup === 'function') {
+      showLoginPopup();
+    }
+    return;
+  }
+
   const payBtn = document.querySelector('.btn-pay-now');
   const originalBtnText = payBtn ? payBtn.innerHTML : 'Pay Now';
   if (payBtn) {
