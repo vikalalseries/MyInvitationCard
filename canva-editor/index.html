@@ -9018,6 +9018,22 @@
       body.is-preview-mode .preview-bar {
         display: flex !important;
       }
+      body.is-preview-mode .preview-vp {
+        scrollbar-width: thin !important;
+        scrollbar-color: rgba(0, 0, 0, 0.25) transparent !important;
+        scrollbar-gutter: stable !important;
+      }
+      body.is-preview-mode .preview-vp::-webkit-scrollbar {
+        display: block !important;
+        width: 8px !important;
+      }
+      body.is-preview-mode .preview-vp::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.25) !important;
+        border-radius: 4px !important;
+      }
+      body.is-preview-mode .preview-scrollbar-rail {
+        display: none !important;
+      }
       body.is-preview-mode .editor-container {
         height: 100vh !important;
         border-top: none !important;
