@@ -2513,7 +2513,7 @@ window.executeLogout = async function () {
 };
 
 // ── LIVE PREVIEW SCALING ENGINE (EXACT REPLICA OF BUILDER1) ──
-let currentZoom = 75;
+let currentZoom = 85;
 let templateWidth = 893;
 let templateHeight = 760;
 
