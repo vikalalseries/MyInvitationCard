@@ -2,6 +2,13 @@
 <html lang="en">
 
 <head>
+  <script>
+    // Prevent flash of customize UI panels in preview mode on initial load
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('viewMode') === 'preview') {
+      document.documentElement.classList.add('is-preview-mode-init');
+    }
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MyInvitationCard Studio - Canva Mode</title>
@@ -18,6 +25,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="htmlToFabric.js"></script>
   <style>
+    /* FOUC Prevention for Preview mode */
+    html.is-preview-mode-init .left-panel-wrapper,
+    html.is-preview-mode-init .properties-bar,
+    html.is-preview-mode-init .edit-toolbar {
+      display: none !important;
+    }
+
     /* ── DYNAMIC STYLE GUIDE MATCHING UNIVERSAL EDITOR ── */
     :root {
       --w: #ffffff;
@@ -9008,6 +9022,7 @@
     document.head.appendChild(style);
 
     window.setViewMode = function (mode) {
+      document.documentElement.classList.remove('is-preview-mode-init');
       if (mode === 'preview') {
         document.body.classList.add('is-preview-mode');
         if (canvas) {

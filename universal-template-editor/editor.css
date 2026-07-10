@@ -2386,6 +2386,9 @@ input:checked + .slider:before {
 .right-col {
   overflow: visible !important;
 }
+.body.is-customize-active .right-col {
+  z-index: 100 !important;
+}
 .right-col .preview-bar {
   display: none !important;
 }
