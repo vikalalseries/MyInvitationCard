@@ -4,8 +4,7 @@
 <head>
   <script>
     // Prevent flash of customize UI panels in preview mode on initial load
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('viewMode') === 'preview') {
+    if (new URLSearchParams(window.location.search).get('viewMode') === 'preview') {
       document.documentElement.classList.add('is-preview-mode-init');
     }
   </script>
