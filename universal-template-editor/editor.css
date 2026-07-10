@@ -2383,15 +2383,16 @@ input:checked + .slider:before {
 }
 
 /* Canva Editor Integration Overlay Styles */
-.body.is-customize-active .right-col {
+.right-col {
   overflow: visible !important;
 }
-.body.is-customize-active .right-col .preview-bar {
+.right-col .preview-bar {
   display: none !important;
 }
-.body.is-customize-active .preview-vp {
-  overflow: visible !important;
+.preview-vp {
+  overflow: hidden !important;
   height: 100% !important;
+  padding: 0 !important;
 }
 .body.is-customize-active #canva-editor-view {
   left: -66.67% !important;
