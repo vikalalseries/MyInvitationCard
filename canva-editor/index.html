@@ -4562,8 +4562,10 @@
       }
       window.addEventListener('resize', () => {
         updateCustomScrollbar();
-        if (typeof fitToScreen === 'function') {
-          fitToScreen();
+        if (document.body.classList.contains('is-preview-mode')) {
+          if (typeof fitToScreen === 'function') {
+            fitToScreen();
+          }
         }
       });
 
@@ -9043,6 +9045,13 @@
 
     window.setViewMode = function (mode) {
       document.documentElement.classList.remove('is-preview-mode-init');
+      
+      // Reset scroll position to top
+      const vp = document.querySelector('.preview-vp');
+      if (vp) {
+        vp.scrollTop = 0;
+      }
+
       if (mode === 'preview') {
         document.body.classList.add('is-preview-mode');
         if (canvas) {
@@ -9063,9 +9072,15 @@
         }
       }
       setTimeout(() => {
-        zoomLevel = 0.85;
-        if (typeof applyZoomScale === 'function') {
-          applyZoomScale();
+        if (mode === 'preview') {
+          if (typeof fitToScreen === 'function') {
+            fitToScreen();
+          }
+        } else {
+          zoomLevel = 0.85;
+          if (typeof applyZoomScale === 'function') {
+            applyZoomScale();
+          }
         }
       }, 100);
     };
