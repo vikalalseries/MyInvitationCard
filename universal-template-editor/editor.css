@@ -2397,6 +2397,9 @@ input:checked + .slider:before {
   height: 100% !important;
   padding: 0 !important;
 }
+.body.is-customize-active .preview-vp {
+  overflow: visible !important;
+}
 .body.is-customize-active #canva-editor-view {
   left: -66.67% !important;
   width: 166.67% !important;
