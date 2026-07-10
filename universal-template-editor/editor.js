@@ -543,6 +543,10 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         text.textContent = d.text;
       }
+    } else if (d.type === 'CANVA_ZOOM_CHANGED') {
+      const lbl = document.getElementById('z-lvl');
+      if (lbl) lbl.textContent = d.zoom + '%';
+      currentZoom = d.zoom;
     }
   });
 
@@ -577,16 +581,40 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Resize listener for auto-fitting live preview
   window.addEventListener('resize', () => {
-    autoFit();
+    const canvaIframe = document.getElementById('canva-editor-iframe');
+    if (canvaIframe && canvaIframe.contentWindow) {
+      canvaIframe.contentWindow.postMessage({ type: 'CANVA_ZOOM_FIT' }, '*');
+    }
   });
 
   // Bind zoom buttons
   const zIn = document.getElementById('z-in');
   const zOut = document.getElementById('z-out');
   const zFit = document.getElementById('z-fit');
-  if (zIn) zIn.onclick = () => setZoom(currentZoom + 5);
-  if (zOut) zOut.onclick = () => setZoom(currentZoom - 5);
-  if (zFit) zFit.onclick = autoFit;
+  if (zIn) {
+    zIn.onclick = () => {
+      const canvaIframe = document.getElementById('canva-editor-iframe');
+      if (canvaIframe && canvaIframe.contentWindow) {
+        canvaIframe.contentWindow.postMessage({ type: 'CANVA_ZOOM_IN' }, '*');
+      }
+    };
+  }
+  if (zOut) {
+    zOut.onclick = () => {
+      const canvaIframe = document.getElementById('canva-editor-iframe');
+      if (canvaIframe && canvaIframe.contentWindow) {
+        canvaIframe.contentWindow.postMessage({ type: 'CANVA_ZOOM_OUT' }, '*');
+      }
+    };
+  }
+  if (zFit) {
+    zFit.onclick = () => {
+      const canvaIframe = document.getElementById('canva-editor-iframe');
+      if (canvaIframe && canvaIframe.contentWindow) {
+        canvaIframe.contentWindow.postMessage({ type: 'CANVA_ZOOM_FIT' }, '*');
+      }
+    };
+  }
 
   // Initialize customizer elements
   renderColorPresets();
@@ -2555,6 +2583,13 @@ window.executeResetCard = function () {
   // Trigger UI effects
   triggerSaving();
   sendUpdate();
+
+  // Reset Canva Editor canvas elements
+  const canvaIframe = document.getElementById('canva-editor-iframe');
+  if (canvaIframe && canvaIframe.contentWindow) {
+    canvaIframe.contentWindow.postMessage({ type: 'CANVA_RESET' }, '*');
+  }
+
   closeResetConfirm();
   toast('Template defaults restored!', 's');
 };

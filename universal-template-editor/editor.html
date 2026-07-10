@@ -1075,12 +1075,12 @@
 
         <div class="preview-vp" id="preview-vp" style="position: relative;">
           <!-- Canva Editor View (Inline inside the preview column) -->
-          <div id="canva-editor-view" style="display: none; position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: none; z-index: 5;">
+          <div id="canva-editor-view" style="display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: none; z-index: 5;">
             <iframe id="canva-editor-iframe" src="about:blank"
               style="width: 100%; height: 100%; border: none; display: block;"></iframe>
           </div>
 
-          <div id="card1-scaler-wrap">
+          <div id="card1-scaler-wrap" style="display: none;">
             <div class="card1-outer" id="card1-outer">
               <iframe id="card1-iframe" src="about:blank" title="Live Card1 Preview" scrolling="no"
                 sandbox="allow-scripts allow-same-origin"></iframe>

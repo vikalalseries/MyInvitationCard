@@ -896,7 +896,7 @@
     /* PRESETS TAB CONTENT */
     .presets-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 15px;
     }
 
@@ -987,7 +987,7 @@
 
     .elements-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
       gap: 8px;
       margin-bottom: 15px;
     }
@@ -1047,7 +1047,7 @@
     /* BACKGROUNDS TAB CONTENT */
     .bg-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 10px;
       margin-bottom: 15px;
     }
@@ -1238,8 +1238,8 @@
 
     .preview-vp {
       flex: 1;
-      height: calc(100vh - var(--topbar-h) - 50px);
-      max-height: calc(100vh - var(--topbar-h) - 50px);
+      height: calc(100vh - var(--topbar-h) - 46px);
+      max-height: calc(100vh - var(--topbar-h) - 46px);
       overflow-y: scroll;
       overflow-x: hidden;
       display: flex;
@@ -1404,7 +1404,13 @@
       height: 7px;
       border-radius: 50%;
       background: var(--success);
+      animation: pulseLive 2s infinite;
       box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.75); opacity: 0.5; }
     }
 
     .preview-left-grp {
@@ -1597,8 +1603,10 @@
 
     /* LIVE PREVIEW TOP BAR (Matches universal template editor) */
     .preview-bar {
-      height: 50px !important;
-      background-color: var(--w) !important;
+      height: 46px !important;
+      background: rgba(255, 255, 255, 0.85) !important;
+      backdrop-filter: blur(14px) !important;
+      -webkit-backdrop-filter: blur(14px) !important;
       border-bottom: 1px solid var(--g200) !important;
       border-radius: 0 !important;
       box-shadow: none !important;
@@ -2401,8 +2409,8 @@
       align-items: center;
       justify-content: flex-start;
       flex: 1 !important;
-      height: calc(100vh - var(--topbar-h) - 50px) !important;
-      max-height: calc(100vh - var(--topbar-h) - 50px) !important;
+      height: calc(100vh - var(--topbar-h) - 46px) !important;
+      max-height: calc(100vh - var(--topbar-h) - 46px) !important;
       padding: 24px 40px 0px;
       gap: 14px;
       overflow-y: scroll !important;
@@ -2445,12 +2453,16 @@
 
     /* FIX PANEL WIDTHS */
     .left-panel-wrapper {
-      width: auto !important;
-      max-width: 420px;
+      width: 80px !important;
+      transition: width 0.3s ease;
+    }
+
+    .left-panel-wrapper:has(.drawer:not(.collapsed)) {
+      width: 40% !important;
     }
 
     .drawer {
-      width: 340px !important;
+      width: calc(100% - 80px) !important;
       flex: none !important;
     }
 
@@ -6849,6 +6861,12 @@
       queueLivePreviewUpdate();
       const zoomText = document.getElementById('zoom-percentage');
       if (zoomText) zoomText.textContent = Math.round(zoomLevel * 100) + '%';
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'CANVA_ZOOM_CHANGED',
+          zoom: Math.round(zoomLevel * 100)
+        }, '*');
+      }
       if (typeof updateCustomScrollbar === 'function') {
         updateCustomScrollbar();
       }
@@ -8958,8 +8976,8 @@
         border-top: none !important;
       }
       body.is-embedded .preview-vp {
-        height: calc(100vh - 50px) !important;
-        max-height: calc(100vh - 50px) !important;
+        height: calc(100vh - 46px) !important;
+        max-height: calc(100vh - 46px) !important;
       }
       body.is-embedded.is-preview-mode .preview-vp {
         height: 100vh !important;
@@ -8968,7 +8986,7 @@
         justify-content: center !important;
       }
       body.is-embedded:not(.is-preview-mode) .workspace {
-        padding-top: 46px !important;
+        padding-top: 0 !important;
       }
       body.is-preview-mode .left-panel-wrapper {
         display: none !important;
@@ -9267,7 +9285,19 @@
       const d = e.data;
       if (!d) return;
 
-      if (d.type === 'CANVA_TRIGGER_DOWNLOAD') {
+      if (d.type === 'SET_VIEW_MODE') {
+        if (typeof window.setViewMode === 'function') {
+          window.setViewMode(d.mode);
+        }
+      } else if (d.type === 'CANVA_ZOOM_IN') {
+        if (typeof adjustZoom === 'function') adjustZoom(0.05);
+      } else if (d.type === 'CANVA_ZOOM_OUT') {
+        if (typeof adjustZoom === 'function') adjustZoom(-0.05);
+      } else if (d.type === 'CANVA_ZOOM_FIT') {
+        if (typeof fitToScreen === 'function') fitToScreen();
+      } else if (d.type === 'CANVA_RESET') {
+        if (typeof resetCanvasToDefault === 'function') resetCanvasToDefault();
+      } else if (d.type === 'CANVA_TRIGGER_DOWNLOAD') {
         handleCanvaDownload(d.format);
       } else if (d.type === 'CANVA_RENAME_PROJECT') {
         const titleEl = document.getElementById('project-title');
@@ -9352,273 +9382,6 @@
       }
     }
   </script>
-</body>
-
-</html>
-if (document.body.classList.contains('is-preview-mode')) {
-obj.selectable = false;
-obj.evented = false;
-}
-});
-
-canvas.requestRenderAll();
-}
-
-// postMessage listener for download and rename commands from parent editor
-let isSyncingToParent = false;
-function syncCanvasToParentState() {
-if (!window.parent || window.parent === window || !window.parent.currentData) return;
-
-isSyncingToParent = true;
-try {
-const parentData = window.parent.currentData;
-if (!parentData.fields) parentData.fields = {};
-if (!parentData.events) parentData.events = {};
-if (!parentData.styles) parentData.styles = {};
-
-// 1. Sync card background color
-const bg = canvas.backgroundColor;
-if (bg && typeof bg === 'string') {
-parentData.styles.cardBg = bg;
-}
-
-// 2. Sync objects by name
-canvas.getObjects().forEach(obj => {
-if (!obj.name) return;
-
-if (obj.type === 'text' || obj.type === 'i-text' || obj.type === 'textbox') {
-const text = obj.text;
-
-switch (obj.name) {
-case 'Shloka': {
-const lines = text.split('\n');
-parentData.fields.shlokaLine1 = lines[0] || '';
-parentData.fields.shlokaLine2 = lines.slice(1).join('\n') || '';
-break;
-}
-case 'Heading':
-parentData.fields.headingText = text;
-break;
-case 'Haldi Title':
-if (!parentData.events.haldi) parentData.events.haldi = {};
-parentData.events.haldi.name = text;
-break;
-case 'Haldi Date':
-if (!parentData.events.haldi) parentData.events.haldi = {};
-parentData.events.haldi.date = text;
-break;
-case 'Vivah Title':
-if (!parentData.events.vivah) parentData.events.vivah = {};
-parentData.events.vivah.name = text;
-break;
-case 'Vivah Date':
-if (!parentData.events.vivah) parentData.events.vivah = {};
-parentData.events.vivah.date = text;
-break;
-case 'Vidai Title':
-if (!parentData.events.vidai) parentData.events.vidai = {};
-parentData.events.vidai.name = text;
-break;
-case 'Vidai Date':
-if (!parentData.events.vidai) parentData.events.vidai = {};
-parentData.events.vidai.date = text;
-break;
-case 'Bride Title':
-parentData.fields.brideTitle = text;
-break;
-case 'Bride Name':
-parentData.fields.brideName = text;
-break;
-case 'Bride Grandparents':
-parentData.fields.brideGrandparents = text;
-break;
-case 'Bride Parents':
-parentData.fields.brideParents = text;
-break;
-case 'Bride Address':
-parentData.fields.brideAddress = text;
-break;
-case 'Bride City':
-parentData.fields.brideCity = text;
-break;
-case 'Groom Title':
-parentData.fields.groomTitle = text;
-break;
-case 'Groom Name':
-parentData.fields.groomName = text;
-break;
-case 'Groom Grandparents':
-parentData.fields.groomGrandparents = text;
-break;
-case 'Groom Parents':
-parentData.fields.groomParents = text;
-break;
-case 'Groom Address':
-parentData.fields.groomAddress = text;
-break;
-case 'Groom City':
-parentData.fields.groomCity = text;
-break;
-case 'Dampatya Heading':
-parentData.fields.dampatyaHeading = text;
-break;
-case 'Vinit Text':
-parentData.fields.vinitText = text;
-break;
-case 'Darshnabhilashi Label':
-parentData.fields.darshnabhilashiLabel = text;
-break;
-case 'Darshnabhilashi Names':
-parentData.fields.darshnabhilashiNames = text;
-break;
-case 'Swagatakankshi Label':
-parentData.fields.swagatakankshiLabel = text;
-break;
-case 'Swagatakankshi Names':
-parentData.fields.swagatakankshiNames = text;
-break;
-case 'Vinit Label':
-parentData.fields.vinitLabel = text;
-break;
-case 'Vinit Name':
-parentData.fields.vinitName = text;
-break;
-case 'Vinit Address':
-parentData.fields.vinitAddress = text;
-break;
-case 'Couple Text': {
-const parts = text.split(' & ');
-parentData.fields.groomName = parts[0] || '';
-parentData.fields.brideName = parts[1] || '';
-break;
-}
-}
-}
-});
-
-// Sync heading and text colors if modified directly on canvas
-const headingObj = canvas.getObjects().find(o => o.name === 'Heading');
-if (headingObj && headingObj.fill) {
-parentData.styles.headingColor = headingObj.fill;
-}
-const brideObj = canvas.getObjects().find(o => o.name === 'Bride Name');
-if (brideObj && brideObj.fill) {
-parentData.styles.textColor = brideObj.fill;
-}
-const borderObj = canvas.getObjects().find(o => o.name === 'card-border');
-if (borderObj && borderObj.stroke) {
-parentData.styles.accentColor = borderObj.stroke;
-}
-
-if (typeof window.parent.sendUpdate === 'function') {
-window.parent.sendUpdate();
-}
-if (typeof window.parent.syncCustomizerInputs === 'function') {
-window.parent.syncCustomizerInputs();
-}
-} finally {
-setTimeout(() => {
-isSyncingToParent = false;
-}, 50);
-}
-}
-
-window.addEventListener('message', function (e) {
-const d = e.data;
-if (!d) return;
-
-if (d.type === 'SET_VIEW_MODE') {
-if (typeof window.setViewMode === 'function') {
-window.setViewMode(d.mode);
-}
-} else if (d.type === 'CANVA_TRIGGER_DOWNLOAD') {
-handleCanvaDownload(d.format);
-} else if (d.type === 'CANVA_RENAME_PROJECT') {
-const titleEl = document.getElementById('project-title');
-if (titleEl) {
-titleEl.value = d.title;
-}
-} else if (d.type === 'UPDATE_TEMPLATE_DATA') {
-if (isSyncingToParent) return;
-const payload = d.data;
-const tId = d.templateId || activeTemplateId || 'card1';
-if (payload) {
-const isCard1 = tId === 'card1' || tId === '1' || tId === '37' || tId === '38' || tId === 'muslim' || tId ===
-'engagement' || tId === 'birthday';
-const templateChanged = (tId !== activeTemplateId) || (canvas.getObjects().length === 0);
-
-activeTemplateData = payload;
-activeTemplateId = tId;
-
-if (isCard1) {
-const bgIframe = document.getElementById('bg-template-frame');
-if (bgIframe) {
-const expectedSrc = '../card1/card1.html';
-if (!bgIframe.src.endsWith(expectedSrc)) {
-bgIframe.src = expectedSrc;
-}
-}
-if (templateChanged) {
-renderEditableCard1(payload);
-} else {
-updateCanvasTextsAndStyles(payload);
-}
-} else {
-if (templateChanged) {
-renderCanvasFromTemplateData(payload, tId, false);
-} else {
-updateCanvasTextsAndStyles(payload);
-}
-}
-}
-}
-});
-
-// Handle redirecting/switching to tabs on parent
-function navigateToParentTab(tabName) {
-if (tabName === 'customize') return;
-
-const urlParams = new URLSearchParams(window.location.search);
-const templateId = urlParams.get('templateId') || 'card1';
-const projectId = urlParams.get('projectId');
-
-let targetUrl = `../universal-template-editor/editor.html?templateId=${templateId}`;
-if (projectId) {
-targetUrl += `&projectId=${projectId}`;
-}
-targetUrl += `&tab=${tabName}`;
-
-if (window.parent && window.parent !== window) {
-if (typeof window.parent.switchBuilderTab === 'function') {
-window.parent.switchBuilderTab(tabName);
-} else {
-window.parent.location.href = targetUrl;
-}
-} else {
-window.location.href = targetUrl;
-}
-}
-
-// Reset canvas to default layout/texts
-function resetCanvasToDefault(e) {
-if (e) e.stopPropagation();
-
-if (confirm("Are you sure you want to reset all canvas customizations? This will clear all design modifications and
-restore the default template layout and texts.")) {
-isSavingHistory = false;
-
-// Find normalized active template id
-const urlParams = new URLSearchParams(window.location.search);
-let currentTemplateId = urlParams.get('templateId') || urlParams.get('template') || 'card1';
-if (currentTemplateId === '1' || currentTemplateId === '37' || currentTemplateId === '38' || currentTemplateId ===
-'muslim' || currentTemplateId === 'engagement' || currentTemplateId === 'birthday') {
-currentTemplateId = 'card1';
-}
-
-loadDefaultConfigAndRender(currentTemplateId);
-}
-}
-</script>
 </body>
 
 </html>
