@@ -4562,11 +4562,6 @@
       }
       window.addEventListener('resize', () => {
         updateCustomScrollbar();
-        if (document.body.classList.contains('is-preview-mode')) {
-          if (typeof fitToScreen === 'function') {
-            fitToScreen();
-          }
-        }
       });
 
       initCustomScrollbarDrag();
@@ -9072,15 +9067,9 @@
         }
       }
       setTimeout(() => {
-        if (mode === 'preview') {
-          if (typeof fitToScreen === 'function') {
-            fitToScreen();
-          }
-        } else {
-          zoomLevel = 0.85;
-          if (typeof applyZoomScale === 'function') {
-            applyZoomScale();
-          }
+        zoomLevel = 0.85;
+        if (typeof applyZoomScale === 'function') {
+          applyZoomScale();
         }
       }, 100);
     };
