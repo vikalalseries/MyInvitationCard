@@ -48,47 +48,81 @@ Promise.all([
           const raw = localStorage.getItem(projectKey);
           if (raw) {
             const userProjects = JSON.parse(raw);
-            const proj = activeProjectId 
+            const proj = activeProjectId
               ? userProjects.find(p => p.id === activeProjectId)
               : userProjects.find(p => p.templateId === activeTemplateId);
-            
+
             if (proj && proj.data) {
               currentData = proj.data;
               isProjectLoaded = true;
               activeProjectId = proj.id;
-              
-              // Ensure all events are active and null values are preserved/set
-              if (currentData.events) {
-                Object.keys(currentData.events).forEach(key => {
-                  currentData.events[key].active = true;
-                  if (currentData.events[key].name === undefined) currentData.events[key].name = null;
-                  if (currentData.events[key].date === undefined) currentData.events[key].date = null;
-                });
+
+              if (proj.templateId) {
+                activeTemplateId = proj.templateId;
               }
-              
-              if (!currentData.styles) {
-                currentData.styles = JSON.parse(JSON.stringify(DEFAULT_STYLE));
-              }
-              
+
               // Restore document title
               if (proj.documentTitle) {
                 const titleInput = document.getElementById('doc-title-input');
                 if (titleInput) titleInput.value = proj.documentTitle;
               }
-              
-              // Update URL to include the projectId if it wasn't there
+
+              // Update URL to include the templateId and projectId
               const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?templateId=' + activeTemplateId + '&projectId=' + activeProjectId;
               window.history.replaceState({ path: newUrl }, '', newUrl);
-              
-              // Regenerate forms to show the loaded project data
-              generateContentForm();
-              generateCeremoniesForm();
-              generateStylesForm();
-              
-              // Update preview iframe
-              sendUpdate();
-              
-              toast('Project loaded from saved draft!', 's');
+
+              // Load the config for the activeTemplateId
+              const loadId = (activeTemplateId === '1' || activeTemplateId === '37' || activeTemplateId === '38' || activeTemplateId === 'muslim' || activeTemplateId === 'engagement' || activeTemplateId === 'birthday' || activeTemplateId === 'card1') ? 'card1' : activeTemplateId;
+              fetch(`templates/${loadId}/config.json`)
+                .then(r => {
+                  if (!r.ok) throw new Error("HTTP error " + r.status);
+                  return r.json();
+                })
+                .then(cfgData => {
+                  config = cfgData;
+                  // Ensure all events are active and null values are preserved/set
+                  if (currentData.events) {
+                    Object.keys(currentData.events).forEach(key => {
+                      currentData.events[key].active = true;
+                      if (currentData.events[key].name === undefined) currentData.events[key].name = null;
+                      if (currentData.events[key].date === undefined) currentData.events[key].date = null;
+                    });
+                  }
+                  if (!currentData.styles) {
+                    currentData.styles = JSON.parse(JSON.stringify(DEFAULT_STYLE));
+                  }
+
+                  // Regenerate forms to show the loaded project data
+                  generateContentForm();
+                  generateCeremoniesForm();
+                  generateStylesForm();
+
+                  // Update preview iframe
+                  sendUpdate();
+
+                  toast('Project loaded from saved draft!', 's');
+                })
+                .catch(err => {
+                  console.error("Error loading template config for loaded draft:", err);
+
+                  // Ensure all events are active and null values are preserved/set
+                  if (currentData.events) {
+                    Object.keys(currentData.events).forEach(key => {
+                      currentData.events[key].active = true;
+                      if (currentData.events[key].name === undefined) currentData.events[key].name = null;
+                      if (currentData.events[key].date === undefined) currentData.events[key].date = null;
+                    });
+                  }
+                  if (!currentData.styles) {
+                    currentData.styles = JSON.parse(JSON.stringify(DEFAULT_STYLE));
+                  }
+
+                  generateContentForm();
+                  generateCeremoniesForm();
+                  generateStylesForm();
+                  sendUpdate();
+                  toast('Project loaded from saved draft!', 's');
+                });
             }
           }
         } catch (e) {
@@ -122,7 +156,7 @@ const FIELD_CATEGORIES = [
 ];
 
 const $ = id => document.getElementById(id);
-const esc = s => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+const esc = s => s ? String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : '';
 
 const DEFAULT_STYLE = {
   cardBg: '#f9f1d0',
@@ -464,7 +498,7 @@ let currentUser = null;
 window.addEventListener('DOMContentLoaded', () => {
   // Load default template
   loadTemplate(activeTemplateId);
-  
+
   // Set up auth state
   checkAuthState();
 
@@ -473,14 +507,14 @@ window.addEventListener('DOMContentLoaded', () => {
   if (tabParam) {
     switchBuilderTab(tabParam);
   }
-  
+
   // Document title change listener
   const titleInput = document.getElementById('doc-title-input');
   if (titleInput) {
     titleInput.addEventListener('change', (e) => {
       triggerSaving();
       toast('Draft renamed to: ' + e.target.value, 's');
-      
+
       const isCustomize = document.getElementById('tab-customize').classList.contains('active');
       if (isCustomize) {
         const canvaIframe = document.getElementById('canva-editor-iframe');
@@ -568,7 +602,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // Load template configuration
 async function loadTemplate(templateId) {
   activeTemplateId = templateId;
-  
+
   // Update Canva Mode Link & Add transfer listener
   const canvaLink = document.getElementById('canva-mode-link');
   if (canvaLink) {
@@ -577,18 +611,18 @@ async function loadTemplate(templateId) {
       switchBuilderTab('customize');
     });
   }
-  
+
   const loadId = (templateId === '1' || templateId === '37' || templateId === '38' || templateId === 'muslim' || templateId === 'engagement' || templateId === 'birthday' || templateId === 'card1') ? 'card1' : templateId;
 
   try {
     const response = await fetch(`templates/${loadId}/config.json`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    
+
     config = await response.json();
-    
+
     // Initialize data state from config defaults
     initializeDataState();
-    
+
     // Fetch dynamic template settings from backend DB
     try {
       const dbRes = await fetch(`${BACKEND_URL}/api/templates/${templateId}`);
@@ -603,7 +637,7 @@ async function loadTemplate(templateId) {
     } catch (dbErr) {
       console.warn("Could not load template settings from backend:", dbErr.message);
     }
-    
+
     // Check if there is imported VLS data in localStorage
     const savedVlsStr = localStorage.getItem("savedVlsData");
     if (savedVlsStr) {
@@ -612,7 +646,7 @@ async function loadTemplate(templateId) {
         if (vlsData && vlsData.data) {
           currentData = vlsData.data;
           isProjectLoaded = true;
-          
+
           // Ensure all events are active and null values are preserved/set
           if (currentData.events) {
             Object.keys(currentData.events).forEach(key => {
@@ -621,18 +655,18 @@ async function loadTemplate(templateId) {
               if (currentData.events[key].date === undefined) currentData.events[key].date = null;
             });
           }
-          
+
           // Ensure styles exist
           if (!currentData.styles) {
             currentData.styles = JSON.parse(JSON.stringify(DEFAULT_STYLE));
           }
-          
+
           // Restore document title
           if (vlsData.documentTitle) {
             const titleInput = document.getElementById('doc-title-input');
             if (titleInput) titleInput.value = vlsData.documentTitle;
           }
-          
+
           toast('Project loaded from .vls file successfully!', 's');
         }
       } catch (err) {
@@ -641,17 +675,17 @@ async function loadTemplate(templateId) {
         localStorage.removeItem("savedVlsData");
       }
     }
-    
+
     // Generate Editor forms dynamically
     generateContentForm();
     generateCeremoniesForm();
     generateStylesForm();
-    
+
     // Set preview iframe template path directly
     const previewIframe = document.getElementById('card1-iframe');
     if (previewIframe) {
       previewIframe.src = `templates/${loadId}/template.html`;
-      
+
       // Clear previous load listeners and bind direct update trigger
       previewIframe.onload = () => {
         sendUpdate();
@@ -661,6 +695,16 @@ async function loadTemplate(templateId) {
           autoSaveUserProject();
         }
       };
+    }
+
+    // Set canva-editor iframe template path directly (in preview mode)
+    const canvaIframe = document.getElementById('canva-editor-iframe');
+    if (canvaIframe) {
+      let url = '../canva-editor/index.html?templateId=' + templateId + '&embed=true&viewMode=preview';
+      if (window.activeProjectId) {
+        url += '&projectId=' + window.activeProjectId;
+      }
+      canvaIframe.src = url;
     }
   } catch (error) {
     console.error("Failed to load template configuration:", error);
@@ -714,7 +758,7 @@ function initializeDataState() {
     events: {},
     styles: JSON.parse(JSON.stringify(DEFAULT_STYLE))
   };
-  
+
   // Override styles and default fields based on activeTemplateId if it's Muslim, Engagement, or Birthday
   if (activeTemplateId === 'muslim' || activeTemplateId === '37') {
     currentData.styles.cardBg = '#113f2a';
@@ -725,7 +769,7 @@ function initializeDataState() {
     currentData.styles.showGanesh = false;
     currentData.styles.showOm = false;
     currentData.styles.showCouple = false;
-    
+
     currentData.fields.shlokaLine1 = '';
     currentData.fields.shlokaLine2 = '';
     currentData.fields.headingText = 'Jalasa-e-Nikah';
@@ -740,7 +784,7 @@ function initializeDataState() {
     currentData.styles.headingColor = '#5b3e31';
     currentData.styles.showGanesh = false;
     currentData.styles.showOm = false;
-    
+
     currentData.fields.shlokaLine1 = '';
     currentData.fields.shlokaLine2 = '';
     currentData.fields.headingText = '।। Engagement Ceremony ।।';
@@ -757,7 +801,7 @@ function initializeDataState() {
   }
 
   if (!config) return;
-  
+
   if (config.fields) {
     config.fields.forEach(f => {
       // Set to null to indicate it is not customized yet (shows default in preview, placeholder in editor)
@@ -766,7 +810,7 @@ function initializeDataState() {
       }
     });
   }
-  
+
   if (config.events) {
     config.events.forEach(e => {
       currentData.events[e.id] = {
@@ -800,7 +844,7 @@ function updateAccordionEmptyState(sc, fields) {
     // A field is considered empty/hidden only if it is explicitly set to an empty string
     return val !== null && val !== undefined && val.trim() === '';
   });
-  
+
   const title = sc.querySelector('.sc-title');
   if (allEmpty) {
     sc.classList.add('empty-disabled');
@@ -825,63 +869,63 @@ function updateAccordionEmptyState(sc, fields) {
 function generateContentForm() {
   const container = document.getElementById('dynamic-content-fields');
   container.innerHTML = '';
-  
+
   if (!config || !config.fields) return;
-  
+
   // Group fields by category
   const categorized = {};
   FIELD_CATEGORIES.forEach(cat => categorized[cat] = []);
-  
+
   config.fields.forEach(f => {
     const cat = f.category || "Invitation Details";
     if (!categorized[cat]) categorized[cat] = [];
     categorized[cat].push(f);
   });
-  
+
   // Render each category as a collapsible card (.sc)
   FIELD_CATEGORIES.forEach((categoryName, index) => {
     const fields = categorized[categoryName];
     if (fields.length === 0) return;
-    
+
     const sc = document.createElement('div');
     sc.className = 'sc';
     if (index === 0 || index === 1 || index === 2) {
       sc.classList.add('open'); // Open Mantra, Bride, and Groom panels by default
     }
-    
+
     const head = document.createElement('div');
     head.className = 'sc-head';
     head.setAttribute('onclick', 'toggleAccordion(this)');
-    
+
     const left = document.createElement('div');
     left.className = 'sc-left';
-    
+
     const title = document.createElement('span');
     title.className = 'sc-title';
     title.textContent = categoryName;
-    
+
     left.appendChild(title);
     head.appendChild(left);
-    
+
     const chev = document.createElement('i');
     chev.className = 'fa-solid fa-chevron-down sc-chev';
     head.appendChild(chev);
     sc.appendChild(head);
-    
+
     const body = document.createElement('div');
     body.className = 'sc-body';
-    
+
     const inner = document.createElement('div');
     inner.className = 'sc-inner';
-    
+
     fields.forEach(field => {
       const group = document.createElement('div');
       group.className = 'form-group';
-      
+
       const label = document.createElement('label');
       label.textContent = field.label;
       group.appendChild(label);
-      
+
       const input = document.createElement('textarea');
       input.className = 'form-input form-textarea';
       input.value = (currentData.fields[field.id] === null || currentData.fields[field.id] === undefined) ? '' : currentData.fields[field.id];
@@ -894,17 +938,17 @@ function generateContentForm() {
         autoGrowTextarea(e.target);
       });
       input.addEventListener('keydown', handleTranslitKeydown);
-      
+
       group.appendChild(input);
       inner.appendChild(group);
-      
+
       // Auto-grow on render
       setTimeout(() => autoGrowTextarea(input), 0);
     });
-    
+
     // Set initial empty state class
     updateAccordionEmptyState(sc, fields);
-    
+
     body.appendChild(inner);
     sc.appendChild(body);
     container.appendChild(sc);
@@ -915,20 +959,20 @@ function generateContentForm() {
 function generateCeremoniesForm() {
   const container = document.getElementById('dynamic-ceremonies-fields');
   container.innerHTML = '';
-  
+
   if (!config || !config.events) return;
-  
+
   config.events.forEach((e, index) => {
     const sc = document.createElement('div');
     sc.className = 'sc';
     sc.id = `event-card-${e.id}`;
     if (index === 0) sc.classList.add('open'); // Open first ceremony by default
-    
+
     // Custom header for event cards
     const head = document.createElement('div');
     head.className = 'sc-head';
     head.setAttribute('onclick', 'toggleAccordion(this)');
-    
+
     const left = document.createElement('div');
     left.className = 'sc-left';
     const title = document.createElement('span');
@@ -936,25 +980,25 @@ function generateCeremoniesForm() {
     title.textContent = e.label || e.id;
     left.appendChild(title);
     head.appendChild(left);
-    
+
     const chev = document.createElement('i');
     chev.className = 'fa-solid fa-chevron-down sc-chev';
     head.appendChild(chev);
     sc.appendChild(head);
-    
+
     const body = document.createElement('div');
     body.className = 'sc-body';
-    
+
     const inner = document.createElement('div');
     inner.className = 'sc-inner';
-    
+
     // 1. Name input
     const nameGroup = document.createElement('div');
     nameGroup.className = 'form-group';
     const nameLabel = document.createElement('label');
     nameLabel.textContent = "Ceremony Title";
     nameGroup.appendChild(nameLabel);
-    
+
     const nameInput = document.createElement('textarea');
     nameInput.className = 'form-input form-textarea';
     nameInput.value = (currentData.events[e.id].name === null || currentData.events[e.id].name === undefined) ? '' : currentData.events[e.id].name;
@@ -969,7 +1013,7 @@ function generateCeremoniesForm() {
     nameGroup.appendChild(nameInput);
     inner.appendChild(nameGroup);
     setTimeout(() => autoGrowTextarea(nameInput), 0);
-    
+
     // 2. Date input
     if (e.defaultDate !== undefined) {
       const dateGroup = document.createElement('div');
@@ -977,7 +1021,7 @@ function generateCeremoniesForm() {
       const dateLabel = document.createElement('label');
       dateLabel.textContent = "Date";
       dateGroup.appendChild(dateLabel);
-      
+
       const dateInput = document.createElement('input');
       dateInput.type = 'date';
       dateInput.className = 'form-input';
@@ -990,7 +1034,7 @@ function generateCeremoniesForm() {
       dateGroup.appendChild(dateInput);
       inner.appendChild(dateGroup);
     }
-    
+
     // 3. Time input
     if (e.defaultTime !== undefined) {
       const timeGroup = document.createElement('div');
@@ -998,7 +1042,7 @@ function generateCeremoniesForm() {
       const timeLabel = document.createElement('label');
       timeLabel.textContent = "Time";
       timeGroup.appendChild(timeLabel);
-      
+
       const timeInput = document.createElement('input');
       timeInput.type = 'time';
       timeInput.className = 'form-input';
@@ -1011,7 +1055,7 @@ function generateCeremoniesForm() {
       timeGroup.appendChild(timeInput);
       inner.appendChild(timeGroup);
     }
-    
+
     // 4. Venue input
     if (e.defaultVenue !== undefined) {
       const venueGroup = document.createElement('div');
@@ -1019,7 +1063,7 @@ function generateCeremoniesForm() {
       const venueLabel = document.createElement('label');
       venueLabel.textContent = "Venue Details";
       venueGroup.appendChild(venueLabel);
-      
+
       const venueInput = document.createElement('textarea');
       venueInput.className = 'form-input form-textarea';
       venueInput.value = currentData.events[e.id].venue || '';
@@ -1034,13 +1078,13 @@ function generateCeremoniesForm() {
       inner.appendChild(venueGroup);
       setTimeout(() => autoGrowTextarea(venueInput), 0);
     }
-    
+
     body.appendChild(inner);
     sc.appendChild(body);
-    
+
     // Set initial active status
     currentData.events[e.id].active = true;
-    
+
     container.appendChild(sc);
   });
 }
@@ -1292,14 +1336,14 @@ function applyIconAccordionState() {
 function saveIconAccordionState() {
   try {
     localStorage.setItem('mic_icon_accordion_state', JSON.stringify(ICON_ACCORDION_STATE));
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function getIconReplaceTarget() {
   try {
     const saved = localStorage.getItem('mic_icon_replace_target');
     if (saved) ICON_REPLACE_TARGET = saved === 'couple1' ? 'couple2' : saved;
-  } catch (e) {}
+  } catch (e) { }
   if (!ICON_REPLACE_TARGETS.some(item => item.key === ICON_REPLACE_TARGET)) {
     ICON_REPLACE_TARGET = 'ganesh';
   }
@@ -1332,7 +1376,7 @@ function refreshIconReplacementStatus() {
   if (host) host.textContent = getIconReplacementLabel(target) + ': ' + getIconReplacementSummary(target);
 }
 
-window.toggleIconAccordion = function(key) {
+window.toggleIconAccordion = function (key) {
   ICON_ACCORDION_STATE[key] = !ICON_ACCORDION_STATE[key];
   applyIconAccordionState();
   saveIconAccordionState();
@@ -1382,27 +1426,27 @@ async function loadIconLibrary() {
   }
 }
 
-window.handleIconLibrarySearch = function(el) {
+window.handleIconLibrarySearch = function (el) {
   ICON_LIBRARY_FILTER.query = el.value || '';
   renderIconLibrary();
 };
 
-window.setIconLibraryCategory = function(category) {
+window.setIconLibraryCategory = function (category) {
   ICON_LIBRARY_FILTER.category = category;
   renderIconCategoryChips();
   renderIconLibrary();
 };
 
-window.setIconReplaceTarget = function(targetKey) {
+window.setIconReplaceTarget = function (targetKey) {
   ICON_REPLACE_TARGET = targetKey || 'ganesh';
   try {
     localStorage.setItem('mic_icon_replace_target', ICON_REPLACE_TARGET);
-  } catch (e) {}
+  } catch (e) { }
   refreshIconReplacementStatus();
   renderIconLibrary();
 };
 
-window.clearIconReplacement = function() {
+window.clearIconReplacement = function () {
   const target = getIconReplaceTarget();
   const style = ensureCardStyle();
   const next = Object.assign({}, style.iconReplacements || {});
@@ -1413,12 +1457,12 @@ window.clearIconReplacement = function() {
   toast(`Removed icon from ${getIconReplacementLabel(target)}`, 's');
 };
 
-window.useLibraryIcon = function(iconId) {
+window.useLibraryIcon = function (iconId) {
   const icon = ICON_LIBRARY.find(item => item.id === iconId);
   if (!icon) return;
   try {
     localStorage.setItem('mic_selected_icon', JSON.stringify(icon));
-  } catch (e) {}
+  } catch (e) { }
   const target = getIconReplaceTarget();
   const style = ensureCardStyle();
   const next = Object.assign({}, style.iconReplacements || {});
@@ -1426,13 +1470,13 @@ window.useLibraryIcon = function(iconId) {
   setField('styles.iconReplacements', next);
   try {
     localStorage.setItem('mic_selected_icon_id', icon.id);
-  } catch (e) {}
+  } catch (e) { }
   refreshIconReplacementStatus();
   renderIconLibrary();
   toast(`Replaced ${getIconReplacementLabel(target)} with ${icon.name}`, 's');
 };
 
-window.applyColorPreset = function(presetIndex, element) {
+window.applyColorPreset = function (presetIndex, element) {
   const preset = PRESETS[presetIndex];
   if (!preset) return;
 
@@ -1447,40 +1491,40 @@ window.applyColorPreset = function(presetIndex, element) {
 
   // Sync visual inputs
   syncCustomizerInputs();
-  
+
   if (element) {
     document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
     element.classList.add('active');
   }
-  
+
   toast('Applied color palette theme!', 's');
 };
 
-window.handleBorderPresetChange = function(el) {
+window.handleBorderPresetChange = function (el) {
   setField('styles.borderPreset', el.value);
 };
 
-window.handleColorPickerInput = function(el) {
+window.handleColorPickerInput = function (el) {
   const key = el.dataset.styleKey;
   const val = el.value;
   setField('styles.' + key, val);
-  
+
   // Sync the labels
   const label = $('val-' + key);
   if (label) label.textContent = val;
   updatePresetCardsActiveState();
 };
 
-window.handleCardStockChange = function(el) {
+window.handleCardStockChange = function (el) {
   setField('styles.cardBg', el.value);
   setField('styles.bodyBg', el.value);
 };
 
-window.handleSliderInput = function(el) {
+window.handleSliderInput = function (el) {
   const key = el.dataset.styleKey;
   const val = parseInt(el.value, 10);
   setField('styles.' + key, val);
-  
+
   // Sync label
   const label = $('val-' + key);
   if (label) {
@@ -1493,23 +1537,23 @@ window.handleSliderInput = function(el) {
   }
 };
 
-window.handleSpacingInput = function(el) {
+window.handleSpacingInput = function (el) {
   const key = el.dataset.styleKey;
   const val = parseFloat((parseInt(el.value, 10) / 100).toFixed(1));
   setField('styles.' + key, val);
-  
+
   // Sync label
   const label = $('val-' + key);
   if (label) label.textContent = val.toFixed(1) + 'cm';
 };
 
-window.handleCheckboxChange = function(el) {
+window.handleCheckboxChange = function (el) {
   const key = el.dataset.styleKey;
   const val = el.checked;
   setField('styles.' + key, val);
 };
 
-window.handleIconColorPickerInput = function(el) {
+window.handleIconColorPickerInput = function (el) {
   const key = el.dataset.iconKey;
   if (!key) return;
   const color = el.value;
@@ -1526,7 +1570,7 @@ window.handleIconColorPickerInput = function(el) {
   }
 };
 
-window.resetIconColor = function(iconKey) {
+window.resetIconColor = function (iconKey) {
   const style = ensureCardStyle();
   const next = Object.assign({}, style.iconColors || {});
   delete next[iconKey];
@@ -1544,7 +1588,7 @@ window.resetIconColor = function(iconKey) {
   if (label) label.textContent = 'default';
 };
 
-window.resetAllIconColors = function() {
+window.resetAllIconColors = function () {
   const style = ensureCardStyle();
   setField('styles.iconColors', {});
   syncCustomizerInputs();
@@ -1555,16 +1599,16 @@ window.resetAllIconColors = function() {
   toast('Reset all icon color overrides', 's');
 };
 
-window.handleFontFamilyChange = function(el) {
+window.handleFontFamilyChange = function (el) {
   setField('styles.fontFamily', el.value);
   el.style.fontFamily = el.value;
 };
 
-window.handleCornerSymbolChange = function(el) {
+window.handleCornerSymbolChange = function (el) {
   setField('styles.cornerSymbol', el.value);
 };
 
-window.adjustIconOffset = function(iconKey, dx, dy) {
+window.adjustIconOffset = function (iconKey, dx, dy) {
   const st = ensureCardStyle();
   const keys = iconOffsetKeys(iconKey);
   const nextX = Math.max(-2, Math.min(2, Number(st[keys.x] || 0) + dx));
@@ -1574,14 +1618,14 @@ window.adjustIconOffset = function(iconKey, dx, dy) {
   syncCustomizerInputs();
 };
 
-window.resetIconOffset = function(iconKey) {
+window.resetIconOffset = function (iconKey) {
   const keys = iconOffsetKeys(iconKey);
   setField('styles.' + keys.x, 0);
   setField('styles.' + keys.y, 0);
   syncCustomizerInputs();
 };
 
-window.adjustCornerOffset = function(cornerKey, dx, dy) {
+window.adjustCornerOffset = function (cornerKey, dx, dy) {
   const st = ensureCardStyle();
   const keys = offsetValueKeys(cornerKey);
   const nextX = Math.max(-1, Math.min(1, Number(st[keys.x] || 0) + dx));
@@ -1591,14 +1635,14 @@ window.adjustCornerOffset = function(cornerKey, dx, dy) {
   syncCustomizerInputs();
 };
 
-window.resetCornerOffset = function(cornerKey) {
+window.resetCornerOffset = function (cornerKey) {
   const keys = offsetValueKeys(cornerKey);
   setField('styles.' + keys.x, 0);
   setField('styles.' + keys.y, 0);
   syncCustomizerInputs();
 };
 
-window.adjustSectionOffset = function(sectionKey, dx, dy) {
+window.adjustSectionOffset = function (sectionKey, dx, dy) {
   const st = ensureCardStyle();
   const keys = { x: sectionKey + 'OffsetX', y: sectionKey + 'OffsetY' };
   const nextX = Math.max(-5, Math.min(5, Number(st[keys.x] || 0) + dx));
@@ -1608,7 +1652,7 @@ window.adjustSectionOffset = function(sectionKey, dx, dy) {
   syncCustomizerInputs();
 };
 
-window.resetSectionOffset = function(sectionKey) {
+window.resetSectionOffset = function (sectionKey) {
   const keys = { x: sectionKey + 'OffsetX', y: sectionKey + 'OffsetY' };
   setField('styles.' + keys.x, 0);
   setField('styles.' + keys.y, 0);
@@ -1620,9 +1664,9 @@ function updatePresetCardsActiveState() {
   if (!st) return;
   document.querySelectorAll('.preset-card').forEach(card => {
     const matches = card.dataset.bodyBg === st.bodyBg &&
-                    card.dataset.accentColor === st.accentColor &&
-                    card.dataset.textColor === st.textColor &&
-                    card.dataset.headingColor === st.headingColor;
+      card.dataset.accentColor === st.accentColor &&
+      card.dataset.textColor === st.textColor &&
+      card.dataset.headingColor === st.headingColor;
     if (matches) {
       card.classList.add('active');
     } else {
@@ -1646,7 +1690,7 @@ function syncCustomizerInputs() {
 
   // Sync sliders
   const sliders = [
-    'shlokaSize', 'headingSize', 'namesSize', 'eventSize', 'footerSize', 
+    'shlokaSize', 'headingSize', 'namesSize', 'eventSize', 'footerSize',
     'ganeshSize', 'omSize', 'chainsSize', 'coupleSize', 'cornerSize', 'curveLevel',
     'balAagrahSize', 'ceremoniesSize', 'invitationDetailsSize'
   ];
@@ -1767,19 +1811,34 @@ function switchBuilderTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-  
+
   // Set active class on active button
   document.getElementById(`tab-${tabId}`).classList.add('active');
-  
+
   const canvaView = document.getElementById('canva-editor-view');
   const sidebar = document.querySelector('.sidebar');
   const rightCol = document.querySelector('.right-col');
-  
+  const bodyEl = document.querySelector('.body');
+
+  // Toggle sidebar main panel views
+  document.querySelectorAll('.sidebar-view-panel').forEach(panel => {
+    panel.style.display = 'none';
+  });
+
   if (tabId === 'customize') {
-    // Hide normal sidebar and right-col
-    if (sidebar) sidebar.style.display = 'none';
-    if (rightCol) rightCol.style.display = 'none';
-    
+    // Customize Tab: Keep both columns visible (40/60 split)
+    if (sidebar) {
+      sidebar.style.display = 'flex';
+      sidebar.style.width = '40%';
+    }
+    if (rightCol) {
+      rightCol.style.display = 'flex';
+      rightCol.style.width = '60%';
+    }
+    if (bodyEl) {
+      bodyEl.classList.add('is-customize-active');
+    }
+
     // Show Canva editor view
     if (canvaView) {
       canvaView.style.display = 'block';
@@ -1796,30 +1855,56 @@ function switchBuilderTab(tabId) {
       // Set Canva editor iframe src
       const iframe = document.getElementById('canva-editor-iframe');
       if (iframe) {
-        let url = '../canva-editor/index.html?templateId=' + (activeTemplateId || 'card1') + '&embed=true';
-        if (window.activeProjectId) {
-          url += '&projectId=' + window.activeProjectId;
+        if (iframe.src === 'about:blank' || iframe.src === '') {
+          let url = '../canva-editor/index.html?templateId=' + (activeTemplateId || 'card1') + '&embed=true&viewMode=editor';
+          if (window.activeProjectId) {
+            url += '&projectId=' + window.activeProjectId;
+          }
+          iframe.src = url;
+        } else {
+          // Send mode change and updated content state
+          iframe.contentWindow.postMessage({ type: 'SET_VIEW_MODE', mode: 'editor' }, '*');
+          iframe.contentWindow.postMessage({
+            type: 'UPDATE_TEMPLATE_DATA',
+            data: JSON.parse(JSON.stringify(currentData)),
+            templateId: activeTemplateId
+          }, '*');
         }
-        iframe.src = url;
       }
     }
   } else {
-    // Hide Canva editor view
-    if (canvaView) canvaView.style.display = 'none';
-    
-    // Show normal sidebar and right-col
-    if (sidebar) sidebar.style.display = 'flex';
-    if (rightCol) rightCol.style.display = 'flex';
-    
-    // Toggle sidebar main panel views
-    document.querySelectorAll('.sidebar-view-panel').forEach(panel => {
-      panel.style.display = 'none';
-    });
+    // Content / AI Tools Tabs
+    if (bodyEl) {
+      bodyEl.classList.remove('is-customize-active');
+    }
+
+    // Keep normal sidebar and right-col
+    if (sidebar) {
+      sidebar.style.display = 'flex';
+      sidebar.style.width = '40%';
+    }
+    if (rightCol) {
+      rightCol.style.display = 'flex';
+      rightCol.style.width = '60%';
+    }
+
+    // In Content tab, we display Canva editor iframe in preview mode
+    if (canvaView) {
+      canvaView.style.display = 'block';
+      const iframe = document.getElementById('canva-editor-iframe');
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'SET_VIEW_MODE', mode: 'preview' }, '*');
+      }
+    }
+
     const targetView = document.getElementById(`${tabId}-view`);
     if (targetView) targetView.style.display = 'flex';
-    
-    // Refresh preview when returning to Content tab
+
+    // Refresh preview and rehydrate fields
     if (tabId === 'content') {
+      generateContentForm();
+      generateCeremoniesForm();
+      syncCustomizerInputs();
       sendUpdate();
     }
   }
@@ -1831,14 +1916,14 @@ function switchContentSubTab(subTabId) {
   document.querySelectorAll('.sub-tab-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-  
+
   document.getElementById(`sub-tab-${subTabId}`).classList.add('active');
-  
+
   // Toggle sub-tab panels inside Content tab
   document.querySelectorAll('.sub-tab-pane').forEach(pane => {
     pane.style.display = 'none';
   });
-  
+
   if (subTabId === 'text') {
     document.getElementById('dynamic-content-fields').style.display = 'flex';
   } else {
@@ -1852,15 +1937,15 @@ function switchCustomizerSection(sectionId) {
   document.querySelectorAll('.customizer-nav-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-  
+
   const activeBtn = document.getElementById(`c-nav-${sectionId}`);
   if (activeBtn) activeBtn.classList.add('active');
-  
+
   // Toggle customization panels
   document.querySelectorAll('.customizer-section-panel').forEach(panel => {
     panel.style.display = 'none';
   });
-  
+
   const activePanel = document.getElementById(`c-sec-${sectionId}`);
   if (activePanel) activePanel.style.display = 'block';
 }
@@ -1874,7 +1959,7 @@ function sendUpdate() {
       events: {},
       styles: currentData.styles
     };
-    
+
     if (config) {
       if (config.fields) {
         config.fields.forEach(f => {
@@ -1897,25 +1982,72 @@ function sendUpdate() {
         });
       }
     }
-    
+
     iframe.contentWindow.postMessage({
       type: 'UPDATE_TEMPLATE_DATA',
       data: resolvedData
     }, '*');
   }
+
+  // Update Canva Editor iframe in real-time
+  const canvaIframe = document.getElementById('canva-editor-iframe');
+  if (canvaIframe && canvaIframe.contentWindow) {
+    canvaIframe.contentWindow.postMessage({
+      type: 'UPDATE_TEMPLATE_DATA',
+      data: JSON.parse(JSON.stringify(currentData)),
+      templateId: activeTemplateId
+    }, '*');
+  }
+}
+
+window.onTemplateChangedFromCanva = function (newTemplateId) {
+  if (activeTemplateId === newTemplateId) return;
+  activeTemplateId = newTemplateId;
+
+  // Update parent URL query parameter without page reload
+  let nextUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?templateId=' + newTemplateId;
+  if (activeProjectId) {
+    nextUrl += '&projectId=' + activeProjectId;
+  }
+  window.history.replaceState({ path: nextUrl }, '', nextUrl);
+
+  // Load configuration for the new template Id
+  const loadId = (newTemplateId === '1' || newTemplateId === '37' || newTemplateId === '38' || newTemplateId === 'muslim' || newTemplateId === 'engagement' || newTemplateId === 'birthday' || newTemplateId === 'card1') ? 'card1' : newTemplateId;
+
+  fetch(`templates/${loadId}/config.json`)
+    .then(response => {
+      if (!response.ok) throw new Error("HTTP error " + response.status);
+      return response.json();
+    })
+    .then(data => {
+      config = data;
+      // Regenerate Content forms using the updated config
+      generateContentForm();
+      generateCeremoniesForm();
+      syncCustomizerInputs();
+
+      // Update preview
+      sendUpdate();
+
+      // Auto save the project with new templateId
+      triggerSaving();
+    })
+    .catch(err => {
+      console.error("Error loading template config from Canva sync:", err);
+    });
 }
 
 // Reset values to defaults
 function resetToDefaults() {
   if (!confirm("Are you sure you want to restore defaults? All edits will be discarded.")) return;
-  
+
   initializeDataState();
-  
+
   // Re-render
   generateContentForm();
   generateCeremoniesForm();
   generateStylesForm();
-  
+
   // Trigger UI effects
   triggerSaving();
   sendUpdate();
@@ -1927,7 +2059,7 @@ function exportData() {
   const jsonString = JSON.stringify(currentData, null, 2);
   const blob = new Blob([jsonString], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-  
+
   const link = document.createElement('a');
   link.href = url;
   const docName = document.getElementById('doc-title-input').value.toLowerCase().replace(/[^a-z0-9]+/g, '_');
@@ -1936,7 +2068,7 @@ function exportData() {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-  
+
   toast('Draft backed up successfully!', 's');
 }
 
@@ -1944,24 +2076,24 @@ function exportData() {
 function toast(msg, type = 's') {
   const wrap = document.getElementById('toast-wrap');
   if (!wrap) return;
-  
+
   const t = document.createElement('div');
   t.className = `toast t-${type}`;
-  
+
   const icon = document.createElement('span');
   icon.className = 't-ico';
   icon.innerHTML = type === 's' ? '✓' : type === 'e' ? '✗' : type === 'i' ? 'i' : '!';
-  
+
   const txt = document.createElement('span');
   txt.textContent = msg;
-  
+
   t.appendChild(icon);
   t.appendChild(txt);
   wrap.appendChild(t);
-  
+
   // Add animation class
   setTimeout(() => t.classList.add('show'), 10);
-  
+
   // Clean up
   setTimeout(() => {
     t.classList.remove('show');
@@ -1974,9 +2106,9 @@ let saveTimeout = null;
 function autoSaveUserProject() {
   if (!userLoggedIn || !currentUser || !currentUser.uid) return;
   if (!config) return; // Prevent saving if config isn't loaded yet
-  
+
   const docTitle = document.getElementById('doc-title-input')?.value.trim() || 'Untitled Invitation';
-  
+
   const projectKey = `mic_user_projects_${currentUser.uid}`;
   let userProjects = [];
   try {
@@ -1985,7 +2117,7 @@ function autoSaveUserProject() {
   } catch (e) {
     console.error("Error reading saved projects:", e);
   }
-  
+
   if (!activeProjectId) {
     const sameTemplateProject = userProjects.find(p => p.templateId === activeTemplateId);
     if (sameTemplateProject) {
@@ -1996,7 +2128,7 @@ function autoSaveUserProject() {
     const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?templateId=' + activeTemplateId + '&projectId=' + activeProjectId;
     window.history.replaceState({ path: newUrl }, '', newUrl);
   }
-  
+
   const existingIndex = userProjects.findIndex(p => p.id === activeProjectId);
   const loadId = (activeTemplateId === '1' || activeTemplateId === '37' || activeTemplateId === '38' || activeTemplateId === 'muslim' || activeTemplateId === 'engagement' || activeTemplateId === 'birthday' || activeTemplateId === 'card1') ? 'card1' : activeTemplateId;
   const projectData = {
@@ -2007,13 +2139,13 @@ function autoSaveUserProject() {
     thumbnail: `templates/${loadId}/thumbnail.jpg`,
     data: JSON.parse(JSON.stringify(currentData))
   };
-  
+
   if (existingIndex > -1) {
     userProjects[existingIndex] = projectData;
   } else {
     userProjects.push(projectData);
   }
-  
+
   localStorage.setItem(projectKey, JSON.stringify(userProjects));
 }
 
@@ -2021,16 +2153,16 @@ function triggerSaving() {
   const status = document.getElementById('save-status');
   const text = document.getElementById('save-status-text');
   if (!status || !text) return;
-  
+
   status.classList.add('saving');
   text.textContent = 'Saving...';
-  
+
   if (saveTimeout) clearTimeout(saveTimeout);
-  
+
   saveTimeout = setTimeout(() => {
     status.classList.remove('saving');
     text.textContent = 'Draft Saved';
-    
+
     // Auto save to user's drafts list
     autoSaveUserProject();
   }, 1000);
@@ -2109,22 +2241,8 @@ async function captureCardCanvas() {
 // ── DOWNLOAD TRIGGER (REAL IMAGE/PDF CAPTURE) ──
 function handleDownload(format) {
   document.getElementById('dl-wrap').classList.remove('open');
-  
-  const docName = document.getElementById('doc-title-input').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_') || 'invitation_card';
 
-  // If in Customize (Canva editor) mode, forward download command to the iframe
-  const isCustomize = document.getElementById('tab-customize').classList.contains('active');
-  if (isCustomize) {
-    const canvaIframe = document.getElementById('canva-editor-iframe');
-    if (canvaIframe && canvaIframe.contentWindow) {
-      canvaIframe.contentWindow.postMessage({
-        type: 'CANVA_TRIGGER_DOWNLOAD',
-        format: format,
-        docName: docName
-      }, '*');
-    }
-    return;
-  }
+  const docName = document.getElementById('doc-title-input').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_') || 'invitation_card';
 
   // Access control check for export formats
   if (!userLoggedIn) {
@@ -2132,17 +2250,17 @@ function handleDownload(format) {
     toast('Please log in to download your card.', 'e');
     return;
   }
-  
+
   showDownloadProgress(
     `Generating ${format.toUpperCase()}...`,
     'Capturing your card at high resolution'
   );
-  
+
   // Small delay to let the overlay render
   setTimeout(async () => {
     try {
       const canvas = await captureCardCanvas();
-      
+
       if (format === 'pdf') {
         // Card dimensions: 23.5cm × 19cm
         const { jsPDF } = window.jspdf;
@@ -2151,11 +2269,11 @@ function handleDownload(format) {
           unit: 'cm',
           format: [19, 23.5]
         });
-        
+
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
         pdf.addImage(imgData, 'JPEG', 0, 0, 23.5, 19);
         pdf.save(`${docName}.pdf`);
-        
+
         toast('PDF downloaded successfully!', 's');
       } else if (format === 'png') {
         const dataUrl = canvas.toDataURL('image/png');
@@ -2190,10 +2308,10 @@ function triggerBlobDownload(dataUrl, filename) {
 // Save current editing state as a .vls file (free for all users)
 function handleDownloadVLS() {
   document.getElementById('dl-wrap').classList.remove('open');
-  
+
   const docTitle = document.getElementById('doc-title-input').value.trim() || 'Wedding Card';
   const docName = docTitle.toLowerCase().replace(/[^a-z0-9]+/g, '_') || 'invitation_card';
-  
+
   const vlsData = {
     format: 'VLS',
     version: '1.0',
@@ -2203,11 +2321,11 @@ function handleDownloadVLS() {
     createdAt: new Date().toISOString(),
     data: JSON.parse(JSON.stringify(currentData))
   };
-  
+
   const jsonString = JSON.stringify(vlsData, null, 2);
   const blob = new Blob([jsonString], { type: 'application/vls+json' });
   const url = URL.createObjectURL(blob);
-  
+
   const link = document.createElement('a');
   link.href = url;
   link.download = `${docName}.vls`;
@@ -2215,7 +2333,7 @@ function handleDownloadVLS() {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-  
+
   toast('Project saved as .vls file!', 's');
 }
 
@@ -2228,7 +2346,7 @@ function checkAuthState() {
     document.getElementById('dl-pdf').classList.remove('disabled');
     document.getElementById('dl-png').classList.remove('disabled');
     document.getElementById('dl-jpg').classList.remove('disabled');
-    
+
     // Hide download login button gate
     document.getElementById('dl-login-gate-btn').style.display = 'none';
     document.getElementById('dl-menu-sep').style.display = 'none';
@@ -2237,7 +2355,7 @@ function checkAuthState() {
     document.getElementById('dl-pdf').classList.add('disabled');
     document.getElementById('dl-png').classList.add('disabled');
     document.getElementById('dl-jpg').classList.add('disabled');
-    
+
     // Show download login button gate
     document.getElementById('dl-login-gate-btn').style.display = 'flex';
     document.getElementById('dl-menu-sep').style.display = 'block';
@@ -2268,7 +2386,7 @@ async function updateHeaderProfileUI(user) {
         const meta = JSON.parse(metaRaw);
         localAvatar = meta.customAvatar || meta.avatar || "";
       }
-    } catch (e) {}
+    } catch (e) { }
 
     // Async fetch from MongoDB
     try {
@@ -2328,7 +2446,7 @@ function getAvatarBgColor(name) {
   return colors[index];
 }
 
-window.handleAuthAction = function() {
+window.handleAuthAction = function () {
   if (userLoggedIn) {
     showLogoutConfirm();
   } else {
@@ -2336,19 +2454,19 @@ window.handleAuthAction = function() {
   }
 };
 
-window.showLogoutConfirm = function() {
+window.showLogoutConfirm = function () {
   const popup = document.getElementById('builderUserPopup');
   if (popup) popup.classList.remove('show');
   document.getElementById('login-overlay').classList.add('show');
   document.getElementById('logout-confirm-popup').classList.add('show');
 };
 
-window.closeLogoutConfirm = function() {
+window.closeLogoutConfirm = function () {
   document.getElementById('login-overlay').classList.remove('show');
   document.getElementById('logout-confirm-popup').classList.remove('show');
 };
 
-window.executeLogout = async function() {
+window.executeLogout = async function () {
   if (!firebaseAuth || !firebaseConfig) {
     toast("Auth system is loading. Please try again.", "e");
     return;
@@ -2356,7 +2474,7 @@ window.executeLogout = async function() {
   try {
     await firebaseAuth.signOut(firebaseConfig.auth);
     localStorage.removeItem('mic_active_template');
-    
+
     checkAuthState();
     closeLogoutConfirm();
     toast('Signed out successfully!', 's');
@@ -2413,7 +2531,7 @@ function autoFit() {
 }
 
 // Custom reset popup functions
-window.showResetConfirm = function(e) {
+window.showResetConfirm = function (e) {
   if (e) e.stopPropagation();
   const dlWrap = document.getElementById('dl-wrap');
   if (dlWrap) dlWrap.classList.remove('open');
@@ -2421,19 +2539,19 @@ window.showResetConfirm = function(e) {
   document.getElementById('reset-confirm-popup').classList.add('show');
 };
 
-window.closeResetConfirm = function() {
+window.closeResetConfirm = function () {
   document.getElementById('login-overlay').classList.remove('show');
   document.getElementById('reset-confirm-popup').classList.remove('show');
 };
 
-window.executeResetCard = function() {
+window.executeResetCard = function () {
   initializeDataState();
-  
+
   // Re-render
   generateContentForm();
   generateCeremoniesForm();
   generateStylesForm();
-  
+
   // Trigger UI effects
   triggerSaving();
   sendUpdate();
@@ -2450,7 +2568,7 @@ function handleTranslitKeydown(e) {
     const input = this;
     const cursorPos = input.selectionStart;
     const textBeforeCursor = input.value.substring(0, cursorPos);
-    
+
     // Match only English alphabet word right before the cursor
     const match = textBeforeCursor.match(/[a-zA-Z]+$/);
     if (match) {
@@ -2458,7 +2576,7 @@ function handleTranslitKeydown(e) {
       const word = match[0];
       const start = cursorPos - word.length;
       const end = cursorPos;
-      
+
       // Perform transliteration
       transliterateWord(input, word, start, end);
     }
@@ -2468,12 +2586,12 @@ function handleTranslitKeydown(e) {
 function transliterateWord(input, word, start, end) {
   const langSelect = document.getElementById('translit-language');
   const fullCode = langSelect ? langSelect.value : 'hi-t-i0-und';
-  
+
   const url = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=${encodeURIComponent(fullCode)}&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage`;
-  
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 5000);
-  
+
   fetch(url, { signal: controller.signal })
     .then(res => res.json())
     .then(data => {
@@ -2539,11 +2657,11 @@ function replaceWordInInput(input, originalWord, newWord, start, end) {
 function handleTranslitToggleChange(el) {
   const indicator = document.getElementById('translit-indicator');
   const selectorRow = document.getElementById('translit-selector-row');
-  
+
   if (indicator) {
     indicator.style.background = el.checked ? 'var(--success)' : 'var(--g300)';
   }
-  
+
   if (selectorRow) {
     if (el.checked) {
       selectorRow.classList.remove('disabled');
@@ -2551,46 +2669,46 @@ function handleTranslitToggleChange(el) {
       selectorRow.classList.add('disabled');
     }
   }
-  
+
   try {
     localStorage.setItem('mic_translit_enabled', el.checked ? 'true' : 'false');
-  } catch(e) {}
+  } catch (e) { }
 }
 
 function handleTranslitLanguageChange(el) {
   const selectedOption = el.options[el.selectedIndex];
   const helpText = selectedOption.dataset.help || 'Type in English, press Space to write';
   const helpEl = document.getElementById('translit-help-text');
-  
+
   if (helpEl) {
     helpEl.textContent = helpText;
   }
-  
+
   document.body.setAttribute('data-translit-lang', el.value);
-  
+
   try {
     localStorage.setItem('mic_translit_lang', el.value);
-  } catch(e) {}
+  } catch (e) { }
 }
 
 function initTransliterationState() {
   try {
     const enabled = localStorage.getItem('mic_translit_enabled') !== 'false';
     const lang = localStorage.getItem('mic_translit_lang') || 'hi-t-i0-und';
-    
+
     const toggle = document.getElementById('translit-toggle');
     const langSelect = document.getElementById('translit-language');
-    
+
     if (toggle) {
       toggle.checked = enabled;
       handleTranslitToggleChange(toggle);
     }
-    
+
     if (langSelect) {
       langSelect.value = lang;
       handleTranslitLanguageChange(langSelect);
     }
-  } catch(e) {
+  } catch (e) {
     console.error('Failed to init transliteration state:', e);
   }
 }
