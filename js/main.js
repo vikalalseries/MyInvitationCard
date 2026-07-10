@@ -165,11 +165,10 @@ async function loadHomeTemplates() {
     grid.innerHTML = selected
       .map(
         (template, index) => `
-          <div
+          <a
             href="template-dashboard.html?template=${template.slug}&event=${template.event}"
             class="home-template-card reveal"
-            onclick="console.log(this.href)"
-            style="animation-delay:${index * 120}ms"
+            style="animation-delay:${index * 120}ms; text-decoration: none; color: inherit; display: block;"
           >
             <img
               src="${template.thumbnail}"
@@ -183,22 +182,10 @@ async function loadHomeTemplates() {
                 ${template.title}
               </div>
             </div>
-          </div>
+          </a>
         `
       )
       .join("");
-
-    document.querySelectorAll(".home-template-card").forEach(card => {
-      card.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        const url = card.getAttribute("href");
-
-        console.log("Going to:", url);
-
-        window.location.href = url;
-      });
-    });
 
   } catch (err) {
     console.error("Homepage templates failed:", err);

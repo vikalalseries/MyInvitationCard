@@ -250,10 +250,27 @@ function reportTemplate() {
 const TEMPLATE_BUILDER_MAP = {
   1: "universal-template-editor/editor.html",
   37: "universal-template-editor/editor.html",
-  38: "universal-template-editor/editor.html"
-  // Add future template→builder mappings here, e.g.:
-  // 28: "builder2/builder.html",
+  38: "universal-template-editor/editor.html",
+  28: "universal-template-editor/editor.html"
 };
+
+function showComingSoonModal() {
+  const modal = document.getElementById("comingSoonModal");
+  if (modal) {
+    modal.classList.add("show");
+    modal.classList.remove("hidden");
+  }
+}
+
+function closeComingSoonModal() {
+  const modal = document.getElementById("comingSoonModal");
+  if (modal) {
+    modal.classList.remove("show");
+    setTimeout(() => {
+      modal.classList.add("hidden");
+    }, 300);
+  }
+}
 
 function useTemplate() {
   if (!selectedTemplate) return;
@@ -261,10 +278,7 @@ function useTemplate() {
   const builderPath = TEMPLATE_BUILDER_MAP[selectedTemplate.id];
 
   if (!builderPath) {
-    alert(
-      "Builder for \"" + selectedTemplate.title + "\" is coming soon!\n\n" +
-      "We're working on it. Stay tuned."
-    );
+    showComingSoonModal();
     return;
   }
 
@@ -273,7 +287,11 @@ function useTemplate() {
     JSON.stringify(selectedTemplate)
   );
 
-  window.top.location.href = builderPath + "?templateId=" + selectedTemplate.id;
+  let tId = selectedTemplate.id;
+  if (tId === 1) tId = "card1";
+  if (tId === 28) tId = "birthday";
+
+  window.top.location.href = builderPath + "?templateId=" + tId;
 }
 
 
@@ -319,6 +337,28 @@ onAuthStateChanged(auth, (user) => {
   currentUser = user;
   updateFavoriteUI();
 });
+
+// Bind coming soon modal actions
+const closeBtn1 = document.getElementById("closeComingSoonModalBtn");
+const closeBtn2 = document.getElementById("closeComingSoonModalBtn2");
+const modalOverlay = document.getElementById("comingSoonModal");
+const tryLiveBtn = document.getElementById("tryLiveTemplateBtn");
+
+if (closeBtn1) closeBtn1.addEventListener("click", closeComingSoonModal);
+if (closeBtn2) closeBtn2.addEventListener("click", closeComingSoonModal);
+if (modalOverlay) {
+  modalOverlay.addEventListener("click", (e) => {
+    if (e.target === modalOverlay) {
+      closeComingSoonModal();
+    }
+  });
+}
+if (tryLiveBtn) {
+  tryLiveBtn.addEventListener("click", () => {
+    closeComingSoonModal();
+    window.top.location.href = "template-dashboard.html?category=free";
+  });
+}
 
 
 

@@ -2385,6 +2385,7 @@ input:checked + .slider:before {
 /* Canva Editor Integration Overlay Styles */
 .right-col {
   overflow: visible !important;
+  height: 100% !important;
 }
 .body.is-customize-active .right-col {
   z-index: 100 !important;
@@ -2394,11 +2395,26 @@ input:checked + .slider:before {
 }
 .preview-vp {
   overflow: hidden !important;
-  height: 100% !important;
+  flex: 1 !important;
+  height: auto !important;
   padding: 0 !important;
 }
 .body.is-customize-active .preview-vp {
   overflow: visible !important;
+}
+#canva-editor-view {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100% !important;
+  z-index: 5;
+}
+#canva-editor-iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border: none;
+  display: block;
 }
 .body.is-customize-active #canva-editor-view {
   left: -66.67% !important;
