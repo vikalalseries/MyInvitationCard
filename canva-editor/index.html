@@ -9071,7 +9071,10 @@
         if (typeof applyZoomScale === 'function') {
           applyZoomScale();
         }
-      }, 100);
+        if (vp) {
+          vp.scrollTop = 0;
+        }
+      }, 120);
     };
 
     function updateCanvasTextsAndStyles(data) {
