@@ -720,40 +720,28 @@
       z-index: 5;
       transition: width 0.3s ease;
     }
+
     .left-panel-wrapper:has(.drawer:not(.collapsed)) {
       width: 40% !important;
-    }
-
-    .left-panel-wrapper {
-      width: 80px;
-      display: flex;
-      flex-shrink: 0;
-      min-height: 0;
-      height: 100%;
-      border-right: 1px solid var(--g200);
-      background: var(--w);
-      z-index: 5;
-      transition: width 0.3s ease;
-      box-shadow: 6px 0 24px rgba(0, 0, 0, 0.02);
     }
 
     /* SIDE NAVIGATION (TAB ICONS) */
     .sidenav {
       width: 80px;
-      background-color: #faf9f6; /* Premium soft luxury cream background */
+      background-color: var(--w);
       border-right: 1px solid var(--g200);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 0;
-      gap: 10px;
+      padding: 15px 0;
+      gap: 8px;
       z-index: 5;
     }
 
     .nav-tab {
-      width: 66px;
-      height: 66px;
-      border-radius: 12px;
+      width: 64px;
+      height: 64px;
+      border-radius: var(--r-md);
       background: none;
       border: none;
       color: var(--g500);
@@ -763,35 +751,19 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      font-size: 9.5px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 11px;
+      font-weight: 500;
+      transition: all var(--t);
     }
 
     .nav-tab i {
-      font-size: 16px;
-      transition: transform 0.2s ease;
+      font-size: 18px;
     }
 
-    .nav-tab:hover {
-      color: var(--rose);
-      background-color: rgba(244, 63, 94, 0.05);
-    }
-
-    .nav-tab:hover i {
-      transform: scale(1.08);
-    }
-
+    .nav-tab:hover,
     .nav-tab.active {
       color: var(--rose);
-      background-color: var(--w);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 0 0 1px rgba(0, 0, 0, 0.01);
-    }
-
-    .nav-tab.active i {
-      transform: scale(1.05);
+      background-color: var(--rose-50);
     }
 
     /* SIDE DRAWER (TAB CONTENTS) */
@@ -857,37 +829,29 @@
     }
 
     .drawer-header {
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--g150);
+      padding: 20px;
+      border-bottom: 1px solid var(--g200);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
     .drawer-title {
-      font-size: 14.5px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 600;
       color: var(--g900);
-      letter-spacing: -0.2px;
     }
 
     .close-drawer-btn {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--g50);
+      background: none;
       border: none;
       color: var(--g400);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      transition: all var(--t);
+      font-size: 16px;
+      transition: color var(--t);
     }
 
     .close-drawer-btn:hover {
-      background: var(--rose-50);
       color: var(--rose);
     }
 
@@ -932,191 +896,132 @@
     /* PRESETS TAB CONTENT */
     .presets-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
+      grid-template-columns: 1fr;
+      gap: 15px;
     }
 
     .preset-card {
-      border: 1.5px solid var(--g200);
-      border-radius: 14px;
-      background-color: var(--w);
+      border: 1px solid var(--g200);
+      border-radius: var(--r-md);
+      background-color: var(--g50);
       padding: 12px;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+      transition: all var(--t);
       text-align: center;
     }
 
     .preset-card:hover {
-      border-color: rgba(244, 63, 94, 0.4);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(244, 63, 94, 0.08);
-      background-color: var(--w);
-    }
-
-    .preset-card.active {
       border-color: var(--rose);
-      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15);
-      background-color: var(--w);
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-hover);
+      background-color: var(--rose-50);
     }
 
     .preset-preview-thumb {
-      height: 110px;
-      background: linear-gradient(135deg, #7c152a, #aa1a38);
-      border-radius: 8px;
-      margin-bottom: 12px;
+      height: 120px;
+      background: linear-gradient(135deg, #7c152a, #d4af37);
+      border-radius: var(--r-sm);
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
-      color: #e5c158;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(229, 193, 88, 0.25);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .preset-preview-thumb::before {
-      content: '';
-      position: absolute;
-      inset: 4px;
-      border: 1px solid rgba(229, 193, 88, 0.15);
-      border-radius: 6px;
-      pointer-events: none;
+      font-size: 24px;
+      color: #d4af37;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .preset-card-title {
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 600;
-      color: var(--g800);
-      margin-top: 4px;
-      letter-spacing: -0.1px;
+      color: var(--g900);
     }
 
     /* TEXT TAB CONTENT */
     .text-adder-btn {
       width: 100%;
-      background-color: var(--w);
-      border: 1.5px solid var(--g200);
-      color: var(--g800);
-      padding: 14px 16px;
-      border-radius: 12px;
+      background-color: var(--g50);
+      border: 1px solid var(--g200);
+      color: var(--g900);
+      padding: 12px;
+      border-radius: var(--r-md);
       cursor: pointer;
       text-align: left;
       margin-bottom: 12px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+      gap: 10px;
       transition: all var(--t);
     }
 
     .text-adder-btn:hover {
       border-color: var(--rose);
       background-color: var(--rose-50);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.05);
-    }
-
-    .text-adder-btn i {
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background-color: var(--rose-50);
-      color: var(--rose);
-      flex-shrink: 0;
     }
 
     .text-adder-heading {
-      font-size: 15px;
-      font-weight: 750;
+      font-size: 18px;
+      font-weight: 700;
       color: var(--g900);
-      letter-spacing: -0.2px;
-      margin-bottom: 2px;
     }
 
     .text-adder-sub {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: var(--g800);
-      letter-spacing: -0.1px;
-      margin-bottom: 2px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--g700);
     }
 
     .text-adder-body {
       font-size: 12px;
-      font-weight: 600;
-      color: var(--g700);
-      margin-bottom: 2px;
+      color: var(--g500);
     }
 
     /* ELEMENTS TAB CONTENT */
     .elements-category-title {
-      font-size: 10px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--g400);
       text-transform: uppercase;
-      letter-spacing: 1.2px;
-      margin: 24px 0 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .elements-category-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--g150);
+      letter-spacing: 0.5px;
+      margin: 15px 0 8px;
     }
 
     .elements-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       margin-bottom: 15px;
     }
 
     .element-item {
       aspect-ratio: 1;
-      border: 1px solid var(--g150);
-      border-radius: 12px;
-      background-color: var(--w);
+      border: 1px solid var(--g200);
+      border-radius: var(--r-sm);
+      background-color: var(--g50);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.01);
-      transition: all 0.2s ease;
+      padding: 8px;
+      transition: all var(--t);
     }
 
     .element-item:hover {
       border-color: var(--rose);
       background-color: var(--rose-50);
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.06);
     }
 
     .element-item img {
-      max-width: 90%;
-      max-height: 90%;
+      max-width: 100%;
+      max-height: 100%;
       object-fit: contain;
       pointer-events: none;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.03));
     }
 
     .shape-item {
-      width: 32px;
-      height: 32px;
-      border: 2px solid var(--g500);
-      border-radius: 4px;
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--g400);
+      border-radius: 2px;
     }
 
     .shape-item.circle {
@@ -1126,23 +1031,23 @@
     .shape-item.triangle {
       width: 0;
       height: 0;
-      border-left: 16px solid transparent;
-      border-right: 16px solid transparent;
-      border-bottom: 28px solid var(--g500);
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 35px solid var(--g400);
       border-top: none;
       border-radius: 0;
     }
 
     .shape-item.line {
       height: 3px;
-      background-color: var(--g500);
+      background-color: var(--g400);
       border: none;
     }
 
     /* BACKGROUNDS TAB CONTENT */
     .bg-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       margin-bottom: 15px;
     }
@@ -1171,191 +1076,18 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 14px;
-      background-color: var(--w);
-      border: 1.5px solid var(--g150);
-      border-radius: 12px;
+      padding: 10px 12px;
+      background-color: var(--g50);
+      border: 1px solid var(--g200);
+      border-radius: var(--r-sm);
       cursor: pointer;
       transition: all var(--t);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.01);
     }
 
     .layer-item:hover,
     .layer-item.active {
       border-color: var(--rose);
       background-color: var(--rose-50);
-    }
-
-    /* CARD STOCK TEXTURE CARDS */
-    .bg-texture-card {
-      height: 64px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border: 1.5px solid var(--g200);
-      border-radius: 12px;
-      cursor: pointer;
-      text-align: center;
-      padding: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.01);
-      transition: all var(--t);
-    }
-    .bg-texture-card:hover {
-      border-color: var(--rose);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.05);
-    }
-    .bg-texture-card.active {
-      border-color: var(--rose);
-      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15);
-    }
-    .bg-texture-title {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: var(--g800);
-      margin-bottom: 2px;
-    }
-    .bg-texture-desc {
-      font-size: 9.5px;
-      font-weight: 500;
-      color: var(--g500);
-    }
-
-    /* MINI FIELDS & CONTROLS IN DRAWER */
-    .mini-field {
-      margin-bottom: 12px;
-    }
-    .mini-field select {
-      width: 100%;
-      height: 38px !important;
-      border: 1.5px solid var(--g200) !important;
-      border-radius: 10px !important;
-      padding: 0 12px !important;
-      outline: none !important;
-      background: #fff !important;
-      font-size: 12.5px !important;
-      font-weight: 500 !important;
-      color: var(--g800) !important;
-      transition: all var(--t) !important;
-      font-family: inherit !important;
-    }
-    .mini-field select:focus {
-      border-color: var(--rose) !important;
-      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.08) !important;
-    }
-    /* Premium Sliders */
-    .mini-field input[type="range"] {
-      width: 100% !important;
-      height: 5px !important;
-      border-radius: 3px !important;
-      background: var(--g200) !important;
-      outline: none !important;
-      -webkit-appearance: none !important;
-      margin: 10px 0 !important;
-      transition: background var(--t) !important;
-    }
-    .mini-field input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none !important;
-      width: 16px !important;
-      height: 16px !important;
-      border-radius: 50% !important;
-      background: var(--rose) !important;
-      cursor: pointer !important;
-      transition: transform 0.1s ease !important;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
-    }
-    .mini-field input[type="range"]::-webkit-slider-thumb:hover {
-      transform: scale(1.2) !important;
-    }
-
-    /* CURATED COLOR THEMES & CUSTOM PICKERS */
-    .curated-palette-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border: 1.5px solid var(--g200);
-      border-radius: 12px;
-      background: #fff;
-      cursor: pointer;
-      padding: 12px 14px;
-      transition: all var(--t);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.01);
-    }
-
-    .curated-palette-card:hover {
-      border-color: var(--rose);
-      background-color: var(--rose-50);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.05);
-    }
-
-    .curated-palette-title {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: var(--g800);
-    }
-
-    .curated-palette-dots {
-      display: flex;
-      gap: 4px;
-    }
-
-    .curated-palette-dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
-    }
-
-    .color-picker-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      background: var(--g50);
-      border: 1px solid var(--g150);
-      border-radius: 10px;
-      transition: all var(--t);
-    }
-
-    .color-picker-row:hover {
-      border-color: var(--g250);
-      background: var(--w);
-    }
-
-    .color-picker-label {
-      font-size: 11.5px;
-      font-weight: 600;
-      color: var(--g700);
-    }
-
-    input[type="color"].custom-swatch {
-      -webkit-appearance: none;
-      border: none;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      cursor: pointer;
-      background: none;
-      overflow: hidden;
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
-      transition: transform 0.15s ease;
-      padding: 0;
-    }
-
-    input[type="color"].custom-swatch::-webkit-color-swatch-wrapper {
-      padding: 0;
-    }
-
-    input[type="color"].custom-swatch::-webkit-color-swatch {
-      border: none;
-      border-radius: 50%;
-    }
-
-    input[type="color"].custom-swatch:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 0 2px var(--rose), 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .layer-item-left {
@@ -1385,7 +1117,7 @@
       flex: 1;
       min-height: 0;
       background: #e2dbd5 !important;
-      background-image: radial-gradient(circle, rgba(0,0,0,0.045) 1.2px, transparent 0) !important;
+      background-image: radial-gradient(circle, rgba(0, 0, 0, 0.045) 1.2px, transparent 0) !important;
       background-size: 22px 22px !important;
       display: flex;
       flex-direction: column;
@@ -1506,8 +1238,8 @@
 
     .preview-vp {
       flex: 1;
-      height: calc(100vh - var(--topbar-h) - 46px);
-      max-height: calc(100vh - var(--topbar-h) - 46px);
+      height: calc(100vh - var(--topbar-h) - 50px);
+      max-height: calc(100vh - var(--topbar-h) - 50px);
       overflow-y: scroll;
       overflow-x: hidden;
       display: flex;
@@ -1587,27 +1319,25 @@
 
     /* UPLOAD DIALOG */
     .upload-box {
-      border: 2px dashed var(--g300);
-      border-radius: 16px;
-      padding: 36px 20px;
+      border: 2px dashed var(--g200);
+      border-radius: var(--r-md);
+      padding: 30px;
       text-align: center;
       cursor: pointer;
-      background-color: var(--g50);
       transition: all var(--t);
       margin-bottom: 15px;
+      background-color: var(--g50);
     }
 
     .upload-box:hover {
       border-color: var(--rose);
       background-color: var(--rose-50);
-      box-shadow: inset 0 0 0 1px rgba(244, 63, 94, 0.05);
     }
 
     .upload-box i {
-      font-size: 36px;
-      color: var(--rose);
-      margin-bottom: 12px;
-      opacity: 0.85;
+      font-size: 32px;
+      color: var(--g400);
+      margin-bottom: 10px;
     }
 
     /* PAGE SWITCHER */
@@ -1674,13 +1404,7 @@
       height: 7px;
       border-radius: 50%;
       background: var(--success);
-      animation: pulseLive 2s infinite;
       box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-    }
-
-    @keyframes pulseLive {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(0.75); opacity: 0.5; }
     }
 
     .preview-left-grp {
@@ -1873,10 +1597,8 @@
 
     /* LIVE PREVIEW TOP BAR (Matches universal template editor) */
     .preview-bar {
-      height: 46px !important;
-      background: rgba(255, 255, 255, 0.85) !important;
-      backdrop-filter: blur(14px) !important;
-      -webkit-backdrop-filter: blur(14px) !important;
+      height: 50px !important;
+      background-color: var(--w) !important;
       border-bottom: 1px solid var(--g200) !important;
       border-radius: 0 !important;
       box-shadow: none !important;
@@ -1894,12 +1616,10 @@
     .preview-lbl {
       display: flex !important;
       align-items: center !important;
-      font-size: 0.65rem !important;
-      font-weight: 750 !important;
-      letter-spacing: 2.2px !important;
-      text-transform: uppercase !important;
-      color: var(--g500) !important;
-      gap: 7px !important;
+      font-weight: 700 !important;
+      font-size: 14px !important;
+      color: var(--g900) !important;
+      gap: 8px !important;
     }
 
     .preview-bar .zoom-bar {
@@ -2681,8 +2401,8 @@
       align-items: center;
       justify-content: flex-start;
       flex: 1 !important;
-      height: calc(100vh - var(--topbar-h) - 46px) !important;
-      max-height: calc(100vh - var(--topbar-h) - 46px) !important;
+      height: calc(100vh - var(--topbar-h) - 50px) !important;
+      max-height: calc(100vh - var(--topbar-h) - 50px) !important;
       padding: 24px 40px 0px;
       gap: 14px;
       overflow-y: scroll !important;
@@ -2725,16 +2445,12 @@
 
     /* FIX PANEL WIDTHS */
     .left-panel-wrapper {
-      width: 80px !important;
-      transition: width 0.3s ease;
-    }
-
-    .left-panel-wrapper:has(.drawer:not(.collapsed)) {
-      width: 40% !important;
+      width: auto !important;
+      max-width: 420px;
     }
 
     .drawer {
-      width: calc(100% - 80px) !important;
+      width: 340px !important;
       flex: none !important;
     }
 
@@ -2747,7 +2463,7 @@
     .canvas-stage {
       flex: 1 1 auto !important;
       width: 100% !important;
-      background-color: transparent !important;
+      background-color: var(--g100) !important;
     }
 
     .workspace {
@@ -2950,7 +2666,7 @@
           Layers
         </button>
         <div style="flex:1;"></div>
-        <a id="form-mode-link" href="javascript:void(0)" onclick="navigateToParentTab('content')" class="nav-tab" style="text-decoration:none; color: var(--g500);">
+        <a id="form-mode-link" href="editor.html" class="nav-tab" style="text-decoration:none; color: var(--g500);">
           <i class="fa-solid fa-circle-chevron-left"></i>
           Form Mode
         </a>
@@ -2976,59 +2692,67 @@
 
             <div class="elements-category-title" style="margin-top: 20px;">Curated Color Themes</div>
             <div class="bg-grid" style="grid-template-columns: repeat(1, 1fr); gap: 8px; padding: 0 4px;">
-              <div onclick="applyCuratedColorPalette('crimson')" class="curated-palette-card">
-                <span class="curated-palette-title">Royal Crimson & Gold</span>
-                <div class="curated-palette-dots">
-                  <div class="curated-palette-dot" style="background: #7c152a;"></div>
-                  <div class="curated-palette-dot" style="background: #d4af37;"></div>
-                  <div class="curated-palette-dot" style="background: #ffffff;"></div>
+              <div onclick="applyCuratedColorPalette('crimson')"
+                style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Royal Crimson & Gold</span>
+                <div style="display: flex; gap: 4px;">
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #7c152a;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #d4af37;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #ffffff;"></div>
                 </div>
               </div>
-              <div onclick="applyCuratedColorPalette('emerald')" class="curated-palette-card">
-                <span class="curated-palette-title">Emerald Forest & Gold</span>
-                <div class="curated-palette-dots">
-                  <div class="curated-palette-dot" style="background: #113f2a;"></div>
-                  <div class="curated-palette-dot" style="background: #d4af37;"></div>
-                  <div class="curated-palette-dot" style="background: #fffbeb;"></div>
+              <div onclick="applyCuratedColorPalette('emerald')"
+                style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Emerald Forest & Gold</span>
+                <div style="display: flex; gap: 4px;">
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #113f2a;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #d4af37;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #fffbeb;"></div>
                 </div>
               </div>
-              <div onclick="applyCuratedColorPalette('slate')" class="curated-palette-card">
-                <span class="curated-palette-title">Midnight Slate & Platinum</span>
-                <div class="curated-palette-dots">
-                  <div class="curated-palette-dot" style="background: #1b1917;"></div>
-                  <div class="curated-palette-dot" style="background: #e2e8f0;"></div>
-                  <div class="curated-palette-dot" style="background: #f5f5f4;"></div>
+              <div onclick="applyCuratedColorPalette('slate')"
+                style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Midnight Slate & Platinum</span>
+                <div style="display: flex; gap: 4px;">
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #1b1917;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #e2e8f0;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #f5f5f4;"></div>
                 </div>
               </div>
-              <div onclick="applyCuratedColorPalette('rose')" class="curated-palette-card">
-                <span class="curated-palette-title">Blush Rose & Silver</span>
-                <div class="curated-palette-dots">
-                  <div class="curated-palette-dot" style="background: #dfa8a9;"></div>
-                  <div class="curated-palette-dot" style="background: #b0c4de;"></div>
-                  <div class="curated-palette-dot" style="background: #3f2223;"></div>
+              <div onclick="applyCuratedColorPalette('rose')"
+                style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Blush Rose & Silver</span>
+                <div style="display: flex; gap: 4px;">
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #dfa8a9;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #b0c4de;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #3f2223;"></div>
                 </div>
               </div>
-              <div onclick="applyCuratedColorPalette('cream')" class="curated-palette-card">
-                <span class="curated-palette-title">Classic Ivory & Burgundy</span>
-                <div class="curated-palette-dots">
-                  <div class="curated-palette-dot" style="background: #f9f1d0;"></div>
-                  <div class="curated-palette-dot" style="background: #b38f2d;"></div>
-                  <div class="curated-palette-dot" style="background: #4a0e17;"></div>
+              <div onclick="applyCuratedColorPalette('cream')"
+                style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--g200); border-radius: 12px; background: #fff; cursor: pointer; padding: 10px; box-shadow: none;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Classic Ivory & Burgundy</span>
+                <div style="display: flex; gap: 4px;">
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #f9f1d0;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #b38f2d;"></div>
+                  <div style="width: 16px; height: 16px; border-radius: 4px; background: #4a0e17;"></div>
                 </div>
               </div>
             </div>
 
             <div class="elements-category-title" style="margin-top: 20px;">Customize Colors</div>
-            <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 4px; margin-bottom: 10px;">
-              <div class="color-picker-row">
-                <span class="color-picker-label">Text Elements</span>
+            <div style="display: flex; flex-direction: column; gap: 10px; padding: 0 4px; margin-bottom: 10px;">
+
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Text Elements</span>
                 <input type="color" id="palette-custom-text" value="#000000"
-                  onchange="applyCustomPaletteColor('text', this.value)" class="custom-swatch">
+                  onchange="applyCustomPaletteColor('text', this.value)"
+                  style="border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; padding: 0; background: none;">
               </div>
-              <div class="color-picker-row">
-                <span class="color-picker-label">Accents & Ornaments</span>
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Accents & Ornaments</span>
                 <input type="color" id="palette-custom-accent" value="#d4af37"
-                  onchange="applyCustomPaletteColor('accent', this.value)" class="custom-swatch">
+                  onchange="applyCustomPaletteColor('accent', this.value)"
+                  style="border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; padding: 0; background: none;">
               </div>
             </div>
           </div>
@@ -3229,21 +2953,25 @@
           <div id="panel-background" class="drawer-panel-section">
             <div class="elements-category-title">Card Stock Texture</div>
             <div class="bg-grid" style="grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 4px;">
-              <div class="bg-texture-card" onclick="applyCardStockTexture('none')" style="background: #fff;">
-                <span class="bg-texture-title">Smooth Matte</span>
-                <span class="bg-texture-desc">No texture</span>
+              <div class="bg-color-item" onclick="applyCardStockTexture('none')"
+                style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--g200); border-radius: 8px; background: #fff; cursor: pointer; text-align: center; padding: 4px; box-shadow: none; width: auto; aspect-ratio: auto;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Smooth Matte</span>
+                <span style="font-size: 9px; color: var(--g400);">No texture</span>
               </div>
-              <div class="bg-texture-card" onclick="applyCardStockTexture('linen')" style="background: url('https://www.transparenttextures.com/patterns/linen.png') #fff;">
-                <span class="bg-texture-title">Linen Stock</span>
-                <span class="bg-texture-desc">Linen feel</span>
+              <div class="bg-color-item" onclick="applyCardStockTexture('linen')"
+                style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--g200); border-radius: 8px; background: url('https://www.transparenttextures.com/patterns/linen.png') #fff; cursor: pointer; text-align: center; padding: 4px; box-shadow: none; width: auto; aspect-ratio: auto;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Linen Stock</span>
+                <span style="font-size: 9px; color: var(--g500);">Linen feel</span>
               </div>
-              <div class="bg-texture-card" onclick="applyCardStockTexture('handmade')" style="background: url('https://www.transparenttextures.com/patterns/handmade-paper.png') #fff;">
-                <span class="bg-texture-title">Handmade</span>
-                <span class="bg-texture-desc">Parchment feel</span>
+              <div class="bg-color-item" onclick="applyCardStockTexture('handmade')"
+                style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--g200); border-radius: 8px; background: url('https://www.transparenttextures.com/patterns/handmade-paper.png') #fff; cursor: pointer; text-align: center; padding: 4px; box-shadow: none; width: auto; aspect-ratio: auto;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Handmade</span>
+                <span style="font-size: 9px; color: var(--g500);">Parchment feel</span>
               </div>
-              <div class="bg-texture-card" onclick="applyCardStockTexture('kraft')" style="background: url('https://www.transparenttextures.com/patterns/cardboard-flat.png') #e2c0a5;">
-                <span class="bg-texture-title">Kraft Stock</span>
-                <span class="bg-texture-desc">Recycled paper</span>
+              <div class="bg-color-item" onclick="applyCardStockTexture('kraft')"
+                style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--g200); border-radius: 8px; background: url('https://www.transparenttextures.com/patterns/cardboard-flat.png') #e2c0a5; cursor: pointer; text-align: center; padding: 4px; box-shadow: none; width: auto; aspect-ratio: auto;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--g800);">Kraft Stock</span>
+                <span style="font-size: 9px; color: var(--g600);">Recycled paper</span>
               </div>
             </div>
           </div>
@@ -3251,10 +2979,11 @@
           <!-- CARD STYLE TAB CONTENT -->
           <div id="panel-card-style" class="drawer-panel-section">
             <div class="elements-category-title">Card Border Frame</div>
-            <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; padding: 0 4px;">
-              <div class="mini-field">
-                <span style="font-size: 11.5px; font-weight: 600; color: var(--g700); margin-bottom: 4px; display: inline-block;">Border Style</span>
-                <select id="card-border-style" onchange="updateCardBorder()">
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding: 0 4px;">
+              <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Border Style</span>
+                <select id="card-border-style" onchange="updateCardBorder()"
+                  style="width: 100%; height: 34px; border: 1px solid var(--g200); border-radius: 8px; padding: 0 8px; outline: none; background: #fff; font-size: 12px; color: var(--g800);">
                   <option value="none">None (No Border)</option>
                   <option value="classic" selected>Classic Frame</option>
                   <option value="double">Double Frame</option>
@@ -3272,44 +3001,52 @@
                 </select>
               </div>
 
-              <div class="mini-field">
-                <span style="font-size: 11.5px; font-weight: 600; color: var(--g700); margin-bottom: 4px; display: inline-block;">Border Scope</span>
-                <select id="card-border-scope" onchange="updateCardBorder()">
+              <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Border Scope</span>
+                <select id="card-border-scope" onchange="updateCardBorder()"
+                  style="width: 100%; height: 34px; border: 1px solid var(--g200); border-radius: 8px; padding: 0 8px; outline: none; background: #fff; font-size: 12px; color: var(--g800);">
                   <option value="whole">Whole Card</option>
                   <option value="section" selected>Section Wise</option>
                 </select>
               </div>
 
-              <div class="mini-field">
-                <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 600; color: var(--g700); margin-bottom: 4px;">
+              <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--g700);">
                   <span>Border Thickness</span>
                   <span id="label-border-thickness" style="color: var(--g500);">3 px</span>
                 </div>
-                <input type="range" id="card-border-thickness" min="1" max="16" step="1" value="3" oninput="updateCardBorder()">
+                <input type="range" id="card-border-thickness" min="1" max="16" step="1" value="3"
+                  oninput="updateCardBorder()" style="width: 100%; accent-color: var(--rose);">
               </div>
 
-              <div class="mini-field">
-                <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 600; color: var(--g700); margin-bottom: 4px;">
+              <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--g700);">
                   <span>Border Margin (Inset)</span>
                   <span id="label-border-inset" style="color: var(--g500);">20 px</span>
                 </div>
-                <input type="range" id="card-border-inset" min="10" max="60" step="2" value="20" oninput="updateCardBorder()">
+                <input type="range" id="card-border-inset" min="10" max="60" step="2" value="20"
+                  oninput="updateCardBorder()" style="width: 100%; accent-color: var(--rose);">
               </div>
 
-              <div class="color-picker-row">
-                <span class="color-picker-label">Border Color</span>
+              <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Border Color</span>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                  <input type="color" id="card-border-color" value="#8b0040" onchange="updateCardBorder()" class="custom-swatch">
-                  <span id="label-border-color-hex" style="font-size: 11.5px; color: var(--g500); font-family: monospace;">#8B0040</span>
+                  <input type="color" id="card-border-color" value="#8b0040" onchange="updateCardBorder()"
+                    style="border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; padding: 0; background: none;">
+                  <span id="label-border-color-hex"
+                    style="font-size: 12px; color: var(--g500); font-family: monospace;">#8B0040</span>
                 </div>
               </div>
             </div>
 
             <div class="elements-category-title">Corner Ornaments</div>
-            <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; padding: 0 4px;">
-              <div class="mini-field">
-                <span style="font-size: 11.5px; font-weight: 600; color: var(--g700); margin-bottom: 4px; display: inline-block;">Ornament Style</span>
-                <select id="card-ornament-style" onchange="updateCardOrnaments()">
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding: 0 4px;">
+              <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Ornament Style</span>
+                <select id="card-ornament-style" onchange="updateCardOrnaments()"
+                  style="width: 100%; height: 34px; border: 1px solid var(--g200); border-radius: 8px; padding: 0 8px; outline: none; background: #fff; font-size: 12px; color: var(--g800);">
                   <option value="none">None (No Ornaments)</option>
                   <option value="traditional-blossom" selected>✿ Traditional Blossom</option>
                   <option value="light-flower">❀ Light Flower</option>
@@ -3321,19 +3058,23 @@
                 </select>
               </div>
 
-              <div class="mini-field">
-                <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 600; color: var(--g700); margin-bottom: 4px;">
+              <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--g700);">
                   <span>Ornament Size</span>
                   <span id="label-ornament-size" style="color: var(--g500);">45 px</span>
                 </div>
-                <input type="range" id="card-ornament-size" min="20" max="100" step="5" value="45" oninput="updateCardOrnaments()">
+                <input type="range" id="card-ornament-size" min="20" max="100" step="5" value="45"
+                  oninput="updateCardOrnaments()" style="width: 100%; accent-color: var(--rose);">
               </div>
 
-              <div class="color-picker-row">
-                <span class="color-picker-label">Ornament Color</span>
+              <div class="mini-field" style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--g700);">Ornament Color</span>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                  <input type="color" id="card-ornament-color" value="#8b0040" onchange="updateCardOrnaments()" class="custom-swatch">
-                  <span id="label-ornament-color-hex" style="font-size: 11.5px; color: var(--g500); font-family: monospace;">#8B0040</span>
+                  <input type="color" id="card-ornament-color" value="#8b0040" onchange="updateCardOrnaments()"
+                    style="border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; padding: 0; background: none;">
+                  <span id="label-ornament-color-hex"
+                    style="font-size: 12px; color: var(--g500); font-family: monospace;">#8B0040</span>
                 </div>
               </div>
             </div>
@@ -8460,8 +8201,7 @@
         // Update Form Mode Link
         const formLink = document.getElementById('form-mode-link');
         if (formLink) {
-          formLink.href = 'javascript:void(0)';
-          formLink.onclick = () => navigateToParentTab('content');
+          formLink.href = '../universal-template-editor/editor.html?templateId=' + currentId;
         }
 
         // Notify parent of the template change
@@ -9196,7 +8936,7 @@
       isSavingHistory = true;
       saveHistory();
       syncCanvasToParentState();
-      
+
       // Set the initial view mode on load
       const initialViewMode = urlParams.get('viewMode') || 'editor';
       setViewMode(initialViewMode);
@@ -9218,8 +8958,8 @@
         border-top: none !important;
       }
       body.is-embedded .preview-vp {
-        height: calc(100vh - 46px) !important;
-        max-height: calc(100vh - 46px) !important;
+        height: calc(100vh - 50px) !important;
+        max-height: calc(100vh - 50px) !important;
       }
       body.is-embedded.is-preview-mode .preview-vp {
         height: 100vh !important;
@@ -9228,7 +8968,7 @@
         justify-content: center !important;
       }
       body.is-embedded:not(.is-preview-mode) .workspace {
-        padding-top: 0 !important;
+        padding-top: 46px !important;
       }
       body.is-preview-mode .left-panel-wrapper {
         display: none !important;
@@ -9249,7 +8989,7 @@
     `;
     document.head.appendChild(style);
 
-    window.setViewMode = function(mode) {
+    window.setViewMode = function (mode) {
       if (mode === 'preview') {
         document.body.classList.add('is-preview-mode');
         if (canvas) {
@@ -9280,10 +9020,10 @@
       if (!canvas || !data) return;
       const fields = data.fields || {};
       const events = data.events || {};
-      
+
       canvas.getObjects().forEach(obj => {
         if (!obj.name) return;
-        
+
         switch (obj.name) {
           case 'Shloka':
             obj.set('text', ((fields.shlokaLine1 || '।। श्री गणेशाय नमः ।।') + '\n' + (fields.shlokaLine2 || '')).trim());
@@ -9354,13 +9094,13 @@
             obj.set('text', `${fields.groomName || 'Kabir'} & ${fields.brideName || 'Riya'}`);
             break;
         }
-        
+
         if (document.body.classList.contains('is-preview-mode')) {
           obj.selectable = false;
           obj.evented = false;
         }
       });
-      
+
       canvas.requestRenderAll();
     }
 
@@ -9527,11 +9267,7 @@
       const d = e.data;
       if (!d) return;
 
-      if (d.type === 'SET_VIEW_MODE') {
-        if (typeof window.setViewMode === 'function') {
-          window.setViewMode(d.mode);
-        }
-      } else if (d.type === 'CANVA_TRIGGER_DOWNLOAD') {
+      if (d.type === 'CANVA_TRIGGER_DOWNLOAD') {
         handleCanvaDownload(d.format);
       } else if (d.type === 'CANVA_RENAME_PROJECT') {
         const titleEl = document.getElementById('project-title');
@@ -9545,10 +9281,10 @@
         if (payload) {
           const isCard1 = tId === 'card1' || tId === '1' || tId === '37' || tId === '38' || tId === 'muslim' || tId === 'engagement' || tId === 'birthday';
           const templateChanged = (tId !== activeTemplateId) || (canvas.getObjects().length === 0);
-          
+
           activeTemplateData = payload;
           activeTemplateId = tId;
-          
+
           if (isCard1) {
             const bgIframe = document.getElementById('bg-template-frame');
             if (bgIframe) {
@@ -9616,6 +9352,273 @@
       }
     }
   </script>
+</body>
+
+</html>
+if (document.body.classList.contains('is-preview-mode')) {
+obj.selectable = false;
+obj.evented = false;
+}
+});
+
+canvas.requestRenderAll();
+}
+
+// postMessage listener for download and rename commands from parent editor
+let isSyncingToParent = false;
+function syncCanvasToParentState() {
+if (!window.parent || window.parent === window || !window.parent.currentData) return;
+
+isSyncingToParent = true;
+try {
+const parentData = window.parent.currentData;
+if (!parentData.fields) parentData.fields = {};
+if (!parentData.events) parentData.events = {};
+if (!parentData.styles) parentData.styles = {};
+
+// 1. Sync card background color
+const bg = canvas.backgroundColor;
+if (bg && typeof bg === 'string') {
+parentData.styles.cardBg = bg;
+}
+
+// 2. Sync objects by name
+canvas.getObjects().forEach(obj => {
+if (!obj.name) return;
+
+if (obj.type === 'text' || obj.type === 'i-text' || obj.type === 'textbox') {
+const text = obj.text;
+
+switch (obj.name) {
+case 'Shloka': {
+const lines = text.split('\n');
+parentData.fields.shlokaLine1 = lines[0] || '';
+parentData.fields.shlokaLine2 = lines.slice(1).join('\n') || '';
+break;
+}
+case 'Heading':
+parentData.fields.headingText = text;
+break;
+case 'Haldi Title':
+if (!parentData.events.haldi) parentData.events.haldi = {};
+parentData.events.haldi.name = text;
+break;
+case 'Haldi Date':
+if (!parentData.events.haldi) parentData.events.haldi = {};
+parentData.events.haldi.date = text;
+break;
+case 'Vivah Title':
+if (!parentData.events.vivah) parentData.events.vivah = {};
+parentData.events.vivah.name = text;
+break;
+case 'Vivah Date':
+if (!parentData.events.vivah) parentData.events.vivah = {};
+parentData.events.vivah.date = text;
+break;
+case 'Vidai Title':
+if (!parentData.events.vidai) parentData.events.vidai = {};
+parentData.events.vidai.name = text;
+break;
+case 'Vidai Date':
+if (!parentData.events.vidai) parentData.events.vidai = {};
+parentData.events.vidai.date = text;
+break;
+case 'Bride Title':
+parentData.fields.brideTitle = text;
+break;
+case 'Bride Name':
+parentData.fields.brideName = text;
+break;
+case 'Bride Grandparents':
+parentData.fields.brideGrandparents = text;
+break;
+case 'Bride Parents':
+parentData.fields.brideParents = text;
+break;
+case 'Bride Address':
+parentData.fields.brideAddress = text;
+break;
+case 'Bride City':
+parentData.fields.brideCity = text;
+break;
+case 'Groom Title':
+parentData.fields.groomTitle = text;
+break;
+case 'Groom Name':
+parentData.fields.groomName = text;
+break;
+case 'Groom Grandparents':
+parentData.fields.groomGrandparents = text;
+break;
+case 'Groom Parents':
+parentData.fields.groomParents = text;
+break;
+case 'Groom Address':
+parentData.fields.groomAddress = text;
+break;
+case 'Groom City':
+parentData.fields.groomCity = text;
+break;
+case 'Dampatya Heading':
+parentData.fields.dampatyaHeading = text;
+break;
+case 'Vinit Text':
+parentData.fields.vinitText = text;
+break;
+case 'Darshnabhilashi Label':
+parentData.fields.darshnabhilashiLabel = text;
+break;
+case 'Darshnabhilashi Names':
+parentData.fields.darshnabhilashiNames = text;
+break;
+case 'Swagatakankshi Label':
+parentData.fields.swagatakankshiLabel = text;
+break;
+case 'Swagatakankshi Names':
+parentData.fields.swagatakankshiNames = text;
+break;
+case 'Vinit Label':
+parentData.fields.vinitLabel = text;
+break;
+case 'Vinit Name':
+parentData.fields.vinitName = text;
+break;
+case 'Vinit Address':
+parentData.fields.vinitAddress = text;
+break;
+case 'Couple Text': {
+const parts = text.split(' & ');
+parentData.fields.groomName = parts[0] || '';
+parentData.fields.brideName = parts[1] || '';
+break;
+}
+}
+}
+});
+
+// Sync heading and text colors if modified directly on canvas
+const headingObj = canvas.getObjects().find(o => o.name === 'Heading');
+if (headingObj && headingObj.fill) {
+parentData.styles.headingColor = headingObj.fill;
+}
+const brideObj = canvas.getObjects().find(o => o.name === 'Bride Name');
+if (brideObj && brideObj.fill) {
+parentData.styles.textColor = brideObj.fill;
+}
+const borderObj = canvas.getObjects().find(o => o.name === 'card-border');
+if (borderObj && borderObj.stroke) {
+parentData.styles.accentColor = borderObj.stroke;
+}
+
+if (typeof window.parent.sendUpdate === 'function') {
+window.parent.sendUpdate();
+}
+if (typeof window.parent.syncCustomizerInputs === 'function') {
+window.parent.syncCustomizerInputs();
+}
+} finally {
+setTimeout(() => {
+isSyncingToParent = false;
+}, 50);
+}
+}
+
+window.addEventListener('message', function (e) {
+const d = e.data;
+if (!d) return;
+
+if (d.type === 'SET_VIEW_MODE') {
+if (typeof window.setViewMode === 'function') {
+window.setViewMode(d.mode);
+}
+} else if (d.type === 'CANVA_TRIGGER_DOWNLOAD') {
+handleCanvaDownload(d.format);
+} else if (d.type === 'CANVA_RENAME_PROJECT') {
+const titleEl = document.getElementById('project-title');
+if (titleEl) {
+titleEl.value = d.title;
+}
+} else if (d.type === 'UPDATE_TEMPLATE_DATA') {
+if (isSyncingToParent) return;
+const payload = d.data;
+const tId = d.templateId || activeTemplateId || 'card1';
+if (payload) {
+const isCard1 = tId === 'card1' || tId === '1' || tId === '37' || tId === '38' || tId === 'muslim' || tId ===
+'engagement' || tId === 'birthday';
+const templateChanged = (tId !== activeTemplateId) || (canvas.getObjects().length === 0);
+
+activeTemplateData = payload;
+activeTemplateId = tId;
+
+if (isCard1) {
+const bgIframe = document.getElementById('bg-template-frame');
+if (bgIframe) {
+const expectedSrc = '../card1/card1.html';
+if (!bgIframe.src.endsWith(expectedSrc)) {
+bgIframe.src = expectedSrc;
+}
+}
+if (templateChanged) {
+renderEditableCard1(payload);
+} else {
+updateCanvasTextsAndStyles(payload);
+}
+} else {
+if (templateChanged) {
+renderCanvasFromTemplateData(payload, tId, false);
+} else {
+updateCanvasTextsAndStyles(payload);
+}
+}
+}
+}
+});
+
+// Handle redirecting/switching to tabs on parent
+function navigateToParentTab(tabName) {
+if (tabName === 'customize') return;
+
+const urlParams = new URLSearchParams(window.location.search);
+const templateId = urlParams.get('templateId') || 'card1';
+const projectId = urlParams.get('projectId');
+
+let targetUrl = `../universal-template-editor/editor.html?templateId=${templateId}`;
+if (projectId) {
+targetUrl += `&projectId=${projectId}`;
+}
+targetUrl += `&tab=${tabName}`;
+
+if (window.parent && window.parent !== window) {
+if (typeof window.parent.switchBuilderTab === 'function') {
+window.parent.switchBuilderTab(tabName);
+} else {
+window.parent.location.href = targetUrl;
+}
+} else {
+window.location.href = targetUrl;
+}
+}
+
+// Reset canvas to default layout/texts
+function resetCanvasToDefault(e) {
+if (e) e.stopPropagation();
+
+if (confirm("Are you sure you want to reset all canvas customizations? This will clear all design modifications and
+restore the default template layout and texts.")) {
+isSavingHistory = false;
+
+// Find normalized active template id
+const urlParams = new URLSearchParams(window.location.search);
+let currentTemplateId = urlParams.get('templateId') || urlParams.get('template') || 'card1';
+if (currentTemplateId === '1' || currentTemplateId === '37' || currentTemplateId === '38' || currentTemplateId ===
+'muslim' || currentTemplateId === 'engagement' || currentTemplateId === 'birthday') {
+currentTemplateId = 'card1';
+}
+
+loadDefaultConfigAndRender(currentTemplateId);
+}
+}
+</script>
 </body>
 
 </html>
