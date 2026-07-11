@@ -1251,8 +1251,8 @@
 
     .preview-vp {
       flex: 1;
-      height: calc(100vh - var(--topbar-h) - 46px);
-      max-height: calc(100vh - var(--topbar-h) - 46px);
+      height: calc(100% - 46px);
+      max-height: calc(100% - 46px);
       overflow-y: scroll;
       overflow-x: hidden;
       display: flex;
@@ -2422,8 +2422,8 @@
       align-items: center;
       justify-content: flex-start;
       flex: 1 !important;
-      height: calc(100vh - var(--topbar-h) - 46px) !important;
-      max-height: calc(100vh - var(--topbar-h) - 46px) !important;
+      height: calc(100% - 46px) !important;
+      max-height: calc(100% - 46px) !important;
       padding: 24px 40px 0px;
       gap: 14px;
       overflow-y: scroll !important;
@@ -4556,6 +4556,9 @@
         vp.addEventListener('scroll', updateCustomScrollbar);
       }
       window.addEventListener('resize', () => {
+        if (typeof applyZoomScale === 'function') {
+          applyZoomScale();
+        }
         updateCustomScrollbar();
       });
 
@@ -8986,12 +8989,12 @@
         border-top: none !important;
       }
       body.is-embedded .preview-vp {
-        height: calc(100vh - 46px) !important;
-        max-height: calc(100vh - 46px) !important;
+        height: calc(100% - 46px) !important;
+        max-height: calc(100% - 46px) !important;
       }
       body.is-embedded.is-preview-mode .preview-vp {
-        height: calc(100vh - 46px) !important;
-        max-height: calc(100vh - 46px) !important;
+        height: calc(100% - 46px) !important;
+        max-height: calc(100% - 46px) !important;
         padding: 40px 24px !important;
         justify-content: flex-start !important;
       }
@@ -9423,3 +9426,5 @@
 </body>
 
 </html>
+
+
