@@ -2747,3 +2747,4 @@ function initTransliterationState() {
     console.error('Failed to init transliteration state:', e);
   }
 }
+
